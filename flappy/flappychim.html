@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Flappy Chim Edition</title>
+    <style>
+        /* Basic reset and fullscreen setup */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body {
+            width: 100%; height: 100%; overflow: hidden;
+            background: linear-gradient(to bottom, #4a6a8a, #7a9ab8, #c0c8d0); /* Default */
+            cursor: none; transition: background 0.5s ease;
+        }
+        canvas { display: block; background-color: rgba(255, 255, 255, 0.4); }
+
+        /* Message Boxes & Prompts */
+        #messageBox, #continuePrompt {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8); color: white; padding: 30px 50px;
+            border-radius: 15px; text-align: center; font-family: 'Arial', sans-serif;
+            display: none; z-index: 10; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        #messageBox { font-size: 1.8em; }
+        #continuePrompt { font-size: 1.5em; padding: 25px 40px; }
+        #messageBox button { /* Restart Button */
+            margin-top: 20px; padding: 12px 25px; font-size: 0.8em; cursor: pointer;
+            border: none; border-radius: 8px; background-color: #5cb85c; color: white;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+        #messageBox button:hover { background-color: #4cae4c; }
+        #messageBox button:active { transform: scale(0.95); }
+
+        /* Game Info Text (Score, Hearts, Status, High Score) */
+        .game-info {
+            position: absolute; top: 20px; left: 20px;
+            /* Color set by JS for contrast */
+            color: #000; /* Default to black */
+            font-size: 24px;
+            font-family: Arial, sans-serif; background-color: rgba(255, 255, 255, 0.6);
+            padding: 5px 10px; border-radius: 5px;
+            transition: color 0.5s ease, background-color 0.3s ease; z-index: 5;
+        }
+        #heartsDisplay { top: 60px; }
+        #statusDisplay { top: 100px; font-size: 18px; display: none; }
+        #highScoreDisplay { top: 20px; right: 20px; left: auto; text-align: right; }
+
+        .game-info span { /* Heart symbols */
+             color: red !important; font-size: 1.2em; margin-left: 2px;
+        }
+        .score-multiplier-active { /* Score multiplier style */
+            color: #fff !important; background-color: rgba(255, 165, 0, 0.8) !important; font-weight: bold;
+        }
+        /* REMOVED Maze Mode Active Style */
+        /* .maze-mode-active { ... } */
+
+
+        /* Theme Button Style */
+        #themeButton {
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+            padding: 10px 20px; font-size: 1em; font-family: Arial, sans-serif;
+            background-color: rgba(0, 0, 0, 0.6); color: white; border: none;
+            border-radius: 8px; cursor: pointer; z-index: 5; display: none;
+            transition: background-color 0.3s ease;
+        }
+        #themeButton:hover { background-color: rgba(0, 0, 0, 0.8); }
+
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <div id="scoreDisplay" class="game-info">Score: 0</div>
+    <div id="heartsDisplay" class="game-info">Hearts: </div>
+    <div id="statusDisplay" class="game-info"></div>
+    <div id="highScoreDisplay" class="game-info">High Score: 0</div>
+    <div id="messageBox"> <p id="messageText"></p> <button id="restartButton">Restart</button> </div>
+    <div id="continuePrompt"> <p>Use a Heart?</p> <p style="font-size: 0.7em; margin-top: 10px;">(Spacebar = Yes / Enter = No)</p> </div>
+    <button id="themeButton">Random Theme</button>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const messageBox = document.getElementById('messageBox');
+        const messageText = document.getElementById('messageText');
+        const restartButton = document.getElementById('restartButton');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const heartsDisplay = document.getElementById('heartsDisplay');
+        const statusDisplay = document.getElementById('statusDisplay');
+        const themeButton = document.getElementById('themeButton');
+        const highScoreDisplay = document.getElementById('highScoreDisplay');
+        const continuePrompt = document.getElementById('continuePrompt');
+
+
+        // --- Game Variables ---
+        let ball, obstacles, powerUps, score, hearts, baseGameSpeed, currentGameSpeed, highScore;
+        let gameStarted = false; gameOver = false; awaitingContinueChoice = false;
+        let isInvincible = false; // General invincibility flag (shield, post-hit)
+
+        // --- REMOVED Maze Mode Variables ---
+        // let inMazeMode = false; let mazeTimer = 0; const mazeDuration = 30;
+        // let mazeWaveAngle = 0; const mazeWaveAmplitude = 100; const mazeWaveFrequency = 0.05;
+
+        // Ball Properties
+        const baseBallRadius = 15; let currentBallRadius = baseBallRadius;
+        const scrollSensitivity = 1.5;
+
+        // Obstacle Properties
+        const obstacleWidth = 80;
+        const obstacleMinGap = baseBallRadius * 2 * (2.5 * 1.0); // Tighter gap
+        const obstacleMaxGap = baseBallRadius * 2 * (3.5 * 1.0); // Tighter gap
+        const obstacleFrequency = 100; let frameCount = 0;
+
+        // PowerUp Properties
+        const powerUpRadius = 12; const powerUpFrequency = 200; const powerUpSpawnChance = 0.4;
+        const POWERUP_TYPES = { HEART: 'heart', SHIELD: 'shield', SLOW_MO: 'slow_mo', SHRINK: 'shrink', SCORE_MULTIPLIER: 'score_multiplier' };
+        const POWERUP_COLORS = { [POWERUP_TYPES.HEART]: 'pink', [POWERUP_TYPES.SHIELD]: 'lightblue', [POWERUP_TYPES.SLOW_MO]: 'lightgreen', [POWERUP_TYPES.SHRINK]: 'purple', [POWERUP_TYPES.SCORE_MULTIPLIER]: 'orange' };
+        const POWERUP_SYMBOLS = { [POWERUP_TYPES.HEART]: '♥', [POWERUP_TYPES.SHIELD]: '🛡️', [POWERUP_TYPES.SLOW_MO]: '⏳', [POWERUP_TYPES.SHRINK]: '🤏', [POWERUP_TYPES.SCORE_MULTIPLIER]: 'x2' };
+        let activePowerUps = {}; const powerUpBaseDuration = 5;
+        let slowMoFactor = 1.0; let scoreMultiplier = 1;
+        const postHitInvincibilityDuration = 1.5;
+
+        // Delta Time & Theme Variables
+        let lastTime = 0; let deltaTime = 0;
+        let currentBgColor1, currentBgColor2, currentBallColor, currentTubeColor1, currentTubeColor2, currentTubeBorder, currentTextColor;
+        function getRandomHexColor() { return '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0'); }
+
+        // --- NEW: Function to calculate luminance ---
+        function getLuminance(hexColor) {
+            const rgb = parseInt(hexColor.slice(1), 16);   // Convert hex to integer
+            const r = (rgb >> 16) & 0xff;  // Extract red
+            const g = (rgb >>  8) & 0xff;  // Extract green
+            const b = (rgb >>  0) & 0xff;  // Extract blue
+
+            // Formula for relative luminance (sRGB)
+            const RsRGB = r / 255;
+            const GsRGB = g / 255;
+            const BsRGB = b / 255;
+
+            const R = (RsRGB <= 0.03928) ? RsRGB / 12.92 : Math.pow(((RsRGB + 0.055) / 1.055), 2.4);
+            const G = (GsRGB <= 0.03928) ? GsRGB / 12.92 : Math.pow(((GsRGB + 0.055) / 1.055), 2.4);
+            const B = (BsRGB <= 0.03928) ? BsRGB / 12.92 : Math.pow(((BsRGB + 0.055) / 1.055), 2.4);
+
+            return 0.2126 * R + 0.7152 * G + 0.0722 * B;
+        }
+
+        function generateRandomTheme() {
+            currentBgColor1 = getRandomHexColor();
+            currentBgColor2 = getRandomHexColor();
+            currentBallColor = getRandomHexColor();
+            currentTubeColor1 = getRandomHexColor();
+            currentTubeColor2 = getRandomHexColor();
+            currentTubeBorder = getRandomHexColor();
+
+            // --- Determine Text Color based on Background Luminance ---
+            const lum1 = getLuminance(currentBgColor1);
+            const lum2 = getLuminance(currentBgColor2);
+            // Average luminance (simple average, could be weighted)
+            const avgLuminance = (lum1 + lum2) / 2;
+
+            // Set text color to black or white for contrast
+            currentTextColor = avgLuminance > 0.5 ? '#000000' : '#FFFFFF'; // Dark background -> White text, Light background -> Black text
+        }
+
+
+        // --- Game Objects ---
+        class Ball { // Ball class remains the same
+            constructor(x, y, radius) { this.x = x; this.y = y; this.baseRadius = radius; this.radius = radius; }
+            draw() { this.radius = currentBallRadius; const ballColor = currentBallColor; ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); if (isInvincible) { const shieldPulse = Math.abs(Math.sin(lastTime / 200)) * 5; ctx.fillStyle = ballColor; ctx.fill(); ctx.strokeStyle = POWERUP_COLORS[POWERUP_TYPES.SHIELD]; ctx.lineWidth = 3 + shieldPulse / 2; ctx.stroke(); if (activePowerUps[POWERUP_TYPES.SHIELD] > 0) { const shieldTimeLeft = activePowerUps[POWERUP_TYPES.SHIELD] || 0; const angle = (shieldTimeLeft / powerUpBaseDuration) * Math.PI * 2; ctx.beginPath(); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(0, 150, 255, 0.7)'; ctx.arc(this.x, this.y, this.radius + 5 + shieldPulse, -Math.PI / 2, -Math.PI / 2 + angle); ctx.stroke(); } } else { const gradient = ctx.createRadialGradient(this.x - this.radius * 0.3, this.y - this.radius * 0.3, this.radius * 0.1, this.x, this.y, this.radius); const r = parseInt(ballColor.slice(1, 3), 16); const g = parseInt(ballColor.slice(3, 5), 16); const b = parseInt(ballColor.slice(5, 7), 16); gradient.addColorStop(0, `rgba(${Math.min(255, r + 50)}, ${Math.min(255, g + 50)}, ${Math.min(255, b + 50)}, 1)`); gradient.addColorStop(1, ballColor); ctx.fillStyle = gradient; ctx.fill(); ctx.strokeStyle = `rgb(${Math.max(0, r - 50)}, ${Math.max(0, g - 50)}, ${Math.max(0, b - 50)})`; ctx.lineWidth = 1; ctx.stroke(); } ctx.closePath(); ctx.lineWidth = 1; }
+            update(dt) { if (this.y - this.radius < 0) { this.y = this.radius; } if (this.y + this.radius > canvas.height) { this.y = canvas.height - this.radius; } }
+            move(deltaY) { if (!gameOver && gameStarted && !awaitingContinueChoice) { this.y += deltaY * scrollSensitivity; if (this.y - this.radius < 0) { this.y = this.radius; } if (this.y + this.radius > canvas.height) { this.y = canvas.height - this.radius; } } }
+        }
+        class Obstacle { // Obstacle class constructor simplified (no maze logic)
+             constructor(x, width, canvasHeight) {
+                this.x = x; this.width = width; this.canvasHeight = canvasHeight;
+                const currentMinGap = obstacleMinGap; const currentMaxGap = obstacleMaxGap;
+                this.gap = Math.random() * (currentMaxGap - currentMinGap) + currentMinGap;
+                const minTopHeight = 60; const maxTopHeight = this.canvasHeight - this.gap - 60;
+                const effectiveMaxTopHeight = Math.max(minTopHeight, maxTopHeight);
+                // Random height generation only
+                this.topHeight = Math.random() * (effectiveMaxTopHeight - minTopHeight) + minTopHeight;
+                this.bottomY = this.topHeight + this.gap; this.passed = false;
+            }
+             draw() { const gradient = ctx.createLinearGradient(this.x, 0, this.x + this.width, 0); gradient.addColorStop(0, currentTubeColor1); gradient.addColorStop(0.5, currentTubeColor2); gradient.addColorStop(1, currentTubeColor1); ctx.fillStyle = gradient; ctx.strokeStyle = currentTubeBorder; ctx.lineWidth = 2; ctx.fillRect(this.x, 0, this.width, this.topHeight); ctx.strokeRect(this.x, 0, this.width, this.topHeight); ctx.fillRect(this.x, this.bottomY, this.width, this.canvasHeight - this.bottomY); ctx.strokeRect(this.x, this.bottomY, this.width, this.canvasHeight - this.bottomY); const capHeight = 15; ctx.fillRect(this.x - 5, this.topHeight - capHeight, this.width + 10, capHeight); ctx.strokeRect(this.x - 5, this.topHeight - capHeight, this.width + 10, capHeight); ctx.fillRect(this.x - 5, this.bottomY, this.width + 10, capHeight); ctx.strokeRect(this.x - 5, this.bottomY, this.width + 10, capHeight); }
+             update(dt) { if(!awaitingContinueChoice) this.x -= currentGameSpeed * slowMoFactor * dt * 60; }
+             isOffscreen() { return this.x + this.width < 0; }
+        }
+        class PowerUp { // Powerup class remains the same
+            constructor(x, y, radius, type) { this.x = x; this.y = y; this.radius = radius; this.type = type; this.color = POWERUP_COLORS[type] || 'gray'; this.symbol = POWERUP_SYMBOLS[type] || '?'; }
+            draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = this.color; ctx.fill(); ctx.fillStyle = 'white'; const fontSize = this.symbol.length > 1 ? this.radius * 0.9 : this.radius * 1.2; ctx.font = `bold ${fontSize}px Arial`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(this.symbol, this.x, this.y + 1); ctx.closePath(); }
+            update(dt) { if(!awaitingContinueChoice) this.x -= currentGameSpeed * slowMoFactor * dt * 60; }
+            isOffscreen() { return this.x + this.radius < 0; }
+        }
+
+
+        // --- Game Functions ---
+
+        function applyRandomTheme() {
+            document.body.style.background = `linear-gradient(to bottom, ${currentBgColor1}, ${currentBgColor2})`;
+            // Apply calculated contrast color to UI text elements
+            scoreDisplay.style.color = currentTextColor;
+            heartsDisplay.style.color = currentTextColor;
+            statusDisplay.style.color = currentTextColor;
+            highScoreDisplay.style.color = currentTextColor;
+
+            if (!gameStarted && !gameOver && ball) {
+                 ctx.clearRect(0, 0, canvas.width, canvas.height);
+                 ball.draw(); drawGameTitle(); drawStartMessage();
+            }
+        }
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; initGame(); }
+
+        function initGame() {
+            gameStarted = false; gameOver = false; awaitingContinueChoice = false;
+            // REMOVED Maze reset: inMazeMode = false; mazeTimer = 0; mazeWaveAngle = 0;
+            isInvincible = false;
+            score = 0; hearts = 0; frameCount = 0;
+            obstacles = []; powerUps = []; lastTime = 0; activePowerUps = {};
+            slowMoFactor = 1.0; scoreMultiplier = 1;
+            currentBallRadius = baseBallRadius;
+            baseGameSpeed = canvas.width * 0.004; currentGameSpeed = baseGameSpeed;
+
+            highScore = localStorage.getItem('flappyChimHighScore') || 0;
+            updateHighScoreDisplay();
+
+            ball = new Ball(canvas.width / 4, canvas.height / 2, baseBallRadius);
+
+            messageBox.style.display = 'none'; continuePrompt.style.display = 'none';
+            statusDisplay.style.display = 'none'; // statusDisplay.classList.remove('maze-mode-active'); // Removed maze style class
+            scoreDisplay.classList.remove('score-multiplier-active');
+            themeButton.style.display = 'block';
+
+            if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; }
+
+            generateRandomTheme(); applyRandomTheme();
+            updateScoreDisplay(); updateHeartsDisplay();
+        }
+
+        function addObstacle() { obstacles.push(new Obstacle(canvas.width, obstacleWidth, canvas.height)); }
+        function addPowerUp() { /* Remains the same */ let spawnY = canvas.height / 2; if (obstacles.length > 0) { const lastObstacle = obstacles[obstacles.length - 1]; spawnY = lastObstacle.topHeight + Math.random() * lastObstacle.gap; spawnY = Math.max(powerUpRadius + 10, Math.min(canvas.height - powerUpRadius - 10, spawnY)); } const rand = Math.random(); let type; if (rand < 0.35) type = POWERUP_TYPES.HEART; else if (rand < 0.55) type = POWERUP_TYPES.SHIELD; else if (rand < 0.75) type = POWERUP_TYPES.SLOW_MO; else if (rand < 0.90) type = POWERUP_TYPES.SHRINK; else type = POWERUP_TYPES.SCORE_MULTIPLIER; powerUps.push(new PowerUp(canvas.width + obstacleWidth, spawnY, powerUpRadius, type)); }
+
+        function updateObstacles(dt) {
+            if (awaitingContinueChoice) return;
+            if (gameStarted && frameCount % obstacleFrequency === 0) { addObstacle(); }
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                obstacles[i].update(dt); obstacles[i].draw();
+                // Scoring & High Score Update
+                if (!obstacles[i].passed && obstacles[i].x + obstacles[i].width < ball.x - ball.radius) {
+                    obstacles[i].passed = true; score += (1 * scoreMultiplier); updateScoreDisplay();
+                    if (score > highScore) { highScore = score; updateHighScoreDisplay(); } // Live high score update
+
+                    // --- Speed Cap ---
+                    // Increase speed only if below 2x base speed
+                    if (currentGameSpeed < baseGameSpeed * 2) {
+                         currentGameSpeed *= 1.10;
+                         // Optional: Clamp speed exactly to 2x base if it overshoots
+                         // if (currentGameSpeed > baseGameSpeed * 2) {
+                         //     currentGameSpeed = baseGameSpeed * 2;
+                         // }
+                    }
+                     // --- REMOVED Maze Trigger ---
+                     // if (!inMazeMode) { ... }
+                }
+                // Collision check uses isInvincible flag
+                if (!isInvincible && checkCollision(ball, obstacles[i])) {
+                    handleCollision(obstacles[i]); return;
+                }
+                if (obstacles[i].isOffscreen()) { obstacles.splice(i, 1); }
+            }
+        }
+        function updatePowerUps(dt) { /* Remains the same */ if (awaitingContinueChoice) return; if (gameStarted && frameCount % powerUpFrequency === 0 && Math.random() < powerUpSpawnChance) { addPowerUp(); } for (let i = powerUps.length - 1; i >= 0; i--) { powerUps[i].update(dt); powerUps[i].draw(); const dx = ball.x - powerUps[i].x; const dy = ball.y - powerUps[i].y; const distance = Math.sqrt(dx * dx + dy * dy); if (distance < ball.radius + powerUps[i].radius) { applyPowerUp(powerUps[i].type); powerUps.splice(i, 1); } else if (powerUps[i].isOffscreen()) { powerUps.splice(i, 1); } } }
+        function applyPowerUp(type) { /* Remains the same */ if (type === POWERUP_TYPES.HEART) { hearts++; updateHeartsDisplay(); flashScreen('pink', 0.5); } else { activePowerUps[type] = powerUpBaseDuration; if (type === POWERUP_TYPES.SHIELD) { isInvincible = true; flashScreen(POWERUP_COLORS[type], 0.5); } if (type === POWERUP_TYPES.SLOW_MO) { slowMoFactor = 0.5; flashScreen(POWERUP_COLORS[type], 0.5); } if (type === POWERUP_TYPES.SHRINK) { currentBallRadius = baseBallRadius * 0.6; flashScreen(POWERUP_COLORS[type], 0.5); } if (type === POWERUP_TYPES.SCORE_MULTIPLIER) { scoreMultiplier = 2; scoreDisplay.classList.add('score-multiplier-active'); flashScreen(POWERUP_COLORS[type], 0.5); } } updateStatusDisplay(); }
+
+        function updateEffects(dt) { // Simplified invincibility logic
+            if (awaitingContinueChoice) return;
+            let statusChanged = false;
+            let stillInvincibleFromPowerup = false;
+
+            // --- REMOVED Maze Mode Timer Update ---
+            // if (inMazeMode) { ... }
+
+            // Update PowerUp Timers
+            for (const type in activePowerUps) {
+                if (activePowerUps[type] > 0) {
+                    activePowerUps[type] -= dt;
+                    statusChanged = true;
+                    if (activePowerUps[type] <= 0) {
+                        delete activePowerUps[type];
+                        if (type === POWERUP_TYPES.SLOW_MO) slowMoFactor = 1.0;
+                        if (type === POWERUP_TYPES.SHRINK) currentBallRadius = baseBallRadius;
+                        if (type === POWERUP_TYPES.SCORE_MULTIPLIER) { scoreMultiplier = 1; scoreDisplay.classList.remove('score-multiplier-active'); }
+                        // Don't reset isInvincible here, handled below
+                    } else {
+                        if (type === POWERUP_TYPES.SHIELD) {
+                            stillInvincibleFromPowerup = true; // Shield powerup is still active
+                        }
+                    }
+                }
+            }
+
+            // Update overall invincibility status (only depends on shield powerup now)
+            const newInvincibleStatus = stillInvincibleFromPowerup;
+            if (isInvincible !== newInvincibleStatus) {
+                isInvincible = newInvincibleStatus;
+                statusChanged = true;
+            }
+
+            if(statusChanged) updateStatusDisplay();
+        }
+
+        function updateStatusDisplay() { // Simplified status display (no maze)
+            let statusText = '';
+            // statusDisplay.classList.remove('maze-mode-active'); // Ensure maze style is removed
+
+            for (const type in activePowerUps) {
+                if (activePowerUps[type] > 0) {
+                    const timeLeft = Math.ceil(activePowerUps[type]);
+                    let effectName = type.replace('_', ' ').toUpperCase();
+                    if(type === POWERUP_TYPES.SCORE_MULTIPLIER) effectName = `SCORE x${scoreMultiplier}`;
+                    if(type === POWERUP_TYPES.SHIELD) effectName = 'SHIELD'; // Use 'SHIELD' explicitly
+                    statusText += `${effectName}: ${timeLeft}s | `;
+                }
+            }
+
+            if (statusText) {
+                statusDisplay.textContent = statusText.slice(0, -3);
+                statusDisplay.style.display = 'block';
+            } else {
+                statusDisplay.style.display = 'none';
+            }
+        }
+
+        // checkCollision, handleCollision, handleContinueChoice, flashScreen, updateScoreDisplay,
+        // updateHeartsDisplay, updateHighScoreDisplay, drawStartMessage, drawGameTitle,
+        // showGameOverMessage, endGame
+        // --- These functions remain the same ---
+        function checkCollision(ball, obstacle) { if (ball.x + ball.radius > obstacle.x && ball.x - ball.radius < obstacle.x + obstacle.width && ball.y - ball.radius < obstacle.topHeight) { return true; } if (ball.x + ball.radius > obstacle.x && ball.x - ball.radius < obstacle.x + obstacle.width && ball.y + ball.radius > obstacle.bottomY) { return true; } const capWidthExtension = 5; const capHeight = 15; if (ball.x + ball.radius > obstacle.x - capWidthExtension && ball.x - ball.radius < obstacle.x + obstacle.width + capWidthExtension && ball.y - ball.radius < obstacle.topHeight && ball.y + ball.radius > obstacle.topHeight - capHeight) { return true; } if (ball.x + ball.radius > obstacle.x - capWidthExtension && ball.x - ball.radius < obstacle.x + obstacle.width + capWidthExtension && ball.y + ball.radius > obstacle.bottomY && ball.y - ball.radius < obstacle.bottomY + capHeight) { return true; } return false; }
+        function handleCollision(collidedObstacle) { if (gameOver || isInvincible || awaitingContinueChoice) return; flashScreen('red', 0.7); if (hearts > 0) { awaitingContinueChoice = true; continuePrompt.style.display = 'block'; canvas.style.cursor = 'default'; if (collidedObstacle) { collidedObstacle.x += 10; } } else { endGame(); } }
+        function handleContinueChoice(useHeart) { if (!awaitingContinueChoice) return; awaitingContinueChoice = false; continuePrompt.style.display = 'none'; canvas.style.cursor = 'none'; if (useHeart && hearts > 0) { hearts--; updateHeartsDisplay(); isInvincible = true; activePowerUps[POWERUP_TYPES.SHIELD] = postHitInvincibilityDuration; updateStatusDisplay(); if (!animationFrameId) { animationFrameId = requestAnimationFrame(gameLoop); } } else { endGame(); } }
+        function flashScreen(color, maxOpacity = 0.7) { const flashDiv = document.createElement('div'); flashDiv.style.position = 'absolute'; flashDiv.style.top = '0'; flashDiv.style.left = '0'; flashDiv.style.width = '100%'; flashDiv.style.height = '100%'; flashDiv.style.backgroundColor = color; flashDiv.style.opacity = maxOpacity; flashDiv.style.zIndex = '5'; flashDiv.style.pointerEvents = 'none'; document.body.appendChild(flashDiv); let opacity = maxOpacity; const fadeInterval = setInterval(() => { opacity -= 0.05; flashDiv.style.opacity = opacity; if (opacity <= 0) { clearInterval(fadeInterval); if (flashDiv.parentNode) { document.body.removeChild(flashDiv); } } }, 20); }
+        function updateScoreDisplay() { scoreDisplay.textContent = `Score: ${score}`; }
+        function updateHeartsDisplay() { let heartSymbols = ''; const displayHearts = Math.max(0, hearts); for (let i = 0; i < displayHearts; i++) { heartSymbols += '<span>♥</span>'; } heartsDisplay.innerHTML = `Hearts: ${displayHearts === 0 ? '0' : heartSymbols}`; }
+        function updateHighScoreDisplay() { highScoreDisplay.textContent = `High Score: ${highScore}`; }
+        function drawStartMessage() { if (!gameStarted && !gameOver) { ctx.fillStyle = currentTextColor; ctx.font = '24px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('Scroll Mouse Wheel to Start and Control Ball', canvas.width / 2, canvas.height / 2 - 60); } }
+        function drawGameTitle() { ctx.fillStyle = currentTextColor; ctx.font = 'bold 36px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.fillText('Flappy Chim Edition', canvas.width / 2, 20); }
+        function showGameOverMessage() { if (score > highScore) { highScore = score; localStorage.setItem('flappyChimHighScore', highScore); updateHighScoreDisplay(); } messageText.innerHTML = `Game Over!<br>Final Score: ${score}<br>High Score: ${highScore}`; messageBox.style.display = 'block'; canvas.style.cursor = 'default'; themeButton.style.display = 'block'; }
+        function endGame() { if (!gameOver) { gameOver = true; gameStarted = false; showGameOverMessage(); if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; } } }
+
+
+        // --- Game Loop ---
+        let animationFrameId = null;
+        function gameLoop(currentTime) { // Logic remains the same
+            if (lastTime === 0) { lastTime = currentTime; } deltaTime = (currentTime - lastTime) / 1000; lastTime = currentTime; const maxDeltaTime = 1 / 30; if (deltaTime > maxDeltaTime) { deltaTime = maxDeltaTime; }
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (gameStarted && !gameOver && !awaitingContinueChoice) { ball.update(deltaTime); updateObstacles(deltaTime); updatePowerUps(deltaTime); updateEffects(deltaTime); frameCount++; }
+            obstacles.forEach(obstacle => obstacle.draw()); powerUps.forEach(powerUp => powerUp.draw()); ball.draw(); drawGameTitle(); drawStartMessage();
+            if (!gameOver && !awaitingContinueChoice) { animationFrameId = requestAnimationFrame(gameLoop); }
+            else { if(gameOver && animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; } }
+        }
+
+        // --- Event Listeners ---
+        function handleScroll(event) { /* Remains the same */ event.preventDefault(); if (gameOver || awaitingContinueChoice) return; if (!gameStarted) { gameStarted = true; lastTime = 0; canvas.style.cursor = 'none'; themeButton.style.display = 'none'; if (!animationFrameId) { animationFrameId = requestAnimationFrame(gameLoop); } } ball.move(event.deltaY); }
+        canvas.addEventListener('wheel', handleScroll, { passive: false });
+        restartButton.addEventListener('click', () => { canvas.style.cursor = 'none'; resizeCanvas(); });
+        window.addEventListener('resize', resizeCanvas);
+        themeButton.addEventListener('click', () => { if (!gameStarted || gameOver) { generateRandomTheme(); applyRandomTheme(); } });
+        window.addEventListener('keydown', (event) => { // Keydown listener remains the same
+            if (awaitingContinueChoice) { if (event.code === 'Space') { event.preventDefault(); handleContinueChoice(true); } else if (event.code === 'Enter') { event.preventDefault(); handleContinueChoice(false); } }
+        });
+
+        // --- Initial Setup ---
+        window.onload = () => { resizeCanvas(); };
+
+    </script>
+</body>
+</html>
