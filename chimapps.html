@@ -3,21 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChimApps Launchpad</title>
+    <title>Fromsupply</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         /* Apply Inter font globally */
         body {
             font-family: 'Inter', sans-serif;
+            /* Added background pattern for more tech feel */
+            background-color: #111827; /* bg-gray-900 */
+            background-image: radial-gradient(circle at 1px 1px, rgba(209, 213, 219, 0.1) 1px, transparent 0);
+            background-size: 20px 20px;
         }
         /* Custom neon glow effect for hover */
         .neon-glow-cyan:hover {
             box-shadow: 0 0 5px theme('colors.cyan.400'),
                         0 0 15px theme('colors.cyan.500'),
                         0 0 25px theme('colors.cyan.600');
+        }
+        /* Footer link styling */
+        .footer-link {
+            @apply text-gray-400 hover:text-cyan-400 transition-colors duration-200;
         }
     </style>
     <script>
@@ -33,55 +42,65 @@
         }
     </script>
 </head>
-<body class="bg-gray-900 text-gray-100 min-h-screen flex items-center justify-center p-4">
+<body class="text-gray-100 min-h-screen flex flex-col justify-between p-4">
 
-    <div class="w-full max-w-5xl mx-auto">
+    <div class="w-full max-w-5xl mx-auto flex-grow flex flex-col items-center justify-center">
         <header class="text-center mb-12">
-            <h1 class="text-4xl sm:text-5xl font-bold text-cyan-400 mb-2">ChimApps</h1>
-            <p class="text-lg text-gray-400">Your High-Tech Application Nexus</p>
+            <h1 class="text-4xl sm:text-5xl font-bold text-cyan-400 mb-2">Fromsupply</h1>
+            <p class="text-lg text-gray-400">Designed and implemented by Chim Wopara</p>
         </header>
 
-        <main class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        <main class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 w-full">
 
-            <a href="/code" class="block bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-cyan-500 transition-all duration-300 ease-in-out transform hover:-translate-y-1 neon-glow-cyan">
+            <a href="https://fromsupply.com/code" class="block bg-gray-800/80 backdrop-blur-sm p-6 rounded-lg border border-gray-700 hover:border-cyan-500 transition-all duration-300 ease-in-out transform hover:-translate-y-1 neon-glow-cyan">
                 <h2 class="text-2xl font-semibold text-white mb-2">Chim Code</h2>
                 <p class="text-gray-400">The Intelligent Coding Environment.</p>
             </a>
 
-            <a href="/type" class="block bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-cyan-500 transition-all duration-300 ease-in-out transform hover:-translate-y-1 neon-glow-cyan">
+            <a href="https://fromsupply.com/type" class="block bg-gray-800/80 backdrop-blur-sm p-6 rounded-lg border border-gray-700 hover:border-cyan-500 transition-all duration-300 ease-in-out transform hover:-translate-y-1 neon-glow-cyan">
                 <h2 class="text-2xl font-semibold text-white mb-2">Chim Type</h2>
                 <p class="text-gray-400">Precision Typing Analysis.</p>
             </a>
 
-            <a href="/maze" class="block bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-cyan-500 transition-all duration-300 ease-in-out transform hover:-translate-y-1 neon-glow-cyan">
+            <a href="https://fromsupply.com/maze" class="block bg-gray-800/80 backdrop-blur-sm p-6 rounded-lg border border-gray-700 hover:border-cyan-500 transition-all duration-300 ease-in-out transform hover:-translate-y-1 neon-glow-cyan">
                 <h2 class="text-2xl font-semibold text-white mb-2">Chim maze</h2>
                 <p class="text-gray-400">Solve Complex Navigational Puzzles.</p>
             </a>
 
-            <a href="/clinic" class="block bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-cyan-500 transition-all duration-300 ease-in-out transform hover:-translate-y-1 neon-glow-cyan">
+            <a href="https://fromsupply.com/clinic" class="block bg-gray-800/80 backdrop-blur-sm p-6 rounded-lg border border-gray-700 hover:border-cyan-500 transition-all duration-300 ease-in-out transform hover:-translate-y-1 neon-glow-cyan">
                 <h2 class="text-2xl font-semibold text-white mb-2">Chim Clinic</h2>
                 <p class="text-gray-400">Diagnostic Tools & Health Insights.</p>
             </a>
 
-            <a href="/prompts" class="block bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-cyan-500 transition-all duration-300 ease-in-out transform hover:-translate-y-1 neon-glow-cyan">
+            <a href="https://fromsupply.com/prompts" class="block bg-gray-800/80 backdrop-blur-sm p-6 rounded-lg border border-gray-700 hover:border-cyan-500 transition-all duration-300 ease-in-out transform hover:-translate-y-1 neon-glow-cyan">
                 <h2 class="text-2xl font-semibold text-white mb-2">Chim Prompts</h2>
                 <p class="text-gray-400">Advanced AI Prompt Engineering.</p>
             </a>
 
-            <a href="/team" class="block bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-cyan-500 transition-all duration-300 ease-in-out transform hover:-translate-y-1 neon-glow-cyan">
+            <a href="https://fromsupply.com/team" class="block bg-gray-800/80 backdrop-blur-sm p-6 rounded-lg border border-gray-700 hover:border-cyan-500 transition-all duration-300 ease-in-out transform hover:-translate-y-1 neon-glow-cyan">
                 <h2 class="text-2xl font-semibold text-white mb-2">Chim Team</h2>
                 <p class="text-gray-400">Collaborative Project Management.</p>
             </a>
 
         </main>
-
-        <footer class="text-center mt-12 text-gray-500 text-sm">
-            &copy; <span id="current-year"></span> ChimApps. All rights reserved.
-            <script>
-                document.getElementById('current-year').textContent = new Date().getFullYear();
-            </script>
-        </footer>
     </div>
+
+    <footer class="w-full max-w-5xl mx-auto text-center mt-12 pt-8 border-t border-gray-700 text-gray-500 text-sm">
+        <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mb-4">
+             <a href="mailto:support@fromsupply.com" class="footer-link flex items-center gap-1.5">
+                 <i class="fa-regular fa-envelope"></i> support@fromsupply.com
+             </a>
+             <a href="https://instagram.com/mrwopara" target="_blank" rel="noopener noreferrer" class="footer-link flex items-center gap-1.5">
+                 <i class="fa-brands fa-instagram"></i> Instagram
+             </a>
+        </div>
+        <div>
+            &copy; <span id="current-year"></span> Fromsupply. All rights reserved.
+        </div>
+        <script>
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+        </script>
+    </footer>
 
 </body>
 </html>
