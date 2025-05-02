@@ -1,106 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
     <title>Fromsupply</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
     <style>
-        /* Apply Inter font globally */
-        body {
-            font-family: 'Inter', sans-serif;
-            /* Added background pattern for more tech feel */
-            background-color: #111827; /* bg-gray-900 */
-            background-image: radial-gradient(circle at 1px 1px, rgba(209, 213, 219, 0.1) 1px, transparent 0);
-            background-size: 20px 20px;
-        }
-        /* Custom neon glow effect for hover */
-        .neon-glow-cyan:hover {
-            box-shadow: 0 0 5px theme('colors.cyan.400'),
-                        0 0 15px theme('colors.cyan.500'),
-                        0 0 25px theme('colors.cyan.600');
-        }
-        /* Footer link styling */
-        .footer-link {
-            @apply text-gray-400 hover:text-cyan-400 transition-colors duration-200;
-        }
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #111827;
+        background-image: radial-gradient(circle at 1px 1px, rgba(209,213,219,0.1) 1px, transparent 0);
+        background-size: 20px 20px;
+      }
+      .neon-glow-cyan:hover {
+        box-shadow:
+          0 0 5px theme('colors.cyan.400'),
+          0 0 15px theme('colors.cyan.500'),
+          0 0 25px theme('colors.cyan.600');
+      }
+      .footer-link {
+        @apply text-gray-400 hover:text-cyan-400 transition-colors duration-200;
+      }
     </style>
     <script>
-        // Optional: Tailwind configuration (can be used for custom themes)
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        // You can define custom colors here if needed
-                    }
-                }
-            }
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: { }
+          }
         }
+      }
     </script>
 </head>
 <body class="text-gray-100 min-h-screen flex flex-col justify-between p-4">
 
-    <div class="w-full max-w-5xl mx-auto flex-grow flex flex-col items-center justify-center">
-        <header class="text-center mb-12">
-            <h1 class="text-4xl sm:text-5xl font-bold text-cyan-400 mb-2">Fromsupply</h1>
-            <p class="text-lg text-gray-400">Designed and implemented by Chim Wopara</p>
-        </header>
+  <div class="w-full max-w-5xl mx-auto flex-grow flex flex-col items-center justify-center">
+    <header class="text-center mb-12">
+      <h1 class="text-4xl sm:text-5xl font-bold text-cyan-400 mb-2">Fromsupply</h1>
+      <p class="text-lg text-gray-400">Designed and implemented by Chim Wopara</p>
+    </header>
 
-        <main class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 w-full">
+    <main class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 w-full">
 
-            <a href="https://fromsupply.com/code" class="block bg-gray-800/80 backdrop-blur-sm p-6 rounded-lg border border-gray-700 hover:border-cyan-500 transition-all duration-300 ease-in-out transform hover:-translate-y-1 neon-glow-cyan">
-                <h2 class="text-2xl font-semibold text-white mb-2">Chim Code</h2>
-                <p class="text-gray-400">Build Muscle memory to help you debug.</p>
-            </a>
+      <!-- Chim Code -->
+      <a href="chimcode.html" class="block bg-gray-800/80 backdrop-blur-sm p-6 rounded-lg border border-gray-700 hover:border-cyan-500 transition-all duration-300 ease-in-out transform hover:-translate-y-1 neon-glow-cyan">
+        <h2 class="text-2xl font-semibold text-white mb-2">Chim Code</h2>
+        <p class="text-gray-400">Build muscle memory to help you debug.</p>
+      </a>
 
-            <a href="https://fromsupply.com/type" class="block bg-gray-800/80 backdrop-blur-sm p-6 rounded-lg border border-gray-700 hover:border-cyan-500 transition-all duration-300 ease-in-out transform hover:-translate-y-1 neon-glow-cyan">
-                <h2 class="text-2xl font-semibold text-white mb-2">Chim Type</h2>
-                <p class="text-gray-400">Build Muscle memory to help you type faster.</p>
-            </a>
+      <!-- Chim Type -->
+      <a href="type.html" class="block bg-gray-800/80 backdrop-blur-sm p-6 rounded-lg border border-gray-700 hover:border-cyan-500 transition-all duration-300 ease-in-out transform hover:-translate-y-1 neon-glow-cyan">
+        <h2 class="text-2xl font-semibold text-white mb-2">Chim Type</h2>
+        <p class="text-gray-400">Build muscle memory to help you type faster.</p>
+      </a>
 
-            <a href="https://fromsupply.com/maze" class="block bg-gray-800/80 backdrop-blur-sm p-6 rounded-lg border border-gray-700 hover:border-cyan-500 transition-all duration-300 ease-in-out transform hover:-translate-y-1 neon-glow-cyan">
-                <h2 class="text-2xl font-semibold text-white mb-2">Chim maze</h2>
-                <p class="text-gray-400">Build Muscle memory to aid your tracking.</p>
-            </a>
+      <!-- Chim Maze (flappy.html) -->
+      <a href="flappy.html" class="block bg-gray-800/80 backdrop-blur-sm p-6 rounded-lg border border-gray-700 hover:border-cyan-500 transition-all duration-300 ease-in-out transform hover:-translate-y-1 neon-glow-cyan">
+        <h2 class="text-2xl font-semibold text-white mb-2">Chim Maze</h2>
+        <p class="text-gray-400">Build muscle memory to aid your tracking.</p>
+      </a>
 
-            <a href="https://fromsupply.com/clinic" class="block bg-gray-800/80 backdrop-blur-sm p-6 rounded-lg border border-gray-700 hover:border-cyan-500 transition-all duration-300 ease-in-out transform hover:-translate-y-1 neon-glow-cyan">
-                <h2 class="text-2xl font-semibold text-white mb-2">Chim Clinic</h2>
-                <p class="text-gray-400">Meet Devs to heal or invest in your projects.</p>
-            </a>
+      <!-- Chim Clinic -->
+      <a href="clinic.html" class="block bg-gray-800/80 backdrop-blur-sm p-6 rounded-lg border border-gray-700 hover:border-cyan-500 transition-all duration-300 ease-in-out transform hover:-translate-y-1 neon-glow-cyan">
+        <h2 class="text-2xl font-semibold text-white mb-2">Chim Clinic</h2>
+        <p class="text-gray-400">Meet devs to heal or invest in your projects.</p>
+      </a>
 
-            <a href="https://fromsupply.com/prompts" class="block bg-gray-800/80 backdrop-blur-sm p-6 rounded-lg border border-gray-700 hover:border-cyan-500 transition-all duration-300 ease-in-out transform hover:-translate-y-1 neon-glow-cyan">
-                <h2 class="text-2xl font-semibold text-white mb-2">Chim Prompts</h2>
-                <p class="text-gray-400">Reference Prompt Engineering format.</p>
-            </a>
+      <!-- Chim Prompts -->
+      <a href="prompts.html" class="block bg-gray-800/80 backdrop-blur-sm p-6 rounded-lg border border-gray-700 hover:border-cyan-500 transition-all duration-300 ease-in-out transform hover:-translate-y-1 neon-glow-cyan">
+        <h2 class="text-2xl font-semibold text-white mb-2">Chim Prompts</h2>
+        <p class="text-gray-400">Reference prompt engineering format.</p>
+      </a>
 
-            <a href="https://fromsupply.com/team" class="block bg-gray-800/80 backdrop-blur-sm p-6 rounded-lg border border-gray-700 hover:border-cyan-500 transition-all duration-300 ease-in-out transform hover:-translate-y-1 neon-glow-cyan">
-                <h2 class="text-2xl font-semibold text-white mb-2">Chim Team</h2>
-                <p class="text-gray-400">Gamble Risk free to combat addiction.</p>
-            </a>
+      <!-- Chim Team -->
+      <a href="teams.html" class="block bg-gray-800/80 backdrop-blur-sm p-6 rounded-lg border border-gray-700 hover:border-cyan-500 transition-all duration-300 ease-in-out transform hover:-translate-y-1 neon-glow-cyan">
+        <h2 class="text-2xl font-semibold text-white mb-2">Chim Team</h2>
+        <p class="text-gray-400">Gamble risk-free to combat addiction.</p>
+      </a>
 
-        </main>
+    </main>
+  </div>
+
+  <footer class="w-full max-w-5xl mx-auto text-center mt-12 pt-8 border-t border-gray-700 text-gray-500 text-sm">
+    <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mb-4">
+      <a href="mailto:support@fromsupply.com" class="footer-link flex items-center gap-1.5">
+        <i class="fa-regular fa-envelope"></i> support@fromsupply.com
+      </a>
+      <a href="https://instagram.com/mrwopara" target="_blank" rel="noopener noreferrer" class="footer-link flex items-center gap-1.5">
+        <i class="fa-brands fa-instagram"></i> Instagram
+      </a>
     </div>
-
-    <footer class="w-full max-w-5xl mx-auto text-center mt-12 pt-8 border-t border-gray-700 text-gray-500 text-sm">
-        <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mb-4">
-             <a href="mailto:support@fromsupply.com" class="footer-link flex items-center gap-1.5">
-                 <i class="fa-regular fa-envelope"></i> support@fromsupply.com
-             </a>
-             <a href="https://instagram.com/mrwopara" target="_blank" rel="noopener noreferrer" class="footer-link flex items-center gap-1.5">
-                 <i class="fa-brands fa-instagram"></i> Instagram
-             </a>
-        </div>
-        <div>
-            &copy; <span id="current-year"></span> Fromsupply. All rights reserved.
-        </div>
-        <script>
-            document.getElementById('current-year').textContent = new Date().getFullYear();
-        </script>
-    </footer>
+    <div>&copy; <span id="current-year"></span> Fromsupply. All rights reserved.</div>
+    <script>document.getElementById('current-year').textContent = new Date().getFullYear();</script>
+  </footer>
 
 </body>
 </html>
