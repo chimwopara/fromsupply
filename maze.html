@@ -22,7 +22,7 @@
         }
         #gameContainer.blurred {
             filter: blur(5px);
-            pointer-events: none; /* Prevent interaction with blurred canvas */
+            /* Removed pointer-events: none; to allow modal interaction */
         }
         canvas { display: block; width: 100%; height: 100%; }
 
@@ -61,6 +61,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             min-width: 320px; max-width: 600px; /* Wider for levels */ width: 90%;
             max-height: 85vh; overflow-y: auto;
+            pointer-events: auto; /* Ensure modals are interactive */
         }
         .modal h2 { margin-bottom: 20px; font-size: 1.6em; color: #a0c0ff; text-align: left; }
         .modal .modal-close-button { position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 1.8em; color: #aaa; cursor: pointer; padding: 0; line-height: 1; transition: color 0.2s ease; }
@@ -70,8 +71,8 @@
              border: none; border-radius: 8px; background-color: #4a90e2; color: white;
              transition: background-color 0.3s ease, transform 0.1s ease; min-width: 100px;
         }
-        .modal button:hover { background-color: #3a80d2; }
-        .modal button:active { transform: scale(0.95); }
+        .modal button:hover:not(:disabled) { background-color: #3a80d2; }
+        .modal button:active:not(:disabled) { transform: scale(0.95); }
         .modal button:disabled { background-color: #555; cursor: not-allowed; opacity: 0.6; }
 
 
@@ -198,6 +199,7 @@
             color: white;
             text-align: center;
             cursor: pointer; /* Make overlay clickable to skip reveal */
+            pointer-events: auto; /* Allow clicks on overlay */
         }
         #typingOverlay.visible { display: flex; }
         #typingContent {
@@ -208,6 +210,7 @@
             max-width: 90%;
             width: 500px; /* Max width for content */
             cursor: default; /* Prevent click-skip inside content box */
+            pointer-events: auto; /* Ensure content box is interactive */
         }
         #typingTimerDisplay { font-size: 1.5em; margin-bottom: 15px; color: #ffcc00; font-weight: bold; }
         #typingQuestionText { font-size: 1.8em; margin-bottom: 15px; text-shadow: 1px 1px 2px black; }
@@ -219,14 +222,28 @@
             margin-bottom: 15px; text-align: center;
         }
         #typingInput:disabled { background-color: #ccc; cursor: not-allowed; }
-        #typingSubmitButton {
-            padding: 10px 25px; font-size: 1.1em;
-            cursor: pointer; border-radius: 6px;
-            background-color: #4CAF50; color: white; border: none;
-            transition: background-color 0.2s;
+        /* Removed Submit Button */
+        /* #typingSubmitButton { ... } */
+        #typingHint { /* New Hint Style */
+            margin-top: 10px;
+            padding: 8px 12px;
+            font-size: 0.95em;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: filter 0.3s ease, background-color 0.3s ease;
+            color: #ddd;
         }
-        #typingSubmitButton:hover:not(:disabled) { background-color: #45a049; }
-        #typingSubmitButton:disabled { background-color: #777; }
+        #typingHint.revealed {
+            filter: none !important; /* Ensure blur is removed */
+            background-color: rgba(255, 255, 255, 0.2);
+            border-style: solid;
+            cursor: default;
+        }
+        #typingHint.blurred {
+             filter: blur(4px);
+        }
         #typingAnswerReveal {
             margin-top: 20px;
             font-size: 1.2em;
@@ -258,6 +275,7 @@
             font-size: 5em;
             color: rgba(255, 255, 255, 0.7);
             text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+            pointer-events: auto; /* Allow clicks */
         }
          #pauseOverlay.visible { display: flex; }
          #pauseOverlay::after {
@@ -370,11 +388,12 @@
          </div>
     </div>
 
-    <div id="typingOverlay" onclick="skipTypingRevealWait()"> <div id="typingContent" onclick="event.stopPropagation()"> <div id="typingTimerDisplay">Time: 6s</div>
+    <div id="typingOverlay" onclick="skipTypingRevealWait()">
+        <div id="typingContent" onclick="event.stopPropagation()">
+            <div id="typingTimerDisplay">Time: 6s</div>
             <p id="typingQuestionText"></p>
             <input type="text" id="typingInput" placeholder="Type your answer...">
-            <button id="typingSubmitButton">Submit</button>
-            <div id="typingAnswerReveal">Correct Answer: <span></span></div>
+            <div id="typingHint" class="blurred" onclick="revealTypingHint(event)">Hint (Cost: 1 ⭐)</div> <div id="typingAnswerReveal">Correct Answer: <span></span></div>
             <div id="typingSkipMessage">Tap background or wait to continue...</div>
         </div>
     </div>
@@ -411,7 +430,8 @@
         const typingTimerDisplay = document.getElementById('typingTimerDisplay'); // New
         const typingQuestionText = document.getElementById('typingQuestionText');
         const typingInput = document.getElementById('typingInput');
-        const typingSubmitButton = document.getElementById('typingSubmitButton');
+        // const typingSubmitButton = document.getElementById('typingSubmitButton'); // Removed
+        const typingHint = document.getElementById('typingHint'); // New Hint element
         const typingAnswerReveal = document.getElementById('typingAnswerReveal'); // New
         const typingAnswerRevealText = typingAnswerReveal.querySelector('span'); // New
         const typingSkipMessage = document.getElementById('typingSkipMessage'); // New
@@ -504,6 +524,7 @@
         let ball, obstacles, powerUps, score, stars, baseGameSpeed, currentGameSpeed, highScore;
         let gameStarted = false; // Will be set true in initGame if subject is selected
         let gameOver = false, subjectSelected = false, isPaused = false;
+        let pausedByTyping = false; // Flag to track if pause was initiated by typing overlay
         let currentSubject = null;
         let currentTopic = 'All'; // Stores the key ('Basics', 'All', etc.)
         let currentLevelIndex = null; // Stores the numerical index (1, 2, etc.) or null for 'All'
@@ -566,6 +587,7 @@
         const TYPING_TIME_LIMIT = 6; // Seconds for typing question
         let typingTimeoutId = null; // For setTimeout after reveal
         const TYPING_REVEAL_WAIT = 3; // Seconds to wait after reveal
+        let hintRevealed = false; // New: Track if hint was revealed for current question
 
         // --- Theme Variables ---
         let currentTheme = 'default';
@@ -1007,7 +1029,8 @@
          }
         function initGame(resetHighScore = true) {
             console.log("Initializing game...");
-            gameOver = false; isPaused = false; activeModalId = null; subjectSelected = false; gameStarted = false;
+            gameOver = false; isPaused = false; pausedByTyping = false; // Reset pause flags
+            activeModalId = null; subjectSelected = false; gameStarted = false;
             invincibilityTimer = 0; score = 0; frameCount = 0; lastTime = 0; correctAnswersCount = 0;
             obstacles = []; powerUps = []; activePowerUps = {}; slowMoFactor = 1.0; scoreMultiplier = 1;
             currentBallRadius = baseBallRadius; greyOutActive = false; freeSkipActive = false; firstPauseUsed = false; // Reset pause flag
@@ -1198,16 +1221,26 @@
 
             console.log("Triggering typing input for:", obstacle.question);
             currentTypingObstacle = obstacle;
+            if (!isPaused) { // Only set flag if game wasn't already paused by user
+                 pausedByTyping = true;
+            }
             isPaused = true; // Pause the game physics/updates
 
             // Reset overlay state
             typingQuestionText.textContent = obstacle.question;
             typingInput.value = '';
             typingInput.disabled = false;
-            typingSubmitButton.disabled = false;
+            // typingSubmitButton.disabled = false; // Button removed
             typingAnswerReveal.style.display = 'none';
             typingSkipMessage.style.display = 'none';
             typingTimerDisplay.style.color = '#ffcc00'; // Reset timer color
+
+            // Reset Hint
+            hintRevealed = false;
+            typingHint.classList.remove('revealed');
+            typingHint.classList.add('blurred');
+            typingHint.textContent = "Hint (Cost: 1 ⭐)";
+            typingHint.onclick = revealTypingHint; // Re-attach click listener
 
             typingOverlay.classList.add('visible');
             gameContainer.classList.add('blurred'); // Blur background
@@ -1229,6 +1262,7 @@
             }, 1000);
         }
 
+        // Handles timeout for typing questions
         function handleTypingTimeout() {
             console.log("Typing time ran out!");
             clearInterval(typingTimerId); // Stop the timer interval
@@ -1242,16 +1276,24 @@
 
             // Reveal answer and disable input
             typingInput.disabled = true;
-            typingSubmitButton.disabled = true;
+            // typingSubmitButton.disabled = true; // Button removed
+            typingHint.onclick = null; // Disable hint click
             typingAnswerRevealText.textContent = currentTypingObstacle ? currentTypingObstacle.answers[0] : 'N/A';
             typingAnswerReveal.style.display = 'block';
             typingSkipMessage.style.display = 'block';
             typingTimerDisplay.textContent = "Time's Up!";
             typingTimerDisplay.style.color = '#ff0000'; // Red
 
-            // Lose a star (only if not already game over)
+            // Apply penalty: -1 star (Timeout)
             if (!gameOver) {
-                loseStar(); // Apply penalty for running out of time
+                stars -= 1;
+                updateStarsDisplay();
+                saveStars();
+                if (stars <= 0) {
+                    stars = 0; // Clamp
+                    updateStarsDisplay();
+                    endGame(); // Check for game over after penalty
+                }
             }
 
             // Start timer to automatically close overlay
@@ -1262,44 +1304,108 @@
             }, TYPING_REVEAL_WAIT * 1000);
         }
 
-        function submitTypingAnswer() {
-            if (!currentTypingObstacle || typingInput.disabled) return; // Don't submit if timed out
+        // NEW: Handles correct input for typing questions (Auto-Submit)
+        function handleCorrectTypingInput() {
+             if (!currentTypingObstacle || typingInput.disabled) return;
 
-            clearInterval(typingTimerId); // Stop timer on submit
+            clearInterval(typingTimerId); // Stop timer
             typingTimerId = null;
             clearTimeout(typingTimeoutId); // Clear auto-close timer
             typingTimeoutId = null;
 
-            const userAnswer = typingInput.value.trim();
-            const correctAnswer = currentTypingObstacle.answers[0]; // Typing answer is always at index 0
-
-            console.log(`Typed Answer Submitted: User='${userAnswer}', Correct='${correctAnswer}'`);
+            console.log(`Correct Typed Answer Auto-Submitted: '${currentTypingObstacle.answers[0]}'`);
 
             currentTypingObstacle.passed = true; // Mark as passed
+            currentTypingObstacle.scored = true; // Mark as correct
 
-            // Case-insensitive comparison
-            if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
-                // Correct Typing Answer
-                currentTypingObstacle.scored = true;
-                score += (2 * scoreMultiplier); // More points for typing?
-                stars += 15 * scoreMultiplier; // More stars for typing?
-                correctAnswersCount++;
-                updateStarsDisplay();
-                flashScreen('rgba(0, 255, 0, 0.4)', 0.4); // Green flash
-                 // Spawn power-up check
-                 if (correctAnswersCount > 0 && correctAnswersCount % 10 === 0) {
-                     addPowerUp();
-                 }
-            } else {
-                // Incorrect Typing Answer
-                loseStar();
-                flashScreen('rgba(255, 0, 0, 0.6)', 0.6); // Red flash
+            // Award stars/score
+            score += (2 * scoreMultiplier);
+            stars += 5 * scoreMultiplier; // +5 stars for correct typing
+            correctAnswersCount++;
+            updateStarsDisplay();
+            saveStars();
+            flashScreen('rgba(0, 255, 0, 0.4)', 0.4); // Green flash
+
+            // Spawn power-up check
+            if (correctAnswersCount > 0 && correctAnswersCount % 10 === 0) {
+                addPowerUp();
             }
 
+            // Directly hide overlay
             hideTypingOverlay();
         }
 
-        // New function to handle clearing all typing-related state
+        // NEW: Handles incorrect input for typing questions (Reveal Answer)
+        function handleIncorrectTypingInput() {
+             if (!currentTypingObstacle || typingInput.disabled) return;
+
+            clearInterval(typingTimerId); // Stop timer
+            typingTimerId = null;
+            clearTimeout(typingTimeoutId); // Clear auto-close timer
+            typingTimeoutId = null;
+
+            const correctAnswer = currentTypingObstacle.answers[0];
+            console.log(`Incorrect Typed Answer Submitted`);
+
+            currentTypingObstacle.passed = true; // Mark as passed
+            currentTypingObstacle.scored = false; // Mark as incorrect
+
+            flashScreen('rgba(255, 0, 0, 0.6)', 0.6); // Red flash
+
+            // Apply penalty: -3 stars
+            if (!gameOver) {
+                stars -= 3;
+                updateStarsDisplay();
+                saveStars();
+                if (stars <= 0) {
+                    stars = 0; // Clamp
+                    updateStarsDisplay();
+                    endGame(); // Check for game over after penalty
+                }
+            }
+
+            // Reveal answer and start timer to close
+            typingInput.disabled = true;
+            // typingSubmitButton.disabled = true; // Button removed
+            typingHint.onclick = null; // Disable hint click
+            typingAnswerRevealText.textContent = correctAnswer;
+            typingAnswerReveal.style.display = 'block';
+            typingSkipMessage.style.display = 'block';
+
+            clearTimeout(typingTimeoutId); // Clear previous just in case
+            typingTimeoutId = setTimeout(() => {
+                console.log("Auto-closing typing overlay after incorrect reveal.");
+                hideTypingOverlay();
+            }, TYPING_REVEAL_WAIT * 1000);
+        }
+
+        // NEW: Function to reveal the hint
+        function revealTypingHint(event) {
+            event?.stopPropagation(); // Prevent click from propagating to overlay skip
+
+            if (hintRevealed || !currentTypingObstacle) return; // Already shown or no question active
+
+            if (stars >= 1) {
+                stars -= 1;
+                updateStarsDisplay();
+                saveStars();
+
+                const correctAnswer = currentTypingObstacle.answers[0];
+                const hintText = correctAnswer.substring(0, 1); // Show first letter
+
+                typingHint.textContent = `Hint: ${hintText}`;
+                typingHint.classList.remove('blurred');
+                typingHint.classList.add('revealed');
+                hintRevealed = true;
+                typingHint.onclick = null; // Prevent further clicks
+
+            } else {
+                showMessage("Not enough stars for hint (Cost: 1 ⭐)!", 1500);
+            }
+        }
+
+
+        // Clears all typing-related state variables and timers
         function clearTypingState() {
             clearInterval(typingTimerId);
             clearTimeout(typingTimeoutId);
@@ -1307,33 +1413,44 @@
             typingTimeoutId = null;
             currentTypingObstacle = null;
             typingTimeLeft = 0;
+            pausedByTyping = false; // Reset typing pause flag
+            hintRevealed = false; // Reset hint flag
         }
 
+        // Hides the typing overlay and handles game resume logic
         function hideTypingOverlay() {
             typingOverlay.classList.remove('visible');
-            gameContainer.classList.remove('blurred');
+            const wasPausedByTyping = pausedByTyping; // Store flag before clearing state
             clearTypingState(); // Clear timers and obstacle reference
 
-            // Only resume if game should be running and not paused otherwise
-            if (gameStarted && !gameOver && !isPaused) {
-                isPaused = false; // Ensure unpaused state
+            // Resume game ONLY if it was paused specifically by the typing overlay
+            if (wasPausedByTyping && gameStarted && !gameOver) {
+                isPaused = false; // Unpause the game
                 lastTime = performance.now(); // Reset delta time calculation
                 canvas.style.cursor = 'none'; // Re-hide cursor
+                 // Ensure blur is removed if game is resuming
+                gameContainer.classList.remove('blurred');
                 if (!animationFrameId) {
+                    console.log("Restarting animation frame after typing overlay.");
                     animationFrameId = requestAnimationFrame(gameLoop);
                 }
+                 console.log("Game Resumed after typing overlay.");
+            } else if (!isPaused) { // If game wasn't paused by user beforehand
+                 canvas.style.cursor = gameStarted && !gameOver ? 'none' : 'default';
+                 // Remove blur if game isn't paused by user or over
+                 if (!gameOver) {
+                    gameContainer.classList.remove('blurred');
+                 }
             } else {
-                // If game is paused for another reason (spacebar, modal), keep it paused
-                // If game is over or not started, keep cursor default
-                if (!isPaused) { // If it wasn't paused by spacebar/modal
-                     canvas.style.cursor = 'default';
-                }
+                 // Game was paused by user before typing, leave it paused and blurred
+                 console.log("Typing overlay hidden, game remains paused by user.");
+                 gameContainer.classList.add('blurred'); // Ensure blur stays if paused by user
             }
         }
 
-        // New function to allow skipping the 3-second wait after reveal
+        // Allows skipping the 3-second wait after an incorrect/timeout reveal
         function skipTypingRevealWait() {
-            // Only allow skipping if the reveal timer is active (meaning time ran out)
+            // Only allow skipping if the reveal timer is active
             if (typingTimeoutId) {
                 console.log("Skipping typing reveal wait.");
                 hideTypingOverlay(); // This also clears the timeout
@@ -1476,7 +1593,7 @@
          }
         function showGameOverMessage() {
              gameOverText.innerHTML = `Subject: ${currentSubject}<br>Topic: ${currentTopic}<br>Final Score: ${score}<br><br>Out of stars! Restart or get more stars to continue.`;
-             openModal('gameOverBox');
+             openModal('gameOverBox'); // Use openModal to handle pausing/blurring
              canvas.style.cursor = 'default';
              libraryButton.style.display = 'inline-flex';
              levelButton.style.display = 'inline-flex';
@@ -1498,69 +1615,85 @@
 
         // --- Modal Handling & Pause/Resume ---
         function openModal(modalId) {
-            if (gameOver || !modalId || currentTypingObstacle) return; // Don't open modals if game over or typing
-
-             // Special case: Allow opening game over modal even if paused
-             if (modalId !== 'gameOverBox' && isPaused) return;
+            // Block modal opening ONLY if typing input is active
+            if (!modalId || currentTypingObstacle) {
+                console.log("Modal opening blocked (typing active).");
+                return;
+            }
 
             closeModal(); // Close any existing modal first
 
             const modal = document.getElementById(modalId);
-            if(modal) {
-                // Pause game updates ONLY if it's not the game over modal
-                if (modalId !== 'gameOverBox') {
-                    isPaused = true;
+            if (modal) {
+                // Pause game updates ONLY if it's not the game over modal AND game is actually running AND not already paused
+                if (modalId !== 'gameOverBox' && gameStarted && !gameOver && !isPaused) {
+                    isPaused = true; // Pause the game
                     console.log("Game Paused, Modal Opened:", modalId);
-                } else {
+                } else if (modalId === 'gameOverBox') {
                     console.log("Opening Game Over Modal");
+                    // Ensure game is considered paused if game over modal is shown
+                    if (!gameOver) isPaused = true; // Pause if showing game over prematurely? (Shouldn't happen)
+                } else {
+                    console.log("Opening Modal (Game not running or already paused):", modalId);
                 }
+
                 activeModalId = modalId;
                 modal.style.display = 'block';
-                gameContainer.classList.add('blurred');
-                // Don't show pause overlay if a modal is open
-                // pauseOverlay.classList.add('visible');
+                gameContainer.classList.add('blurred'); // Always blur for modals
                 canvas.style.cursor = 'default'; // Show cursor when modal open
             }
         }
+
         function closeModal() {
             if (activeModalId) {
                 const modal = document.getElementById(activeModalId);
                 if(modal) { modal.style.display = 'none'; }
                 const wasGameOverModal = activeModalId === 'gameOverBox';
+                const previouslyPaused = isPaused; // Check if game was paused before closing
+                const wasPausedByModal = activeModalId && activeModalId !== 'gameOverBox'; // Check if pause was due to a non-gameover modal
                 activeModalId = null;
 
-                 // Only resume if game should be running AND not paused for typing AND not paused by spacebar AND wasn't the game over modal
-                 if (!wasGameOverModal && gameStarted && !gameOver && !currentTypingObstacle && !isPaused) {
-                     // isPaused should already be false if we are resuming normally
+                 // --- Resume Logic ---
+                 // Conditions to UNPAUSE:
+                 // 1. Game should be running (started, not over)
+                 // 2. Not currently paused by typing overlay
+                 // 3. Game was paused *specifically by the modal we just closed* (not by user pause)
+                 if (!wasGameOverModal && gameStarted && !gameOver && !pausedByTyping && wasPausedByModal) {
+                     isPaused = false; // Unpause the game
                      lastTime = performance.now(); // Reset lastTime on resume
                      console.log("Game Resumed, Modal Closed");
                      if (!animationFrameId) { animationFrameId = requestAnimationFrame(gameLoop); }
                      canvas.style.cursor = 'none'; // Hide cursor when resuming game
                      gameContainer.classList.remove('blurred');
                      pauseOverlay.classList.remove('visible');
-                 } else if (!gameStarted || gameOver) {
-                     console.log("Modal Closed (Game not running or Game Over)");
-                     canvas.style.cursor = 'default'; // Show cursor if game not running/over
-                     // Keep blur if game over
-                     if (!gameOver) {
-                        gameContainer.classList.remove('blurred');
-                     }
-                     pauseOverlay.classList.remove('visible');
-                 } else {
-                     // Game is paused for another reason (typing or spacebar)
-                     console.log("Modal closed, but game remains paused.");
-                     // Keep blur if paused by spacebar or typing
-                     if (!isPaused && !currentTypingObstacle) {
-                         gameContainer.classList.remove('blurred');
+                 }
+                 // Conditions to KEEP BLUR/PAUSE OVERLAY:
+                 // 1. Game is over
+                 // 2. Game is paused by user (spacebar) - isPaused will still be true and wasPausedByModal will be false
+                 // 3. Game is paused by typing - pausedByTyping will be true (handled by hideTypingOverlay)
+                 else if (gameOver || (isPaused && !pausedByTyping)) {
+                     console.log("Modal Closed (Game Over or Paused by User)");
+                     canvas.style.cursor = 'default';
+                     // Keep blur if game is over or paused by user
+                     gameContainer.classList.add('blurred');
+                     if (isPaused && !pausedByTyping) { // Show pause overlay only if paused by user
+                         pauseOverlay.classList.add('visible');
+                     } else {
+                         pauseOverlay.classList.remove('visible');
                      }
                  }
+                 // Other cases (game not started, etc.)
+                 else {
+                      console.log("Modal Closed (Game not running or paused by typing)");
+                      canvas.style.cursor = 'default';
+                      gameContainer.classList.remove('blurred'); // Remove blur if not paused/over
+                      pauseOverlay.classList.remove('visible');
+                 }
             }
-
-
         }
 
         function togglePause(triggeredBySpacebar = false) {
-            if (gameOver || currentTypingObstacle) return; // Can't pause if game over or typing
+            if (gameOver || pausedByTyping) return; // Can't pause/unpause if game over or paused for typing
 
             if (isPaused) {
                 // --- Unpausing ---
@@ -1574,7 +1707,7 @@
                     if (!animationFrameId) {
                         animationFrameId = requestAnimationFrame(gameLoop);
                     }
-                    console.log("Game Resumed.");
+                    console.log("Game Resumed (User Unpause).");
                 } else {
                      console.log("Cannot unpause, modal is active:", activeModalId);
                 }
@@ -1604,7 +1737,7 @@
                      gameContainer.classList.add('blurred'); // Blur background
                      canvas.style.cursor = 'default';
                      // Game loop continues but updates are skipped due to isPaused flag
-                     console.log("Game Paused.");
+                     console.log("Game Paused (User Pause).");
                  }
             }
         }
@@ -1809,10 +1942,10 @@
         buyStarsButton.addEventListener('click', () => {
             purchaseStarsWithMoney(1000); // Simulate purchase
             closeModal(); // Close game over screen
-            initGame(false); // Restart game
+            initGame(false); // Restart game with new stars
         });
         window.addEventListener('resize', resizeCanvas);
-        // pauseOverlay.addEventListener('click', () => togglePause(false)); // Click overlay to unpause (optional)
+        pauseOverlay.addEventListener('click', () => togglePause(false)); // Click overlay to unpause
 
         // --- Keyboard Listener for Pause (Spacebar) ---
         window.addEventListener('keydown', (event) => {
@@ -1833,18 +1966,44 @@
             }
         });
 
-        // --- Typing Input Listener ---
-        typingSubmitButton.addEventListener('click', submitTypingAnswer);
+        // --- Typing Input Listener (Auto-Submit) ---
+        typingInput.addEventListener('input', () => {
+            if (!currentTypingObstacle || typingInput.disabled) return;
+
+            const userAnswer = typingInput.value.trim();
+            const correctAnswer = currentTypingObstacle.answers[0];
+
+            // Check for correct answer (case-insensitive)
+            if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                handleCorrectTypingInput();
+            }
+        });
+
+        // --- Typing Input Listener (Enter Key - Incorrect Submit) ---
+        // This allows submitting an incorrect answer early with Enter
         typingInput.addEventListener('keydown', (event) => {
             if (event.key === 'Enter') {
                 event.preventDefault(); // Prevent form submission if inside one
-                submitTypingAnswer();
+                if (!currentTypingObstacle || typingInput.disabled) return;
+
+                const userAnswer = typingInput.value.trim();
+                const correctAnswer = currentTypingObstacle.answers[0];
+
+                // Only trigger if the answer isn't already correct
+                if (userAnswer.toLowerCase() !== correctAnswer.toLowerCase()) {
+                    handleIncorrectTypingInput();
+                }
             }
         });
 
 
         // --- Button Listeners (Library, Level, Stars/Theme) ---
         libraryButton.addEventListener('click', () => {
+            // Allow opening only if not typing
+            if (currentTypingObstacle) {
+                console.log("Library button blocked (typing active).");
+                return;
+            }
             const openLibraryModalAction = () => {
                  libraryContent.innerHTML = '';
                  subjectKeys.forEach(subj => {
@@ -1858,7 +2017,8 @@
                          obstacles = []; frameCount = 0; correctAnswersCount = 0; // Reset counter
                          currentQuestionIndices = {};
                          getTopicsForSubject(currentSubject).forEach(topic => { currentQuestionIndices[currentSubject][topic] = 0; });
-                         closeModal(); canvas.style.cursor = gameStarted ? 'none' : 'default'; redrawStaticElements();
+                         closeModal(); // This will handle resume logic if needed
+                         redrawStaticElements();
                          // Reset game state if already running
                          if (gameStarted && !gameOver) {
                              obstacles = []; powerUps = []; activePowerUps = {}; slowMoFactor = 1.0; scoreMultiplier = 1;
@@ -1875,13 +2035,15 @@
                  });
                  openModal('libraryModal');
             };
-            // Allow opening library even if paused (but not during typing)
-            if ((!gameStarted || gameOver || isPaused) && !currentTypingObstacle) {
-                 openLibraryModalAction();
-            }
+            openLibraryModalAction(); // Call the function
         });
 
         levelButton.addEventListener('click', () => {
+             // Allow opening only if not typing
+            if (currentTypingObstacle) {
+                 console.log("Level button blocked (typing active).");
+                 return;
+            }
             if (!currentSubject) { showMessage("Please choose a subject first!"); return; }
             const openLevelModalAction = () => {
                  topicContent.innerHTML = ''; topicModal.querySelector('h2').textContent = `Select Level (${currentSubject})`;
@@ -1891,7 +2053,7 @@
                      currentTopic = 'All'; currentLevelIndex = null;
                      localStorage.setItem('chimMazeLastTopic', currentTopic);
                      updateLevelButtonText(); obstacles = []; frameCount = 0; correctAnswersCount = 0; // Reset counter
-                     closeModal(); canvas.style.cursor = gameStarted ? 'none' : 'default';
+                     closeModal(); // Handles resume logic
                      if (gameStarted && !gameOver) { /* Reset game state */
                          obstacles = []; powerUps = []; activePowerUps = {}; slowMoFactor = 1.0; scoreMultiplier = 1;
                          currentBallRadius = baseBallRadius; greyOutActive = false; freeSkipActive = false;
@@ -1911,7 +2073,7 @@
                          localStorage.setItem('chimMazeLastTopic', currentTopic);
                          updateLevelButtonText(); obstacles = []; frameCount = 0; correctAnswersCount = 0; // Reset counter
                          currentQuestionIndices[currentSubject][topicKey] = 0;
-                         closeModal(); canvas.style.cursor = gameStarted ? 'none' : 'default';
+                         closeModal(); // Handles resume logic
                           if (gameStarted && !gameOver) { /* Reset game state */
                              obstacles = []; powerUps = []; activePowerUps = {}; slowMoFactor = 1.0; scoreMultiplier = 1;
                              currentBallRadius = baseBallRadius; greyOutActive = false; freeSkipActive = false;
@@ -1923,18 +2085,17 @@
                  });
                  openModal('topicModal');
             };
-             // Allow opening level select even if paused (but not during typing)
-             if ((!gameStarted || gameOver || isPaused) && !currentTypingObstacle) {
-                 openLevelModalAction();
-             }
+            openLevelModalAction(); // Call the function
         });
 
         starsDisplay.addEventListener('click', () => {
+             // Allow opening only if not typing
+            if (currentTypingObstacle) {
+                 console.log("Stars button blocked (typing active).");
+                 return;
+            }
              const openThemeStoreAction = () => { populateThemeStore(); openModal('themeStoreModal'); };
-             // Allow opening theme store even if paused (but not during typing)
-             if ((!gameStarted || gameOver || isPaused) && !currentTypingObstacle) {
-                 openThemeStoreAction();
-             }
+             openThemeStoreAction(); // Call the function
         });
 
         // --- Initial Setup ---
