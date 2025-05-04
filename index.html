@@ -26,18 +26,23 @@
         background: radial-gradient(circle at center, rgba(6, 182, 212, 0.15) 0%, rgba(6, 182, 212, 0.05) 25%, transparent 50%);
       }
       
+      .logo-font {
+        font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+        font-weight: bold;
+      }
+      
       .grid-background {
         background-image: 
           linear-gradient(rgba(6, 182, 212, 0.1) 1px, transparent 1px),
           linear-gradient(90deg, rgba(6, 182, 212, 0.1) 1px, transparent 1px);
         background-size: 40px 40px;
-        background-position: center center;
         position: fixed;
         width: 100%;
         height: 100%;
         top: 0;
         left: 0;
         z-index: -1;
+        transition: all 0.3s ease;
       }
       
       .card {
@@ -82,21 +87,61 @@
         background-color: #06B6D4;
         color: white;
       }
+      
+      .product-slider {
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+      }
+      
+      .product-slide {
+        scroll-snap-align: center;
+        flex-shrink: 0;
+      }
+      
+      .interactive-blob {
+        filter: blur(100px);
+        opacity: 0.5;
+        mix-blend-mode: screen;
+        transition: all 0.2s ease;
+      }
+      
+      .control-buttons {
+        position: fixed;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 50;
+      }
+      
+      /* Particle animation */
+      .particle {
+        position: absolute;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: -1;
+        opacity: 0;
+        animation: particleFade 3s ease-out forwards;
+      }
+      
+      @keyframes particleFade {
+        0% { opacity: 0.7; transform: translate(0, 0); }
+        100% { opacity: 0; transform: translate(var(--tx), var(--ty)); }
+      }
     </style>
 </head>
 <body class="text-gray-100 min-h-screen flex flex-col justify-between">
-  <!-- Grid Background -->
-  <div class="grid-background"></div>
+  <!-- Grid Background with Mouse Interactivity -->
+  <div id="grid-background" class="grid-background"></div>
   
-  <!-- Animated Blobs -->
-  <div class="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-[-1]">
-    <div class="absolute top-[5%] left-[10%] w-[40rem] h-[40rem] rounded-full bg-cyan-900/20 blur-[6rem] mix-blend-screen"></div>
-    <div class="absolute bottom-[15%] right-[10%] w-[30rem] h-[30rem] rounded-full bg-blue-900/20 blur-[6rem] mix-blend-screen"></div>
-    <div class="absolute top-[40%] right-[25%] w-[25rem] h-[25rem] rounded-full bg-indigo-900/20 blur-[5rem] mix-blend-screen"></div>
+  <!-- Interactive Blobs -->
+  <div class="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-[-1]" id="blobs-container">
+    <div class="interactive-blob absolute top-[5%] left-[10%] w-[40rem] h-[40rem] rounded-full bg-cyan-900/20"></div>
+    <div class="interactive-blob absolute bottom-[15%] right-[10%] w-[30rem] h-[30rem] rounded-full bg-blue-900/20"></div>
+    <div class="interactive-blob absolute top-[40%] right-[25%] w-[25rem] h-[25rem] rounded-full bg-indigo-900/20"></div>
   </div>
 
-  <div class="w-full max-w-6xl mx-auto flex-grow flex flex-col items-center justify-center px-4 py-8">
-    <header class="text-center mb-16 relative hero-gradient py-12 w-full">
+  <div class="w-full max-w-6xl mx-auto flex-grow flex flex-col items-center justify-center px-4 py-6">
+    <header class="text-center mb-12 relative hero-gradient py-12 w-full">
       <div class="absolute top-0 left-0 w-full h-full overflow-hidden">
         <div class="absolute top-[10%] left-[10%] w-2 h-2 bg-cyan-400 rounded-full"></div>
         <div class="absolute top-[20%] right-[20%] w-1.5 h-1.5 bg-cyan-500 rounded-full"></div>
@@ -104,8 +149,12 @@
         <div class="absolute bottom-[10%] right-[30%] w-2 h-2 bg-blue-500 rounded-full"></div>
       </div>
       
-      <div class="mb-2 relative">
-        <h1 class="text-6xl sm:text-7xl font-bold mb-1 glow-text tracking-tight">FROMSUPPLY</h1>
+      <div class="mb-6 relative">
+        <!-- Logo Image Space -->
+        <div class="mx-auto w-24 h-24 mb-4">
+          <img src="logo.png" alt="Fromsupply Logo" class="w-full h-full object-contain" id="logo-image"/>
+        </div>
+        <h1 class="text-6xl sm:text-7xl logo-font mb-1 glow-text tracking-tight">FROMSUPPLY</h1>
         <div class="w-1/2 h-0.5 mx-auto bg-gradient-to-r from-transparent via-cyan-400 to-transparent"></div>
       </div>
       
@@ -114,135 +163,164 @@
       </p>
       
       <div class="mt-6 flex justify-center gap-4">
-        <a href="#explore" class="group flex items-center gap-2 bg-gray-800/60 hover:bg-gray-800/90 border border-gray-700 hover:border-cyan-500 px-6 py-2.5 rounded-full transition-all duration-300">
+        <a href="#product-showcase" class="group flex items-center gap-2 bg-gray-800/60 hover:bg-gray-800/90 border border-gray-700 hover:border-cyan-500 px-6 py-2.5 rounded-full transition-all duration-300">
           <span>Explore Solutions</span>
           <i class="fa-solid fa-arrow-right"></i>
         </a>
       </div>
     </header>
 
-    <main id="explore" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
-      <!-- Chim Code -->
-      <a href="chimcode.html" class="card group rounded-xl p-6 relative">
-        <div class="relative">
-          <div class="mb-4 bg-gray-800/70 w-14 h-14 rounded-lg flex items-center justify-center">
-            <i class="fa-solid fa-code card-icon text-2xl text-gray-300"></i>
-          </div>
-          <h2 class="card-title text-2xl font-bold text-white mb-3">Chim Code</h2>
-          <p class="text-gray-400 mb-4">Build muscle memory to help you debug complex systems faster and with higher accuracy.</p>
-          <div class="flex items-center text-cyan-400 text-sm font-medium">
-            <span>Get Started</span>
-            <i class="fa-solid fa-arrow-right ml-2"></i>
-          </div>
+    <!-- Featured Image 1 -->
+    <div class="w-full mb-16">
+      <div class="relative aspect-[16/9] rounded-2xl overflow-hidden">
+        <img src="image1" alt="Fromsupply Developer Tools" class="w-full h-full object-cover" id="featured-image"/>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-8">
+          <h2 class="text-3xl font-bold">Developer Tools Reimagined</h2>
         </div>
-      </a>
+      </div>
+    </div>
 
-      <!-- Chim Type -->
-      <a href="type.html" class="card group rounded-xl p-6 relative">
-        <div class="relative">
-          <div class="mb-4 bg-gray-800/70 w-14 h-14 rounded-lg flex items-center justify-center">
-            <i class="fa-solid fa-keyboard card-icon text-2xl text-gray-300"></i>
-          </div>
-          <h2 class="card-title text-2xl font-bold text-white mb-3">Chim Type</h2>
-          <p class="text-gray-400 mb-4">Build muscle memory to help you type faster with adaptive training algorithms.</p>
-          <div class="flex items-center text-cyan-400 text-sm font-medium">
-            <span>Get Started</span>
-            <i class="fa-solid fa-arrow-right ml-2"></i>
+    <!-- Product Showcase - Immersive Scrollable Experience -->
+    <main id="product-showcase" class="w-full mb-16">
+      <h2 class="text-3xl font-bold mb-8 text-center">Our Solutions</h2>
+      
+      <div class="product-slider flex overflow-x-auto snap-x snap-mandatory pb-8 -mx-4 px-4 hide-scrollbar">
+        <!-- Chim Code -->
+        <div class="product-slide min-w-full md:min-w-[80%] lg:min-w-[50%] p-3">
+          <div class="card rounded-xl p-6 h-full flex flex-col">
+            <div class="mb-6 relative aspect-video overflow-hidden rounded-lg">
+              <img src="image-chimcode" alt="Chim Code" class="w-full h-full object-cover"/>
+            </div>
+            <div class="mb-4 bg-gray-800/70 w-14 h-14 rounded-lg flex items-center justify-center">
+              <i class="fa-solid fa-code card-icon text-2xl text-gray-300"></i>
+            </div>
+            <h2 class="card-title text-2xl font-bold text-white mb-3">Chim Code</h2>
+            <p class="text-gray-400 mb-4 flex-grow">Build muscle memory to help you debug complex systems faster and with higher accuracy.</p>
+            <a href="chimcode.html" class="flex items-center text-cyan-400 text-sm font-medium">
+              <span>Get Started</span>
+              <i class="fa-solid fa-arrow-right ml-2"></i>
+            </a>
           </div>
         </div>
-      </a>
 
-      <!-- Chim Maze -->
-      <a href="maze.html" class="card group rounded-xl p-6 relative">
-        <div class="relative">
-          <div class="mb-4 bg-gray-800/70 w-14 h-14 rounded-lg flex items-center justify-center">
-            <i class="fa-solid fa-cube card-icon text-2xl text-gray-300"></i>
-          </div>
-          <h2 class="card-title text-2xl font-bold text-white mb-3">Chim Maze</h2>
-          <p class="text-gray-400 mb-4">Build muscle memory with subjects through immersive learning environments.</p>
-          <div class="flex items-center text-cyan-400 text-sm font-medium">
-            <span>Get Started</span>
-            <i class="fa-solid fa-arrow-right ml-2"></i>
+        <!-- Chim Type -->
+        <div class="product-slide min-w-full md:min-w-[80%] lg:min-w-[50%] p-3">
+          <div class="card rounded-xl p-6 h-full flex flex-col">
+            <div class="mb-6 relative aspect-video overflow-hidden rounded-lg">
+              <img src="image-chimtype" alt="Chim Type" class="w-full h-full object-cover"/>
+            </div>
+            <div class="mb-4 bg-gray-800/70 w-14 h-14 rounded-lg flex items-center justify-center">
+              <i class="fa-solid fa-keyboard card-icon text-2xl text-gray-300"></i>
+            </div>
+            <h2 class="card-title text-2xl font-bold text-white mb-3">Chim Type</h2>
+            <p class="text-gray-400 mb-4 flex-grow">Build muscle memory to help you type faster with adaptive training algorithms.</p>
+            <a href="type.html" class="flex items-center text-cyan-400 text-sm font-medium">
+              <span>Get Started</span>
+              <i class="fa-solid fa-arrow-right ml-2"></i>
+            </a>
           </div>
         </div>
-      </a>
 
-      <!-- Chim Clinic -->
-      <a href="clinic.html" class="card group rounded-xl p-6 relative">
-        <div class="relative">
-          <div class="mb-4 bg-gray-800/70 w-14 h-14 rounded-lg flex items-center justify-center">
-            <i class="fa-solid fa-laptop-medical card-icon text-2xl text-gray-300"></i>
-          </div>
-          <h2 class="card-title text-2xl font-bold text-white mb-3">Chim Clinic</h2>
-          <p class="text-gray-400 mb-4">Meet expert developers to heal or invest in your projects with advanced diagnostics.</p>
-          <div class="flex items-center text-cyan-400 text-sm font-medium">
-            <span>Get Started</span>
-            <i class="fa-solid fa-arrow-right ml-2"></i>
+        <!-- Chim Maze -->
+        <div class="product-slide min-w-full md:min-w-[80%] lg:min-w-[50%] p-3">
+          <div class="card rounded-xl p-6 h-full flex flex-col">
+            <div class="mb-6 relative aspect-video overflow-hidden rounded-lg">
+              <img src="image-chimmaze" alt="Chim Maze" class="w-full h-full object-cover"/>
+            </div>
+            <div class="mb-4 bg-gray-800/70 w-14 h-14 rounded-lg flex items-center justify-center">
+              <i class="fa-solid fa-cube card-icon text-2xl text-gray-300"></i>
+            </div>
+            <h2 class="card-title text-2xl font-bold text-white mb-3">Chim Maze</h2>
+            <p class="text-gray-400 mb-4 flex-grow">Build muscle memory with subjects through immersive learning environments.</p>
+            <a href="maze.html" class="flex items-center text-cyan-400 text-sm font-medium">
+              <span>Get Started</span>
+              <i class="fa-solid fa-arrow-right ml-2"></i>
+            </a>
           </div>
         </div>
-      </a>
 
-      <!-- Chim Prompts -->
-      <a href="prompts.html" class="card group rounded-xl p-6 relative">
-        <div class="relative">
-          <div class="mb-4 bg-gray-800/70 w-14 h-14 rounded-lg flex items-center justify-center">
-            <i class="fa-solid fa-terminal card-icon text-2xl text-gray-300"></i>
-          </div>
-          <h2 class="card-title text-2xl font-bold text-white mb-3">Chim Prompts</h2>
-          <p class="text-gray-400 mb-4">Reference prompt engineering formats with AI-powered optimization tools.</p>
-          <div class="flex items-center text-cyan-400 text-sm font-medium">
-            <span>Get Started</span>
-            <i class="fa-solid fa-arrow-right ml-2"></i>
+        <!-- Chim Clinic -->
+        <div class="product-slide min-w-full md:min-w-[80%] lg:min-w-[50%] p-3">
+          <div class="card rounded-xl p-6 h-full flex flex-col">
+            <div class="mb-6 relative aspect-video overflow-hidden rounded-lg">
+              <img src="image-chimclinic" alt="Chim Clinic" class="w-full h-full object-cover"/>
+            </div>
+            <div class="mb-4 bg-gray-800/70 w-14 h-14 rounded-lg flex items-center justify-center">
+              <i class="fa-solid fa-laptop-medical card-icon text-2xl text-gray-300"></i>
+            </div>
+            <h2 class="card-title text-2xl font-bold text-white mb-3">Chim Clinic</h2>
+            <p class="text-gray-400 mb-4 flex-grow">Meet expert developers to heal or invest in your projects with advanced diagnostics.</p>
+            <a href="clinic.html" class="flex items-center text-cyan-400 text-sm font-medium">
+              <span>Get Started</span>
+              <i class="fa-solid fa-arrow-right ml-2"></i>
+            </a>
           </div>
         </div>
-      </a>
 
-      <!-- Chim Team -->
-      <a href="teams.html" class="card group rounded-xl p-6 relative">
-        <div class="relative">
-          <div class="mb-4 bg-gray-800/70 w-14 h-14 rounded-lg flex items-center justify-center">
-            <i class="fa-solid fa-users card-icon text-2xl text-gray-300"></i>
-          </div>
-          <h2 class="card-title text-2xl font-bold text-white mb-3">Chim Team</h2>
-          <p class="text-gray-400 mb-4">Gamble risk-free to combat addiction with immersive team-based challenges.</p>
-          <div class="flex items-center text-cyan-400 text-sm font-medium">
-            <span>Get Started</span>
-            <i class="fa-solid fa-arrow-right ml-2"></i>
+        <!-- Chim Prompts -->
+        <div class="product-slide min-w-full md:min-w-[80%] lg:min-w-[50%] p-3">
+          <div class="card rounded-xl p-6 h-full flex flex-col">
+            <div class="mb-6 relative aspect-video overflow-hidden rounded-lg">
+              <img src="image-chimprompts" alt="Chim Prompts" class="w-full h-full object-cover"/>
+            </div>
+            <div class="mb-4 bg-gray-800/70 w-14 h-14 rounded-lg flex items-center justify-center">
+              <i class="fa-solid fa-terminal card-icon text-2xl text-gray-300"></i>
+            </div>
+            <h2 class="card-title text-2xl font-bold text-white mb-3">Chim Prompts</h2>
+            <p class="text-gray-400 mb-4 flex-grow">Reference prompt engineering formats with AI-powered optimization tools.</p>
+            <a href="prompts.html" class="flex items-center text-cyan-400 text-sm font-medium">
+              <span>Get Started</span>
+              <i class="fa-solid fa-arrow-right ml-2"></i>
+            </a>
           </div>
         </div>
-      </a>
-    </main>
-    
-    <!-- Stats Section -->
-    <section class="w-full mt-20 mb-16">
-      <div class="relative">
-        <div class="relative grid grid-cols-2 md:grid-cols-4 gap-4 p-8 rounded-2xl border border-gray-800 bg-gray-900/60 backdrop-blur-sm">
-          <div class="text-center">
-            <div class="text-3xl font-bold mb-1 text-white">24k+</div>
-            <div class="text-gray-400 text-sm">Active Users</div>
-          </div>
-          <div class="text-center">
-            <div class="text-3xl font-bold mb-1 text-white">89%</div>
-            <div class="text-gray-400 text-sm">Success Rate</div>
-          </div>
-          <div class="text-center">
-            <div class="text-3xl font-bold mb-1 text-white">4.9k+</div>
-            <div class="text-gray-400 text-sm">Reviews</div>
-          </div>
-          <div class="text-center">
-            <div class="text-3xl font-bold mb-1 text-white">48h</div>
-            <div class="text-gray-400 text-sm">Response Time</div>
+
+        <!-- Chim Team -->
+        <div class="product-slide min-w-full md:min-w-[80%] lg:min-w-[50%] p-3">
+          <div class="card rounded-xl p-6 h-full flex flex-col">
+            <div class="mb-6 relative aspect-video overflow-hidden rounded-lg">
+              <img src="image-chimteam" alt="Chim Team" class="w-full h-full object-cover"/>
+            </div>
+            <div class="mb-4 bg-gray-800/70 w-14 h-14 rounded-lg flex items-center justify-center">
+              <i class="fa-solid fa-users card-icon text-2xl text-gray-300"></i>
+            </div>
+            <h2 class="card-title text-2xl font-bold text-white mb-3">Chim Team</h2>
+            <p class="text-gray-400 mb-4 flex-grow">Gamble risk-free to combat addiction with immersive team-based challenges.</p>
+            <a href="teams.html" class="flex items-center text-cyan-400 text-sm font-medium">
+              <span>Get Started</span>
+              <i class="fa-solid fa-arrow-right ml-2"></i>
+            </a>
           </div>
         </div>
       </div>
-    </section>
+      
+      <!-- Slider Navigation -->
+      <div class="flex justify-center gap-2 mt-4">
+        <button class="w-3 h-3 rounded-full bg-gray-600 hover:bg-cyan-400 transition-colors" data-slide="0"></button>
+        <button class="w-3 h-3 rounded-full bg-gray-600 hover:bg-cyan-400 transition-colors" data-slide="1"></button>
+        <button class="w-3 h-3 rounded-full bg-gray-600 hover:bg-cyan-400 transition-colors" data-slide="2"></button>
+        <button class="w-3 h-3 rounded-full bg-gray-600 hover:bg-cyan-400 transition-colors" data-slide="3"></button>
+        <button class="w-3 h-3 rounded-full bg-gray-600 hover:bg-cyan-400 transition-colors" data-slide="4"></button>
+        <button class="w-3 h-3 rounded-full bg-gray-600 hover:bg-cyan-400 transition-colors" data-slide="5"></button>
+      </div>
+    </main>
+    
+    <!-- Featured Image 2 -->
+    <div class="w-full mb-16">
+      <div class="relative aspect-[16/9] rounded-2xl overflow-hidden">
+        <img src="image2" alt="Fromsupply Community" class="w-full h-full object-cover" id="featured-image-2"/>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-8">
+          <h2 class="text-3xl font-bold">Join Our Developer Community</h2>
+        </div>
+      </div>
+    </div>
     
     <!-- CTA Section -->
     <section class="w-full mb-16">
       <div class="bg-gray-900 p-8 md:p-12 rounded-2xl relative overflow-hidden border border-cyan-500/30">
         <div class="z-10 relative">
           <h3 class="text-2xl md:text-3xl font-bold mb-3">Ready to upgrade your skills?</h3>
-          <p class="text-gray-400 mb-6 max-w-md">Join thousands of developers who are accelerating their growth with our cutting-edge tools.</p>
+          <p class="text-gray-400 mb-6 max-w-md">Join developers who are accelerating their growth with our cutting-edge tools.</p>
           <a href="#" class="inline-block bg-cyan-500 hover:bg-cyan-600 text-white font-medium px-8 py-3 rounded-lg transition-colors duration-300">Get Started Now</a>
         </div>
         <div class="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl"></div>
@@ -257,13 +335,10 @@
           <h3 class="text-xl font-bold text-white mb-4">Fromsupply</h3>
           <p class="text-gray-400 mb-6">Building the future of developer tools and experiences through innovative solutions.</p>
           <div class="flex space-x-4">
-            <a href="#" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 social-icon">
-              <i class="fab fa-twitter"></i>
-            </a>
-            <a href="#" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 social-icon">
+            <a href="https://github.com/chimwopara/fromsupply" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 social-icon">
               <i class="fab fa-github"></i>
             </a>
-            <a href="https://instagram.com/mrwopara" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 social-icon">
+            <a href="https://instagram.com/fromsupply" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 social-icon">
               <i class="fab fa-instagram"></i>
             </a>
             <a href="#" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 social-icon">
@@ -304,7 +379,7 @@
             </li>
             <li class="flex items-center gap-2 text-gray-400">
               <i class="fa-solid fa-location-dot w-5"></i>
-              <span>San Francisco, CA</span>
+              <span>Alberta, Canada</span>
             </li>
           </ul>
           
@@ -325,5 +400,129 @@
       </div>
     </div>
   </footer>
+
+  <!-- Fixed Search and Sign In Buttons -->
+  <div class="control-buttons flex gap-4">
+    <button class="bg-gray-900/80 hover:bg-gray-800 border border-gray-700 hover:border-cyan-500 backdrop-blur-md px-6 py-2.5 rounded-full transition-all duration-300 flex items-center gap-2">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <span>Search</span>
+    </button>
+    <button class="bg-cyan-500 hover:bg-cyan-600 px-6 py-2.5 rounded-full transition-all duration-300 flex items-center gap-2">
+      <i class="fa-solid fa-right-to-bracket"></i>
+      <span>Sign In</span>
+    </button>
+  </div>
+  
+  <script>
+    // Mouse movement interactive background
+    document.addEventListener('DOMContentLoaded', () => {
+      const gridBackground = document.getElementById('grid-background');
+      const blobs = document.querySelectorAll('.interactive-blob');
+      const productSlider = document.querySelector('.product-slider');
+      const sliderNavButtons = document.querySelectorAll('[data-slide]');
+      
+      // Interactive background with mouse movement
+      document.addEventListener('mousemove', (e) => {
+        const x = e.clientX / window.innerWidth;
+        const y = e.clientY / window.innerHeight;
+        
+        // Move grid background slightly
+        gridBackground.style.backgroundPosition = 
+          `${20 + x * 40}px ${20 + y * 40}px`;
+        
+        // Move blobs based on mouse position
+        blobs.forEach((blob, index) => {
+          const speed = 0.05 - (index * 0.01);
+          const blobX = (x - 0.5) * (100 - (index * 20));
+          const blobY = (y - 0.5) * (100 - (index * 20));
+          
+          blob.style.transform = `translate(${blobX}px, ${blobY}px)`;
+        });
+        
+        // Create particles on mouse move (throttled)
+        if (Math.random() > 0.92) {
+          createParticle(e.clientX, e.clientY);
+        }
+      });
+      
+      // Particle effect
+      function createParticle(x, y) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        
+        // Random size between 2-6px
+        const size = Math.random() * 4 + 2;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        
+        // Random color
+        const colors = ['#06B6D4', '#0891B2', '#0E7490', '#155E75'];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        particle.style.backgroundColor = color;
+        
+        // Position at mouse pointer
+        particle.style.left = `${x}px`;
+        particle.style.top = `${y}px`;
+        
+        // Random direction
+        const tx = (Math.random() - 0.5) * 100;
+        const ty = (Math.random() - 0.5) * 100;
+        particle.style.setProperty('--tx', `${tx}px`);
+        particle.style.setProperty('--ty', `${ty}px`);
+        
+        document.body.appendChild(particle);
+        
+        // Remove particle after animation
+        setTimeout(() => {
+          particle.remove();
+        }, 3000);
+      }
+      
+      // Product slider navigation
+      sliderNavButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const slideIndex = button.getAttribute('data-slide');
+          const slides = document.querySelectorAll('.product-slide');
+          if (slides[slideIndex]) {
+            slides[slideIndex].scrollIntoView({
+              behavior: 'smooth',
+              block: 'nearest',
+              inline: 'center'
+            });
+            
+            // Update active button
+            sliderNavButtons.forEach(btn => btn.classList.remove('bg-cyan-400'));
+            button.classList.add('bg-cyan-400');
+          }
+        });
+      });
+      
+      // Update active slide indicator on scroll
+      productSlider.addEventListener('scroll', () => {
+        const slides = document.querySelectorAll('.product-slide');
+        const sliderCenter = productSlider.offsetWidth / 2;
+        
+        let closestSlide = 0;
+        let closestDistance = Infinity;
+        
+        slides.forEach((slide, index) => {
+          const rect = slide.getBoundingClientRect();
+          const slideCenter = rect.left + rect.width / 2;
+          const distance = Math.abs(slideCenter - sliderCenter - productSlider.offsetLeft);
+          
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            closestSlide = index;
+          }
+        });
+        
+        // Update active button
+        sliderNavButtons.forEach(btn => btn.classList.remove('bg-cyan-400'));
+        if (sliderNavButtons[closestSlide]) {
+          sliderNavButtons[closestSlide].classList.add('bg-cyan-400');
+        }
+      });
+    });
+  </script>
 </body>
 </html>
