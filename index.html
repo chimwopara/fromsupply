@@ -22,19 +22,15 @@
         overflow-x: hidden;
       }
 
+      /* --- Updated Colors: Cyan -> White/Gray --- */
       .hero-gradient {
-        background: radial-gradient(circle at center, rgba(6, 182, 212, 0.15) 0%, rgba(6, 182, 212, 0.05) 25%, transparent 50%);
-      }
-
-      .logo-font {
-        font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-        font-weight: bold;
+        background: radial-gradient(circle at center, rgba(209, 213, 219, 0.1) 0%, rgba(209, 213, 219, 0.05) 25%, transparent 50%);
       }
 
       .grid-background {
         background-image:
-          linear-gradient(rgba(6, 182, 212, 0.1) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(6, 182, 212, 0.1) 1px, transparent 1px);
+          linear-gradient(rgba(209, 213, 219, 0.07) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(209, 213, 219, 0.07) 1px, transparent 1px);
         background-size: 40px 40px;
         position: fixed;
         width: 100%;
@@ -54,52 +50,42 @@
 
       .card:hover {
         transform: translateY(-10px);
-        box-shadow: 0 0 20px 2px rgba(6, 182, 212, 0.3); /* cyan-400 shadow */
-        border-color: rgba(6, 182, 212, 0.5); /* cyan-400 border */
+        box-shadow: 0 0 20px 2px rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.3);
       }
 
-      .card:hover .card-icon {
-        color: #06B6D4; /* cyan-400 */
-      }
-
+      .card:hover .card-icon,
       .card:hover .card-title {
-        color: #06B6D4; /* cyan-400 */
+        color: #ffffff;
       }
 
       .glow-text {
-        color: #06B6D4; /* cyan-400 */
-        text-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+        color: #ffffff;
+        text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
       }
 
       .footer-link {
         transition: color 0.2s ease;
       }
-
       .footer-link:hover {
-        color: #06B6D4; /* cyan-400 */
+        color: #ffffff;
       }
 
       .social-icon {
         transition: all 0.3s ease;
       }
-
       .social-icon:hover {
-        background-color: #06B6D4; /* cyan-400 */
-        color: white;
+        background-color: #ffffff;
+        color: #030712;
       }
 
       .product-slider {
         scroll-snap-type: x mandatory;
         scroll-behavior: smooth;
-        /* Hide scrollbar */
-        -ms-overflow-style: none;  /* IE and Edge */
-        scrollbar-width: none;  /* Firefox */
+        -ms-overflow-style: none;
+        scrollbar-width: none;
       }
-      .product-slider::-webkit-scrollbar { /* Chrome, Safari, Opera */
-        display: none;
-      }
-
-
+      .product-slider::-webkit-scrollbar { display: none; }
       .product-slide {
         scroll-snap-align: center;
         flex-shrink: 0;
@@ -107,18 +93,128 @@
 
       .interactive-blob {
         filter: blur(100px);
-        opacity: 0.5;
+        opacity: 0.3;
         mix-blend-mode: screen;
         transition: all 0.2s ease;
       }
 
-      .control-buttons {
+       /* --- Star Button Styling & Animation --- */
+      .star-button-container {
         position: fixed;
-        bottom: 2rem;
-        left: 50%;
-        transform: translateX(-50%);
+        top: 1.5rem;
+        right: 1.5rem;
         z-index: 50;
       }
+
+      .star-button {
+        position: relative;
+        background-color: rgba(17, 24, 39, 0.5); /* gray-900/50 */
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(55, 65, 81, 0.4); /* gray-700/40 */
+        transition: all 0.3s ease;
+        overflow: hidden;
+      }
+      .star-button:hover {
+        border-color: rgba(255, 255, 255, 0.5);
+        background-color: rgba(17, 24, 39, 0.7);
+      }
+      .star-button::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 200%; height: 200%;
+        background: conic-gradient(transparent, transparent, transparent, rgba(255, 255, 255, 0.5));
+        animation: rotate 4s linear infinite;
+        transform-origin: center center;
+        z-index: -1;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      .star-button:hover::before { opacity: 1; }
+
+      @keyframes rotate {
+        from { transform: translate(-25%, -25%) rotate(0deg); }
+        to { transform: translate(-25%, -25%) rotate(360deg); }
+      }
+
+      /* --- Updated Dropdown Menu --- */
+      .star-dropdown {
+        position: absolute;
+        top: calc(100% + 0.5rem);
+        right: 0;
+        background-color: rgba(31, 41, 55, 0.85); /* gray-800 with more opacity */
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(75, 85, 99, 0.5); /* gray-600/50 */
+        border-radius: 0.75rem; /* rounded-xl */
+        padding: 0.75rem; /* p-3 */
+        width: 300px; /* Increased width */
+        z-index: 60;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem; /* space-y-3 */
+      }
+      .star-dropdown.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      /* --- New Dropdown Item Styling --- */
+      .dropdown-item {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem; /* p-3 */
+        background-color: rgba(55, 65, 81, 0.3); /* gray-700/30 */
+        border-radius: 0.5rem; /* rounded-lg */
+        transition: background-color 0.2s ease;
+        cursor: pointer;
+      }
+      .dropdown-item:hover {
+        background-color: rgba(75, 85, 99, 0.5); /* gray-600/50 */
+      }
+      .dropdown-item-icon {
+        width: 40px; /* w-10 */
+        height: 40px; /* h-10 */
+        border-radius: 0.375rem; /* rounded-md */
+        margin-right: 0.75rem; /* mr-3 */
+        object-fit: cover; /* Ensure icon fits well */
+        flex-shrink: 0;
+      }
+      .dropdown-item-content {
+        flex-grow: 1; /* Take available space */
+        margin-right: 0.5rem; /* mr-2 */
+      }
+      .dropdown-item-title {
+        color: #F3F4F6; /* gray-100 */
+        font-weight: 500; /* font-medium */
+        font-size: 0.875rem; /* text-sm */
+        line-height: 1.2;
+      }
+      .dropdown-item-desc {
+        color: #9CA3AF; /* gray-400 */
+        font-size: 0.75rem; /* text-xs */
+        line-height: 1.3;
+      }
+      .dropdown-item-price {
+        background-color: #4B5563; /* gray-600 */
+        color: #ffffff;
+        font-size: 0.75rem; /* text-xs */
+        font-weight: 600; /* font-semibold */
+        padding: 0.25rem 0.6rem; /* py-1 px-2.5 */
+        border-radius: 9999px; /* rounded-full */
+        transition: background-color 0.2s ease;
+        white-space: nowrap;
+        border: none;
+        cursor: pointer;
+      }
+      .dropdown-item:hover .dropdown-item-price {
+        background-color: #374151; /* gray-700 */
+      }
+      /* --- End Dropdown Item Styling --- */
 
       /* Particle animation */
       .particle {
@@ -129,63 +225,88 @@
         opacity: 0;
         animation: particleFade 3s ease-out forwards;
       }
-
       @keyframes particleFade {
         0% { opacity: 0.7; transform: translate(0, 0); }
         100% { opacity: 0; transform: translate(var(--tx), var(--ty)); }
       }
 
-      /* Ensure iframe fills container */
       .video-container iframe {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
+          position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       }
+      .hide-scrollbar {
+        -ms-overflow-style: none; scrollbar-width: none;
+      }
+      .hide-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="text-gray-100 min-h-screen flex flex-col justify-between">
   <div id="grid-background" class="grid-background"></div>
 
   <div class="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-[-1]" id="blobs-container">
-    <div class="interactive-blob absolute top-[5%] left-[10%] w-[40rem] h-[40rem] rounded-full bg-cyan-900/20"></div>
-    <div class="interactive-blob absolute bottom-[15%] right-[10%] w-[30rem] h-[30rem] rounded-full bg-blue-900/20"></div>
-    <div class="interactive-blob absolute top-[40%] right-[25%] w-[25rem] h-[25rem] rounded-full bg-indigo-900/20"></div>
+    <div class="interactive-blob absolute top-[5%] left-[10%] w-[40rem] h-[40rem] rounded-full bg-gray-900/20"></div>
+    <div class="interactive-blob absolute bottom-[15%] right-[10%] w-[30rem] h-[30rem] rounded-full bg-slate-900/20"></div>
+    <div class="interactive-blob absolute top-[40%] right-[25%] w-[25rem] h-[25rem] rounded-full bg-zinc-900/20"></div>
   </div>
 
-  <div class="w-full max-w-6xl mx-auto flex-grow flex flex-col items-center justify-center px-4 py-6">
+  <div class="star-button-container">
+    <button id="star-button" class="star-button px-5 py-2 rounded-full flex items-center gap-2 text-sm text-gray-300 relative">
+      <span>⭐️ 7348</span>
+    </button>
+    <div id="star-dropdown" class="star-dropdown">
+      <div class="dropdown-item">
+        <img src="clubcard.jpeg" alt="Membership Icon" class="dropdown-item-icon" onerror="this.onerror=null; this.src='https://placehold.co/40x40/374151/FFFFFF?text=FS';">
+        <div class="dropdown-item-content">
+          <div class="dropdown-item-title">fs Membership</div>
+          <div class="dropdown-item-desc">access paid features monthly</div>
+        </div>
+        <button class="dropdown-item-price">$5.99</button>
+      </div>
+      <div class="dropdown-item">
+        <img src="10kcard.jpeg" alt="Cheat Code Icon" class="dropdown-item-icon" onerror="this.onerror=null; this.src='https://placehold.co/40x40/374151/FFFFFF?text=10K';">
+        <div class="dropdown-item-content">
+          <div class="dropdown-item-title">Cheat Code</div>
+          <div class="dropdown-item-desc">Begin your journey with 10 thousands Reserves</div>
+        </div>
+        <button class="dropdown-item-price">$19.99</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="w-full max-w-6xl mx-auto flex-grow flex flex-col items-center justify-center px-4 py-6 pt-24">
     <header class="text-center mb-12 relative hero-gradient py-12 w-full">
       <div class="absolute top-0 left-0 w-full h-full overflow-hidden">
-        <div class="absolute top-[10%] left-[10%] w-2 h-2 bg-cyan-400 rounded-full"></div>
-        <div class="absolute top-[20%] right-[20%] w-1.5 h-1.5 bg-cyan-500 rounded-full"></div>
-        <div class="absolute bottom-[30%] left-[30%] w-1 h-1 bg-blue-400 rounded-full"></div>
-        <div class="absolute bottom-[10%] right-[30%] w-2 h-2 bg-blue-500 rounded-full"></div>
+        <div class="absolute top-[10%] left-[10%] w-2 h-2 bg-gray-500/50 rounded-full"></div>
+        <div class="absolute top-[20%] right-[20%] w-1.5 h-1.5 bg-gray-600/50 rounded-full"></div>
+        <div class="absolute bottom-[30%] left-[30%] w-1 h-1 bg-gray-500/50 rounded-full"></div>
+        <div class="absolute bottom-[10%] right-[30%] w-2 h-2 bg-gray-600/50 rounded-full"></div>
       </div>
 
       <div class="mb-6 relative">
         <div class="mx-auto w-24 h-24 mb-4">
-          <img src="https://placehold.co/96x96/030712/06B6D4?text=FS" alt="Fromsupply Logo" class="w-full h-full object-contain rounded-lg" id="logo-image" onerror="this.onerror=null; this.src='https://placehold.co/96x96/030712/FFFFFF?text=Logo+Error';"/>
+          <img
+            src="logo.jpg"
+            alt="Fromsupply Logo"
+            class="w-full h-full object-contain rounded-lg"
+            id="logo-image"
+            onerror="this.onerror=null; this.src='https://placehold.co/96x96/030712/FFFFFF?text=FS';"
+          />
         </div>
-        <h1 class="text-6xl sm:text-7xl logo-font mb-1 glow-text tracking-tight">FROMSUPPLY</h1>
-        <div class="w-1/2 h-0.5 mx-auto bg-gradient-to-r from-transparent via-cyan-400 to-transparent"></div>
       </div>
 
       <p class="text-xl text-gray-300 mt-4 relative">
-        Designed and implemented by Chim Wopara
+        Designed by Chim Wopara
       </p>
 
       <div class="mt-6 flex justify-center gap-4">
-        <a href="#product-showcase" class="group flex items-center gap-2 bg-gray-800/60 hover:bg-gray-800/90 border border-gray-700 hover:border-cyan-500 px-6 py-2.5 rounded-full transition-all duration-300">
-          <span>Explore Solutions</span>
-          <i class="fa-solid fa-arrow-right"></i>
+         <a href="#product-showcase" class="group flex items-center gap-2 bg-gray-800/60 hover:bg-gray-700/80 border border-gray-700 hover:border-gray-500 px-6 py-2.5 rounded-full transition-all duration-300 text-gray-300 hover:text-white">
+          <span>Sign in with Google</span>
         </a>
       </div>
     </header>
 
     <div class="w-full mb-16">
       <div class="relative aspect-video rounded-2xl overflow-hidden border border-gray-800">
-         <img src="https://placehold.co/1280x720/0f172a/34d399?text=May+Update+Visual" alt="Fromsupply May Update" class="w-full h-full object-cover" id="featured-image" onerror="this.onerror=null; this.src='https://placehold.co/1280x720/1f2937/FFFFFF?text=Image+Error';"/>
+         <img src="https://placehold.co/1280x720/0f172a/e5e7eb?text=May+Update+Visual" alt="Fromsupply May Update" class="w-full h-full object-cover" id="featured-image" onerror="this.onerror=null; this.src='https://placehold.co/1280x720/1f2937/FFFFFF?text=Image+Error';"/>
         <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-8">
           <h2 class="text-3xl font-bold">May 2025 Update</h2>
         </div>
@@ -216,13 +337,12 @@
               <p class="text-gray-400 mb-4 flex-grow">
                 Build muscle memory to help you debug complex systems faster and with higher accuracy.
               </p>
-              <a href="chimcode.html" class="flex items-center text-cyan-400 text-sm font-medium">
-                <span>Get Started</span>
+              <a href="chimcode.html" class="flex items-center text-gray-300 hover:text-white text-sm font-medium footer-link">
+                <span>open</span>
                 <i class="fa-solid fa-arrow-right ml-2"></i>
               </a>
             </div>
-          </div>          
-          
+          </div>
 
         <div class="product-slide min-w-full md:min-w-[80%] lg:min-w-[50%] p-3">
           <div class="card rounded-xl p-6 h-full flex flex-col">
@@ -241,8 +361,8 @@
             </div>
             <h2 class="card-title text-2xl font-bold text-white mb-3">Chim Type</h2>
             <p class="text-gray-400 mb-4 flex-grow">Build muscle memory to help you type faster with adaptive training algorithms.</p>
-            <a href="type.html" class="flex items-center text-cyan-400 text-sm font-medium">
-              <span>Get Started</span>
+             <a href="type.html" class="flex items-center text-gray-300 hover:text-white text-sm font-medium footer-link">
+              <span>open</span>
               <i class="fa-solid fa-arrow-right ml-2"></i>
             </a>
           </div>
@@ -265,8 +385,8 @@
             </div>
             <h2 class="card-title text-2xl font-bold text-white mb-3">Chim Maze</h2>
             <p class="text-gray-400 mb-4 flex-grow">Build muscle memory with subjects through immersive learning environments.</p>
-            <a href="maze.html" class="flex items-center text-cyan-400 text-sm font-medium">
-              <span>Get Started</span>
+             <a href="maze.html" class="flex items-center text-gray-300 hover:text-white text-sm font-medium footer-link">
+              <span>open</span>
               <i class="fa-solid fa-arrow-right ml-2"></i>
             </a>
           </div>
@@ -289,8 +409,8 @@
             </div>
             <h2 class="card-title text-2xl font-bold text-white mb-3">Chim Clinic</h2>
             <p class="text-gray-400 mb-4 flex-grow">Meet expert developers to heal or invest in your projects with advanced diagnostics.</p>
-            <a href="clinic.html" class="flex items-center text-cyan-400 text-sm font-medium">
-              <span>Get Started</span>
+             <a href="clinic.html" class="flex items-center text-gray-300 hover:text-white text-sm font-medium footer-link">
+              <span>open</span>
               <i class="fa-solid fa-arrow-right ml-2"></i>
             </a>
           </div>
@@ -313,8 +433,8 @@
             </div>
             <h2 class="card-title text-2xl font-bold text-white mb-3">Chim Prompts</h2>
             <p class="text-gray-400 mb-4 flex-grow">Reference prompt engineering formats with AI-powered optimization tools.</p>
-            <a href="prompts.html" class="flex items-center text-cyan-400 text-sm font-medium">
-              <span>Get Started</span>
+             <a href="prompts.html" class="flex items-center text-gray-300 hover:text-white text-sm font-medium footer-link">
+              <span>open</span>
               <i class="fa-solid fa-arrow-right ml-2"></i>
             </a>
           </div>
@@ -337,8 +457,8 @@
             </div>
             <h2 class="card-title text-2xl font-bold text-white mb-3">Chim Team</h2>
             <p class="text-gray-400 mb-4 flex-grow">Gamble risk-free to combat addiction with immersive team-based challenges.</p>
-            <a href="teams.html" class="flex items-center text-cyan-400 text-sm font-medium">
-              <span>Get Started</span>
+             <a href="teams.html" class="flex items-center text-gray-300 hover:text-white text-sm font-medium footer-link">
+              <span>open</span>
               <i class="fa-solid fa-arrow-right ml-2"></i>
             </a>
           </div>
@@ -346,39 +466,40 @@
       </div>
 
       <div class="flex justify-center gap-2 mt-4">
-        <button class="w-3 h-3 rounded-full bg-cyan-400 hover:bg-cyan-400 transition-colors" data-slide="0"></button>
-        <button class="w-3 h-3 rounded-full bg-gray-600 hover:bg-cyan-400 transition-colors" data-slide="1"></button>
-        <button class="w-3 h-3 rounded-full bg-gray-600 hover:bg-cyan-400 transition-colors" data-slide="2"></button>
-        <button class="w-3 h-3 rounded-full bg-gray-600 hover:bg-cyan-400 transition-colors" data-slide="3"></button>
-        <button class="w-3 h-3 rounded-full bg-gray-600 hover:bg-cyan-400 transition-colors" data-slide="4"></button>
-        <button class="w-3 h-3 rounded-full bg-gray-600 hover:bg-cyan-400 transition-colors" data-slide="5"></button>
+        <button class="w-3 h-3 rounded-full bg-white hover:bg-gray-300 transition-colors" data-slide="0"></button>
+        <button class="w-3 h-3 rounded-full bg-gray-600 hover:bg-gray-400 transition-colors" data-slide="1"></button>
+        <button class="w-3 h-3 rounded-full bg-gray-600 hover:bg-gray-400 transition-colors" data-slide="2"></button>
+        <button class="w-3 h-3 rounded-full bg-gray-600 hover:bg-gray-400 transition-colors" data-slide="3"></button>
+        <button class="w-3 h-3 rounded-full bg-gray-600 hover:bg-gray-400 transition-colors" data-slide="4"></button>
+        <button class="w-3 h-3 rounded-full bg-gray-600 hover:bg-gray-400 transition-colors" data-slide="5"></button>
       </div>
     </main>
 
     <div class="w-full mb-16">
       <div class="relative aspect-video rounded-2xl overflow-hidden border border-gray-800">
-        <img src="https://placehold.co/1280x720/0f172a/ec4899?text=Community+Visual" alt="Fromsupply Community" class="w-full h-full object-cover" id="featured-image-2" onerror="this.onerror=null; this.src='https://placehold.co/1280x720/1f2937/FFFFFF?text=Image+Error';"/>
+        <img src="https://placehold.co/1280x720/0f172a/f472b6?text=Community+Visual" alt="Fromsupply Community" class="w-full h-full object-cover" id="featured-image-2" onerror="this.onerror=null; this.src='https://placehold.co/1280x720/1f2937/FFFFFF?text=Image+Error';"/>
         <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-8">
-          <h2 class="text-3xl font-bold">Join Our Developer Community</h2>
+          <h2 class="text-3xl font-bold">Who are we ?</h2>
         </div>
       </div>
     </div>
 
     <section class="w-full mb-16">
-      <div class="bg-gray-900 p-8 md:p-12 rounded-2xl relative overflow-hidden border border-cyan-500/30">
+       <div class="bg-gray-900 p-8 md:p-12 rounded-2xl relative overflow-hidden border border-gray-500/30">
         <div class="z-10 relative">
-          <h3 class="text-2xl md:text-3xl font-bold mb-3">Ready to upgrade your skills?</h3>
-          <p class="text-gray-400 mb-6 max-w-md">Join developers who are accelerating their growth with our cutting-edge tools.</p>
-          <a href="#" class="inline-block bg-cyan-500 hover:bg-cyan-600 text-white font-medium px-8 py-3 rounded-lg transition-colors duration-300">Get Started Now</a>
+          <h3 class="text-2xl md:text-3xl font-bold mb-3">Become limitless!</h3>
+          <p class="text-gray-400 mb-6 max-w-md">Become a member to get full access to all paid features, and future products</p>
+          <a href="#" class="inline-block bg-gray-200 hover:bg-white text-gray-900 font-medium px-8 py-3 rounded-lg transition-colors duration-300">only $5.99 monthly</a>
         </div>
-        <div class="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl"></div>
+         <div class="absolute top-0 right-0 w-64 h-64 bg-gray-500/10 rounded-full blur-3xl"></div>
       </div>
     </section>
   </div>
 
   <footer class="w-full bg-gray-900/80 backdrop-blur-md border-t border-gray-800 pt-12 pb-6">
     <div class="max-w-6xl mx-auto px-4">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8"> <div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+        <div>
           <h3 class="text-xl font-bold text-white mb-4">
             Fromsupply <span class="text-xs font-normal text-gray-500 opacity-75">fs v0.5</span>
           </h3>
@@ -436,8 +557,8 @@
           <div class="mt-6">
             <h4 class="text-white font-semibold mb-3">Subscribe to our newsletter</h4>
             <div class="flex">
-              <input type="email" placeholder="Enter your email" class="bg-gray-800 border border-gray-700 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-1 focus:ring-cyan-500 text-gray-200 w-full" />
-              <button type="button" class="bg-cyan-500 hover:bg-cyan-600 text-white px-4 rounded-r-lg transition-colors duration-300">
+              <input type="email" placeholder="Enter your email" class="bg-gray-800 border border-gray-700 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-1 focus:ring-white text-gray-200 w-full" />
+              <button type="button" class="bg-gray-300 hover:bg-white text-gray-900 px-4 rounded-r-lg transition-colors duration-300">
                 <i class="fa-solid fa-paper-plane"></i>
               </button>
             </div>
@@ -448,161 +569,135 @@
       </div>
   </footer>
 
-  <div class="control-buttons flex gap-4">
-    <button class="bg-gray-900/80 hover:bg-gray-800 border border-gray-700 hover:border-cyan-500 backdrop-blur-md px-6 py-2.5 rounded-full transition-all duration-300 flex items-center gap-2">
+  <div class="control-buttons fixed bottom-8 left-1/2 transform -translate-x-1/2 z-40 flex gap-4">
+    <button class="bg-gray-900/80 hover:bg-gray-800 border border-gray-700 hover:border-gray-500 backdrop-blur-md px-6 py-2.5 rounded-full transition-all duration-300 flex items-center gap-2 text-gray-300 hover:text-white">
       <i class="fa-solid fa-magnifying-glass"></i>
-      <span>Search</span>
+      <span>find your topic</span>
     </button>
-    <button class="bg-cyan-500 hover:bg-cyan-600 px-6 py-2.5 rounded-full transition-all duration-300 flex items-center gap-2">
-      <i class="fa-solid fa-right-to-bracket"></i>
-      <span>Sign In</span>
-    </button>
-  </div>
+    </div>
 
   <script>
-    // Mouse movement interactive background
     document.addEventListener('DOMContentLoaded', () => {
       const gridBackground = document.getElementById('grid-background');
       const blobs = document.querySelectorAll('.interactive-blob');
       const productSlider = document.querySelector('.product-slider');
       const sliderNavButtons = document.querySelectorAll('[data-slide]');
+      const starButton = document.getElementById('star-button');
+      const starDropdown = document.getElementById('star-dropdown');
 
-      // Interactive background with mouse movement
+      // --- Interactive Background ---
       document.addEventListener('mousemove', (e) => {
         const x = e.clientX / window.innerWidth;
         const y = e.clientY / window.innerHeight;
-
-        // Move grid background slightly
-        gridBackground.style.backgroundPosition =
-          `${20 + x * 40}px ${20 + y * 40}px`;
-
-        // Move blobs based on mouse position
+        if (gridBackground) {
+            gridBackground.style.backgroundPosition = `${20 + x * 40}px ${20 + y * 40}px`;
+        }
         blobs.forEach((blob, index) => {
           const speed = 0.05 - (index * 0.01);
           const blobX = (x - 0.5) * (100 - (index * 20));
           const blobY = (y - 0.5) * (100 - (index * 20));
-
           blob.style.transform = `translate(${blobX}px, ${blobY}px)`;
         });
-
-        // Create particles on mouse move (throttled)
-        if (Math.random() > 0.92) {
-          createParticle(e.clientX, e.clientY);
-        }
+        if (Math.random() > 0.92) createParticle(e.clientX, e.clientY);
       });
 
-      // Particle effect
+      // --- Particle Effect ---
       function createParticle(x, y) {
         const particle = document.createElement('div');
         particle.className = 'particle';
-
-        // Random size between 2-6px
         const size = Math.random() * 4 + 2;
-        particle.style.width = `${size}px`;
-        particle.style.height = `${size}px`;
-
-        // Random color
-        const colors = ['#06B6D4', '#0891B2', '#0E7490', '#155E75'];
-        const color = colors[Math.floor(Math.random() * colors.length)];
-        particle.style.backgroundColor = color;
-
-        // Position at mouse pointer
-        particle.style.left = `${x}px`;
-        particle.style.top = `${y}px`;
-
-        // Random direction
-        const tx = (Math.random() - 0.5) * 100;
-        const ty = (Math.random() - 0.5) * 100;
-        particle.style.setProperty('--tx', `${tx}px`);
-        particle.style.setProperty('--ty', `${ty}px`);
-
+        particle.style.width = `${size}px`; particle.style.height = `${size}px`;
+        const colors = ['#FFFFFF', '#E5E7EB', '#D1D5DB', '#9CA3AF'];
+        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        particle.style.left = `${x}px`; particle.style.top = `${y}px`;
+        const tx = (Math.random() - 0.5) * 100; const ty = (Math.random() - 0.5) * 100;
+        particle.style.setProperty('--tx', `${tx}px`); particle.style.setProperty('--ty', `${ty}px`);
         document.body.appendChild(particle);
-
-        // Remove particle after animation
-        setTimeout(() => {
-          particle.remove();
-        }, 3000);
+        setTimeout(() => particle.remove(), 3000);
       }
 
-      // Product slider navigation
-      sliderNavButtons.forEach(button => {
-        button.addEventListener('click', () => {
-          const slideIndex = button.getAttribute('data-slide');
-          const slides = document.querySelectorAll('.product-slide');
-          if (slides[slideIndex]) {
-            // Calculate the scroll position to center the slide
-            const sliderRect = productSlider.getBoundingClientRect();
-            const slideRect = slides[slideIndex].getBoundingClientRect();
-            const scrollLeft = productSlider.scrollLeft + slideRect.left - sliderRect.left - (sliderRect.width / 2) + (slideRect.width / 2);
-
-            productSlider.scrollTo({
-              left: scrollLeft,
-              behavior: 'smooth'
-            });
-
-            // Update active button immediately for better UX
-            updateActiveButton(slideIndex);
-          }
-        });
-      });
-
-      // Function to update active button state
-      function updateActiveButton(activeIndex) {
-          sliderNavButtons.forEach((btn, index) => {
-              if (index == activeIndex) {
-                  btn.classList.remove('bg-gray-600');
-                  btn.classList.add('bg-cyan-400');
-              } else {
-                  btn.classList.remove('bg-cyan-400');
-                  btn.classList.add('bg-gray-600');
+      // --- Product Slider ---
+      if (productSlider && sliderNavButtons.length > 0) {
+          sliderNavButtons.forEach(button => {
+            button.addEventListener('click', () => {
+              const slideIndex = button.getAttribute('data-slide');
+              const slides = document.querySelectorAll('.product-slide');
+              if (slides[slideIndex]) {
+                const sliderRect = productSlider.getBoundingClientRect();
+                const slideRect = slides[slideIndex].getBoundingClientRect();
+                const scrollLeft = productSlider.scrollLeft + slideRect.left - sliderRect.left - (sliderRect.width / 2) + (slideRect.width / 2);
+                productSlider.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+                updateActiveButton(slideIndex);
               }
+            });
+          });
+
+          function updateActiveButton(activeIndex) {
+              sliderNavButtons.forEach((btn, index) => {
+                  if (index == activeIndex) {
+                      btn.classList.remove('bg-gray-600', 'hover:bg-gray-400');
+                      btn.classList.add('bg-white', 'hover:bg-gray-300');
+                  } else {
+                      btn.classList.remove('bg-white', 'hover:bg-gray-300');
+                      btn.classList.add('bg-gray-600', 'hover:bg-gray-400');
+                  }
+              });
+          }
+
+          let scrollTimeout;
+          productSlider.addEventListener('scroll', () => {
+              clearTimeout(scrollTimeout);
+              scrollTimeout = setTimeout(() => {
+                  const slides = document.querySelectorAll('.product-slide');
+                  const sliderRect = productSlider.getBoundingClientRect();
+                  const sliderCenter = sliderRect.left + sliderRect.width / 2;
+                  let closestSlideIndex = 0; let minDistance = Infinity;
+                  slides.forEach((slide, index) => {
+                      const slideRect = slide.getBoundingClientRect();
+                      const slideCenter = slideRect.left + slideRect.width / 2;
+                      const distance = Math.abs(sliderCenter - slideCenter);
+                      if (distance < minDistance) { minDistance = distance; closestSlideIndex = index; }
+                  });
+                  updateActiveButton(closestSlideIndex);
+              }, 150);
+          });
+          updateActiveButton(0); // Initialize
+      }
+
+      // --- Star Button Dropdown ---
+      if (starButton && starDropdown) {
+          starButton.addEventListener('click', (event) => {
+              event.stopPropagation();
+              starDropdown.classList.toggle('active');
+          });
+          document.addEventListener('click', (event) => {
+              // Close if click is outside the button and dropdown
+              if (!starButton.contains(event.target) && !starDropdown.contains(event.target)) {
+                  starDropdown.classList.remove('active');
+              }
+          });
+          // Add click listeners to dropdown items/buttons if needed
+          starDropdown.querySelectorAll('.dropdown-item-price').forEach(button => {
+            button.addEventListener('click', (event) => {
+                event.stopPropagation(); // Prevent dropdown from closing
+                console.log('Price button clicked:', button.textContent);
+                // Add purchase logic here
+                alert(`You clicked on ${button.textContent}`); // Example action
+                starDropdown.classList.remove('active'); // Optionally close dropdown after click
+            });
           });
       }
 
-
-      // Update active slide indicator on scroll (debounced)
-      let scrollTimeout;
-      productSlider.addEventListener('scroll', () => {
-          clearTimeout(scrollTimeout);
-          scrollTimeout = setTimeout(() => {
-              const slides = document.querySelectorAll('.product-slide');
-              const sliderRect = productSlider.getBoundingClientRect();
-              const sliderCenter = sliderRect.left + sliderRect.width / 2;
-
-              let closestSlideIndex = 0;
-              let minDistance = Infinity;
-
-              slides.forEach((slide, index) => {
-                  const slideRect = slide.getBoundingClientRect();
-                  const slideCenter = slideRect.left + slideRect.width / 2;
-                  const distance = Math.abs(sliderCenter - slideCenter);
-
-                  if (distance < minDistance) {
-                      minDistance = distance;
-                      closestSlideIndex = index;
-                  }
-              });
-
-              // Update active button
-              updateActiveButton(closestSlideIndex);
-          }, 150); // Adjust debounce time as needed
-      });
-
-      // Initialize first button as active
-      updateActiveButton(0);
-
-      // Add error handlers for images
+      // --- Image Error Handling ---
       document.querySelectorAll('img').forEach(img => {
-        if (!img.hasAttribute('onerror')) { // Add only if not already present
-          const placeholderUrl = `https://placehold.co/${img.width || 100}x${img.height || 100}/1f2937/FFFFFF?text=Error`;
+        if (!img.hasAttribute('onerror')) {
+          const placeholderUrl = `https://placehold.co/${img.naturalWidth || img.width || 100}x${img.naturalHeight || img.height || 100}/1f2937/FFFFFF?text=Error`;
           img.onerror = function() {
-            this.onerror=null; // Prevent infinite loop if placeholder fails
-            this.src=placeholderUrl;
-            console.warn(`Image failed to load: ${img.src}. Replaced with placeholder.`);
+            this.onerror=null; this.src=placeholderUrl;
+            console.warn(`Image failed to load: ${this.src}. Replaced with placeholder.`);
           }
         }
       });
-
 
     });
   </script>
