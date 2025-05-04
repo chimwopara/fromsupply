@@ -22,7 +22,14 @@
         overflow-x: hidden;
       }
 
-      /* --- Updated Colors: Cyan -> White/Gray --- */
+      /* --- Header/Nav Styling --- */
+      .top-nav {
+        background-color: rgba(3, 7, 18, 0.6); /* gray-950 with opacity */
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(55, 65, 81, 0.3); /* gray-700/30 */
+      }
+
+      /* --- Colors & Gradients --- */
       .hero-gradient {
         background: radial-gradient(circle at center, rgba(209, 213, 219, 0.1) 0%, rgba(209, 213, 219, 0.05) 25%, transparent 50%);
       }
@@ -32,56 +39,41 @@
           linear-gradient(rgba(209, 213, 219, 0.07) 1px, transparent 1px),
           linear-gradient(90deg, rgba(209, 213, 219, 0.07) 1px, transparent 1px);
         background-size: 40px 40px;
-        position: fixed;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        z-index: -1;
+        position: fixed; width: 100%; height: 100%;
+        top: 0; left: 0; z-index: -1;
         transition: all 0.3s ease;
       }
 
       .card {
         backdrop-filter: blur(12px);
-        background: linear-gradient(145deg, rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.9)); /* slate-900 with opacity */
-        border: 1px solid rgba(71, 85, 105, 0.2); /* slate-600 with opacity */
+        background: linear-gradient(145deg, rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.9));
+        border: 1px solid rgba(71, 85, 105, 0.2);
         transition: all 0.4s ease;
+        cursor: pointer; /* Add pointer cursor to indicate clickability */
       }
-
       .card:hover {
         transform: translateY(-10px);
         box-shadow: 0 0 20px 2px rgba(255, 255, 255, 0.15);
         border-color: rgba(255, 255, 255, 0.3);
       }
-
       .card:hover .card-icon,
-      .card:hover .card-title {
-        color: #ffffff;
-      }
+      .card:hover .card-title { color: #ffffff; }
 
       .glow-text {
         color: #ffffff;
         text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
       }
 
-      .footer-link {
-        transition: color 0.2s ease;
-      }
-      .footer-link:hover {
-        color: #ffffff;
-      }
+      .footer-link { transition: color 0.2s ease; }
+      .footer-link:hover { color: #ffffff; }
 
-      .social-icon {
-        transition: all 0.3s ease;
-      }
-      .social-icon:hover {
-        background-color: #ffffff;
-        color: #030712;
-      }
+      .social-icon { transition: all 0.3s ease; }
+      .social-icon:hover { background-color: #ffffff; color: #030712; }
 
+      /* --- Product Slider --- */
       .product-slider {
         scroll-snap-type: x mandatory;
-        scroll-behavior: smooth;
+        /* scroll-behavior: smooth; */ /* Removed for smoother JS scroll */
         -ms-overflow-style: none;
         scrollbar-width: none;
       }
@@ -98,36 +90,23 @@
         transition: all 0.2s ease;
       }
 
-       /* --- Star Button Styling & Animation --- */
-      .star-button-container {
-        position: fixed;
-        top: 1.5rem;
-        right: 1.5rem;
-        z-index: 50;
-      }
-
-      .star-button {
-        position: relative;
-        background-color: rgba(17, 24, 39, 0.5); /* gray-900/50 */
-        backdrop-filter: blur(8px);
-        border: 1px solid rgba(55, 65, 81, 0.4); /* gray-700/40 */
-        transition: all 0.3s ease;
-        overflow: hidden;
+       /* --- Star Button (Now in Nav) --- */
+       .star-button-container { position: relative; z-index: 50; }
+       .star-button {
+        position: relative; background-color: rgba(17, 24, 39, 0.5);
+        backdrop-filter: blur(8px); border: 1px solid rgba(55, 65, 81, 0.4);
+        transition: all 0.3s ease; overflow: hidden;
       }
       .star-button:hover {
         border-color: rgba(255, 255, 255, 0.5);
         background-color: rgba(17, 24, 39, 0.7);
       }
       .star-button::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0;
+        content: ''; position: absolute; top: 0; left: 0;
         width: 200%; height: 200%;
         background: conic-gradient(transparent, transparent, transparent, rgba(255, 255, 255, 0.5));
         animation: rotate 4s linear infinite;
-        transform-origin: center center;
-        z-index: -1;
-        opacity: 0;
+        transform-origin: center center; z-index: -1; opacity: 0;
         transition: opacity 0.3s ease;
       }
       .star-button:hover::before { opacity: 1; }
@@ -137,92 +116,47 @@
         to { transform: translate(-25%, -25%) rotate(360deg); }
       }
 
-      /* --- Updated Dropdown Menu --- */
+      /* --- Dropdown Menu --- */
       .star-dropdown {
-        position: absolute;
-        top: calc(100% + 0.5rem);
-        right: 0;
-        background-color: rgba(31, 41, 55, 0.85); /* gray-800 with more opacity */
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(75, 85, 99, 0.5); /* gray-600/50 */
-        border-radius: 0.75rem; /* rounded-xl */
-        padding: 0.75rem; /* p-3 */
-        width: 300px; /* Increased width */
-        z-index: 60;
-        opacity: 0;
-        visibility: hidden;
-        transform: translateY(-10px);
+        position: absolute; top: calc(100% + 0.5rem); right: 0;
+        background-color: rgba(31, 41, 55, 0.85); backdrop-filter: blur(12px);
+        border: 1px solid rgba(75, 85, 99, 0.5); border-radius: 0.75rem;
+        padding: 0.75rem; width: 300px; z-index: 60;
+        opacity: 0; visibility: hidden; transform: translateY(-10px);
         transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem; /* space-y-3 */
+        display: flex; flex-direction: column; gap: 0.75rem;
       }
-      .star-dropdown.active {
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0);
-      }
+      .star-dropdown.active { opacity: 1; visibility: visible; transform: translateY(0); }
 
-      /* --- New Dropdown Item Styling --- */
       .dropdown-item {
-        display: flex;
-        align-items: center;
-        padding: 0.75rem; /* p-3 */
-        background-color: rgba(55, 65, 81, 0.3); /* gray-700/30 */
-        border-radius: 0.5rem; /* rounded-lg */
-        transition: background-color 0.2s ease;
-        cursor: pointer;
+        display: flex; align-items: center; padding: 0.75rem;
+        background-color: rgba(55, 65, 81, 0.3); border-radius: 0.5rem;
+        transition: background-color 0.2s ease; cursor: pointer;
       }
-      .dropdown-item:hover {
-        background-color: rgba(75, 85, 99, 0.5); /* gray-600/50 */
-      }
+      .dropdown-item:hover { background-color: rgba(75, 85, 99, 0.5); }
       .dropdown-item-icon {
-        width: 40px; /* w-10 */
-        height: 40px; /* h-10 */
-        border-radius: 0.375rem; /* rounded-md */
-        margin-right: 0.75rem; /* mr-3 */
-        object-fit: cover; /* Ensure icon fits well */
-        flex-shrink: 0;
+        width: 40px; height: 40px; border-radius: 0.375rem;
+        margin-right: 0.75rem; object-fit: cover; flex-shrink: 0;
       }
-      .dropdown-item-content {
-        flex-grow: 1; /* Take available space */
-        margin-right: 0.5rem; /* mr-2 */
-      }
+      .dropdown-item-content { flex-grow: 1; margin-right: 0.5rem; }
       .dropdown-item-title {
-        color: #F3F4F6; /* gray-100 */
-        font-weight: 500; /* font-medium */
-        font-size: 0.875rem; /* text-sm */
-        line-height: 1.2;
+        color: #F3F4F6; font-weight: 500; font-size: 0.875rem; line-height: 1.2;
       }
       .dropdown-item-desc {
-        color: #9CA3AF; /* gray-400 */
-        font-size: 0.75rem; /* text-xs */
-        line-height: 1.3;
+        color: #9CA3AF; font-size: 0.75rem; line-height: 1.3;
       }
       .dropdown-item-price {
-        background-color: #4B5563; /* gray-600 */
-        color: #ffffff;
-        font-size: 0.75rem; /* text-xs */
-        font-weight: 600; /* font-semibold */
-        padding: 0.25rem 0.6rem; /* py-1 px-2.5 */
-        border-radius: 9999px; /* rounded-full */
+        background-color: #4B5563; color: #ffffff; font-size: 0.75rem;
+        font-weight: 600; padding: 0.25rem 0.6rem; border-radius: 9999px;
         transition: background-color 0.2s ease;
-        white-space: nowrap;
-        border: none;
-        cursor: pointer;
+        white-space: nowrap; border: none; cursor: pointer;
       }
-      .dropdown-item:hover .dropdown-item-price {
-        background-color: #374151; /* gray-700 */
-      }
-      /* --- End Dropdown Item Styling --- */
+      .dropdown-item:hover .dropdown-item-price { background-color: #374151; }
 
       /* Particle animation */
       .particle {
-        position: absolute;
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: -1;
-        opacity: 0;
+        position: absolute; border-radius: 50%;
+        pointer-events: none; z-index: -1; opacity: 0;
         animation: particleFade 3s ease-out forwards;
       }
       @keyframes particleFade {
@@ -232,14 +166,19 @@
 
       .video-container iframe {
           position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+          pointer-events: none; /* Disable direct interaction with iframe initially */
       }
+      .card:hover .video-container iframe {
+          pointer-events: auto; /* Allow interaction on card hover */
+      }
+
       .hide-scrollbar {
         -ms-overflow-style: none; scrollbar-width: none;
       }
       .hide-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body class="text-gray-100 min-h-screen flex flex-col justify-between">
+<body class="text-gray-100 min-h-screen flex flex-col justify-between pt-20">
   <div id="grid-background" class="grid-background"></div>
 
   <div class="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-[-1]" id="blobs-container">
@@ -248,86 +187,58 @@
     <div class="interactive-blob absolute top-[40%] right-[25%] w-[25rem] h-[25rem] rounded-full bg-zinc-900/20"></div>
   </div>
 
-  <div class="star-button-container">
-    <button id="star-button" class="star-button px-5 py-2 rounded-full flex items-center gap-2 text-sm text-gray-300 relative">
-      <span>⭐️ 7348</span>
-    </button>
-    <div id="star-dropdown" class="star-dropdown">
-      <div class="dropdown-item">
-        <img src="clubcard.jpeg" alt="Membership Icon" class="dropdown-item-icon" onerror="this.onerror=null; this.src='https://placehold.co/40x40/374151/FFFFFF?text=FS';">
-        <div class="dropdown-item-content">
-          <div class="dropdown-item-title">fs Membership</div>
-          <div class="dropdown-item-desc">access paid features monthly</div>
-        </div>
-        <button class="dropdown-item-price">$5.99</button>
-      </div>
-      <div class="dropdown-item">
-        <img src="10kcard.jpeg" alt="Cheat Code Icon" class="dropdown-item-icon" onerror="this.onerror=null; this.src='https://placehold.co/40x40/374151/FFFFFF?text=10K';">
-        <div class="dropdown-item-content">
-          <div class="dropdown-item-title">Cheat Code</div>
-          <div class="dropdown-item-desc">Begin your journey with 10 thousands Reserves</div>
-        </div>
-        <button class="dropdown-item-price">$19.99</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="w-full max-w-6xl mx-auto flex-grow flex flex-col items-center justify-center px-4 py-6 pt-24">
-    <header class="text-center mb-12 relative hero-gradient py-12 w-full">
-      <div class="absolute top-0 left-0 w-full h-full overflow-hidden">
-        <div class="absolute top-[10%] left-[10%] w-2 h-2 bg-gray-500/50 rounded-full"></div>
-        <div class="absolute top-[20%] right-[20%] w-1.5 h-1.5 bg-gray-600/50 rounded-full"></div>
-        <div class="absolute bottom-[30%] left-[30%] w-1 h-1 bg-gray-500/50 rounded-full"></div>
-        <div class="absolute bottom-[10%] right-[30%] w-2 h-2 bg-gray-600/50 rounded-full"></div>
-      </div>
-
-      <div class="mb-6 relative">
-        <div class="mx-auto w-24 h-24 mb-4">
-          <img
-            src="logo.jpg"
-            alt="Fromsupply Logo"
-            class="w-full h-full object-contain rounded-lg"
-            id="logo-image"
-            onerror="this.onerror=null; this.src='https://placehold.co/96x96/030712/FFFFFF?text=FS';"
-          />
-        </div>
-      </div>
-
-      <p class="text-xl text-gray-300 mt-4 relative">
-        Designed by Chim Wopara
-      </p>
-
-      <div class="mt-6 flex justify-center gap-4">
-         <a href="#product-showcase" class="group flex items-center gap-2 bg-gray-800/60 hover:bg-gray-700/80 border border-gray-700 hover:border-gray-500 px-6 py-2.5 rounded-full transition-all duration-300 text-gray-300 hover:text-white">
-          <span>Sign in with Google</span>
+  <nav class="top-nav fixed top-0 left-0 right-0 z-50 h-20">
+    <div class="mx-auto px-6 h-full flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <img
+          src="logo.jpg" alt="Fromsupply Logo" class="h-10 w-10 object-contain rounded-md"
+          id="logo-image" onerror="this.onerror=null; this.src='https://placehold.co/40x40/030712/FFFFFF?text=FS';"
+        />
+        <a href="#" class="group flex items-center gap-2 bg-gray-800/60 hover:bg-gray-700/80 border border-gray-700 hover:border-gray-500 px-4 py-2 rounded-full transition-all duration-300 text-gray-300 hover:text-white text-sm">
+          <i class="fa-brands fa-google text-sm"></i> <span>Sign in</span>
         </a>
       </div>
-    </header>
-
-    <div class="w-full mb-16">
-      <div class="relative aspect-video rounded-2xl overflow-hidden border border-gray-800">
-         <img src="https://placehold.co/1280x720/0f172a/e5e7eb?text=May+Update+Visual" alt="Fromsupply May Update" class="w-full h-full object-cover" id="featured-image" onerror="this.onerror=null; this.src='https://placehold.co/1280x720/1f2937/FFFFFF?text=Image+Error';"/>
-        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-8">
-          <h2 class="text-3xl font-bold">May 2025 Update</h2>
+      <div class="flex items-center gap-4">
+        <button class="bg-gray-900/80 hover:bg-gray-800 border border-gray-700 hover:border-gray-500 backdrop-blur-md px-4 py-2 rounded-full transition-all duration-300 flex items-center gap-2 text-gray-300 hover:text-white text-sm">
+          <i class="fa-solid fa-magnifying-glass text-xs"></i>
+          <span class="hidden sm:inline">find topic</span>
+        </button>
+        <div class="star-button-container">
+          <button id="star-button" class="star-button px-4 py-2 rounded-full flex items-center gap-2 text-sm text-gray-300 relative">
+            <span>⭐️ 7348</span>
+          </button>
+          <div id="star-dropdown" class="star-dropdown">
+            <div class="dropdown-item" data-link="#"> <img src="clubcard.jpeg" alt="Membership Icon" class="dropdown-item-icon" onerror="this.onerror=null; this.src='https://placehold.co/40x40/374151/FFFFFF?text=FS';">
+              <div class="dropdown-item-content">
+                <div class="dropdown-item-title">fs Membership</div>
+                <div class="dropdown-item-desc">access paid features monthly</div>
+              </div>
+              <button class="dropdown-item-price" data-action="buy-membership">$5.99</button>
+            </div>
+            <div class="dropdown-item" data-link="#"> <img src="10kcard.jpeg" alt="Cheat Code Icon" class="dropdown-item-icon" onerror="this.onerror=null; this.src='https://placehold.co/40x40/374151/FFFFFF?text=10K';">
+              <div class="dropdown-item-content">
+                <div class="dropdown-item-title">Cheat Code</div>
+                <div class="dropdown-item-desc">Begin your journey with 10 thousands Reserves</div>
+              </div>
+              <button class="dropdown-item-price" data-action="buy-stars">$19.99</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+  </nav>
 
+  <div class="w-full mx-auto flex-grow flex flex-col items-center justify-center px-6 py-6">
     <main id="product-showcase" class="w-full mb-16">
       <div class="product-slider flex overflow-x-auto snap-x snap-mandatory pb-8 -mx-4 px-4 hide-scrollbar">
 
-        <div class="product-slide min-w-full md:min-w-[80%] lg:min-w-[50%] p-3">
-            <div class="card rounded-xl p-6 h-full flex flex-col">
-              <div class="mb-6 relative aspect-video overflow-hidden rounded-lg video-container">
+        <div class="product-slide min-w-full md:min-w-[45%] lg:min-w-[30%] xl:min-w-[23%] p-3"> <div class="card rounded-xl p-6 h-full flex flex-col" data-link="chimcode.html"> <div class="mb-6 relative aspect-video overflow-hidden rounded-lg video-container">
                 <iframe
                   class="absolute top-0 left-0 w-full h-full"
                   src="https://www.youtube.com/embed/flDetM2ZwWI?si=TQ6HoN-VhhvavuYS&controls=0&autoplay=1&rel=0&loop=1&playlist=flDetM2ZwWI"
-                  title="Chim Code Video"
-                  frameborder="0"
+                  title="Chim Code Video" frameborder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allow="autoplay"
-                  referrerpolicy="strict-origin-when-cross-origin"
-                  allowfullscreen
+                  allow="autoplay" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen muted
                 ></iframe>
               </div>
               <div class="mb-4 bg-gray-800/70 w-14 h-14 rounded-lg flex items-center justify-center">
@@ -337,131 +248,92 @@
               <p class="text-gray-400 mb-4 flex-grow">
                 Build muscle memory to help you debug complex systems faster and with higher accuracy.
               </p>
-              <a href="chimcode.html" class="flex items-center text-gray-300 hover:text-white text-sm font-medium footer-link">
-                <span>open</span>
-                <i class="fa-solid fa-arrow-right ml-2"></i>
-              </a>
-            </div>
+              </div>
           </div>
 
-        <div class="product-slide min-w-full md:min-w-[80%] lg:min-w-[50%] p-3">
-          <div class="card rounded-xl p-6 h-full flex flex-col">
-            <div class="mb-6 relative aspect-video overflow-hidden rounded-lg video-container">
+        <div class="product-slide min-w-full md:min-w-[45%] lg:min-w-[30%] xl:min-w-[23%] p-3">
+          <div class="card rounded-xl p-6 h-full flex flex-col" data-link="type.html"> <div class="mb-6 relative aspect-video overflow-hidden rounded-lg video-container">
               <iframe
                 src="https://www.youtube.com/embed/L_LUpnjgPso?autoplay=1&mute=1&loop=1&playlist=L_LUpnjgPso&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1"
-                title="Chim Type Video"
-                frameborder="0"
+                title="Chim Type Video" frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allowfullscreen>
-              </iframe>
+                referrerpolicy="strict-origin-when-cross-origin" allowfullscreen muted allow="autoplay"
+              ></iframe>
             </div>
             <div class="mb-4 bg-gray-800/70 w-14 h-14 rounded-lg flex items-center justify-center">
               <i class="fa-solid fa-keyboard card-icon text-2xl text-gray-300"></i>
             </div>
             <h2 class="card-title text-2xl font-bold text-white mb-3">Chim Type</h2>
             <p class="text-gray-400 mb-4 flex-grow">Build muscle memory to help you type faster with adaptive training algorithms.</p>
-             <a href="type.html" class="flex items-center text-gray-300 hover:text-white text-sm font-medium footer-link">
-              <span>open</span>
-              <i class="fa-solid fa-arrow-right ml-2"></i>
-            </a>
-          </div>
+            </div>
         </div>
 
-        <div class="product-slide min-w-full md:min-w-[80%] lg:min-w-[50%] p-3">
-          <div class="card rounded-xl p-6 h-full flex flex-col">
-             <div class="mb-6 relative aspect-video overflow-hidden rounded-lg video-container">
+        <div class="product-slide min-w-full md:min-w-[45%] lg:min-w-[30%] xl:min-w-[23%] p-3">
+          <div class="card rounded-xl p-6 h-full flex flex-col" data-link="maze.html"> <div class="mb-6 relative aspect-video overflow-hidden rounded-lg video-container">
               <iframe
                 src="https://www.youtube.com/embed/QH2-TGUlwu4?autoplay=1&mute=1&loop=1&playlist=QH2-TGUlwu4&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1"
-                title="Chim Maze Video"
-                frameborder="0"
+                title="Chim Maze Video" frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allowfullscreen>
-              </iframe>
+                referrerpolicy="strict-origin-when-cross-origin" allowfullscreen muted allow="autoplay"
+              ></iframe>
             </div>
             <div class="mb-4 bg-gray-800/70 w-14 h-14 rounded-lg flex items-center justify-center">
               <i class="fa-solid fa-cube card-icon text-2xl text-gray-300"></i>
             </div>
             <h2 class="card-title text-2xl font-bold text-white mb-3">Chim Maze</h2>
             <p class="text-gray-400 mb-4 flex-grow">Build muscle memory with subjects through immersive learning environments.</p>
-             <a href="maze.html" class="flex items-center text-gray-300 hover:text-white text-sm font-medium footer-link">
-              <span>open</span>
-              <i class="fa-solid fa-arrow-right ml-2"></i>
-            </a>
-          </div>
+             </div>
         </div>
 
-        <div class="product-slide min-w-full md:min-w-[80%] lg:min-w-[50%] p-3">
-          <div class="card rounded-xl p-6 h-full flex flex-col">
-             <div class="mb-6 relative aspect-video overflow-hidden rounded-lg video-container">
+        <div class="product-slide min-w-full md:min-w-[45%] lg:min-w-[30%] xl:min-w-[23%] p-3">
+          <div class="card rounded-xl p-6 h-full flex flex-col" data-link="clinic.html"> <div class="mb-6 relative aspect-video overflow-hidden rounded-lg video-container">
               <iframe
                 src="https://www.youtube.com/embed/3JZ_D3ELwOQ?autoplay=1&mute=1&loop=1&playlist=3JZ_D3ELwOQ&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1"
-                title="Chim Clinic Video"
-                frameborder="0"
+                title="Chim Clinic Video" frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allowfullscreen>
-              </iframe>
+                referrerpolicy="strict-origin-when-cross-origin" allowfullscreen muted allow="autoplay"
+              ></iframe>
             </div>
             <div class="mb-4 bg-gray-800/70 w-14 h-14 rounded-lg flex items-center justify-center">
               <i class="fa-solid fa-laptop-medical card-icon text-2xl text-gray-300"></i>
             </div>
             <h2 class="card-title text-2xl font-bold text-white mb-3">Chim Clinic</h2>
             <p class="text-gray-400 mb-4 flex-grow">Meet expert developers to heal or invest in your projects with advanced diagnostics.</p>
-             <a href="clinic.html" class="flex items-center text-gray-300 hover:text-white text-sm font-medium footer-link">
-              <span>open</span>
-              <i class="fa-solid fa-arrow-right ml-2"></i>
-            </a>
-          </div>
+             </div>
         </div>
 
-        <div class="product-slide min-w-full md:min-w-[80%] lg:min-w-[50%] p-3">
-          <div class="card rounded-xl p-6 h-full flex flex-col">
-             <div class="mb-6 relative aspect-video overflow-hidden rounded-lg video-container">
+        <div class="product-slide min-w-full md:min-w-[45%] lg:min-w-[30%] xl:min-w-[23%] p-3">
+          <div class="card rounded-xl p-6 h-full flex flex-col" data-link="prompts.html"> <div class="mb-6 relative aspect-video overflow-hidden rounded-lg video-container">
               <iframe
                 src="https://www.youtube.com/embed/6avJHaC3C2U?autoplay=1&mute=1&loop=1&playlist=6avJHaC3C2U&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1"
-                title="Chim Prompts Video"
-                frameborder="0"
+                title="Chim Prompts Video" frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allowfullscreen>
-              </iframe>
+                referrerpolicy="strict-origin-when-cross-origin" allowfullscreen muted allow="autoplay"
+              ></iframe>
             </div>
             <div class="mb-4 bg-gray-800/70 w-14 h-14 rounded-lg flex items-center justify-center">
               <i class="fa-solid fa-terminal card-icon text-2xl text-gray-300"></i>
             </div>
             <h2 class="card-title text-2xl font-bold text-white mb-3">Chim Prompts</h2>
             <p class="text-gray-400 mb-4 flex-grow">Reference prompt engineering formats with AI-powered optimization tools.</p>
-             <a href="prompts.html" class="flex items-center text-gray-300 hover:text-white text-sm font-medium footer-link">
-              <span>open</span>
-              <i class="fa-solid fa-arrow-right ml-2"></i>
-            </a>
-          </div>
+             </div>
         </div>
 
-        <div class="product-slide min-w-full md:min-w-[80%] lg:min-w-[50%] p-3">
-          <div class="card rounded-xl p-6 h-full flex flex-col">
-            <div class="mb-6 relative aspect-video overflow-hidden rounded-lg video-container">
+        <div class="product-slide min-w-full md:min-w-[45%] lg:min-w-[30%] xl:min-w-[23%] p-3">
+          <div class="card rounded-xl p-6 h-full flex flex-col" data-link="teams.html"> <div class="mb-6 relative aspect-video overflow-hidden rounded-lg video-container">
               <iframe
                 src="https://www.youtube.com/embed/uHKfrz65KSU?autoplay=1&mute=1&loop=1&playlist=uHKfrz65KSU&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1"
-                title="Chim Team Video"
-                frameborder="0"
+                title="Chim Team Video" frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allowfullscreen>
-              </iframe>
+                referrerpolicy="strict-origin-when-cross-origin" allowfullscreen muted allow="autoplay"
+              ></iframe>
             </div>
             <div class="mb-4 bg-gray-800/70 w-14 h-14 rounded-lg flex items-center justify-center">
               <i class="fa-solid fa-users card-icon text-2xl text-gray-300"></i>
             </div>
             <h2 class="card-title text-2xl font-bold text-white mb-3">Chim Team</h2>
             <p class="text-gray-400 mb-4 flex-grow">Gamble risk-free to combat addiction with immersive team-based challenges.</p>
-             <a href="teams.html" class="flex items-center text-gray-300 hover:text-white text-sm font-medium footer-link">
-              <span>open</span>
-              <i class="fa-solid fa-arrow-right ml-2"></i>
-            </a>
-          </div>
+             </div>
         </div>
       </div>
 
@@ -474,6 +346,15 @@
         <button class="w-3 h-3 rounded-full bg-gray-600 hover:bg-gray-400 transition-colors" data-slide="5"></button>
       </div>
     </main>
+
+    <div class="w-full mb-16">
+      <div class="relative aspect-video rounded-2xl overflow-hidden border border-gray-800">
+         <img src="https://placehold.co/1280x720/0f172a/e5e7eb?text=May+Update+Visual" alt="Fromsupply May Update" class="w-full h-full object-cover" id="featured-image" onerror="this.onerror=null; this.src='https://placehold.co/1280x720/1f2937/FFFFFF?text=Image+Error';"/>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-8">
+          <h2 class="text-3xl font-bold">May 2025 Update</h2>
+        </div>
+      </div>
+    </div>
 
     <div class="w-full mb-16">
       <div class="relative aspect-video rounded-2xl overflow-hidden border border-gray-800">
@@ -497,7 +378,7 @@
   </div>
 
   <footer class="w-full bg-gray-900/80 backdrop-blur-md border-t border-gray-800 pt-12 pb-6">
-    <div class="max-w-6xl mx-auto px-4">
+    <div class="mx-auto px-6">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
         <div>
           <h3 class="text-xl font-bold text-white mb-4">
@@ -505,21 +386,12 @@
           </h3>
           <p class="text-gray-400 mb-6">Building the future of developer tools and experiences through innovative solutions.</p>
           <div class="flex space-x-4">
-            <a href="https://github.com/chimwopara/fromsupply" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 social-icon">
-              <i class="fab fa-github"></i>
-            </a>
-            <a href="https://instagram.com/fromsupply" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 social-icon">
-              <i class="fab fa-instagram"></i>
-            </a>
-            <a href="#" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 social-icon">
-              <i class="fab fa-linkedin"></i>
-            </a>
+            <a href="https://github.com/chimwopara/fromsupply" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 social-icon"><i class="fab fa-github"></i></a>
+            <a href="https://instagram.com/fromsupply" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 social-icon"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 social-icon"><i class="fab fa-linkedin"></i></a>
           </div>
-          <div class="mt-6 text-gray-500 text-sm">
-            © 2025 Fromsupply. All rights reserved.
-          </div>
+          <div class="mt-6 text-gray-500 text-sm">© 2025 Fromsupply. All rights reserved.</div>
         </div>
-
         <div>
           <h3 class="text-white font-semibold mb-4">Products</h3>
           <ul class="space-y-2">
@@ -531,56 +403,38 @@
             <li><a href="teams.html" class="text-gray-400 footer-link">Chim Team</a></li>
           </ul>
         </div>
-
         <div>
           <h3 class="text-white font-semibold mb-4">Resources</h3>
           <ul class="space-y-2">
             <li><a href="https://github.com/chimwopara/fromsupply/blob/main/SECURITY.md" target="_blank" rel="noopener noreferrer" class="text-gray-400 footer-link">Documentation</a></li>
             <li><a href="https://www.youtube.com/playlist?list=PLaXy2djTTbXh0hlOvARCHAiGFo2n-EdyT&playnext=1&index=1" target="_blank" rel="noopener noreferrer" class="text-gray-400 footer-link">Tutorials</a></li>
             <li><a href="#" class="text-gray-400 footer-link">Community</a></li>
-            </ul>
+          </ul>
         </div>
-
         <div>
           <h3 class="text-white font-semibold mb-4">Contact</h3>
           <ul class="space-y-2">
-            <li class="flex items-center gap-2 text-gray-400">
-              <i class="fa-regular fa-envelope w-5"></i>
-              <a href="mailto:support@fromsupply.com" class="footer-link">support@fromsupply.com</a>
-            </li>
-            <li class="flex items-center gap-2 text-gray-400">
-              <i class="fa-solid fa-location-dot w-5"></i>
-              <span>Alberta, Canada</span>
-            </li>
+            <li class="flex items-center gap-2 text-gray-400"><i class="fa-regular fa-envelope w-5"></i><a href="mailto:support@fromsupply.com" class="footer-link">support@fromsupply.com</a></li>
+            <li class="flex items-center gap-2 text-gray-400"><i class="fa-solid fa-location-dot w-5"></i><span>Alberta, Canada</span></li>
           </ul>
-
           <div class="mt-6">
-            <h4 class="text-white font-semibold mb-3">Subscribe to our newsletter</h4>
+            <h4 class="text-white font-semibold mb-3">Subscribe</h4>
             <div class="flex">
               <input type="email" placeholder="Enter your email" class="bg-gray-800 border border-gray-700 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-1 focus:ring-white text-gray-200 w-full" />
-              <button type="button" class="bg-gray-300 hover:bg-white text-gray-900 px-4 rounded-r-lg transition-colors duration-300">
-                <i class="fa-solid fa-paper-plane"></i>
-              </button>
+              <button type="button" class="bg-gray-300 hover:bg-white text-gray-900 px-4 rounded-r-lg transition-colors duration-300"><i class="fa-solid fa-paper-plane"></i></button>
             </div>
           </div>
         </div>
       </div>
-
-      </div>
-  </footer>
-
-  <div class="control-buttons fixed bottom-8 left-1/2 transform -translate-x-1/2 z-40 flex gap-4">
-    <button class="bg-gray-900/80 hover:bg-gray-800 border border-gray-700 hover:border-gray-500 backdrop-blur-md px-6 py-2.5 rounded-full transition-all duration-300 flex items-center gap-2 text-gray-300 hover:text-white">
-      <i class="fa-solid fa-magnifying-glass"></i>
-      <span>find your topic</span>
-    </button>
     </div>
+  </footer>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const gridBackground = document.getElementById('grid-background');
       const blobs = document.querySelectorAll('.interactive-blob');
       const productSlider = document.querySelector('.product-slider');
+      const productSlides = document.querySelectorAll('.product-slide .card'); // Select cards for click events
       const sliderNavButtons = document.querySelectorAll('[data-slide]');
       const starButton = document.getElementById('star-button');
       const starDropdown = document.getElementById('star-dropdown');
@@ -616,22 +470,56 @@
         setTimeout(() => particle.remove(), 3000);
       }
 
-      // --- Product Slider ---
+      // --- Product Slider (Smooth Continuous Scroll) ---
+      let smoothScrollRAF; // requestAnimationFrame ID
+      let isHoveringSlider = false;
+      let userInteractedSlider = false;
+      const scrollSpeed = 0.5; // Adjust scroll speed (pixels per frame)
+
+      function smoothAutoScroll() {
+          if (!productSlider || isHoveringSlider || userInteractedSlider) {
+              smoothScrollRAF = requestAnimationFrame(smoothAutoScroll); // Keep checking if paused
+              return;
+          }
+
+          const scrollWidth = productSlider.scrollWidth;
+          const clientWidth = productSlider.clientWidth;
+
+          // If scrolled to the end, instantly jump back to the beginning
+          if (productSlider.scrollLeft >= scrollWidth - clientWidth - 1) {
+              productSlider.scrollLeft = 0; // Jump to start for seamless loop
+          } else {
+              productSlider.scrollLeft += scrollSpeed; // Scroll continuously
+          }
+
+          updateActiveButtonOnScroll(); // Update dots during scroll
+          smoothScrollRAF = requestAnimationFrame(smoothAutoScroll); // Continue animation
+      }
+
+      function stopSmoothScroll() {
+          cancelAnimationFrame(smoothScrollRAF);
+      }
+
       if (productSlider && sliderNavButtons.length > 0) {
+          // Manual Navigation Click
           sliderNavButtons.forEach(button => {
             button.addEventListener('click', () => {
+              userInteractedSlider = true; // Stop auto-scroll on manual nav
+              stopSmoothScroll(); // Stop continuous scroll
               const slideIndex = button.getAttribute('data-slide');
               const slides = document.querySelectorAll('.product-slide');
               if (slides[slideIndex]) {
                 const sliderRect = productSlider.getBoundingClientRect();
                 const slideRect = slides[slideIndex].getBoundingClientRect();
+                // Calculate scroll position to center the target slide
                 const scrollLeft = productSlider.scrollLeft + slideRect.left - sliderRect.left - (sliderRect.width / 2) + (slideRect.width / 2);
-                productSlider.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+                productSlider.scrollTo({ left: scrollLeft, behavior: 'smooth' }); // Use smooth for manual nav
                 updateActiveButton(slideIndex);
               }
             });
           });
 
+          // Update dots based on active slide index
           function updateActiveButton(activeIndex) {
               sliderNavButtons.forEach((btn, index) => {
                   if (index == activeIndex) {
@@ -644,25 +532,63 @@
               });
           }
 
+          // Update dots on scroll (manual or auto) - Debounced
           let scrollTimeout;
-          productSlider.addEventListener('scroll', () => {
-              clearTimeout(scrollTimeout);
-              scrollTimeout = setTimeout(() => {
-                  const slides = document.querySelectorAll('.product-slide');
-                  const sliderRect = productSlider.getBoundingClientRect();
-                  const sliderCenter = sliderRect.left + sliderRect.width / 2;
-                  let closestSlideIndex = 0; let minDistance = Infinity;
-                  slides.forEach((slide, index) => {
-                      const slideRect = slide.getBoundingClientRect();
+          function updateActiveButtonOnScroll() {
+              if (!productSlider) return;
+              const slides = productSlider.querySelectorAll('.product-slide');
+              if (!slides || slides.length === 0) return;
+
+              const sliderRect = productSlider.getBoundingClientRect();
+              const sliderCenter = sliderRect.left + sliderRect.width / 2;
+              let closestSlideIndex = 0; let minDistance = Infinity;
+
+              slides.forEach((slide, index) => {
+                  const slideRect = slide.getBoundingClientRect();
+                  if (slideRect.width > 0) {
                       const slideCenter = slideRect.left + slideRect.width / 2;
                       const distance = Math.abs(sliderCenter - slideCenter);
                       if (distance < minDistance) { minDistance = distance; closestSlideIndex = index; }
-                  });
-                  updateActiveButton(closestSlideIndex);
-              }, 150);
+                  }
+              });
+              updateActiveButton(closestSlideIndex);
+          }
+
+          productSlider.addEventListener('scroll', () => {
+              clearTimeout(scrollTimeout);
+              scrollTimeout = setTimeout(updateActiveButtonOnScroll, 150); // Update slightly after scroll stops
           });
-          updateActiveButton(0); // Initialize
+
+          // --- Interaction Handling for Smooth Scroll ---
+          const stopInteraction = () => {
+              userInteractedSlider = true;
+              stopSmoothScroll();
+          };
+          productSlider.addEventListener('wheel', stopInteraction, { passive: true });
+          productSlider.addEventListener('touchstart', stopInteraction, { passive: true });
+          productSlider.addEventListener('mousedown', stopInteraction); // Also stop on mouse drag start
+
+          productSlider.addEventListener('mouseenter', () => { isHoveringSlider = true; });
+          productSlider.addEventListener('mouseleave', () => { isHoveringSlider = false; });
+
+          updateActiveButton(0); // Initialize dots
+          smoothScrollRAF = requestAnimationFrame(smoothAutoScroll); // Start smooth scroll
       }
+
+      // --- Clickable Product Cards ---
+      productSlides.forEach(card => {
+          card.addEventListener('click', (event) => {
+              // Prevent navigation if the click was inside the video container
+              if (event.target.closest('.video-container')) {
+                  return;
+              }
+              const link = card.getAttribute('data-link');
+              if (link) {
+                  window.location.href = link; // Navigate to the product page
+              }
+          });
+      });
+
 
       // --- Star Button Dropdown ---
       if (starButton && starDropdown) {
@@ -671,20 +597,34 @@
               starDropdown.classList.toggle('active');
           });
           document.addEventListener('click', (event) => {
-              // Close if click is outside the button and dropdown
               if (!starButton.contains(event.target) && !starDropdown.contains(event.target)) {
                   starDropdown.classList.remove('active');
               }
           });
-          // Add click listeners to dropdown items/buttons if needed
-          starDropdown.querySelectorAll('.dropdown-item-price').forEach(button => {
-            button.addEventListener('click', (event) => {
-                event.stopPropagation(); // Prevent dropdown from closing
-                console.log('Price button clicked:', button.textContent);
-                // Add purchase logic here
-                alert(`You clicked on ${button.textContent}`); // Example action
-                starDropdown.classList.remove('active'); // Optionally close dropdown after click
-            });
+
+          // Handle clicks on dropdown items and buttons
+          starDropdown.querySelectorAll('.dropdown-item').forEach(item => {
+              const priceButton = item.querySelector('.dropdown-item-price');
+              const action = priceButton ? priceButton.getAttribute('data-action') : null;
+              const link = item.getAttribute('data-link');
+
+              item.addEventListener('click', (event) => {
+                  event.stopPropagation(); // Prevent dropdown closing immediately
+                  if (event.target === priceButton && action) {
+                      // Price button clicked
+                      console.log('Action:', action);
+                      alert(`Action for ${action}`);
+                  } else if (link && link !== '#') {
+                      // Item area clicked (and has a valid link)
+                       console.log('Navigate:', link);
+                       window.location.href = link;
+                  } else if (action) {
+                       // Item area clicked, but no link, trigger button action
+                       console.log('Action:', action);
+                       alert(`Action for ${action}`);
+                  }
+                  starDropdown.classList.remove('active'); // Close dropdown after action/navigation
+              });
           });
       }
 
