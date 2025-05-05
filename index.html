@@ -22,6 +22,7 @@
         font-family: 'Space Grotesk', sans-serif;
         background-color: #030712; /* gray-950 */
         overflow-x: hidden; /* Prevent horizontal scroll */
+        /* REMOVED pt-20 to allow video to go to top */
       }
 
       /* --- Header/Nav Styling --- */
@@ -114,24 +115,13 @@
         line-height: 1.6; /* Improved readability */
       }
 
-      /* Video container for product cards AND background video */
-      .video-container {
+      /* Video container for product cards */
+      .card .video-container {
         position: relative;
         width: 100%; /* Full width */
         padding-top: 56.25%; /* 16:9 Aspect Ratio */
         overflow: hidden;
         background-color: #111827; /* Dark background while loading */
-        border-radius: inherit; /* Inherit border radius from parent (.card or #background-video-container) */
-      }
-      /* Specific radius for background video container */
-      #background-video-container {
-        border-radius: 1rem; /* Rounded corners for background video */
-        border: 1px solid rgba(55, 65, 81, 0.3); /* Subtle border */
-        max-height: 80vh; /* Limit height */
-        pointer-events: none; /* Prevent interaction with background video */
-      }
-      /* Specific radius for card video containers */
-      .card .video-container {
         border-top-left-radius: 0.75rem; /* Match card radius */
         border-top-right-radius: 0.75rem; /* Match card radius */
         border-bottom-left-radius: 0; /* No bottom radius */
@@ -139,8 +129,23 @@
         margin-bottom: 1rem; /* Space below video in cards */
       }
 
+      /* Background video container styling */
+      #background-video-container {
+        position: absolute; /* Position relative to parent */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh; /* Full viewport height */
+        overflow: hidden;
+        background-color: #030712; /* Match body background */
+        z-index: 0; /* Behind navbar */
+        pointer-events: none; /* Prevent interaction */
+        /* Removed border, border-radius, max-height */
+      }
+
       /* General iframe styling */
-      .video-container iframe {
+      .video-container iframe,
+      #background-video-container iframe {
           position: absolute;
           top: 0;
           left: 0;
@@ -148,6 +153,13 @@
           height: 100%;
           border: none; /* Remove iframe border */
       }
+
+      /* Specific iframe styling for background video */
+      #background-video-container iframe {
+        object-fit: cover; /* Cover the container, may crop */
+        pointer-events: none; /* Ensure no interaction */
+      }
+
       /* Interaction for card videos */
       .card .video-container iframe {
           pointer-events: none; /* Disable direct interaction initially */
@@ -159,7 +171,7 @@
           opacity: 1; /* Full opacity on hover */
       }
       /* Style for video error state (applied to container) */
-      .video-container.video-error {
+      .video-error { /* Applied to .video-container or #background-video-container */
         background-color: #111827; /* Dark background */
         /* Add a fallback background image */
         background-image: url('https://placehold.co/1280x720/111827/6B7280?text=Video+Unavailable');
@@ -167,7 +179,7 @@
         background-repeat: no-repeat;
         background-position: center;
       }
-      .video-container.video-error iframe {
+      .video-error iframe {
         display: none; /* Hide the iframe if there's an error */
       }
 
@@ -313,8 +325,7 @@
       }
     </style>
 </head>
-<body class="text-gray-100 min-h-screen flex flex-col justify-between pt-20">
-  <div id="grid-background" class="grid-background"></div>
+<body class="text-gray-100 min-h-screen flex flex-col justify-between"> <div id="grid-background" class="grid-background"></div>
 
   <div class="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-[-1]" id="blobs-container">
     <div class="interactive-blob absolute top-[5%] left-[10%] w-[40rem] h-[40rem] bg-purple-900/30"></div>
@@ -366,195 +377,197 @@
     </div>
   </nav>
 
-  <div class="w-full flex-grow flex flex-col items-center px-4 sm:px-6 py-6">
-
-    <div id="background-video-section" class="w-full max-w-7xl mb-16">
-      <div id="background-video-container" class="video-container">
-        <iframe
-          id="background-iframe"
-          src="https://www.youtube.com/embed/Lcjm-A8gkUA?controls=0&autoplay=1&mute=1&loop=1&playlist=Lcjm-A8gkUA"
-          title="Background Video"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;"
-          muted
-          allowfullscreen
-          referrerpolicy="strict-origin-when-cross-origin"
-          onload="this.style.opacity=1"
-          onerror="this.parentElement.classList.add('video-error')"
-          style="opacity:0; transition: opacity 0.5s;">
-        </iframe>
-      </div>
+  <div id="background-video-section" class="absolute top-0 left-0 right-0 h-screen w-full">
+    <div id="background-video-container" class=""> <iframe
+        id="background-iframe"
+        src="https://www.youtube.com/embed/Lcjm-A8gkUA?controls=0&autoplay=1&mute=1&loop=1&playlist=Lcjm-A8gkUA"
+        title="Background Video"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;"
+        muted
+        allowfullscreen
+        referrerpolicy="strict-origin-when-cross-origin"
+        onload="this.style.opacity=1"
+        onerror="this.parentElement.classList.add('video-error')"
+        style="opacity:0; transition: opacity 0.5s;">
+      </iframe>
     </div>
-  
-    <main id="product-showcase" class="w-full max-w-7xl mb-16">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-  
-        <div class="card" data-link="chimcode.html">
-          <div class="video-container">
-            <iframe
-              src="https://www.youtube.com/embed/QROdGVs_4pM?controls=0&autoplay=1&mute=1&loop=1&playlist=QROdGVs_4pM"
-              title="Chim Code Video"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;"
-              referrerpolicy="strict-origin-when-cross-origin"
-              allowfullscreen
-              muted
-              onerror="this.parentElement.classList.add('video-error')">
-            </iframe>
-          </div>
-          <div class="card-content">
-            <div class="card-icon-container">
-              <i class="fa-solid fa-code card-icon"></i>
-            </div>
-            <h2 class="card-title">Chim Code</h2>
-            <p class="card-description">
-              Build muscle memory to help you debug complex systems faster and with higher accuracy.
-            </p>
-          </div>
-        </div>
-
-        <div class="card" data-link="type.html">
-          <div class="video-container">
-             <iframe
-              src="https://www.youtube.com/embed/L_LUpnjgPso?autoplay=1&mute=1&loop=1&playlist=L_LUpnjgPso&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1"
-              title="Chim Type Video" frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;"
-              referrerpolicy="strict-origin-when-cross-origin"
-              allowfullscreen
-              muted
-              onerror="this.parentElement.classList.add('video-error')"
-            ></iframe>
-          </div>
-          <div class="card-content">
-            <div class="card-icon-container">
-              <i class="fa-solid fa-keyboard card-icon"></i>
-            </div>
-            <h2 class="card-title">Chim Type</h2>
-            <p class="card-description">Build muscle memory to help you type faster with adaptive training algorithms.</p>
-          </div>
-        </div>
-
-        <div class="card" data-link="maze.html">
-          <div class="video-container">
-             <iframe
-              src="https://www.youtube.com/embed/QH2-TGUlwu4?autoplay=1&mute=1&loop=1&playlist=QH2-TGUlwu4&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1"
-              title="Chim Maze Video" frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;"
-              referrerpolicy="strict-origin-when-cross-origin"
-              allowfullscreen
-              muted
-              onerror="this.parentElement.classList.add('video-error')"
-            ></iframe>
-          </div>
-          <div class="card-content">
-            <div class="card-icon-container">
-              <i class="fa-solid fa-cube card-icon"></i>
-            </div>
-            <h2 class="card-title">Chim Maze</h2>
-            <p class="card-description">Build muscle memory with subjects through immersive learning environments.</p>
-          </div>
-        </div>
-
-        <div class="card" data-link="clinic.html">
-          <div class="video-container">
-             <iframe
-              src="https://www.youtube.com/embed/3JZ_D3ELwOQ?autoplay=1&mute=1&loop=1&playlist=3JZ_D3ELwOQ&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1"
-              title="Chim Clinic Video" frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;"
-              referrerpolicy="strict-origin-when-cross-origin"
-              allowfullscreen
-              muted
-              onerror="this.parentElement.classList.add('video-error')"
-            ></iframe>
-          </div>
-          <div class="card-content">
-            <div class="card-icon-container">
-              <i class="fa-solid fa-laptop-medical card-icon"></i>
-            </div>
-            <h2 class="card-title">Chim Clinic</h2>
-            <p class="card-description">Meet expert developers to heal or invest in your projects with advanced diagnostics.</p>
-          </div>
-        </div>
-
-        <div class="card" data-link="prompts.html">
-          <div class="video-container">
-             <iframe
-              src="https://www.youtube.com/embed/6avJHaC3C2U?autoplay=1&mute=1&loop=1&playlist=6avJHaC3C2U&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1"
-              title="Chim Prompts Video" frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;"
-              referrerpolicy="strict-origin-when-cross-origin"
-              allowfullscreen
-              muted
-              onerror="this.parentElement.classList.add('video-error')"
-            ></iframe>
-          </div>
-          <div class="card-content">
-            <div class="card-icon-container">
-              <i class="fa-solid fa-terminal card-icon"></i>
-            </div>
-            <h2 class="card-title">Chim Prompts</h2>
-            <p class="card-description">Reference prompt engineering formats with AI-powered optimization tools.</p>
-          </div>
-        </div>
-
-        <div class="card" data-link="teams.html">
-          <div class="video-container">
-             <iframe
-              src="https://www.youtube.com/embed/uHKfrz65KSU?autoplay=1&mute=1&loop=1&playlist=uHKfrz65KSU&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1"
-              title="Chim Team Video" frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;"
-              referrerpolicy="strict-origin-when-cross-origin"
-              allowfullscreen
-              muted
-              onerror="this.parentElement.classList.add('video-error')"
-            ></iframe>
-          </div>
-          <div class="card-content">
-            <div class="card-icon-container">
-              <i class="fa-solid fa-users card-icon"></i>
-            </div>
-            <h2 class="card-title">Chim Team</h2>
-            <p class="card-description">Gamble risk-free to combat addiction with immersive team-based challenges.</p>
-          </div>
-        </div>
-      </div>
-    </main>
-
-    <div class="w-full max-w-7xl mb-16">
-      <div class="relative aspect-video rounded-2xl overflow-hidden border border-gray-800 shadow-lg">
-         <img src="https://placehold.co/1280x720/0f172a/e5e7eb?text=May+Update+Visual" alt="Fromsupply May Update" class="w-full h-full object-cover" id="featured-image" onerror="this.onerror=null; this.src='https://placehold.co/1280x720/1f2937/FFFFFF?text=Image+Load+Error';"/>
-        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex items-end p-6 md:p-8">
-          <h2 class="text-2xl md:text-3xl font-bold text-white glow-text">May 2025 Update</h2>
-        </div>
-      </div>
-    </div>
-
-    <div class="w-full max-w-7xl mb-16">
-      <div class="relative aspect-video rounded-2xl overflow-hidden border border-gray-800 shadow-lg">
-        <img src="https://placehold.co/1280x720/0f172a/f472b6?text=Community+Visual" alt="Fromsupply Community" class="w-full h-full object-cover" id="featured-image-2" onerror="this.onerror=null; this.src='https://placehold.co/1280x720/1f2937/FFFFFF?text=Image+Load+Error';"/>
-        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex items-end p-6 md:p-8">
-          <h2 class="text-2xl md:text-3xl font-bold text-white glow-text">Who are we?</h2>
-        </div>
-      </div>
-    </div>
-
-    <section class="w-full max-w-7xl mb-16">
-      <div class="bg-gradient-to-br from-gray-900 to-slate-900 p-8 md:p-12 rounded-2xl relative overflow-hidden border border-gray-700/50 shadow-xl">
-        <div class="z-10 relative">
-          <h3 class="text-2xl md:text-3xl font-bold mb-3 text-white">Become limitless!</h3>
-          <p class="text-gray-400 mb-6 max-w-lg">Become a member to get full access to all paid features, exclusive content, and future products.</p>
-          <a href="#" class="inline-block bg-white hover:bg-gray-200 text-gray-900 font-medium px-8 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg">
-            Only $5.99 monthly
-          </a>
-        </div>
-         <div class="absolute top-0 right-0 -mt-16 -mr-16 w-64 h-64 bg-purple-600/10 rounded-full blur-3xl opacity-50"></div>
-         <div class="absolute bottom-0 left-0 -mb-24 -ml-24 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl opacity-40"></div>
-      </div>
-    </section>
   </div>
 
-  <footer class="w-full bg-gray-900/80 backdrop-blur-md border-t border-gray-800 pt-12 pb-6">
-    <div class="mx-auto px-6 max-w-7xl">
+  <div class="w-full flex-grow flex flex-col items-center px-4 sm:px-6 py-6 relative z-10 pt-[100vh]"> <main id="product-showcase" class="w-full max-w-7xl mb-16">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="card" data-link="chimcode.html">
+            <div class="video-container"> <iframe
+                src="https://www.youtube.com/embed/QROdGVs_4pM?controls=0&autoplay=1&mute=1&loop=1&playlist=QROdGVs_4pM"
+                title="Chim Code Video"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+                muted
+                onerror="this.parentElement.classList.add('video-error')">
+              </iframe>
+            </div>
+            <div class="card-content">
+              <div class="card-icon-container">
+                <i class="fa-solid fa-code card-icon"></i>
+              </div>
+              <h2 class="card-title">Chim Code</h2>
+              <p class="card-description">
+                Build muscle memory to help you debug complex systems faster and with higher accuracy.
+              </p>
+            </div>
+          </div>
+
+          <div class="card" data-link="type.html">
+            <div class="video-container"> <iframe
+                src="https://www.youtube.com/embed/L_LUpnjgPso?controls=0&autoplay=1&mute=1&loop=1&playlist=L_LUpnjgPso"
+                title="Chim Type Video"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+                muted
+                onerror="this.parentElement.classList.add('video-error')">
+              </iframe>
+            </div>
+            <div class="card-content">
+              <div class="card-icon-container">
+                <i class="fa-solid fa-keyboard card-icon"></i>
+              </div>
+              <h2 class="card-title">Chim Type</h2>
+              <p class="card-description">
+                Build muscle memory to help you type faster with adaptive training algorithms.
+              </p>
+            </div>
+          </div>
+
+          <div class="card" data-link="maze.html">
+            <div class="video-container"> <iframe
+                src="https://www.youtube.com/embed/QH2-TGUlwu4?controls=0&autoplay=1&mute=1&loop=1&playlist=QH2-TGUlwu4"
+                title="Chim Maze Video"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+                muted
+                onerror="this.parentElement.classList.add('video-error')">
+              </iframe>
+            </div>
+            <div class="card-content">
+              <div class="card-icon-container">
+                <i class="fa-solid fa-cube card-icon"></i>
+              </div>
+              <h2 class="card-title">Chim Maze</h2>
+              <p class="card-description">
+                Build muscle memory with subjects through immersive learning environments.
+              </p>
+            </div>
+          </div>
+
+          <div class="card" data-link="clinic.html">
+            <div class="video-container"> <iframe
+                src="https://www.youtube.com/embed/3JZ_D3ELwOQ?controls=0&autoplay=1&mute=1&loop=1&playlist=3JZ_D3ELwOQ"
+                title="Chim Clinic Video"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+                muted
+                onerror="this.parentElement.classList.add('video-error')">
+              </iframe>
+            </div>
+            <div class="card-content">
+              <div class="card-icon-container">
+                <i class="fa-solid fa-laptop-medical card-icon"></i>
+              </div>
+              <h2 class="card-title">Chim Clinic</h2>
+              <p class="card-description">
+                Meet expert developers to heal or invest in your projects with advanced diagnostics.
+              </p>
+            </div>
+          </div>
+
+          <div class="card" data-link="prompts.html">
+            <div class="video-container"> <iframe
+                src="https://www.youtube.com/embed/6avJHaC3C2U?controls=0&autoplay=1&mute=1&loop=1&playlist=6avJHaC3C2U"
+                title="Chim Prompts Video"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+                muted
+                onerror="this.parentElement.classList.add('video-error')">
+              </iframe>
+            </div>
+            <div class="card-content">
+              <div class="card-icon-container">
+                <i class="fa-solid fa-terminal card-icon"></i>
+              </div>
+              <h2 class="card-title">Chim Prompts</h2>
+              <p class="card-description">
+                Reference prompt engineering formats with AI-powered optimization tools.
+              </p>
+            </div>
+          </div>
+
+          <div class="card" data-link="teams.html">
+            <div class="video-container"> <iframe
+                src="https://www.youtube.com/embed/uHKfrz65KSU?controls=0&autoplay=1&mute=1&loop=1&playlist=uHKfrz65KSU"
+                title="Chim Team Video"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+                muted
+                onerror="this.parentElement.classList.add('video-error')">
+              </iframe>
+            </div>
+            <div class="card-content">
+              <div class="card-icon-container">
+                <i class="fa-solid fa-users card-icon"></i>
+              </div>
+              <h2 class="card-title">Chim Team</h2>
+              <p class="card-description">
+                Gamble risk-free to combat addiction with immersive team-based challenges.
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <div class="w-full max-w-7xl mb-16">
+        <div class="relative aspect-video rounded-2xl overflow-hidden border border-gray-800 shadow-lg">
+           <img src="https://placehold.co/1280x720/0f172a/e5e7eb?text=May+Update+Visual" alt="Fromsupply May Update" class="w-full h-full object-cover" id="featured-image" onerror="this.onerror=null; this.src='https://placehold.co/1280x720/1f2937/FFFFFF?text=Image+Load+Error';"/>
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex items-end p-6 md:p-8">
+            <h2 class="text-2xl md:text-3xl font-bold text-white glow-text">May 2025 Update</h2>
+          </div>
+        </div>
+      </div>
+
+      <div class="w-full max-w-7xl mb-16">
+        <div class="relative aspect-video rounded-2xl overflow-hidden border border-gray-800 shadow-lg">
+          <img src="https://placehold.co/1280x720/0f172a/f472b6?text=Community+Visual" alt="Fromsupply Community" class="w-full h-full object-cover" id="featured-image-2" onerror="this.onerror=null; this.src='https://placehold.co/1280x720/1f2937/FFFFFF?text=Image+Load+Error';"/>
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex items-end p-6 md:p-8">
+            <h2 class="text-2xl md:text-3xl font-bold text-white glow-text">Who are we?</h2>
+          </div>
+        </div>
+      </div>
+
+      <section class="w-full max-w-7xl mb-16">
+        <div class="bg-gradient-to-br from-gray-900 to-slate-900 p-8 md:p-12 rounded-2xl relative overflow-hidden border border-gray-700/50 shadow-xl">
+          <div class="z-10 relative">
+            <h3 class="text-2xl md:text-3xl font-bold mb-3 text-white">Become limitless!</h3>
+            <p class="text-gray-400 mb-6 max-w-lg">Become a member to get full access to all paid features, exclusive content, and future products.</p>
+            <a href="#" class="inline-block bg-white hover:bg-gray-200 text-gray-900 font-medium px-8 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg">
+              Only $5.99 monthly
+            </a>
+          </div>
+           <div class="absolute top-0 right-0 -mt-16 -mr-16 w-64 h-64 bg-purple-600/10 rounded-full blur-3xl opacity-50"></div>
+           <div class="absolute bottom-0 left-0 -mb-24 -ml-24 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl opacity-40"></div>
+        </div>
+      </section>
+  </div> <footer class="w-full bg-gray-900/80 backdrop-blur-md border-t border-gray-800 pt-12 pb-6 relative z-10"> <div class="mx-auto px-6 max-w-7xl">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
         <div>
           <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
@@ -610,13 +623,14 @@
   </footer>
 
   <script>
-    // --- General Page Logic (No YouTube API specific code needed anymore) ---
+    // --- General Page Logic ---
     document.addEventListener('DOMContentLoaded', () => {
       const gridBackground = document.getElementById('grid-background');
       const blobsContainer = document.getElementById('blobs-container');
       const productCards = document.querySelectorAll('#product-showcase .card');
       const starButton = document.getElementById('star-button');
       const starDropdown = document.getElementById('star-dropdown');
+      const backgroundVideoContainer = document.getElementById('background-video-container'); // Get the background video container
 
       // --- Interactive Background Grid and Blobs ---
       let mouseX = window.innerWidth / 2;
@@ -804,9 +818,19 @@
           img.onerror = null; // IMPORTANT: Prevent infinite loop if the placeholder itself fails
       }
 
-      // --- Iframe Error Handling (Basic) ---
+      // --- Iframe Error Handling ---
       // Add error class to parent container if iframe fails to load
-      // This is done via the `onerror` attribute directly on the iframe elements now.
+      // This is handled via the `onerror` attribute directly on the iframe elements.
+      // We add a specific check for the background video container
+      const backgroundIframe = document.getElementById('background-iframe');
+      if (backgroundIframe && backgroundVideoContainer) {
+          backgroundIframe.onerror = function() {
+              console.error("Background video iframe failed to load.");
+              if (backgroundVideoContainer) {
+                  backgroundVideoContainer.classList.add('video-error');
+              }
+          };
+      }
 
     });
   </script>
