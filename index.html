@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
     <title>Fromsupply</title>
+    <link rel="icon" href="logo.jpg" type="image/jpeg" onerror="this.onerror=null; this.href='https://placehold.co/32x32/030712/FFFFFF?text=FS';">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -16,10 +17,11 @@
       referrerpolicy="no-referrer"
     />
     <style>
+      /* Base body styling */
       body {
         font-family: 'Space Grotesk', sans-serif;
         background-color: #030712; /* gray-950 */
-        overflow-x: hidden;
+        overflow-x: hidden; /* Prevent horizontal scroll */
       }
 
       /* --- Header/Nav Styling --- */
@@ -34,6 +36,7 @@
         background: radial-gradient(circle at center, rgba(209, 213, 219, 0.1) 0%, rgba(209, 213, 219, 0.05) 25%, transparent 50%);
       }
 
+      /* Animated Grid Background */
       .grid-background {
         background-image:
           linear-gradient(rgba(209, 213, 219, 0.07) 1px, transparent 1px),
@@ -41,66 +44,173 @@
         background-size: 40px 40px;
         position: fixed; width: 100%; height: 100%;
         top: 0; left: 0; z-index: -1;
-        transition: all 0.3s ease;
+        transition: background-position 0.3s ease-out; /* Smooth transition for mouse move */
       }
 
+      /* Product Card Styling */
       .card {
         backdrop-filter: blur(12px);
         background: linear-gradient(145deg, rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.9));
         border: 1px solid rgba(71, 85, 105, 0.2);
-        transition: all 0.4s ease;
-        cursor: pointer; /* Add pointer cursor to indicate clickability */
+        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smoother transition */
+        cursor: pointer; /* Indicate clickability */
+        display: flex; /* Flex layout */
+        flex-direction: column; /* Stack content */
+        height: 100%; /* Fill grid cell */
+        border-radius: 0.75rem; /* Rounded corners */
+        overflow: hidden; /* Ensure content respects border radius */
       }
       .card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 0 20px 2px rgba(255, 255, 255, 0.15);
+        transform: translateY(-8px) scale(1.02); /* Subtle lift and scale */
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 20px 40px -15px rgba(255, 255, 255, 0.1); /* Enhanced shadow */
         border-color: rgba(255, 255, 255, 0.3);
       }
       .card:hover .card-icon,
-      .card:hover .card-title { color: #ffffff; }
+      .card:hover .card-title { color: #ffffff; } /* White text on hover */
 
+      /* Card Content Padding */
+      .card-content {
+        padding: 1.5rem; /* Standard padding within the card */
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1; /* Allow content to grow */
+      }
+
+      /* Icon container */
+      .card-icon-container {
+        margin-bottom: 1rem; /* Space below icon */
+        background-color: rgba(55, 65, 81, 0.7); /* Slightly transparent background */
+        width: 3.5rem; /* 56px */
+        height: 3.5rem; /* 56px */
+        border-radius: 0.5rem; /* Rounded */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.3s ease;
+      }
+      .card:hover .card-icon-container {
+        background-color: rgba(75, 85, 99, 0.9); /* Darker on hover */
+      }
+      .card-icon {
+        font-size: 1.5rem; /* 24px */
+        color: #D1D5DB; /* gray-300 */
+        transition: color 0.3s ease;
+      }
+
+      /* Card Title */
+      .card-title {
+        font-size: 1.5rem; /* 24px */
+        font-weight: 700; /* Bold */
+        color: #F9FAFB; /* gray-50 */
+        margin-bottom: 0.75rem; /* Space below title */
+        transition: color 0.3s ease;
+      }
+
+      /* Card Description */
+      .card-description {
+        color: #9CA3AF; /* gray-400 */
+        margin-bottom: 1rem; /* Space below description */
+        flex-grow: 1; /* Take remaining space */
+        line-height: 1.6; /* Improved readability */
+      }
+
+      /* Video container for product cards AND background video */
+      .video-container {
+        position: relative;
+        width: 100%; /* Full width */
+        padding-top: 56.25%; /* 16:9 Aspect Ratio */
+        overflow: hidden;
+        background-color: #111827; /* Dark background while loading */
+        border-radius: inherit; /* Inherit border radius from parent (.card or #background-video-container) */
+      }
+      /* Specific radius for background video container */
+      #background-video-container {
+        border-radius: 1rem; /* Rounded corners for background video */
+        border: 1px solid rgba(55, 65, 81, 0.3); /* Subtle border */
+        max-height: 80vh; /* Limit height */
+        pointer-events: none; /* Prevent interaction with background video */
+      }
+      /* Specific radius for card video containers */
+      .card .video-container {
+        border-top-left-radius: 0.75rem; /* Match card radius */
+        border-top-right-radius: 0.75rem; /* Match card radius */
+        border-bottom-left-radius: 0; /* No bottom radius */
+        border-bottom-right-radius: 0; /* No bottom radius */
+        margin-bottom: 1rem; /* Space below video in cards */
+      }
+
+      /* General iframe styling */
+      .video-container iframe {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          border: none; /* Remove iframe border */
+      }
+      /* Interaction for card videos */
+      .card .video-container iframe {
+          pointer-events: none; /* Disable direct interaction initially */
+          transition: opacity 0.3s ease; /* Fade in effect */
+          opacity: 0.8; /* Slightly faded initially */
+      }
+      .card:hover .video-container iframe {
+          pointer-events: auto; /* Allow interaction on card hover */
+          opacity: 1; /* Full opacity on hover */
+      }
+      /* Style for video error state (applied to container) */
+      .video-container.video-error {
+        background-color: #111827; /* Dark background */
+        /* Add a fallback background image */
+        background-image: url('https://placehold.co/1280x720/111827/6B7280?text=Video+Unavailable');
+        background-size: contain; /* Show the whole text */
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+      .video-container.video-error iframe {
+        display: none; /* Hide the iframe if there's an error */
+      }
+
+
+      /* General Text & Links */
       .glow-text {
         color: #ffffff;
         text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
       }
-
       .footer-link { transition: color 0.2s ease; }
       .footer-link:hover { color: #ffffff; }
-
       .social-icon { transition: all 0.3s ease; }
-      .social-icon:hover { background-color: #ffffff; color: #030712; }
+      .social-icon:hover { background-color: #ffffff; color: #030712; transform: scale(1.1); }
 
-      /* --- Product Slider --- */
-      .product-slider {
-        scroll-snap-type: x mandatory;
-        /* scroll-behavior: smooth; */ /* Removed for smoother JS scroll */
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-      }
-      .product-slider::-webkit-scrollbar { display: none; }
-      .product-slide {
-        scroll-snap-align: center;
-        flex-shrink: 0;
-      }
-
+      /* Interactive Blobs */
       .interactive-blob {
         filter: blur(100px);
-        opacity: 0.3;
+        opacity: 0.2; /* Reduced opacity */
         mix-blend-mode: screen;
-        transition: all 0.2s ease;
+        transition: transform 0.5s ease-out; /* Smoother blob movement */
+        position: absolute; /* Needed for positioning */
+        border-radius: 50%; /* Ensure they are circular */
+        pointer-events: none; /* Prevent interaction */
       }
 
        /* --- Star Button (Now in Nav) --- */
        .star-button-container { position: relative; z-index: 50; }
        .star-button {
-        position: relative; background-color: rgba(17, 24, 39, 0.5);
-        backdrop-filter: blur(8px); border: 1px solid rgba(55, 65, 81, 0.4);
+        position: relative; background-color: rgba(17, 24, 39, 0.5); /* gray-900/50 */
+        backdrop-filter: blur(8px); border: 1px solid rgba(55, 65, 81, 0.4); /* gray-700/40 */
         transition: all 0.3s ease; overflow: hidden;
+        padding: 0.5rem 1rem; /* Tailwind px-4 py-2 */
+        border-radius: 9999px; /* rounded-full */
+        display: flex; align-items: center; gap: 0.5rem; /* gap-2 */
+        font-size: 0.875rem; /* text-sm */
+        color: #D1D5DB; /* gray-300 */
       }
       .star-button:hover {
         border-color: rgba(255, 255, 255, 0.5);
-        background-color: rgba(17, 24, 39, 0.7);
+        background-color: rgba(17, 24, 39, 0.7); /* gray-900/70 */
+        color: #ffffff; /* text-white */
       }
+      /* Animated border effect */
       .star-button::before {
         content: ''; position: absolute; top: 0; left: 0;
         width: 200%; height: 200%;
@@ -108,6 +218,7 @@
         animation: rotate 4s linear infinite;
         transform-origin: center center; z-index: -1; opacity: 0;
         transition: opacity 0.3s ease;
+        transform: translate(-25%, -25%); /* Center the rotation point */
       }
       .star-button:hover::before { opacity: 1; }
 
@@ -119,83 +230,108 @@
       /* --- Dropdown Menu --- */
       .star-dropdown {
         position: absolute; top: calc(100% + 0.5rem); right: 0;
-        background-color: rgba(31, 41, 55, 0.85); backdrop-filter: blur(12px);
-        border: 1px solid rgba(75, 85, 99, 0.5); border-radius: 0.75rem;
-        padding: 0.75rem; width: 300px; z-index: 60;
-        opacity: 0; visibility: hidden; transform: translateY(-10px);
+        background-color: rgba(31, 41, 55, 0.9); /* gray-800/90 */
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(75, 85, 99, 0.5); /* gray-600/50 */
+        border-radius: 0.75rem; /* rounded-xl */
+        padding: 0.75rem; /* p-3 */
+        width: 320px; /* Increased width slightly */
+        z-index: 60;
+        opacity: 0; visibility: hidden; transform: translateY(-10px) scale(0.98); /* Add scale */
         transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
-        display: flex; flex-direction: column; gap: 0.75rem;
+        display: flex; flex-direction: column; gap: 0.75rem; /* gap-3 */
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
       }
-      .star-dropdown.active { opacity: 1; visibility: visible; transform: translateY(0); }
+      .star-dropdown.active { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
 
       .dropdown-item {
-        display: flex; align-items: center; padding: 0.75rem;
-        background-color: rgba(55, 65, 81, 0.3); border-radius: 0.5rem;
-        transition: background-color 0.2s ease; cursor: pointer;
+        display: flex; align-items: center; padding: 0.75rem; /* p-3 */
+        background-color: rgba(55, 65, 81, 0.4); /* gray-700/40 */
+        border-radius: 0.5rem; /* rounded-lg */
+        transition: background-color 0.2s ease, transform 0.15s ease;
+        cursor: pointer;
+        border: 1px solid transparent; /* Placeholder for hover border */
       }
-      .dropdown-item:hover { background-color: rgba(75, 85, 99, 0.5); }
+      .dropdown-item:hover {
+        background-color: rgba(75, 85, 99, 0.6); /* gray-600/60 */
+        transform: translateX(4px); /* Slight shift on hover */
+        border-color: rgba(107, 114, 128, 0.5); /* gray-500/50 */
+      }
       .dropdown-item-icon {
-        width: 40px; height: 40px; border-radius: 0.375rem;
-        margin-right: 0.75rem; object-fit: cover; flex-shrink: 0;
+        width: 40px; height: 40px; border-radius: 0.375rem; /* rounded-md */
+        margin-right: 0.75rem; /* mr-3 */
+        object-fit: cover; flex-shrink: 0;
+        border: 1px solid rgba(75, 85, 99, 0.5); /* Subtle border */
       }
-      .dropdown-item-content { flex-grow: 1; margin-right: 0.5rem; }
+      .dropdown-item-content { flex-grow: 1; margin-right: 0.5rem; /* mr-2 */ }
       .dropdown-item-title {
-        color: #F3F4F6; font-weight: 500; font-size: 0.875rem; line-height: 1.2;
+        color: #F3F4F6; /* gray-100 */
+        font-weight: 500; /* medium */
+        font-size: 0.875rem; /* text-sm */
+        line-height: 1.2;
+        margin-bottom: 2px; /* Small space */
       }
       .dropdown-item-desc {
-        color: #9CA3AF; font-size: 0.75rem; line-height: 1.3;
+        color: #9CA3AF; /* gray-400 */
+        font-size: 0.75rem; /* text-xs */
+        line-height: 1.3;
       }
       .dropdown-item-price {
-        background-color: #4B5563; color: #ffffff; font-size: 0.75rem;
-        font-weight: 600; padding: 0.25rem 0.6rem; border-radius: 9999px;
-        transition: background-color 0.2s ease;
+        background-color: #4B5563; /* gray-600 */
+        color: #ffffff; font-size: 0.75rem; /* text-xs */
+        font-weight: 600; /* semibold */
+        padding: 0.25rem 0.6rem; /* py-1 px-2.5 */
+        border-radius: 9999px; /* rounded-full */
+        transition: background-color 0.2s ease, transform 0.15s ease;
         white-space: nowrap; border: none; cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       }
-      .dropdown-item:hover .dropdown-item-price { background-color: #374151; }
+      .dropdown-item:hover .dropdown-item-price {
+        background-color: #374151; /* gray-700 */
+        transform: scale(1.05); /* Slightly larger on hover */
+      }
 
       /* Particle animation */
       .particle {
         position: absolute; border-radius: 50%;
-        pointer-events: none; z-index: -1; opacity: 0;
+        pointer-events: none; z-index: 10; /* Ensure particles are above background but below content */
+        opacity: 0;
         animation: particleFade 3s ease-out forwards;
       }
       @keyframes particleFade {
-        0% { opacity: 0.7; transform: translate(0, 0); }
-        100% { opacity: 0; transform: translate(var(--tx), var(--ty)); }
+        0% { opacity: 0.7; transform: translate(0, 0) scale(1); }
+        100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.5); } /* Fade out and shrink */
       }
 
-      .video-container iframe {
-          position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-          pointer-events: none; /* Disable direct interaction with iframe initially */
-      }
-      .card:hover .video-container iframe {
-          pointer-events: auto; /* Allow interaction on card hover */
-      }
-
+      /* Utility to hide scrollbars */
       .hide-scrollbar {
-        -ms-overflow-style: none; scrollbar-width: none;
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
       }
-      .hide-scrollbar::-webkit-scrollbar { display: none; }
+      .hide-scrollbar::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+      }
     </style>
 </head>
 <body class="text-gray-100 min-h-screen flex flex-col justify-between pt-20">
   <div id="grid-background" class="grid-background"></div>
 
   <div class="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-[-1]" id="blobs-container">
-    <div class="interactive-blob absolute top-[5%] left-[10%] w-[40rem] h-[40rem] rounded-full bg-gray-900/20"></div>
-    <div class="interactive-blob absolute bottom-[15%] right-[10%] w-[30rem] h-[30rem] rounded-full bg-slate-900/20"></div>
-    <div class="interactive-blob absolute top-[40%] right-[25%] w-[25rem] h-[25rem] rounded-full bg-zinc-900/20"></div>
+    <div class="interactive-blob absolute top-[5%] left-[10%] w-[40rem] h-[40rem] bg-purple-900/30"></div>
+    <div class="interactive-blob absolute bottom-[15%] right-[10%] w-[30rem] h-[30rem] bg-blue-900/30"></div>
+    <div class="interactive-blob absolute top-[40%] right-[25%] w-[25rem] h-[25rem] bg-teal-900/30"></div>
   </div>
 
   <nav class="top-nav fixed top-0 left-0 right-0 z-50 h-20">
-    <div class="mx-auto px-6 h-full flex items-center justify-between">
+    <div class="mx-auto px-6 h-full flex items-center justify-between max-w-7xl">
       <div class="flex items-center gap-4">
         <img
-          src="logo.jpg" alt="Fromsupply Logo" class="h-10 w-10 object-contain rounded-md"
+          src="logo.jpg" alt="Fromsupply Logo" class="h-10 w-10 object-contain rounded-md flex-shrink-0"
           id="logo-image" onerror="this.onerror=null; this.src='https://placehold.co/40x40/030712/FFFFFF?text=FS';"
         />
         <a href="#" class="group flex items-center gap-2 bg-gray-800/60 hover:bg-gray-700/80 border border-gray-700 hover:border-gray-500 px-4 py-2 rounded-full transition-all duration-300 text-gray-300 hover:text-white text-sm">
-          <i class="fa-brands fa-google text-sm"></i> <span>Sign in</span>
+          <i class="fa-brands fa-google text-sm"></i>
+          <span class="hidden sm:inline">Sign in</span>
         </a>
       </div>
       <div class="flex items-center gap-4">
@@ -204,18 +340,20 @@
           <span class="hidden sm:inline">find topic</span>
         </button>
         <div class="star-button-container">
-          <button id="star-button" class="star-button px-4 py-2 rounded-full flex items-center gap-2 text-sm text-gray-300 relative">
+          <button id="star-button" class="star-button" aria-haspopup="true" aria-expanded="false">
             <span>⭐️ 7348</span>
           </button>
-          <div id="star-dropdown" class="star-dropdown">
-            <div class="dropdown-item" data-link="#"> <img src="clubcard.jpeg" alt="Membership Icon" class="dropdown-item-icon" onerror="this.onerror=null; this.src='https://placehold.co/40x40/374151/FFFFFF?text=FS';">
+          <div id="star-dropdown" class="star-dropdown" role="menu">
+            <div class="dropdown-item" role="menuitem" data-link="#">
+              <img src="clubcard.jpeg" alt="Membership Icon" class="dropdown-item-icon" onerror="this.onerror=null; this.src='https://placehold.co/40x40/374151/FFFFFF?text=FS';">
               <div class="dropdown-item-content">
                 <div class="dropdown-item-title">fs Membership</div>
                 <div class="dropdown-item-desc">access paid features monthly</div>
               </div>
               <button class="dropdown-item-price" data-action="buy-membership">$5.99</button>
             </div>
-            <div class="dropdown-item" data-link="#"> <img src="10kcard.jpeg" alt="Cheat Code Icon" class="dropdown-item-icon" onerror="this.onerror=null; this.src='https://placehold.co/40x40/374151/FFFFFF?text=10K';">
+            <div class="dropdown-item" role="menuitem" data-link="#">
+              <img src="10kcard.jpeg" alt="Cheat Code Icon" class="dropdown-item-icon" onerror="this.onerror=null; this.src='https://placehold.co/40x40/374151/FFFFFF?text=10K';">
               <div class="dropdown-item-content">
                 <div class="dropdown-item-title">Cheat Code</div>
                 <div class="dropdown-item-desc">Begin your journey with 10 thousands Reserves</div>
@@ -228,173 +366,208 @@
     </div>
   </nav>
 
-  <div class="w-full mx-auto flex-grow flex flex-col items-center justify-center px-6 py-6">
-    <main id="product-showcase" class="w-full mb-16">
-      <div class="product-slider flex overflow-x-auto snap-x snap-mandatory pb-8 -mx-4 px-4 hide-scrollbar">
+  <div class="w-full flex-grow flex flex-col items-center px-4 sm:px-6 py-6">
 
-        <div class="product-slide min-w-full md:min-w-[45%] lg:min-w-[30%] xl:min-w-[23%] p-3"> <div class="card rounded-xl p-6 h-full flex flex-col" data-link="chimcode.html"> <div class="mb-6 relative aspect-video overflow-hidden rounded-lg video-container">
-                <iframe
-                  class="absolute top-0 left-0 w-full h-full"
-                  src="https://www.youtube.com/embed/flDetM2ZwWI?si=TQ6HoN-VhhvavuYS&controls=0&autoplay=1&rel=0&loop=1&playlist=flDetM2ZwWI"
-                  title="Chim Code Video" frameborder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allow="autoplay" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen muted
-                ></iframe>
-              </div>
-              <div class="mb-4 bg-gray-800/70 w-14 h-14 rounded-lg flex items-center justify-center">
-                <i class="fa-solid fa-code card-icon text-2xl text-gray-300"></i>
-              </div>
-              <h2 class="card-title text-2xl font-bold text-white mb-3">Chim Code</h2>
-              <p class="text-gray-400 mb-4 flex-grow">
-                Build muscle memory to help you debug complex systems faster and with higher accuracy.
-              </p>
-              </div>
+    <div id="background-video-section" class="w-full max-w-7xl mb-16">
+        <div id="background-video-container" class="video-container">
+            <iframe
+                id="background-iframe"
+                src="https://www.youtube.com/watch?v=GtfX_qwl3Pg"
+                title="Background Video"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;"
+                allowfullscreen
+                referrerpolicy="strict-origin-when-cross-origin"
+                onload="this.style.opacity=1"
+                onerror="this.parentElement.classList.add('video-error')"
+                style="opacity:0; transition: opacity 0.5s;"
+            ></iframe>
+        </div>
+    </div>
+
+    <main id="product-showcase" class="w-full max-w-7xl mb-16">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <div class="card" data-link="chimcode.html">
+          <div class="video-container">
+              <iframe
+                src="https://www.youtube.com/watch?v=zhiLxvxe80I"
+                title="Chim Code Video" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+                muted onerror="this.parentElement.classList.add('video-error')"
+              ></iframe>
           </div>
-
-        <div class="product-slide min-w-full md:min-w-[45%] lg:min-w-[30%] xl:min-w-[23%] p-3">
-          <div class="card rounded-xl p-6 h-full flex flex-col" data-link="type.html"> <div class="mb-6 relative aspect-video overflow-hidden rounded-lg video-container">
-              <iframe
-                src="https://www.youtube.com/embed/L_LUpnjgPso?autoplay=1&mute=1&loop=1&playlist=L_LUpnjgPso&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1"
-                title="Chim Type Video" frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin" allowfullscreen muted allow="autoplay"
-              ></iframe>
+          <div class="card-content">
+            <div class="card-icon-container">
+              <i class="fa-solid fa-code card-icon"></i>
             </div>
-            <div class="mb-4 bg-gray-800/70 w-14 h-14 rounded-lg flex items-center justify-center">
-              <i class="fa-solid fa-keyboard card-icon text-2xl text-gray-300"></i>
-            </div>
-            <h2 class="card-title text-2xl font-bold text-white mb-3">Chim Type</h2>
-            <p class="text-gray-400 mb-4 flex-grow">Build muscle memory to help you type faster with adaptive training algorithms.</p>
-            </div>
+            <h2 class="card-title">Chim Code</h2>
+            <p class="card-description">
+              Build muscle memory to help you debug complex systems faster and with higher accuracy.
+            </p>
+          </div>
         </div>
 
-        <div class="product-slide min-w-full md:min-w-[45%] lg:min-w-[30%] xl:min-w-[23%] p-3">
-          <div class="card rounded-xl p-6 h-full flex flex-col" data-link="maze.html"> <div class="mb-6 relative aspect-video overflow-hidden rounded-lg video-container">
-              <iframe
-                src="https://www.youtube.com/embed/QH2-TGUlwu4?autoplay=1&mute=1&loop=1&playlist=QH2-TGUlwu4&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1"
-                title="Chim Maze Video" frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin" allowfullscreen muted allow="autoplay"
-              ></iframe>
+        <div class="card" data-link="type.html">
+          <div class="video-container">
+             <iframe
+              src="https://www.youtube.com/embed/L_LUpnjgPso?autoplay=1&mute=1&loop=1&playlist=L_LUpnjgPso&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1"
+              title="Chim Type Video" frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen
+              muted
+              onerror="this.parentElement.classList.add('video-error')"
+            ></iframe>
+          </div>
+          <div class="card-content">
+            <div class="card-icon-container">
+              <i class="fa-solid fa-keyboard card-icon"></i>
             </div>
-            <div class="mb-4 bg-gray-800/70 w-14 h-14 rounded-lg flex items-center justify-center">
-              <i class="fa-solid fa-cube card-icon text-2xl text-gray-300"></i>
-            </div>
-            <h2 class="card-title text-2xl font-bold text-white mb-3">Chim Maze</h2>
-            <p class="text-gray-400 mb-4 flex-grow">Build muscle memory with subjects through immersive learning environments.</p>
-             </div>
+            <h2 class="card-title">Chim Type</h2>
+            <p class="card-description">Build muscle memory to help you type faster with adaptive training algorithms.</p>
+          </div>
         </div>
 
-        <div class="product-slide min-w-full md:min-w-[45%] lg:min-w-[30%] xl:min-w-[23%] p-3">
-          <div class="card rounded-xl p-6 h-full flex flex-col" data-link="clinic.html"> <div class="mb-6 relative aspect-video overflow-hidden rounded-lg video-container">
-              <iframe
-                src="https://www.youtube.com/embed/3JZ_D3ELwOQ?autoplay=1&mute=1&loop=1&playlist=3JZ_D3ELwOQ&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1"
-                title="Chim Clinic Video" frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin" allowfullscreen muted allow="autoplay"
-              ></iframe>
+        <div class="card" data-link="maze.html">
+          <div class="video-container">
+             <iframe
+              src="https://www.youtube.com/embed/QH2-TGUlwu4?autoplay=1&mute=1&loop=1&playlist=QH2-TGUlwu4&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1"
+              title="Chim Maze Video" frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen
+              muted
+              onerror="this.parentElement.classList.add('video-error')"
+            ></iframe>
+          </div>
+          <div class="card-content">
+            <div class="card-icon-container">
+              <i class="fa-solid fa-cube card-icon"></i>
             </div>
-            <div class="mb-4 bg-gray-800/70 w-14 h-14 rounded-lg flex items-center justify-center">
-              <i class="fa-solid fa-laptop-medical card-icon text-2xl text-gray-300"></i>
-            </div>
-            <h2 class="card-title text-2xl font-bold text-white mb-3">Chim Clinic</h2>
-            <p class="text-gray-400 mb-4 flex-grow">Meet expert developers to heal or invest in your projects with advanced diagnostics.</p>
-             </div>
+            <h2 class="card-title">Chim Maze</h2>
+            <p class="card-description">Build muscle memory with subjects through immersive learning environments.</p>
+          </div>
         </div>
 
-        <div class="product-slide min-w-full md:min-w-[45%] lg:min-w-[30%] xl:min-w-[23%] p-3">
-          <div class="card rounded-xl p-6 h-full flex flex-col" data-link="prompts.html"> <div class="mb-6 relative aspect-video overflow-hidden rounded-lg video-container">
-              <iframe
-                src="https://www.youtube.com/embed/6avJHaC3C2U?autoplay=1&mute=1&loop=1&playlist=6avJHaC3C2U&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1"
-                title="Chim Prompts Video" frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin" allowfullscreen muted allow="autoplay"
-              ></iframe>
+        <div class="card" data-link="clinic.html">
+          <div class="video-container">
+             <iframe
+              src="https://www.youtube.com/embed/3JZ_D3ELwOQ?autoplay=1&mute=1&loop=1&playlist=3JZ_D3ELwOQ&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1"
+              title="Chim Clinic Video" frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen
+              muted
+              onerror="this.parentElement.classList.add('video-error')"
+            ></iframe>
+          </div>
+          <div class="card-content">
+            <div class="card-icon-container">
+              <i class="fa-solid fa-laptop-medical card-icon"></i>
             </div>
-            <div class="mb-4 bg-gray-800/70 w-14 h-14 rounded-lg flex items-center justify-center">
-              <i class="fa-solid fa-terminal card-icon text-2xl text-gray-300"></i>
-            </div>
-            <h2 class="card-title text-2xl font-bold text-white mb-3">Chim Prompts</h2>
-            <p class="text-gray-400 mb-4 flex-grow">Reference prompt engineering formats with AI-powered optimization tools.</p>
-             </div>
+            <h2 class="card-title">Chim Clinic</h2>
+            <p class="card-description">Meet expert developers to heal or invest in your projects with advanced diagnostics.</p>
+          </div>
         </div>
 
-        <div class="product-slide min-w-full md:min-w-[45%] lg:min-w-[30%] xl:min-w-[23%] p-3">
-          <div class="card rounded-xl p-6 h-full flex flex-col" data-link="teams.html"> <div class="mb-6 relative aspect-video overflow-hidden rounded-lg video-container">
-              <iframe
-                src="https://www.youtube.com/embed/uHKfrz65KSU?autoplay=1&mute=1&loop=1&playlist=uHKfrz65KSU&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1"
-                title="Chim Team Video" frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin" allowfullscreen muted allow="autoplay"
-              ></iframe>
+        <div class="card" data-link="prompts.html">
+          <div class="video-container">
+             <iframe
+              src="https://www.youtube.com/embed/6avJHaC3C2U?autoplay=1&mute=1&loop=1&playlist=6avJHaC3C2U&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1"
+              title="Chim Prompts Video" frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen
+              muted
+              onerror="this.parentElement.classList.add('video-error')"
+            ></iframe>
+          </div>
+          <div class="card-content">
+            <div class="card-icon-container">
+              <i class="fa-solid fa-terminal card-icon"></i>
             </div>
-            <div class="mb-4 bg-gray-800/70 w-14 h-14 rounded-lg flex items-center justify-center">
-              <i class="fa-solid fa-users card-icon text-2xl text-gray-300"></i>
-            </div>
-            <h2 class="card-title text-2xl font-bold text-white mb-3">Chim Team</h2>
-            <p class="text-gray-400 mb-4 flex-grow">Gamble risk-free to combat addiction with immersive team-based challenges.</p>
-             </div>
+            <h2 class="card-title">Chim Prompts</h2>
+            <p class="card-description">Reference prompt engineering formats with AI-powered optimization tools.</p>
+          </div>
         </div>
-      </div>
 
-      <div class="flex justify-center gap-2 mt-4">
-        <button class="w-3 h-3 rounded-full bg-white hover:bg-gray-300 transition-colors" data-slide="0"></button>
-        <button class="w-3 h-3 rounded-full bg-gray-600 hover:bg-gray-400 transition-colors" data-slide="1"></button>
-        <button class="w-3 h-3 rounded-full bg-gray-600 hover:bg-gray-400 transition-colors" data-slide="2"></button>
-        <button class="w-3 h-3 rounded-full bg-gray-600 hover:bg-gray-400 transition-colors" data-slide="3"></button>
-        <button class="w-3 h-3 rounded-full bg-gray-600 hover:bg-gray-400 transition-colors" data-slide="4"></button>
-        <button class="w-3 h-3 rounded-full bg-gray-600 hover:bg-gray-400 transition-colors" data-slide="5"></button>
+        <div class="card" data-link="teams.html">
+          <div class="video-container">
+             <iframe
+              src="https://www.youtube.com/embed/uHKfrz65KSU?autoplay=1&mute=1&loop=1&playlist=uHKfrz65KSU&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1"
+              title="Chim Team Video" frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen
+              muted
+              onerror="this.parentElement.classList.add('video-error')"
+            ></iframe>
+          </div>
+          <div class="card-content">
+            <div class="card-icon-container">
+              <i class="fa-solid fa-users card-icon"></i>
+            </div>
+            <h2 class="card-title">Chim Team</h2>
+            <p class="card-description">Gamble risk-free to combat addiction with immersive team-based challenges.</p>
+          </div>
+        </div>
       </div>
     </main>
 
-    <div class="w-full mb-16">
-      <div class="relative aspect-video rounded-2xl overflow-hidden border border-gray-800">
-         <img src="https://placehold.co/1280x720/0f172a/e5e7eb?text=May+Update+Visual" alt="Fromsupply May Update" class="w-full h-full object-cover" id="featured-image" onerror="this.onerror=null; this.src='https://placehold.co/1280x720/1f2937/FFFFFF?text=Image+Error';"/>
-        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-8">
-          <h2 class="text-3xl font-bold">May 2025 Update</h2>
+    <div class="w-full max-w-7xl mb-16">
+      <div class="relative aspect-video rounded-2xl overflow-hidden border border-gray-800 shadow-lg">
+         <img src="https://placehold.co/1280x720/0f172a/e5e7eb?text=May+Update+Visual" alt="Fromsupply May Update" class="w-full h-full object-cover" id="featured-image" onerror="this.onerror=null; this.src='https://placehold.co/1280x720/1f2937/FFFFFF?text=Image+Load+Error';"/>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex items-end p-6 md:p-8">
+          <h2 class="text-2xl md:text-3xl font-bold text-white glow-text">May 2025 Update</h2>
         </div>
       </div>
     </div>
 
-    <div class="w-full mb-16">
-      <div class="relative aspect-video rounded-2xl overflow-hidden border border-gray-800">
-        <img src="https://placehold.co/1280x720/0f172a/f472b6?text=Community+Visual" alt="Fromsupply Community" class="w-full h-full object-cover" id="featured-image-2" onerror="this.onerror=null; this.src='https://placehold.co/1280x720/1f2937/FFFFFF?text=Image+Error';"/>
-        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-8">
-          <h2 class="text-3xl font-bold">Who are we ?</h2>
+    <div class="w-full max-w-7xl mb-16">
+      <div class="relative aspect-video rounded-2xl overflow-hidden border border-gray-800 shadow-lg">
+        <img src="https://placehold.co/1280x720/0f172a/f472b6?text=Community+Visual" alt="Fromsupply Community" class="w-full h-full object-cover" id="featured-image-2" onerror="this.onerror=null; this.src='https://placehold.co/1280x720/1f2937/FFFFFF?text=Image+Load+Error';"/>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex items-end p-6 md:p-8">
+          <h2 class="text-2xl md:text-3xl font-bold text-white glow-text">Who are we?</h2>
         </div>
       </div>
     </div>
 
-    <section class="w-full mb-16">
-       <div class="bg-gray-900 p-8 md:p-12 rounded-2xl relative overflow-hidden border border-gray-500/30">
+    <section class="w-full max-w-7xl mb-16">
+      <div class="bg-gradient-to-br from-gray-900 to-slate-900 p-8 md:p-12 rounded-2xl relative overflow-hidden border border-gray-700/50 shadow-xl">
         <div class="z-10 relative">
-          <h3 class="text-2xl md:text-3xl font-bold mb-3">Become limitless!</h3>
-          <p class="text-gray-400 mb-6 max-w-md">Become a member to get full access to all paid features, and future products</p>
-          <a href="#" class="inline-block bg-gray-200 hover:bg-white text-gray-900 font-medium px-8 py-3 rounded-lg transition-colors duration-300">only $5.99 monthly</a>
+          <h3 class="text-2xl md:text-3xl font-bold mb-3 text-white">Become limitless!</h3>
+          <p class="text-gray-400 mb-6 max-w-lg">Become a member to get full access to all paid features, exclusive content, and future products.</p>
+          <a href="#" class="inline-block bg-white hover:bg-gray-200 text-gray-900 font-medium px-8 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg">
+            Only $5.99 monthly
+          </a>
         </div>
-         <div class="absolute top-0 right-0 w-64 h-64 bg-gray-500/10 rounded-full blur-3xl"></div>
+         <div class="absolute top-0 right-0 -mt-16 -mr-16 w-64 h-64 bg-purple-600/10 rounded-full blur-3xl opacity-50"></div>
+         <div class="absolute bottom-0 left-0 -mb-24 -ml-24 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl opacity-40"></div>
       </div>
     </section>
   </div>
 
   <footer class="w-full bg-gray-900/80 backdrop-blur-md border-t border-gray-800 pt-12 pb-6">
-    <div class="mx-auto px-6">
+    <div class="mx-auto px-6 max-w-7xl">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
         <div>
-          <h3 class="text-xl font-bold text-white mb-4">
-            Fromsupply <span class="text-xs font-normal text-gray-500 opacity-75">fs v0.5</span>
+          <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+            <img src="logo.jpg" alt="" class="h-6 w-6 rounded-sm inline-block" onerror="this.style.display='none'"> Fromsupply <span class="text-xs font-normal text-gray-500 opacity-75">fs v0.5</span>
           </h3>
-          <p class="text-gray-400 mb-6">Building the future of developer tools and experiences through innovative solutions.</p>
-          <div class="flex space-x-4">
-            <a href="https://github.com/chimwopara/fromsupply" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 social-icon"><i class="fab fa-github"></i></a>
-            <a href="https://instagram.com/fromsupply" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 social-icon"><i class="fab fa-instagram"></i></a>
-            <a href="#" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 social-icon"><i class="fab fa-linkedin"></i></a>
+          <p class="text-gray-400 text-sm mb-6">Building the future of developer tools and experiences through innovative solutions.</p>
+          <div class="flex space-x-3">
+            <a href="https://github.com/chimwopara/fromsupply" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 social-icon"><i class="fab fa-github"></i></a>
+            <a href="https://instagram.com/fromsupply" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 social-icon"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 social-icon"><i class="fab fa-linkedin-in"></i></a>
           </div>
-          <div class="mt-6 text-gray-500 text-sm">© 2025 Fromsupply. All rights reserved.</div>
+          <div class="mt-6 text-gray-500 text-xs">© 2025 Fromsupply. All rights reserved.</div>
         </div>
         <div>
           <h3 class="text-white font-semibold mb-4">Products</h3>
-          <ul class="space-y-2">
+          <ul class="space-y-2 text-sm">
             <li><a href="chimcode.html" class="text-gray-400 footer-link">Chim Code</a></li>
             <li><a href="type.html" class="text-gray-400 footer-link">Chim Type</a></li>
             <li><a href="maze.html" class="text-gray-400 footer-link">Chim Maze</a></li>
@@ -405,23 +578,27 @@
         </div>
         <div>
           <h3 class="text-white font-semibold mb-4">Resources</h3>
-          <ul class="space-y-2">
+          <ul class="space-y-2 text-sm">
             <li><a href="https://github.com/chimwopara/fromsupply/blob/main/SECURITY.md" target="_blank" rel="noopener noreferrer" class="text-gray-400 footer-link">Documentation</a></li>
             <li><a href="https://www.youtube.com/playlist?list=PLaXy2djTTbXh0hlOvARCHAiGFo2n-EdyT&playnext=1&index=1" target="_blank" rel="noopener noreferrer" class="text-gray-400 footer-link">Tutorials</a></li>
-            <li><a href="#" class="text-gray-400 footer-link">Community</a></li>
+            <li><a href="#" class="text-gray-400 footer-link">Community Forum</a></li>
+             <li><a href="#" class="text-gray-400 footer-link">Blog</a></li>
+             <li><a href="#" class="text-gray-400 footer-link">Support Center</a></li>
           </ul>
         </div>
         <div>
           <h3 class="text-white font-semibold mb-4">Contact</h3>
-          <ul class="space-y-2">
-            <li class="flex items-center gap-2 text-gray-400"><i class="fa-regular fa-envelope w-5"></i><a href="mailto:support@fromsupply.com" class="footer-link">support@fromsupply.com</a></li>
-            <li class="flex items-center gap-2 text-gray-400"><i class="fa-solid fa-location-dot w-5"></i><span>Alberta, Canada</span></li>
+          <ul class="space-y-2 text-sm mb-6">
+            <li class="flex items-center gap-2 text-gray-400"><i class="fa-regular fa-envelope w-4 text-center"></i><a href="mailto:support@fromsupply.com" class="footer-link">support@fromsupply.com</a></li>
+            <li class="flex items-center gap-2 text-gray-400"><i class="fa-solid fa-location-dot w-4 text-center"></i><span>Alberta, Canada</span></li>
           </ul>
-          <div class="mt-6">
-            <h4 class="text-white font-semibold mb-3">Subscribe</h4>
+          <div>
+            <h4 class="text-white font-semibold mb-3 text-sm">Subscribe to Updates</h4>
             <div class="flex">
-              <input type="email" placeholder="Enter your email" class="bg-gray-800 border border-gray-700 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-1 focus:ring-white text-gray-200 w-full" />
-              <button type="button" class="bg-gray-300 hover:bg-white text-gray-900 px-4 rounded-r-lg transition-colors duration-300"><i class="fa-solid fa-paper-plane"></i></button>
+              <input type="email" placeholder="your.email@example.com" class="bg-gray-800 border border-gray-700 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-1 focus:ring-white/50 focus:border-white/50 text-gray-200 w-full text-sm placeholder-gray-500" />
+              <button type="button" class="bg-gray-300 hover:bg-white text-gray-900 px-4 rounded-r-lg transition-colors duration-300 flex items-center justify-center">
+                <i class="fa-solid fa-paper-plane text-sm"></i>
+              </button>
             </div>
           </div>
         </div>
@@ -430,214 +607,203 @@
   </footer>
 
   <script>
+    // --- General Page Logic (No YouTube API specific code needed anymore) ---
     document.addEventListener('DOMContentLoaded', () => {
       const gridBackground = document.getElementById('grid-background');
-      const blobs = document.querySelectorAll('.interactive-blob');
-      const productSlider = document.querySelector('.product-slider');
-      const productSlides = document.querySelectorAll('.product-slide .card'); // Select cards for click events
-      const sliderNavButtons = document.querySelectorAll('[data-slide]');
+      const blobsContainer = document.getElementById('blobs-container');
+      const productCards = document.querySelectorAll('#product-showcase .card');
       const starButton = document.getElementById('star-button');
       const starDropdown = document.getElementById('star-dropdown');
 
-      // --- Interactive Background ---
+      // --- Interactive Background Grid and Blobs ---
+      let mouseX = window.innerWidth / 2;
+      let mouseY = window.innerHeight / 2;
+
       document.addEventListener('mousemove', (e) => {
-        const x = e.clientX / window.innerWidth;
-        const y = e.clientY / window.innerHeight;
-        if (gridBackground) {
-            gridBackground.style.backgroundPosition = `${20 + x * 40}px ${20 + y * 40}px`;
-        }
-        blobs.forEach((blob, index) => {
-          const speed = 0.05 - (index * 0.01);
-          const blobX = (x - 0.5) * (100 - (index * 20));
-          const blobY = (y - 0.5) * (100 - (index * 20));
-          blob.style.transform = `translate(${blobX}px, ${blobY}px)`;
-        });
-        if (Math.random() > 0.92) createParticle(e.clientX, e.clientY);
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        // Only create particles frequently if mouse is moving significantly
+        if (Math.random() > 0.9) createParticle(e.clientX, e.clientY);
       });
+
+      function updateBackground() {
+        const xPercent = mouseX / window.innerWidth;
+        const yPercent = mouseY / window.innerHeight;
+
+        // Update grid position
+        if (gridBackground) {
+            const offsetX = 20 + xPercent * 40;
+            const offsetY = 20 + yPercent * 40;
+            gridBackground.style.backgroundPosition = `${offsetX}px ${offsetY}px`;
+        }
+
+        // Update blob positions smoothly
+        const blobs = blobsContainer ? blobsContainer.querySelectorAll('.interactive-blob') : [];
+        blobs.forEach((blob, index) => {
+            const speedFactor = 0.05 - (index * 0.01); // Vary speed per blob
+            const targetX = (xPercent - 0.5) * (150 - (index * 30)); // Adjust range of movement
+            const targetY = (yPercent - 0.5) * (150 - (index * 30));
+            // Apply transform directly for smoother animation via GPU
+            blob.style.transform = `translate(${targetX}px, ${targetY}px)`;
+        });
+
+        requestAnimationFrame(updateBackground); // Create a smooth animation loop
+      }
+
+      if (blobsContainer) { // Start animation loop only if blobs exist
+        requestAnimationFrame(updateBackground);
+      }
+
 
       // --- Particle Effect ---
       function createParticle(x, y) {
         const particle = document.createElement('div');
         particle.className = 'particle';
-        const size = Math.random() * 4 + 2;
-        particle.style.width = `${size}px`; particle.style.height = `${size}px`;
-        const colors = ['#FFFFFF', '#E5E7EB', '#D1D5DB', '#9CA3AF'];
+        const size = Math.random() * 3 + 1.5; // Smaller particles
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        const colors = ['#FFFFFF', '#E5E7EB', '#D1D5DB', '#9CA3AF', '#6B7280']; // Added more grays
         particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-        particle.style.left = `${x}px`; particle.style.top = `${y}px`;
-        const tx = (Math.random() - 0.5) * 100; const ty = (Math.random() - 0.5) * 100;
-        particle.style.setProperty('--tx', `${tx}px`); particle.style.setProperty('--ty', `${ty}px`);
+        particle.style.left = `${x}px`;
+        particle.style.top = `${y}px`;
+        // Random trajectory
+        const tx = (Math.random() - 0.5) * 80; // Shorter travel distance
+        const ty = (Math.random() - 0.5) * 80;
+        particle.style.setProperty('--tx', `${tx}px`);
+        particle.style.setProperty('--ty', `${ty}px`);
+
+        // Append to body or a specific container if preferred
         document.body.appendChild(particle);
-        setTimeout(() => particle.remove(), 3000);
-      }
 
-      // --- Product Slider (Smooth Continuous Scroll) ---
-      let smoothScrollRAF; // requestAnimationFrame ID
-      let isHoveringSlider = false;
-      let userInteractedSlider = false;
-      const scrollSpeed = 0.5; // Adjust scroll speed (pixels per frame)
-
-      function smoothAutoScroll() {
-          if (!productSlider || isHoveringSlider || userInteractedSlider) {
-              smoothScrollRAF = requestAnimationFrame(smoothAutoScroll); // Keep checking if paused
-              return;
-          }
-
-          const scrollWidth = productSlider.scrollWidth;
-          const clientWidth = productSlider.clientWidth;
-
-          // If scrolled to the end, instantly jump back to the beginning
-          if (productSlider.scrollLeft >= scrollWidth - clientWidth - 1) {
-              productSlider.scrollLeft = 0; // Jump to start for seamless loop
-          } else {
-              productSlider.scrollLeft += scrollSpeed; // Scroll continuously
-          }
-
-          updateActiveButtonOnScroll(); // Update dots during scroll
-          smoothScrollRAF = requestAnimationFrame(smoothAutoScroll); // Continue animation
-      }
-
-      function stopSmoothScroll() {
-          cancelAnimationFrame(smoothScrollRAF);
-      }
-
-      if (productSlider && sliderNavButtons.length > 0) {
-          // Manual Navigation Click
-          sliderNavButtons.forEach(button => {
-            button.addEventListener('click', () => {
-              userInteractedSlider = true; // Stop auto-scroll on manual nav
-              stopSmoothScroll(); // Stop continuous scroll
-              const slideIndex = button.getAttribute('data-slide');
-              const slides = document.querySelectorAll('.product-slide');
-              if (slides[slideIndex]) {
-                const sliderRect = productSlider.getBoundingClientRect();
-                const slideRect = slides[slideIndex].getBoundingClientRect();
-                // Calculate scroll position to center the target slide
-                const scrollLeft = productSlider.scrollLeft + slideRect.left - sliderRect.left - (sliderRect.width / 2) + (slideRect.width / 2);
-                productSlider.scrollTo({ left: scrollLeft, behavior: 'smooth' }); // Use smooth for manual nav
-                updateActiveButton(slideIndex);
-              }
-            });
-          });
-
-          // Update dots based on active slide index
-          function updateActiveButton(activeIndex) {
-              sliderNavButtons.forEach((btn, index) => {
-                  if (index == activeIndex) {
-                      btn.classList.remove('bg-gray-600', 'hover:bg-gray-400');
-                      btn.classList.add('bg-white', 'hover:bg-gray-300');
-                  } else {
-                      btn.classList.remove('bg-white', 'hover:bg-gray-300');
-                      btn.classList.add('bg-gray-600', 'hover:bg-gray-400');
-                  }
-              });
-          }
-
-          // Update dots on scroll (manual or auto) - Debounced
-          let scrollTimeout;
-          function updateActiveButtonOnScroll() {
-              if (!productSlider) return;
-              const slides = productSlider.querySelectorAll('.product-slide');
-              if (!slides || slides.length === 0) return;
-
-              const sliderRect = productSlider.getBoundingClientRect();
-              const sliderCenter = sliderRect.left + sliderRect.width / 2;
-              let closestSlideIndex = 0; let minDistance = Infinity;
-
-              slides.forEach((slide, index) => {
-                  const slideRect = slide.getBoundingClientRect();
-                  if (slideRect.width > 0) {
-                      const slideCenter = slideRect.left + slideRect.width / 2;
-                      const distance = Math.abs(sliderCenter - slideCenter);
-                      if (distance < minDistance) { minDistance = distance; closestSlideIndex = index; }
-                  }
-              });
-              updateActiveButton(closestSlideIndex);
-          }
-
-          productSlider.addEventListener('scroll', () => {
-              clearTimeout(scrollTimeout);
-              scrollTimeout = setTimeout(updateActiveButtonOnScroll, 150); // Update slightly after scroll stops
-          });
-
-          // --- Interaction Handling for Smooth Scroll ---
-          const stopInteraction = () => {
-              userInteractedSlider = true;
-              stopSmoothScroll();
-          };
-          productSlider.addEventListener('wheel', stopInteraction, { passive: true });
-          productSlider.addEventListener('touchstart', stopInteraction, { passive: true });
-          productSlider.addEventListener('mousedown', stopInteraction); // Also stop on mouse drag start
-
-          productSlider.addEventListener('mouseenter', () => { isHoveringSlider = true; });
-          productSlider.addEventListener('mouseleave', () => { isHoveringSlider = false; });
-
-          updateActiveButton(0); // Initialize dots
-          smoothScrollRAF = requestAnimationFrame(smoothAutoScroll); // Start smooth scroll
+        // Remove particle after animation completes
+        setTimeout(() => {
+            // Check if particle still exists and has a parent before removing
+            if (particle && particle.parentNode) {
+                particle.parentNode.removeChild(particle);
+            }
+        }, 3000); // Match animation duration
       }
 
       // --- Clickable Product Cards ---
-      productSlides.forEach(card => {
+      productCards.forEach(card => {
           card.addEventListener('click', (event) => {
-              // Prevent navigation if the click was inside the video container
-              if (event.target.closest('.video-container')) {
+              // Prevent navigation if the click was on the iframe itself or a button inside the card
+              if (event.target.tagName === 'IFRAME' || event.target.closest('button')) {
+                  console.log('Click on iframe or button inside card, preventing navigation.');
                   return;
               }
+              // Prevent navigation if click is inside video container but not the iframe
+              if (event.target.closest('.video-container') && event.target.tagName !== 'IFRAME') {
+                 console.log('Click inside video container (not iframe), preventing navigation.');
+                 return;
+              }
+
               const link = card.getAttribute('data-link');
-              if (link) {
+              if (link && link !== '#') { // Check if link exists and is not just '#'
+                  console.log(`Card clicked, navigating to: ${link}`);
                   window.location.href = link; // Navigate to the product page
+              } else {
+                  console.log("Card clicked, but no valid data-link found or link is '#'.");
               }
           });
       });
 
 
-      // --- Star Button Dropdown ---
+      // --- Star Button Dropdown Logic ---
       if (starButton && starDropdown) {
           starButton.addEventListener('click', (event) => {
-              event.stopPropagation();
-              starDropdown.classList.toggle('active');
+              event.stopPropagation(); // Prevent document click listener from closing it immediately
+              const isActive = starDropdown.classList.toggle('active');
+              starButton.setAttribute('aria-expanded', isActive); // Update ARIA attribute
           });
+
+          // Close dropdown if clicking anywhere outside of it
           document.addEventListener('click', (event) => {
+              // Check if the click is outside the button AND outside the dropdown
               if (!starButton.contains(event.target) && !starDropdown.contains(event.target)) {
-                  starDropdown.classList.remove('active');
+                  if (starDropdown.classList.contains('active')) {
+                      starDropdown.classList.remove('active');
+                      starButton.setAttribute('aria-expanded', 'false');
+                  }
               }
           });
 
-          // Handle clicks on dropdown items and buttons
+          // Close dropdown on Escape key press
+          document.addEventListener('keydown', (event) => {
+              if (event.key === 'Escape' && starDropdown.classList.contains('active')) {
+                  starDropdown.classList.remove('active');
+                  starButton.setAttribute('aria-expanded', 'false');
+              }
+          });
+
+
+          // Handle clicks specifically on dropdown items and their buttons
           starDropdown.querySelectorAll('.dropdown-item').forEach(item => {
               const priceButton = item.querySelector('.dropdown-item-price');
               const action = priceButton ? priceButton.getAttribute('data-action') : null;
-              const link = item.getAttribute('data-link');
+              const link = item.getAttribute('data-link'); // Link associated with the whole item
 
               item.addEventListener('click', (event) => {
-                  event.stopPropagation(); // Prevent dropdown closing immediately
-                  if (event.target === priceButton && action) {
-                      // Price button clicked
-                      console.log('Action:', action);
-                      alert(`Action for ${action}`);
+                  event.stopPropagation(); // Prevent the document click listener from firing
+
+                  if (priceButton && priceButton.contains(event.target)) {
+                      // --- Clicked specifically on the price button ---
+                      console.log('Action button clicked:', action);
+                      // Replace alert with actual purchase/action logic (e.g., open modal, call API)
+                      alert(`Action triggered for: ${action}`);
+                      starDropdown.classList.remove('active'); // Close dropdown after action
+                      starButton.setAttribute('aria-expanded', 'false');
+
                   } else if (link && link !== '#') {
-                      // Item area clicked (and has a valid link)
-                       console.log('Navigate:', link);
+                      // --- Clicked on the item area (not the button) AND the item has a valid link ---
+                       console.log('Dropdown item clicked, navigating to:', link);
                        window.location.href = link;
-                  } else if (action) {
-                       // Item area clicked, but no link, trigger button action
-                       console.log('Action:', action);
-                       alert(`Action for ${action}`);
+                       // Dropdown will close automatically due to page navigation
+
+                  } else {
+                      // --- Clicked on the item area, but not the button, and no valid link ---
+                      console.log('Clicked item area without specific action or valid link.');
+                      // Optionally close the dropdown here if needed, or do nothing
                   }
-                  starDropdown.classList.remove('active'); // Close dropdown after action/navigation
               });
           });
+      } else {
+          console.warn("Star button or dropdown element not found.");
       }
 
-      // --- Image Error Handling ---
+      // --- Robust Image Error Handling ---
       document.querySelectorAll('img').forEach(img => {
-        if (!img.hasAttribute('onerror')) {
-          const placeholderUrl = `https://placehold.co/${img.naturalWidth || img.width || 100}x${img.naturalHeight || img.height || 100}/1f2937/FFFFFF?text=Error`;
-          img.onerror = function() {
-            this.onerror=null; this.src=placeholderUrl;
-            console.warn(`Image failed to load: ${this.src}. Replaced with placeholder.`);
-          }
+        // Check if already broken or if src is missing/empty AND not already handled
+        if (((img.complete && img.naturalWidth === 0) || !img.src) && !img.getAttribute('data-error-handled')) {
+            handleImageError(img);
+        } else if (!img.getAttribute('data-error-handled')) {
+            // Add error listener for images that might fail later
+            img.onerror = function() {
+                // Check again inside onerror to prevent handling multiple times if error fires rapidly
+                if (!this.getAttribute('data-error-handled')) {
+                    handleImageError(this);
+                }
+            };
         }
       });
+
+      function handleImageError(img) {
+          img.setAttribute('data-error-handled', 'true'); // Mark as handled
+          const width = img.getAttribute('width') || img.offsetWidth || 50; // Get size or default
+          const height = img.getAttribute('height') || img.offsetHeight || 50;
+          const altText = img.alt || 'Error';
+          // Use a more descriptive placeholder with dark background
+          const placeholderUrl = `https://placehold.co/${width}x${height}/1f2937/6B7280?text=${encodeURIComponent(altText)}`;
+          console.warn(`Image failed to load: ${img.src || 'Source missing'}. Replaced with placeholder: ${placeholderUrl}`);
+          img.src = placeholderUrl;
+          img.style.objectFit = 'contain'; // Ensure placeholder text is visible
+          img.style.backgroundColor = '#1f2937'; // Match dark theme background
+          img.onerror = null; // IMPORTANT: Prevent infinite loop if the placeholder itself fails
+      }
+
+      // --- Iframe Error Handling (Basic) ---
+      // Add error class to parent container if iframe fails to load
+      // This is done via the `onerror` attribute directly on the iframe elements now.
 
     });
   </script>
