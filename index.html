@@ -369,35 +369,38 @@
   <div class="w-full flex-grow flex flex-col items-center px-4 sm:px-6 py-6">
 
     <div id="background-video-section" class="w-full max-w-7xl mb-16">
-        <div id="background-video-container" class="video-container">
-            <iframe
-                id="background-iframe"
-                src="https://www.youtube.com/watch?v=GtfX_qwl3Pg"
-                title="Background Video"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;"
-                allowfullscreen
-                referrerpolicy="strict-origin-when-cross-origin"
-                onload="this.style.opacity=1"
-                onerror="this.parentElement.classList.add('video-error')"
-                style="opacity:0; transition: opacity 0.5s;"
-            ></iframe>
-        </div>
+      <div id="background-video-container" class="video-container">
+        <iframe
+          id="background-iframe"
+          src="https://www.youtube.com/embed/Lcjm-A8gkUA?controls=0&autoplay=1&mute=1&loop=1&playlist=Lcjm-A8gkUA"
+          title="Background Video"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;"
+          muted
+          allowfullscreen
+          referrerpolicy="strict-origin-when-cross-origin"
+          onload="this.style.opacity=1"
+          onerror="this.parentElement.classList.add('video-error')"
+          style="opacity:0; transition: opacity 0.5s;">
+        </iframe>
+      </div>
     </div>
-
+  
     <main id="product-showcase" class="w-full max-w-7xl mb-16">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
+  
         <div class="card" data-link="chimcode.html">
           <div class="video-container">
-              <iframe
-                src="https://www.youtube.com/watch?v=zhiLxvxe80I"
-                title="Chim Code Video" frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allowfullscreen
-                muted onerror="this.parentElement.classList.add('video-error')"
-              ></iframe>
+            <iframe
+              src="https://www.youtube.com/embed/QROdGVs_4pM?controls=0&autoplay=1&mute=1&loop=1&playlist=QROdGVs_4pM"
+              title="Chim Code Video"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen
+              muted
+              onerror="this.parentElement.classList.add('video-error')">
+            </iframe>
           </div>
           <div class="card-content">
             <div class="card-icon-container">
