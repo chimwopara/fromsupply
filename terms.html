@@ -33,29 +33,6 @@
         border-bottom: 1px solid rgba(55, 65, 81, 0.3);
       }
 
-      /* Interactive Blobs Container */
-      #blobs-container {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        pointer-events: none;
-        z-index: -2; /* Behind everything */
-      }
-
-      /* Interactive Blobs */
-      .interactive-blob {
-        position: absolute;
-        border-radius: 50%;
-        filter: blur(120px);
-        opacity: 0.35;
-        mix-blend-mode: screen;
-        transition: background-color 2s ease-in-out; /* Only transition color smoothly */
-        pointer-events: none;
-      }
-
       /* General Text & Links */
       .glow-text { color: #ffffff; text-shadow: 0 0 8px rgba(255, 255, 255, 0.2); }
       .footer-link { transition: color 0.2s ease; }
@@ -116,7 +93,7 @@
       /* Particle animation */
       .particle {
         position: fixed;
-        border-radius: 50%; pointer-events: none; z-index: 5;
+        border-radius: 50%; pointer-events: none; z-index: 5; /* Ensure particles are above background but below UI if needed */
         opacity: 0; animation: particleFade 3s ease-out forwards;
       }
       @keyframes particleFade {
@@ -147,13 +124,6 @@
     </style>
 </head>
 <body class="text-gray-100 min-h-screen flex flex-col justify-between">
-  <div id="blobs-container">
-      <div class="interactive-blob blob-1"></div>
-      <div class="interactive-blob blob-2"></div>
-      <div class="interactive-blob blob-3"></div>
-      <div class="interactive-blob blob-4"></div>
-  </div>
-
   <nav class="top-nav fixed top-0 left-0 right-0 z-50 h-20">
     <div class="mx-auto h-full flex items-center justify-between px-4 sm:px-6">
       <div class="flex items-center gap-4">
@@ -177,7 +147,7 @@
               <div id="new-stuff-item" class="dropdown-item hidden" role="menuitem" data-link="#">
                 <img src="newstuff.png" alt="New Stuff Icon" class="dropdown-item-icon" onerror="this.onerror=null; this.src='https://placehold.co/40x40/374151/FFFFFF?text=NEW';">
                 <div class="dropdown-item-content">
-                  <div id="new-stuff-title" class="dropdown-item-title">Get What's New?</div>
+                  <div id="new-stuff-title" class="dropdown-item-title">Upgrade ?</div>
                   <div class="dropdown-item-desc">Get all the new features across all your max purchases</div>
                 </div>
                 <button id="new-stuff-button" class="dropdown-item-price new-stuff-button" data-action="buy-new-stuff" disabled>$2.49</button>
@@ -216,8 +186,7 @@
     </div>
   </nav>
 
-  <div class="w-full flex-grow pt-20 relative z-10">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row lg:gap-x-8 xl:gap-x-12">
+  <div class="w-full flex-grow pt-20 relative z-10"> <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row lg:gap-x-8 xl:gap-x-12">
 
       <aside class="lg:w-1/4 xl:w-1/5 w-full py-4 lg:py-8">
         <nav id="table-of-contents"
@@ -525,17 +494,16 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       // --- Element Selectors ---
-      const blobsContainer = document.getElementById('blobs-container');
+      // Blobs related selectors removed
       const starButton = document.getElementById('star-button');
       const starDropdown = document.getElementById('star-dropdown');
-      const blobs = blobsContainer ? blobsContainer.querySelectorAll('.interactive-blob') : [];
       const newStuffItem = document.getElementById('new-stuff-item');
       const newStuffButton = document.getElementById('new-stuff-button');
       const newStuffTitle = document.getElementById('new-stuff-title');
       const newStuffPopupTitle = document.getElementById('new-stuff-popup-title');
       const appVersionDisplay = document.getElementById('app-version-display');
       const tocLinks = document.querySelectorAll('#table-of-contents .toc-link');
-      const sections = document.querySelectorAll('.terms-content h2[id], .terms-content h3[id], .terms-content h4[id]'); // Added h4
+      const sections = document.querySelectorAll('.terms-content h2[id], .terms-content h3[id], .terms-content h4[id]');
 
       // --- App Version ---
       const APP_VERSION = "0.5";
@@ -547,7 +515,7 @@
 
       // --- Set Footer & New Stuff Title Version ---
       if (appVersionDisplay) appVersionDisplay.textContent = `fs v${APP_VERSION}`;
-      if (newStuffTitle) newStuffTitle.textContent = `Get What's New? (fs v${APP_VERSION})`;
+      if (newStuffTitle) newStuffTitle.textContent = `Upgrade ? (fs v${APP_VERSION})`;
       if (newStuffPopupTitle) {
           const now = new Date();
           const month = now.toLocaleString('default', { month: 'long' });
@@ -555,63 +523,19 @@
           newStuffPopupTitle.textContent = `${month} ${year}`;
       }
 
-      // --- Blob Animation State ---
-      let blobHues = [270, 220, 170, 250]; // Initial hues for the blobs
-      const blobElements = [
-          { el: document.querySelector('.blob-1'), initialTop: '-10%', initialLeft: '-15%', initialWidth: '60vw', initialHeight: '60vw' },
-          { el: document.querySelector('.blob-2'), initialTop: 'auto', initialBottom: '-20%', initialLeft: 'auto', initialRight: '-15%', initialWidth: '55vw', initialHeight: '55vw' },
-          { el: document.querySelector('.blob-3'), initialTop: '30%', initialLeft: 'auto', initialRight: '10%', initialWidth: '50vw', initialHeight: '50vw' },
-          { el: document.querySelector('.blob-4'), initialTop: 'auto', initialBottom: '5%', initialLeft: '20%', initialWidth: '45vw', initialHeight: '45vw' }
-      ];
-
-      // --- Initialize Blob Styles ---
-      function initializeBlobs() {
-          if (!blobsContainer) return;
-          blobElements.forEach((blobObj, index) => {
-              if (blobObj.el) {
-                  blobObj.el.style.top = blobObj.initialTop !== 'auto' ? blobObj.initialTop : 'auto';
-                  blobObj.el.style.bottom = blobObj.initialBottom !== 'auto' ? blobObj.initialBottom : 'auto';
-                  blobObj.el.style.left = blobObj.initialLeft !== 'auto' ? blobObj.initialLeft : 'auto';
-                  blobObj.el.style.right = blobObj.initialRight !== 'auto' ? blobObj.initialRight : 'auto';
-                  blobObj.el.style.width = blobObj.initialWidth;
-                  blobObj.el.style.height = blobObj.initialHeight;
-                  blobObj.el.style.backgroundColor = `hsl(${blobHues[index]}, 70%, 60%)`;
-              } else {
-                  console.warn(`Blob element ${index+1} not found.`);
-              }
-          });
-      }
-
-
-      // --- Background Blob Animation ---
-      function animateBackgroundBlobs() {
-        if (blobsContainer) {
-            blobElements.forEach((blobObj, index) => {
-                if (blobObj.el) {
-                    blobHues[index] = (blobHues[index] + 0.1) % 360;
-                    blobObj.el.style.backgroundColor = `hsl(${blobHues[index]}, 70%, 60%)`;
-                }
-            });
-        }
-        requestAnimationFrame(animateBackgroundBlobs);
-      }
-      
-      initializeBlobs(); // Set initial positions and colors
-      if (blobsContainer && blobElements.some(b => b.el)) animateBackgroundBlobs();
-
+      // Blob animation state and functions (initializeBlobs, animateBackgroundBlobs) removed
 
       // --- Particle Effect ---
       function createParticle(x, y) {
         const p = document.createElement('div'); p.className = 'particle';
         const s = Math.random()*2.5+1; p.style.width=`${s}px`; p.style.height=`${s}px`;
         const c = ['#FFFFFF','#E5E7EB','#D1D5DB','#9CA3AF'][Math.floor(Math.random()*4)]; p.style.backgroundColor=c;
-        p.style.left=`${x}px`; p.style.top=`${y}px`; // Position is fixed by class
+        p.style.left=`${x}px`; p.style.top=`${y}px`;
         const tx = (Math.random()-0.5)*60, ty = (Math.random()-0.5)*60;
         p.style.setProperty('--tx',`${tx}px`); p.style.setProperty('--ty',`${ty}px`);
         document.body.appendChild(p);
         setTimeout(() => { if (p.parentNode) p.parentNode.removeChild(p); }, 3000);
       }
-      // Add mouse move listener for particles
       document.addEventListener('mousemove', (e) => {
         if (Math.random() > 0.97) createParticle(e.clientX, e.clientY);
       });
@@ -669,8 +593,7 @@
                   if (priceButton && priceButton.contains(event.target)) {
                       event.stopPropagation();
                       console.log('Action button clicked:', action);
-                      // alert(`Action triggered for: ${action}`); // Replace with actual logic
-                      // For demo, we'll just log and close.
+                      // Example: alert(`Action triggered for: ${action}`);
                       starDropdown.classList.remove('active');
                       starButton.setAttribute('aria-expanded', 'false');
                   } else if (link && link !== '#') {
@@ -691,7 +614,7 @@
               if (newStuffButton.disabled) return;
               const action = newStuffButton.getAttribute('data-action');
               console.log('New Stuff button clicked:', action);
-              // alert(`Purchased New Stuff Features for Version ${APP_MAJOR_VERSION}.0!`); // Replace
+              // Example: alert(`Purchased New Stuff Features for Version ${APP_MAJOR_VERSION}.0!`);
               localStorage.setItem(LS_NEW_STUFF_VERSION, APP_MAJOR_VERSION.toString());
               checkAndDisplayNewStuff();
               if (starDropdown.classList.contains('active')) {
@@ -740,13 +663,12 @@
       // --- TOC Active Link Highlighting on Scroll ---
       const observerOptions = {
           root: null,
-          rootMargin: '-25% 0px -75% 0px', // Attempts to highlight when section is in middle 50% of viewport
-          threshold: 0 // Trigger as soon as any part of the target is visible within rootMargin
+          rootMargin: '-25% 0px -75% 0px',
+          threshold: 0
       };
 
       const observer = new IntersectionObserver((entries) => {
           let visibleSectionId = null;
-          // Find the first entry that is intersecting, which is usually the topmost visible one within the rootMargin
           const intersectingEntry = entries.find(entry => entry.isIntersecting);
           if (intersectingEntry) {
               visibleSectionId = intersectingEntry.target.id;
@@ -756,7 +678,7 @@
               link.classList.remove('active');
               const parentLink = link.closest('ul')?.closest('li')?.querySelector('a.toc-link');
               if (parentLink) {
-                parentLink.classList.remove('active'); // Deactivate parent as well
+                parentLink.classList.remove('active');
               }
           });
 

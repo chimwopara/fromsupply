@@ -287,12 +287,12 @@
         </a>
         <div class="star-button-container">
           <button id="star-button" class="star-button" aria-haspopup="true" aria-expanded="false">
-            <span>⭐️ 7348</span> </button>
+            <span>⭐️ 0</span> </button>
           <div id="star-dropdown" class="star-dropdown" role="menu">
              <div id="new-stuff-item" class="dropdown-item hidden" role="menuitem" data-link="#">
                 <img src="newstuff.png" alt="New Stuff Icon" class="dropdown-item-icon" onerror="this.onerror=null; this.src='https://placehold.co/40x40/374151/FFFFFF?text=NEW';">
                 <div class="dropdown-item-content">
-                  <div id="new-stuff-title" class="dropdown-item-title">Get What's New?</div>
+                  <div id="new-stuff-title" class="dropdown-item-title">Upgrade ?</div>
                   <div class="dropdown-item-desc">Get all the new features across all your max purchases</div>
                 </div>
                 <button id="new-stuff-button" class="dropdown-item-price new-stuff-button" data-action="buy-new-stuff" disabled>$2.49</button>
@@ -509,7 +509,7 @@
 
       // --- Set Footer & New Stuff Title Version ---
       if (appVersionDisplay) appVersionDisplay.textContent = `fs v${APP_VERSION}`;
-      if (newStuffTitle) newStuffTitle.textContent = `Get What's New? (fs v${APP_VERSION})`;
+      if (newStuffTitle) newStuffTitle.textContent = `Upgrade ? (fs v${APP_VERSION})`;
       if (newStuffPopupTitle) {
            const now = new Date();
            const month = now.toLocaleString('default', { month: 'long' });
@@ -557,7 +557,7 @@
            if (!newStuffItem || !newStuffButton || !newStuffTitle) return;
            const hasPurchasedMax = localStorage.getItem(LS_HAS_MAX) === 'true';
            const lastPurchasedMajorVersion = parseInt(localStorage.getItem(LS_NEW_STUFF_VERSION) || '-1');
-           newStuffTitle.textContent = `Get What's New? (fs v${APP_VERSION})`;
+           newStuffTitle.textContent = `Upgrade ? (fs v${APP_VERSION})`;
            if (hasPurchasedMax) {
                newStuffItem.classList.remove('hidden');
                if (APP_MAJOR_VERSION > lastPurchasedMajorVersion) {
