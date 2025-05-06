@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Fromsupply - Terms of Use & Privacy Policy</title>
+    <link rel="icon" href="logo.jpg" type="image/jpeg" onerror="this.onerror=null; this.href='https://placehold.co/32x32/030712/FFFFFF?text=FS';">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <style>
+      /* Base body styling */
+      body {
+        font-family: 'Space Grotesk', sans-serif;
+        background-color: #030712; /* gray-950 */
+        overflow-x: hidden; /* Prevent horizontal scroll */
+        position: relative; /* Needed for z-index context */
+        scroll-behavior: smooth; /* Add smooth scrolling for TOC links */
+      }
+
+      /* --- Header/Nav Styling --- */
+      .top-nav {
+        background-color: rgba(3, 7, 18, 0.6);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(55, 65, 81, 0.3);
+      }
+
+      /* Interactive Blobs Container */
+      #blobs-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: -2; /* Behind everything */
+      }
+
+      /* Interactive Blobs */
+      .interactive-blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(120px);
+        opacity: 0.35;
+        mix-blend-mode: screen;
+        transition: background-color 2s ease-in-out; /* Only transition color smoothly */
+        pointer-events: none;
+      }
+
+      /* General Text & Links */
+      .glow-text { color: #ffffff; text-shadow: 0 0 8px rgba(255, 255, 255, 0.2); }
+      .footer-link { transition: color 0.2s ease; }
+      .footer-link:hover { color: #ffffff; }
+      .social-icon { transition: all 0.3s ease; }
+      .social-icon:hover { background-color: #ffffff; color: #030712; transform: scale(1.1); }
+
+      /* Star Button & Dropdown */
+      .star-button-container { position: relative; z-index: 50; }
+      .star-button {
+        position: relative; background-color: rgba(17, 24, 39, 0.5); backdrop-filter: blur(8px); border: 1px solid rgba(55, 65, 81, 0.4);
+        transition: all 0.3s ease; overflow: hidden; padding: 0.5rem 1rem; border-radius: 9999px; display: flex; align-items: center; gap: 0.5rem;
+        font-size: 0.875rem; color: #D1D5DB; cursor: pointer;
+      }
+      .star-button:hover { border-color: rgba(255, 255, 255, 0.5); background-color: rgba(17, 24, 39, 0.7); color: #ffffff; }
+      .star-button::before {
+        content: ''; position: absolute; top: 0; left: 0; width: 200%; height: 200%;
+        background: conic-gradient(transparent, transparent, transparent, rgba(255, 255, 255, 0.5));
+        animation: rotate 4s linear infinite; transform-origin: center center; z-index: -1; opacity: 0;
+        transition: opacity 0.3s ease; transform: translate(-25%, -25%);
+      }
+      .star-button:hover::before { opacity: 1; }
+      @keyframes rotate { from { transform: translate(-25%, -25%) rotate(0deg); } to { transform: translate(-25%, -25%) rotate(360deg); } }
+      .star-dropdown {
+        position: absolute; top: calc(100% + 0.5rem); right: 0; background-color: rgba(31, 41, 55, 0.9); backdrop-filter: blur(12px);
+        border: 1px solid rgba(75, 85, 99, 0.5); border-radius: 0.75rem; padding: 0.75rem; width: 320px; z-index: 60;
+        opacity: 0; visibility: hidden; transform: translateY(-10px) scale(0.98); transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+        display: flex; flex-direction: column; gap: 0.75rem; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      }
+      .star-dropdown.active { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+      .dropdown-item {
+        display: flex; align-items: center; padding: 0.75rem; background-color: rgba(55, 65, 81, 0.4); border-radius: 0.5rem;
+        transition: background-color 0.2s ease, transform 0.15s ease; cursor: pointer; border: 1px solid transparent; position: relative;
+      }
+      .dropdown-item:hover { background-color: rgba(75, 85, 99, 0.6); transform: translateX(4px); border-color: rgba(107, 114, 128, 0.5); }
+      .dropdown-item-icon { width: 40px; height: 40px; border-radius: 0.375rem; margin-right: 0.75rem; object-fit: cover; flex-shrink: 0; border: 1px solid rgba(75, 85, 99, 0.5); }
+      .dropdown-item-content { flex-grow: 1; margin-right: 0.5rem; }
+      .dropdown-item-title { color: #F3F4F6; font-weight: 500; font-size: 0.875rem; line-height: 1.2; margin-bottom: 2px; }
+      .dropdown-item-desc { color: #9CA3AF; font-size: 0.75rem; line-height: 1.3; }
+      .dropdown-item-price {
+        background-color: #4B5563; color: #ffffff; font-size: 0.75rem; font-weight: 600; padding: 0.25rem 0.6rem; border-radius: 9999px;
+        transition: background-color 0.2s ease, transform 0.15s ease, opacity 0.2s ease; white-space: nowrap; border: none; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .dropdown-item:hover .dropdown-item-price:not(.new-stuff-button[disabled]) { background-color: #374151; transform: scale(1.05); }
+      .new-stuff-button[disabled] { background-color: #374151; color: #6b7280; cursor: not-allowed; opacity: 0.6; transform: none; }
+      .new-stuff-button[disabled]:hover { background-color: #374151; transform: none; }
+      .new-stuff-popup {
+        display: none; position: absolute; top: 50%; right: 100%; transform: translateY(-50%); margin-right: 0.75rem; width: max-content; max-width: 300px;
+        background-color: rgba(217, 119, 6, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(217, 119, 6, 0.3); border-radius: 0.5rem;
+        padding: 1rem; z-index: 70; box-shadow: 0 5px 15px rgba(0,0,0,0.3); pointer-events: none;
+      }
+      #new-stuff-item:hover .new-stuff-popup { display: block; }
+      .popup-content { display: flex; align-items: center; gap: 0.75rem; }
+      .popup-icon { width: 32px; height: 32px; border-radius: 0.25rem; flex-shrink: 0; }
+      .popup-text h4 { color: #FDE68A; font-weight: 600; margin-bottom: 0.5rem; }
+      .popup-text ul { list-style: disc; padding-left: 1.25rem; color: #FEF3C7; font-size: 0.875rem; line-height: 1.5; }
+
+      /* Particle animation */
+      .particle {
+        position: fixed;
+        border-radius: 50%; pointer-events: none; z-index: 5;
+        opacity: 0; animation: particleFade 3s ease-out forwards;
+      }
+      @keyframes particleFade {
+        0% { opacity: 0.7; transform: translate(0, 0) scale(1); }
+        100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.5); }
+      }
+
+      /* Utility to hide scrollbars */
+      .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      .hide-scrollbar::-webkit-scrollbar { display: none; }
+
+      /* Custom styles for Terms/Privacy content headings */
+      .terms-content h2,
+      .terms-content h3,
+      .terms-content h4 {
+        scroll-margin-top: 6rem; /* Offset for fixed nav (h-20 is 5rem, top-24 for sticky TOC is 6rem) */
+      }
+
+      /* Style for active TOC link (requires JS) */
+      #table-of-contents li a.toc-link.active {
+        color: #60A5FA; /* text-blue-400 */
+        font-weight: 500; /* font-medium */
+      }
+      /* Hover effect for TOC links */
+      #table-of-contents li a.toc-link:hover {
+        transform: translateX(4px);
+      }
+    </style>
+</head>
+<body class="text-gray-100 min-h-screen flex flex-col justify-between">
+  <div id="blobs-container">
+      <div class="interactive-blob blob-1"></div>
+      <div class="interactive-blob blob-2"></div>
+      <div class="interactive-blob blob-3"></div>
+      <div class="interactive-blob blob-4"></div>
+  </div>
+
+  <nav class="top-nav fixed top-0 left-0 right-0 z-50 h-20">
+    <div class="mx-auto h-full flex items-center justify-between px-4 sm:px-6">
+      <div class="flex items-center gap-4">
+        <a href="index.html" class="flex items-center gap-3 group">
+            <img
+              src="logo.jpg" alt="Fromsupply Logo" class="h-10 w-10 object-contain rounded-md flex-shrink-0"
+              id="logo-image" onerror="this.onerror=null; this.src='https://placehold.co/40x40/030712/FFFFFF?text=FS';"
+            />
+            <span class="text-lg font-semibold text-gray-200 group-hover:text-white transition-colors duration-200 hidden sm:inline">Fromsupply</span>
+        </a>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="#" class="group flex items-center gap-2 bg-gray-800/60 hover:bg-gray-700/80 border border-gray-700 hover:border-gray-500 px-4 py-2 rounded-full transition-all duration-300 text-gray-300 hover:text-white text-sm">
+          <i class="fa-brands fa-google text-sm"></i>
+          <span class="hidden sm:inline">Sign in</span>
+        </a>
+        <div class="star-button-container">
+          <button id="star-button" class="star-button" aria-haspopup="true" aria-expanded="false">
+            <span>⭐️ 7348</span> </button>
+          <div id="star-dropdown" class="star-dropdown" role="menu">
+              <div id="new-stuff-item" class="dropdown-item hidden" role="menuitem" data-link="#">
+                <img src="newstuff.png" alt="New Stuff Icon" class="dropdown-item-icon" onerror="this.onerror=null; this.src='https://placehold.co/40x40/374151/FFFFFF?text=NEW';">
+                <div class="dropdown-item-content">
+                  <div id="new-stuff-title" class="dropdown-item-title">Get What's New?</div>
+                  <div class="dropdown-item-desc">Get all the new features across all your max purchases</div>
+                </div>
+                <button id="new-stuff-button" class="dropdown-item-price new-stuff-button" data-action="buy-new-stuff" disabled>$2.49</button>
+                <div class="new-stuff-popup">
+                    <div class="popup-content">
+                        <img src="newstuff.png" alt="New Stuff Icon" class="popup-icon" onerror="this.onerror=null; this.src='https://placehold.co/32x32/111827/FFFFFF?text=N';">
+                        <div class="popup-text">
+                            <h4 id="new-stuff-popup-title"></h4> <ul>
+                                <li>Added new chimcode languages</li>
+                                <li>Updated chimtype algorithms</li>
+                                <li>New maze environments</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+              </div>
+              <div class="dropdown-item" role="menuitem" data-link="#">
+               <img src="clubcard.jpeg" alt="Membership Icon" class="dropdown-item-icon" onerror="this.onerror=null; this.src='https://placehold.co/40x40/374151/FFFFFF?text=FS';">
+               <div class="dropdown-item-content">
+                 <div class="dropdown-item-title">fs Membership</div>
+                 <div class="dropdown-item-desc">access paid features monthly</div>
+               </div>
+               <button class="dropdown-item-price" data-action="buy-membership">$5.99</button>
+             </div>
+             <div class="dropdown-item" role="menuitem" data-link="#">
+               <img src="10kcard.jpeg" alt="Cheat Code Icon" class="dropdown-item-icon" onerror="this.onerror=null; this.src='https://placehold.co/40x40/374151/FFFFFF?text=10K';">
+               <div class="dropdown-item-content">
+                 <div class="dropdown-item-title">Cheat Code</div>
+                 <div class="dropdown-item-desc">Begin your journey with 10 thousands Reserves</div>
+               </div>
+               <button class="dropdown-item-price" data-action="buy-stars">$19.99</button>
+             </div>
+             </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="w-full flex-grow pt-20 relative z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row lg:gap-x-8 xl:gap-x-12">
+
+      <aside class="lg:w-1/4 xl:w-1/5 w-full py-4 lg:py-8">
+        <nav id="table-of-contents"
+             aria-label="Table of contents"
+             class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-4 sm:p-6
+                    lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto hide-scrollbar
+                    mb-8 lg:mb-0 w-full">
+            <h3 class="text-lg font-semibold text-white mb-4 mt-0 pt-0">Contents</h3>
+            <ul class="list-none p-0 m-0 space-y-2">
+                <li><a href="#terms" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">Terms and Conditions</a>
+                    <ul class="list-none pl-4 mt-1 space-y-1">
+                        <li><a href="#terms-intro" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">1. Introduction</a></li>
+                        <li><a href="#terms-accounts" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">2. Accounts and Eligibility</a></li>
+                        <li><a href="#terms-products" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">3. Products and Services</a></li>
+                        <li><a href="#terms-payment" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">4. Fees, Payment, and Billing</a></li>
+                        <li><a href="#terms-subscriptions" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">5. Subscription Terms</a></li>
+                        <li><a href="#terms-refunds" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">6. Refund Policy</a></li>
+                        <li><a href="#terms-security" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">7. Security and Cyberattacks</a></li>
+                        <li><a href="#terms-conduct" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">8. User Conduct and Responsibilities</a></li>
+                        <li><a href="#terms-ip" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">9. Intellectual Property</a></li>
+                        <li><a href="#terms-disclaimers" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">10. Disclaimer of Warranties</a></li>
+                        <li><a href="#terms-liability" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">11. Limitation of Liability</a></li>
+                        <li><a href="#terms-indemnification" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">12. Indemnification</a></li>
+                        <li><a href="#terms-changes" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">13. Changes to These Terms</a></li>
+                        <li><a href="#terms-governing-law" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">14. Governing Law and Dispute Resolution</a></li>
+                        <li><a href="#terms-waiver" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">15. No Waiver</a></li>
+                        <li><a href="#terms-severability" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">16. Severability</a></li>
+                        <li><a href="#terms-contact" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">17. Contact and Support (Terms)</a></li>
+                    </ul>
+                </li>
+                <li><a href="#privacy" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">Privacy Policy</a>
+                    <ul class="list-none pl-4 mt-1 space-y-1">
+                        <li><a href="#privacy-intro" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">1. Introduction</a></li>
+                        <li><a href="#privacy-info-collected" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">2. Information We Collect</a></li>
+                        <li><a href="#privacy-how-we-use" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">3. How We Use Your Information</a></li>
+                        <li><a href="#privacy-cookies" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">4. Cookies and Tracking Technologies</a></li>
+                        <li><a href="#privacy-sharing" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">5. Data Sharing and Disclosure</a></li>
+                        <li><a href="#privacy-transfers" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">6. International Data Transfers</a></li>
+                        <li><a href="#privacy-security" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">7. Data Security</a></li>
+                        <li><a href="#privacy-retention" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">8. Data Retention</a></li>
+                        <li><a href="#privacy-rights" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">9. Your Rights and Choices</a></li>
+                        <li><a href="#privacy-children" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">10. Children’s Privacy</a></li>
+                        <li><a href="#privacy-updates" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">11. Updates to this Privacy Policy</a></li>
+                        <li><a href="#privacy-contact" class="toc-link text-gray-300 hover:text-white text-sm transition-colors duration-200 block py-1 no-underline">12. Contact Us (Privacy)</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+      </aside>
+
+      <main class="lg:w-3/4 xl:w-4/5 w-full py-4 lg:py-8 terms-content mb-16">
+        <h1 class="text-3xl sm:text-4xl font-bold text-white mb-4 pt-8 lg:pt-0 text-center lg:text-left">FromSupply Legal Center</h1>
+        <p class="text-center lg:text-left text-gray-400 mb-10 text-gray-300 leading-relaxed">Terms of Use & Privacy Policy - Last Updated: May 6, 2025</p>
+
+        <h2 id="terms" class="text-2xl sm:text-3xl font-semibold text-white mb-6 pt-10 border-t border-gray-700">FromSupply Terms and Conditions</h2>
+
+        <h3 id="terms-intro" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">1. Introduction</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed">Welcome to FromSupply! These Terms and Conditions (“Terms”) govern your use of the FromSupply marketplace, which offers both digital products (such as apps, websites, cheat codes, and subscription services) and, in the future, physical products and trade services (including food packaging, vending machines, etc.). FromSupply operates in Canada and Nigeria, and by using our platform you agree to these Terms. We comply with applicable laws in our operating jurisdictions and nothing in these Terms is intended to limit any consumer rights provided by Canadian or Nigerian law. If you do not agree with these Terms, please do not use FromSupply.</p>
+
+        <h3 id="terms-accounts" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">2. Accounts and Eligibility</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed">To use the FromSupply marketplace, you may need to create an account. You agree to provide accurate, up-to-date information during registration and to keep your account credentials secure. You are responsible for all activities under your account. You must be the age of majority in your province/territory or state (or at least 18 years old) to use our services. By creating an account, you represent that you are eligible to do so and that you will use the platform in compliance with these Terms and all applicable laws.</p>
+
+        <h3 id="terms-products" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">3. Products and Services</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed">FromSupply provides access to various products and services: digital goods (e.g. software, cheat codes, subscription-based services) and eventually physical goods and trade services. All products, whether digital or physical, are subject to availability and may be modified or discontinued at any time. We reserve the right to add new features, categories, or services and to establish specific terms or fees for certain products (we will provide notice if such specific terms apply). The use of any digital content purchased is for your personal, lawful use only. Unauthorized resale or distribution of content obtained from FromSupply is prohibited.</p>
+
+        <h3 id="terms-payment" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">4. Fees, Payment, and Billing</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed">When you make a purchase on FromSupply, you agree to pay all specified fees and charges. Prices are listed in the applicable currency and may exclude taxes (any required taxes will be added at checkout according to your location). <strong class="font-semibold text-gray-100">Billing is handled exclusively via our support center.</strong> This means that any special billing arrangements, inquiries, or issues (including payment disputes or changes to your payment method) must be addressed by contacting FromSupply’s support team through the official support channels. We currently accept the payment methods indicated at checkout. You must provide valid payment information, and you authorize us to charge your chosen payment method for any purchases or subscription fees. If a payment fails or is not processed, we may suspend or cancel your access to the product or service.</p>
+
+        <h3 id="terms-subscriptions" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">5. Subscription Terms</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed">Some of FromSupply’s digital services are offered on a subscription basis (for example, recurring monthly or annual services). By subscribing, you understand and agree that your subscription will automatically renew at the end of each billing cycle (e.g. monthly or yearly) unless you cancel in accordance with these Terms. <strong class="font-semibold text-gray-100">Subscription cancellations take effect at the end of the current billing cycle.</strong> This means you will continue to have access to the subscription service until the current paid period ends, and the cancellation will prevent future charges but will not result in a mid-cycle refund. <strong class="font-semibold text-gray-100">Users must cancel subscriptions on or before the last day of their current access period to avoid further billing.</strong> If you do not cancel by the last day, the subscription will renew and you will be charged for the next cycle. We will provide methods to cancel (typically via your account settings or by contacting support).</p>
+        <p class="text-gray-300 mb-4 leading-relaxed">If you received a <strong class="font-semibold text-gray-100">free trial</strong> or promotional subscription (for example, via a referral or special promotion), you will not be charged during the trial period. However, <strong class="font-semibold text-gray-100">you must cancel before the trial ends</strong> to avoid being charged when the trial converts to a paid subscription. If you do not cancel before the trial period lapses and a charge is processed, that initial charge will be subject to our refund policy (see Section 6 below) – specifically, refunds in such cases are <strong class="font-semibold text-gray-100">only possible at FromSupply’s discretion</strong>.</p>
+
+        <h3 id="terms-refunds" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">6. Refund Policy</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed">We want you to be satisfied with your experience, but we also have certain guidelines on refunds due to the nature of our products. <strong class="font-semibold text-gray-100">All refund and cancellation decisions are ultimately made at FromSupply’s sole discretion on a case-by-case basis.</strong> In general, our refund policy is as follows:</p>
+        <ul class="list-disc list-inside text-gray-300 mb-4 pl-4 space-y-2">
+          <li><strong class="font-semibold text-gray-100">30-Day Refund Window:</strong> Refund requests must be made within 30 days of the original purchase date. If you are unsatisfied with a product or service, you have up to 30 calendar days from purchase to request a refund. Within this period, we may issue a refund upon review of your case.</li>
+          <li><strong class="font-semibold text-gray-100">No Refunds After 30 Days:</strong> We will not issue refunds for any requests made more than 30 days after purchase. After the 30-day window has passed, all sales are considered final. Late cancellation of a service (beyond one month from purchase or renewal) will not be eligible for a refund.</li>
+          <li><strong class="font-semibold text-gray-100">Subscription Cancellations:</strong> As noted in Section 5, if you cancel a subscription, the cancellation takes effect at the next billing cycle and we do not provide prorated refunds for the remaining days in the current cycle. Once a subscription charge has been processed for a given cycle, that amount is generally non-refundable (except in the case of timely cancellation within 30 days of a first-time charge, as may be granted at our discretion).</li>
+          <li><strong class="font-semibold text-gray-100">Upgrades and Tier Changes:</strong> If you choose to upgrade a product or service after you have already reached the maximum purchase tier or level for that offering, any fees paid for such upgrades are <strong class="font-semibold text-gray-100">non-refundable</strong>. (For example, if the service has a maximum tier and you have utilized full value up to that tier, additional upgrade purchases beyond that may not be refundable.) We encourage you to review upgrade details carefully before purchase.</li>
+          <li><strong class="font-semibold text-gray-100">Cheat Code Purchases:</strong> All purchases of cheat codes or similar digital unlocks are <strong class="font-semibold text-gray-100">strictly non-refundable.</strong> Due to the nature of cheat codes (immediate access to digital information that cannot be returned), once a cheat code is delivered or accessed, the sale is final. Please be sure you are purchasing the correct item before confirmation.</li>
+          <li><strong class="font-semibold text-gray-100">Free Trials and Promotions:</strong> If you were given a free trial via referral or promotion and you did not cancel before the trial ended, resulting in a charge, you generally will <strong class="font-semibold text-gray-100">not</strong> be entitled to an automatic refund of that charge. However, you may contact our support center to request consideration. Refunds for charges arising from free trial conversions are <strong class="font-semibold text-gray-100">at the owner’s (FromSupply’s) discretion</strong> and are not guaranteed. To be eligible even for consideration of such a refund, you should cancel immediately after the charge (indicating you did not intend to continue), and even then, any refund is a courtesy and not an obligation.</li>
+          <li><strong class="font-semibold text-gray-100">Owner’s Discretion:</strong> All refund decisions are ultimately made by FromSupply’s owner/management. Meeting the criteria above (such as being within 30 days) <strong class="font-semibold text-gray-100">does not guarantee</strong> a refund, especially if we suspect abuse of the policy or other extenuating circumstances. We reserve the right to deny a refund request even if it falls within the general guidelines, in accordance with applicable law. Conversely, we may make exceptions to the policy on a case-by-case basis in our sole discretion (for example, extended refunds for certain special circumstances), but these are one-time and do not set a precedent.</li>
+          <li><strong class="font-semibold text-gray-100">How to Request a Refund:</strong> To request a refund, you must contact FromSupply’s support center (through the official support email or portal) with your order details and the reason for the request. Our billing team (available via the support center) is the only channel authorized to handle refunds. We will review your request and inform you of the outcome. Please allow some time for processing. If approved, refunds will be issued to the original payment method used for the transaction.</li>
+        </ul>
+
+        <h3 id="terms-security" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">7. Security and Cyberattacks</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed">FromSupply takes security seriously and implements reasonable measures to protect our platform and your information. However, <strong class="font-semibold text-gray-100">we cannot guarantee absolute security</strong>. You acknowledge that any platform, no matter how secure, can potentially be subject to cyberattacks or data breaches. In the unfortunate event of a cyberattack on the FromSupply platform, we will work diligently to mitigate the issue and protect our users, but <strong class="font-semibold text-gray-100">FromSupply is not liable for any loss or unauthorized access resulting from such an attack.</strong> In particular, <strong class="font-semibold text-gray-100">FromSupply holds no liability for issuing refunds or compensations due to a cyber incident</strong> beyond what is outlined in our Refund Policy (Section 6).</p>
+        <p class="text-gray-300 mb-4 leading-relaxed">Furthermore, please note that for certain digital resources or services on FromSupply, <strong class="font-semibold text-gray-100">a free method of obtaining “reserves” or equivalent content may exist</strong> (for example, we might offer free alternatives or promotions that provide similar benefits as paid content). Because such free options are available, if you voluntarily choose to provide your payment information and engage in a paid transaction instead, you assume the risks associated with that choice. <strong class="font-semibold text-gray-100">FromSupply will not be held responsible for any breaches, unauthorized access to your payment data, or other consequences (financial or otherwise) arising from a cyberattack or data leak involving your information.</strong> Choosing to use paid services when free methods are available is entirely your decision, and you agree that FromSupply is not liable for any issues that may result from that decision.</p>
+        <p class="text-gray-300 mb-4 leading-relaxed">Always safeguard your own account credentials and payment information. If you suspect any unauthorized activity on your account or a security breach, please contact our support center immediately.</p>
+
+        <h3 id="terms-conduct" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">8. User Conduct and Responsibilities</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed">By using FromSupply, you agree to use the platform and all its products and services only for lawful purposes and in a manner that does not infringe the rights of or restrict or inhibit anyone else’s use of the platform. You shall not:</p>
+        <ul class="list-disc list-inside text-gray-300 mb-4 pl-4 space-y-2">
+          <li>Violate any applicable local, national, or international law or regulation.</li>
+          <li>Engage in fraudulent, misleading, or deceptive activities.</li>
+          <li>Attempt to hack, destabilize, or disrupt the platform, or bypass any security measures.</li>
+          <li>Use automated means (bots, scrapers, etc.) to access the platform without permission.</li>
+          <li>Post or transmit unlawful, offensive, threatening, libelous, defamatory, or infringing content.</li>
+        </ul>
+        <p class="text-gray-300 mb-4 leading-relaxed">Violation of these Terms may result in suspension or termination of your access and potential legal consequences. You are responsible for any legal fees or losses incurred by FromSupply due to your breach (see Section 12, Indemnification).</p>
+
+        <h3 id="terms-ip" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">9. Intellectual Property</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed">All content and materials on FromSupply (text, graphics, logos, software, etc.) are the property of FromSupply or its licensors and protected by intellectual property laws. The compilation of content is FromSupply's exclusive property.</p>
+        <p class="text-gray-300 mb-4 leading-relaxed">Purchasing digital products grants you a limited, non-exclusive, non-transferable license for personal, non-commercial use, subject to applicable EULAs. You do not gain ownership. Reproduction, distribution, modification, or public display of FromSupply content is prohibited without explicit permission.</p>
+        <p class="text-gray-300 mb-4 leading-relaxed">Trademarks and logos on FromSupply belong to FromSupply or third parties and may not be used without written permission.</p>
+
+        <h3 id="terms-disclaimers" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">10. Disclaimer of Warranties</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed"><strong class="font-semibold text-gray-100">FromSupply is provided “as is” and “as available.”</strong> To the fullest extent permitted by law, FromSupply disclaims all warranties (express, implied, or statutory), including merchantability, fitness for a particular purpose, title, and non-infringement. We do not guarantee the platform will be uninterrupted, error-free, secure, or free of harmful components. We do not guarantee the accuracy or reliability of information or that defects will be corrected.</p>
+        <p class="text-gray-300 mb-4 leading-relaxed">Your use of FromSupply is at your own risk. Material downloaded is accessed at your own risk, and you are solely responsible for any damage to your device or data loss.</p>
+        <p class="text-gray-300 mb-4 leading-relaxed">FromSupply makes no guarantees about the effectiveness or outcomes of digital products (e.g., cheat codes, software). Any advice or information does not create any warranty not expressly stated in these Terms.</p>
+
+        <h3 id="terms-liability" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">11. Limitation of Liability</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed">To the fullest extent permitted by law, FromSupply and its affiliates will not be liable for any indirect, incidental, special, consequential, exemplary, or punitive damages (including lost profits, revenue, data, or replacement costs) arising from your use or inability to use the platform or services, or from actions taken under these Terms (like account termination).</p>
+        <p class="text-gray-300 mb-4 leading-relaxed"><strong class="font-semibold text-gray-100">FromSupply is not liable for any physical, mental, or spiritual effects or harm</strong> claimed from using our platform or products. You use FromSupply voluntarily and at your own risk, waiving rights to hold us responsible for outcomes resulting from your voluntary actions (e.g., consequences of using a cheat code, participating in activities).</p>
+        <p class="text-gray-300 mb-4 leading-relaxed">If FromSupply is found liable, <strong class="font-semibold text-gray-100">our total liability for all claims will not exceed the amount you paid to FromSupply in the last six (6) months, or CAD $100, whichever is greater.</strong> This limitation applies collectively. Some jurisdictions may not allow these limitations; our liability will be limited to the maximum extent permitted by law.</p>
+
+        <h3 id="terms-indemnification" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">12. Indemnification</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed">You agree to indemnify, defend, and hold harmless FromSupply and its affiliates from any claims, liabilities, damages, losses, or expenses (including reasonable attorneys’ fees) arising from: (a) your use or misuse of the platform/services, (b) your breach of these Terms or applicable law, or (c) claims that your actions caused harm to a third party. FromSupply reserves the right to assume exclusive defense and control of such matters at your expense, and you agree to cooperate. You will not settle any such matter without FromSupply's prior written consent.</p>
+
+        <h3 id="terms-changes" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">13. Changes to These Terms</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed">FromSupply may revise these Terms. We will notify users of <strong class="font-semibold text-gray-100">material changes</strong> by posting updated Terms on the platform with a new effective date and/or via service notice or email. Review these Terms periodically. <strong class="font-semibold text-gray-100">Continuing to use the platform after changes become effective means you agree to the revised Terms.</strong> If you disagree, stop using FromSupply and cancel subscriptions.</p>
+
+        <h3 id="terms-governing-law" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">14. Governing Law and Dispute Resolution</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed">These Terms are governed by the laws of Canada and the Federal Republic of Nigeria, as applicable. We comply with consumer protection laws in both jurisdictions. If you reside in Canada, Canadian law applies; if in Nigeria, Nigerian law applies. Contact us first to resolve disputes amicably. Legal claims must be commenced within one (1) year after the cause of action accrues, or they are permanently barred (where permitted by law).</p>
+        <p class="text-gray-300 mb-4 leading-relaxed">Jurisdiction for disputes will be determined by FromSupply based on the dispute's nature and your location, potentially in Canadian or Nigerian courts. Alternative dispute resolution (arbitration, mediation) may be agreed upon.</p>
+        <p class="text-gray-300 mb-4 leading-relaxed"><strong class="font-semibold text-gray-100">Local Law Provisions:</strong> Nothing here contravenes mandatory consumer rights or data protection laws. If a provision is unenforceable, it will be modified or severed, leaving the rest of the Terms effective.</p>
+
+        <h3 id="terms-waiver" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">15. No Waiver</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed">FromSupply’s failure to enforce any right or provision does not constitute a waiver. Waivers must be in writing and signed by an authorized representative.</p>
+
+        <h3 id="terms-severability" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">16. Severability</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed">If any provision is held invalid, illegal, or unenforceable, it will be eliminated or limited minimally, and the remaining provisions will continue in full force and effect.</p>
+
+        <h3 id="terms-contact" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">17. Contact and Support (Terms)</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed">For questions about these Terms or other support needs, contact FromSupply support via methods on our website (email, contact form). For billing/account issues, include your account email or order number.</p>
+
+        <hr class="my-12 border-gray-700" />
+
+        <h2 id="privacy" class="text-2xl sm:text-3xl font-semibold text-white mb-6 pt-10 border-t border-gray-700">FromSupply Privacy Policy</h2>
+
+        <h3 id="privacy-intro" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">1. Introduction</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed">FromSupply respects your privacy. This Policy outlines how we collect, use, store, and protect your personal information when you use FromSupply. It explains your rights and how to contact us. We comply with applicable data protection laws in Canada (PIPEDA) and Nigeria (NDPR/successor laws). By using our services, you agree to this Policy.</p>
+
+        <h3 id="privacy-info-collected" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">2. Information We Collect</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed">We collect information to provide and improve services:</p>
+        <ul class="list-disc list-inside text-gray-300 mb-4 pl-4 space-y-2">
+          <li><strong class="font-semibold text-gray-100">Personal Identification Information:</strong> Name, email, phone, address, etc., when registering or purchasing. Vendor details if applicable.</li>
+          <li><strong class="font-semibold text-gray-100">Account and Profile Information:</strong> Username, hashed password, preferences, profile details.</li>
+          <li><strong class="font-semibold text-gray-100">Payment Information:</strong> Details needed for transactions (handled by secure processors). We retain transaction records, not full financial numbers.</li>
+          <li><strong class="font-semibold text-gray-100">Digital Usage Data:</strong>
+              <ul class="list-disc list-inside ml-6 mt-2 space-y-1">
+                <li><strong class="font-semibold text-gray-100">Device/Technical Info:</strong> IP address, browser, device type, OS, identifiers.</li>
+                <li><strong class="font-semibold text-gray-100">Usage Details:</strong> Pages viewed, features used, timestamps, referral URLs, clickstream data.</li>
+                <li><strong class="font-semibold text-gray-100">Cookies/Similar Tech:</strong> Used for preferences, login, analytics, personalization (see Section 4).</li>
+              </ul>
+          </li>
+          <li><strong class="font-semibold text-gray-100">Support and Communications:</strong> Information provided during support interactions, communication records.</li>
+          <li><strong class="font-semibold text-gray-100">Location Information:</strong> General location from IP; precise location only with explicit permission (rarely required).</li>
+        </ul>
+        <p class="text-gray-300 mb-4 leading-relaxed">We collect info directly from you, automatically (cookies), or from third parties (e.g., login services). Consent sought where required by law.</p>
+
+        <h3 id="privacy-how-we-use" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">3. How We Use Your Information</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed">We use information for purposes including:</p>
+        <ul class="list-disc list-inside text-gray-300 mb-4 pl-4 space-y-2">
+          <li><strong class="font-semibold text-gray-100">Providing/Improving Service:</strong> Operating the marketplace, processing orders, delivering products, troubleshooting, analysis, enhancing user experience.</li>
+          <li><strong class="font-semibold text-gray-100">Account Management:</strong> Creating/managing accounts, authentication, customer support, administrative messages (password resets, policy updates).</li>
+          <li><strong class="font-semibold text-gray-100">Transactions/Billing:</strong> Processing payments, issuing invoices, record-keeping, managing subscriptions, billing support.</li>
+          <li><strong class="font-semibold text-gray-100">Communication/Updates:</strong> Order confirmations, product notices, service updates. With consent (where required), newsletters, marketing emails (opt-out available). Transactional messages are still sent.</li>
+          <li><strong class="font-semibold text-gray-100">Personalization:</strong> Suggesting relevant products/services based on behavior/history.</li>
+          <li><strong class="font-semibold text-gray-100">Analytics/Performance:</strong> Understanding usage patterns via aggregated data (e.g., Google Analytics) to improve the platform.</li>
+          <li><strong class="font-semibold text-gray-100">Security/Fraud Prevention:</strong> Maintaining security, verifying accounts, detecting/preventing fraud or illegal activities, debugging.</li>
+          <li><strong class="font-semibold text-gray-100">Legal Compliance:</strong> Meeting legal/regulatory obligations (tax, accounting, lawful requests).</li>
+          <li><strong class="font-semibold text-gray-100">Other Purposes:</strong> With notice and consent if required.</li>
+        </ul>
+        <p class="text-gray-300 mb-4 leading-relaxed">Legal bases for processing include consent, contract fulfillment, legitimate interests (balanced against your rights), and legal obligations.</p>
+
+        <h3 id="privacy-cookies" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">4. Cookies and Tracking Technologies</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed">We use cookies (small data files) and similar tech (web beacons):</p>
+        <ul class="list-disc list-inside text-gray-300 mb-4 pl-4 space-y-2">
+          <li><strong class="font-semibold text-gray-100">Essential Cookies:</strong> Necessary for site function (login, security).</li>
+          <li><strong class="font-semibold text-gray-100">Analytical/Performance Cookies:</strong> Anonymous data collection on usage to improve site performance.</li>
+          <li><strong class="font-semibold text-gray-100">Functional Cookies:</strong> Enhanced functionality/personalization (preferences, cart).</li>
+          <li><strong class="font-semibold text-gray-100">Targeting/Marketing Cookies:</strong> (Used minimally, if at all) To make site/ads relevant (consent obtained if used).</li>
+        </ul>
+        <p class="text-gray-300 mb-4 leading-relaxed">Most browsers allow cookie management (blocking, deleting), but this may affect site functionality. We don't currently respond to Do Not Track signals.</p>
+
+        <h3 id="privacy-sharing" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">5. Data Sharing and Disclosure</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed">We do <strong class="font-semibold text-gray-100">not</strong> sell your personal data. We may share it with:</p>
+        <ul class="list-disc list-inside text-gray-300 mb-4 pl-4 space-y-2">
+          <li><strong class="font-semibold text-gray-100">Service Providers:</strong> Trusted third parties performing functions on our behalf (payment processing, hosting, analytics, email, support) under strict confidentiality and security obligations.</li>
+          <li><strong class="font-semibold text-gray-100">Business Partners/Vendors:</strong> When necessary to fulfill transactions involving third parties (e.g., sharing name/email for license delivery).</li>
+          <li><strong class="font-semibold text-gray-100">Legal Requirements/Protection:</strong> If required by law (subpoena, court order) or to protect FromSupply's rights/property, prevent wrongdoing, ensure safety, or defend against liability.</li>
+          <li><strong class="font-semibold text-gray-100">Business Transfers:</strong> In case of merger, acquisition, bankruptcy, data may be transferred to a successor, subject to consistent privacy terms (notice provided).</li>
+          <li><strong class="font-semibold text-gray-100">With Your Consent:</strong> For purposes not listed, after informing you and obtaining consent.</li>
+        </ul>
+        <p class="text-gray-300 mb-4 leading-relaxed">Aggregated or de-identified data may be shared publicly or with third parties.</p>
+
+        <h3 id="privacy-transfers" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">6. International Data Transfers</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed">Your information may be transferred, stored, or processed outside your home country (e.g., between Canada/Nigeria, or to service providers in US/EU). We ensure appropriate safeguards required by your jurisdiction's laws (e.g., NDPR compliance for Nigerian data, PIPEDA for Canadian data) are in place. By using FromSupply, you consent to these transfers.</p>
+
+        <h3 id="privacy-security" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">7. Data Security</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed">We use appropriate technical/organizational measures (encryption, hashing, firewalls, access controls) to protect your data. However, <strong class="font-semibold text-gray-100">no system is 100% secure.</strong> We cannot guarantee absolute security. Protect your credentials and notify us of suspected breaches.</p>
+        <p class="text-gray-300 mb-4 leading-relaxed">In case of a significant breach, we will notify affected individuals and authorities as required by law (e.g., Privacy Commissioner of Canada, Nigeria Data Protection Bureau) and take mitigation steps.</p>
+
+        <h3 id="privacy-retention" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">8. Data Retention</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed">We retain personal data only as long as necessary for the purposes collected, including legal/accounting needs.</p>
+        <ul class="list-disc list-inside text-gray-300 mb-4 pl-4 space-y-2">
+          <li>Account info kept until account deletion request.</li>
+          <li>Transaction records retained for service, audit, legal compliance (e.g., tax laws).</li>
+          <li>Support communications kept for follow-up/improvement.</li>
+          <li>Analytics data anonymized/deleted when no longer needed.</li>
+          <li>Data related to withdrawn consent stopped from use and managed per retention policy.</li>
+        </ul>
+        <p class="text-gray-300 mb-4 leading-relaxed">When no longer needed, data is deleted, anonymized, or securely isolated until deletion is possible (backups may retain data temporarily).</p>
+
+        <h3 id="privacy-rights" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">9. Your Rights and Choices</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed">Depending on your jurisdiction (Canada, Nigeria, etc.), you may have rights:</p>
+        <ul class="list-disc list-inside text-gray-300 mb-4 pl-4 space-y-2">
+          <li><strong class="font-semibold text-gray-100">Access and Correction:</strong> Request access to your data and correction of inaccuracies (some via account settings, others via contact).</li>
+          <li><strong class="font-semibold text-gray-100">Deletion (Right to be Forgotten):</strong> Request erasure of your data (subject to legal retention needs). May result in account termination.</li>
+          <li><strong class="font-semibold text-gray-100">Withdrawal of Consent:</strong> Withdraw consent for processing (e.g., unsubscribe from marketing). Does not affect past processing or processing on other legal bases.</li>
+          <li><strong class="font-semibold text-gray-100">Data Portability:</strong> Request a copy of your data in a machine-readable format and transmission to another provider (where applicable).</li>
+          <li><strong class="font-semibold text-gray-100">Objection to Processing:</strong> Object to certain processing (direct marketing, legitimate interests). May affect service provision.</li>
+          <li><strong class="font-semibold text-gray-100">Restriction of Processing:</strong> Request pausing of processing under certain conditions.</li>
+          <li><strong class="font-semibold text-gray-100">Automated Decision-Making:</strong> Rights regarding significant decisions made solely automatically (currently not typical at FromSupply).</li>
+        </ul>
+        <p class="text-gray-300 mb-4 leading-relaxed">Contact us to exercise rights (see Section 12). We may need to verify your identity. We won't discriminate for exercising rights, but some actions may impact service availability.</p>
+
+        <h3 id="privacy-children" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">10. Children’s Privacy</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed">FromSupply is <strong class="font-semibold text-gray-100">not directed to children under 13</strong> (or relevant age of consent). We do not knowingly collect data from children. If we learn we have, we delete it. Parents/guardians can contact us if they believe a child provided data. Minors using the service are assumed to have parental/guardian consent where required.</p>
+
+        <h3 id="privacy-updates" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">11. Updates to this Privacy Policy</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed">We may update this Policy. Material changes will be notified via website notice or other channels, with an updated "last updated" date. <strong class="font-semibold text-gray-100">Continued use after changes implies acceptance.</strong> Review periodically. New uses of data will involve notice/consent if required.</p>
+
+        <h3 id="privacy-contact" class="text-xl sm:text-2xl font-semibold text-white mt-8 mb-4">12. Contact Us (Privacy)</h3>
+        <p class="text-gray-300 mb-4 leading-relaxed">FromSupply is responsible for your data. For privacy questions, concerns, or requests:</p>
+        <ul class="list-disc list-inside text-gray-300 mb-4 pl-4 space-y-2">
+          <li><strong class="font-semibold text-gray-100">Email:</strong> <a href="mailto:privacy@fromsupply.com" class="text-blue-400 hover:text-blue-300 underline">privacy@fromsupply.com</a> (privacy-specific) or <a href="mailto:support@fromsupply.com" class="text-blue-400 hover:text-blue-300 underline">support@fromsupply.com</a> (general, mention privacy).</li>
+          <li><strong class="font-semibold text-gray-100">Support Center:</strong> Via online portal/contact form on FromSupply website.</li>
+          <li><strong class="font-semibold text-gray-100">Mailing Address (Canada):</strong> <em class="italic">[Insert Canadian office address if available]</em></li>
+          <li><strong class="font-semibold text-gray-100">Mailing Address (Nigeria):</strong> <em class="italic">[Insert Nigerian office address if available]</em></li>
+        </ul>
+        <p class="text-gray-300 mb-4 leading-relaxed"><em class="italic">(Note: Central contact via email/website is sufficient currently.)</em></p>
+        <p class="text-gray-300 mb-4 leading-relaxed">We aim to respond reasonably quickly. Provide sufficient info for requests; verification may be needed. If unresolved, you may contact your local data protection authority (e.g., OPC Canada, NDPB Nigeria), but please contact us first.</p>
+        <p class="text-gray-300 mb-4 leading-relaxed">Thank you for reading. Your trust is important.</p>
+
+        <p class="mt-8 text-gray-400 text-sm text-center lg:text-left text-gray-300 mb-4 leading-relaxed"><strong class="font-semibold text-gray-100">Last Updated:</strong> May 6, 2025</p>
+      </main>
+
+    </div>
+  </div>
+
+  <footer class="w-full bg-gray-900/80 backdrop-blur-md border-t border-gray-800 pt-12 pb-6 relative z-10">
+    <div class="mx-auto px-6 max-w-7xl">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div>
+          <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+            <img src="logo.jpg" alt="Fromsupply Logo" class="h-6 w-6 rounded-sm inline-block" onerror="this.style.display='none'; const fsText = document.createElement('span'); fsText.textContent='FS'; fsText.className='w-6 h-6 bg-gray-700 text-white flex items-center justify-center rounded-sm text-xs font-semibold'; this.parentNode.insertBefore(fsText, this);"> Fromsupply
+            <span id="app-version-display" class="text-xs font-normal text-gray-500 opacity-75">fs v</span>
+          </h3>
+          <p class="text-gray-400 text-sm mb-6">Building the future of developer tools and experiences through innovative solutions.</p>
+          <div class="flex space-x-3">
+            <a href="https://github.com/chimwopara/fromsupply" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 social-icon" aria-label="GitHub">
+              <i class="fab fa-github"></i>
+            </a>
+            <a href="https://instagram.com/fromsupply" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 social-icon" aria-label="Instagram">
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a href="#" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 social-icon" aria-label="LinkedIn">
+              <i class="fab fa-linkedin-in"></i>
+            </a>
+          </div>
+          <div class="mt-6 text-gray-500 text-xs">© 2025 Fromsupply. All rights reserved.</div>
+        </div>
+
+        <div>
+          <h3 class="text-white font-semibold mb-4">Resources</h3>
+          <ul class="space-y-2 text-sm">
+            <li><a href="https://www.youtube.com/playlist?list=PLaXy2djTTbXh0hlOvARCHAiGFo2n-EdyT&playnext=1&index=1" target="_blank" rel="noopener noreferrer" class="text-gray-400 footer-link">Tutorials</a></li>
+            <li><a href="terms.html" class="text-gray-400 footer-link">Terms & Privacy</a></li> </ul>
+        </div>
+
+        <div>
+          <h3 class="text-white font-semibold mb-4">Contact</h3>
+          <ul class="space-y-2 text-sm mb-6">
+            <li class="flex items-center gap-2 text-gray-400">
+              <i class="fa-regular fa-envelope w-4 text-center"></i>
+              <a href="mailto:support@fromsupply.com" class="footer-link">support@fromsupply.com</a>
+            </li>
+            <li class="flex items-center gap-2 text-gray-400">
+              <i class="fa-solid fa-location-dot w-4 text-center"></i>
+              <span>Alberta, Canada</span>
+            </li>
+            <li>
+              <a href="support.html" class="text-gray-400 footer-link flex items-center gap-2">
+                <i class="fa-regular fa-life-ring w-4 text-center"></i>Support Center
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // --- Element Selectors ---
+      const blobsContainer = document.getElementById('blobs-container');
+      const starButton = document.getElementById('star-button');
+      const starDropdown = document.getElementById('star-dropdown');
+      const blobs = blobsContainer ? blobsContainer.querySelectorAll('.interactive-blob') : [];
+      const newStuffItem = document.getElementById('new-stuff-item');
+      const newStuffButton = document.getElementById('new-stuff-button');
+      const newStuffTitle = document.getElementById('new-stuff-title');
+      const newStuffPopupTitle = document.getElementById('new-stuff-popup-title');
+      const appVersionDisplay = document.getElementById('app-version-display');
+      const tocLinks = document.querySelectorAll('#table-of-contents .toc-link');
+      const sections = document.querySelectorAll('.terms-content h2[id], .terms-content h3[id], .terms-content h4[id]'); // Added h4
+
+      // --- App Version ---
+      const APP_VERSION = "0.5";
+      const APP_MAJOR_VERSION = parseInt(APP_VERSION.split('.')[0]);
+
+      // --- LocalStorage Keys ---
+      const LS_HAS_MAX = 'fs_hasPurchasedMax';
+      const LS_NEW_STUFF_VERSION = 'fs_newStuffPurchasedVersion';
+
+      // --- Set Footer & New Stuff Title Version ---
+      if (appVersionDisplay) appVersionDisplay.textContent = `fs v${APP_VERSION}`;
+      if (newStuffTitle) newStuffTitle.textContent = `Get What's New? (fs v${APP_VERSION})`;
+      if (newStuffPopupTitle) {
+          const now = new Date();
+          const month = now.toLocaleString('default', { month: 'long' });
+          const year = now.getFullYear();
+          newStuffPopupTitle.textContent = `${month} ${year}`;
+      }
+
+      // --- Blob Animation State ---
+      let blobHues = [270, 220, 170, 250]; // Initial hues for the blobs
+      const blobElements = [
+          { el: document.querySelector('.blob-1'), initialTop: '-10%', initialLeft: '-15%', initialWidth: '60vw', initialHeight: '60vw' },
+          { el: document.querySelector('.blob-2'), initialTop: 'auto', initialBottom: '-20%', initialLeft: 'auto', initialRight: '-15%', initialWidth: '55vw', initialHeight: '55vw' },
+          { el: document.querySelector('.blob-3'), initialTop: '30%', initialLeft: 'auto', initialRight: '10%', initialWidth: '50vw', initialHeight: '50vw' },
+          { el: document.querySelector('.blob-4'), initialTop: 'auto', initialBottom: '5%', initialLeft: '20%', initialWidth: '45vw', initialHeight: '45vw' }
+      ];
+
+      // --- Initialize Blob Styles ---
+      function initializeBlobs() {
+          if (!blobsContainer) return;
+          blobElements.forEach((blobObj, index) => {
+              if (blobObj.el) {
+                  blobObj.el.style.top = blobObj.initialTop !== 'auto' ? blobObj.initialTop : 'auto';
+                  blobObj.el.style.bottom = blobObj.initialBottom !== 'auto' ? blobObj.initialBottom : 'auto';
+                  blobObj.el.style.left = blobObj.initialLeft !== 'auto' ? blobObj.initialLeft : 'auto';
+                  blobObj.el.style.right = blobObj.initialRight !== 'auto' ? blobObj.initialRight : 'auto';
+                  blobObj.el.style.width = blobObj.initialWidth;
+                  blobObj.el.style.height = blobObj.initialHeight;
+                  blobObj.el.style.backgroundColor = `hsl(${blobHues[index]}, 70%, 60%)`;
+              } else {
+                  console.warn(`Blob element ${index+1} not found.`);
+              }
+          });
+      }
+
+
+      // --- Background Blob Animation ---
+      function animateBackgroundBlobs() {
+        if (blobsContainer) {
+            blobElements.forEach((blobObj, index) => {
+                if (blobObj.el) {
+                    blobHues[index] = (blobHues[index] + 0.1) % 360;
+                    blobObj.el.style.backgroundColor = `hsl(${blobHues[index]}, 70%, 60%)`;
+                }
+            });
+        }
+        requestAnimationFrame(animateBackgroundBlobs);
+      }
+      
+      initializeBlobs(); // Set initial positions and colors
+      if (blobsContainer && blobElements.some(b => b.el)) animateBackgroundBlobs();
+
+
+      // --- Particle Effect ---
+      function createParticle(x, y) {
+        const p = document.createElement('div'); p.className = 'particle';
+        const s = Math.random()*2.5+1; p.style.width=`${s}px`; p.style.height=`${s}px`;
+        const c = ['#FFFFFF','#E5E7EB','#D1D5DB','#9CA3AF'][Math.floor(Math.random()*4)]; p.style.backgroundColor=c;
+        p.style.left=`${x}px`; p.style.top=`${y}px`; // Position is fixed by class
+        const tx = (Math.random()-0.5)*60, ty = (Math.random()-0.5)*60;
+        p.style.setProperty('--tx',`${tx}px`); p.style.setProperty('--ty',`${ty}px`);
+        document.body.appendChild(p);
+        setTimeout(() => { if (p.parentNode) p.parentNode.removeChild(p); }, 3000);
+      }
+      // Add mouse move listener for particles
+      document.addEventListener('mousemove', (e) => {
+        if (Math.random() > 0.97) createParticle(e.clientX, e.clientY);
+      });
+
+
+      // --- Check and Display/Configure "New Stuff" Item ---
+      function checkAndDisplayNewStuff() {
+          if (!newStuffItem || !newStuffButton || !newStuffTitle) return;
+          const hasPurchasedMax = localStorage.getItem(LS_HAS_MAX) === 'true';
+          const lastPurchasedMajorVersion = parseInt(localStorage.getItem(LS_NEW_STUFF_VERSION) || '-1');
+          newStuffTitle.textContent = `Get What's New? (fs v${APP_VERSION})`;
+          if (hasPurchasedMax) {
+              newStuffItem.classList.remove('hidden');
+              if (APP_MAJOR_VERSION > lastPurchasedMajorVersion) {
+                  newStuffButton.disabled = false;
+                  newStuffButton.classList.remove('new-stuff-button');
+                  newStuffButton.style.cursor = 'pointer';
+              } else {
+                  newStuffButton.disabled = true;
+                  newStuffButton.classList.add('new-stuff-button');
+                  newStuffButton.style.cursor = 'not-allowed';
+              }
+          } else {
+              newStuffItem.classList.add('hidden');
+          }
+      }
+
+      // --- Star Button Dropdown Logic ---
+      if (starButton && starDropdown) {
+          starButton.addEventListener('click', (event) => {
+              event.stopPropagation();
+              const isActive = starDropdown.classList.toggle('active');
+              starButton.setAttribute('aria-expanded', isActive);
+          });
+          document.addEventListener('click', (event) => {
+              if (!starButton.contains(event.target) && !starDropdown.contains(event.target)) {
+                  if (starDropdown.classList.contains('active')) {
+                      starDropdown.classList.remove('active');
+                      starButton.setAttribute('aria-expanded', 'false');
+                  }
+              }
+          });
+          document.addEventListener('keydown', (event) => {
+              if (event.key === 'Escape' && starDropdown.classList.contains('active')) {
+                  starDropdown.classList.remove('active');
+                  starButton.setAttribute('aria-expanded', 'false');
+              }
+          });
+          starDropdown.querySelectorAll('.dropdown-item:not(#new-stuff-item)').forEach(item => {
+              const priceButton = item.querySelector('.dropdown-item-price');
+              const action = priceButton ? priceButton.getAttribute('data-action') : null;
+              const link = item.getAttribute('data-link');
+
+              item.addEventListener('click', (event) => {
+                  if (priceButton && priceButton.contains(event.target)) {
+                      event.stopPropagation();
+                      console.log('Action button clicked:', action);
+                      // alert(`Action triggered for: ${action}`); // Replace with actual logic
+                      // For demo, we'll just log and close.
+                      starDropdown.classList.remove('active');
+                      starButton.setAttribute('aria-expanded', 'false');
+                  } else if (link && link !== '#') {
+                      window.location.href = link;
+                  } else {
+                      console.log('Clicked item area without specific action/link.');
+                      starDropdown.classList.remove('active');
+                      starButton.setAttribute('aria-expanded', 'false');
+                  }
+              });
+          });
+      }
+
+      // --- "New Stuff" Button Logic ---
+      if (newStuffButton && newStuffItem) {
+          newStuffButton.addEventListener('click', (e) => {
+              e.stopPropagation();
+              if (newStuffButton.disabled) return;
+              const action = newStuffButton.getAttribute('data-action');
+              console.log('New Stuff button clicked:', action);
+              // alert(`Purchased New Stuff Features for Version ${APP_MAJOR_VERSION}.0!`); // Replace
+              localStorage.setItem(LS_NEW_STUFF_VERSION, APP_MAJOR_VERSION.toString());
+              checkAndDisplayNewStuff();
+              if (starDropdown.classList.contains('active')) {
+                  starDropdown.classList.remove('active');
+                  starButton.setAttribute('aria-expanded', 'false');
+              }
+          });
+          newStuffItem.addEventListener('click', (e) => {
+              if (!e.target.closest('.dropdown-item-price')) {
+                  console.log('Clicked New Stuff item area.');
+                  starDropdown.classList.remove('active');
+                  starButton.setAttribute('aria-expanded', 'false');
+              }
+          });
+      }
+
+      // --- Initial Check on Load ---
+      checkAndDisplayNewStuff();
+
+      // --- Robust Image Error Handling ---
+      document.querySelectorAll('img').forEach(img => {
+        if (((img.complete && img.naturalWidth === 0) || !img.src) && !img.getAttribute('data-error-handled')) {
+            handleImageError(img);
+        }
+        else if (!img.getAttribute('data-error-handled')) {
+            img.onerror = function() {
+                if (!this.getAttribute('data-error-handled')) {
+                    handleImageError(this);
+                }
+            };
+        }
+      });
+      function handleImageError(img) {
+          img.setAttribute('data-error-handled', 'true');
+          const w = img.getAttribute('width') || img.offsetWidth || 40;
+          const h = img.getAttribute('height') || img.offsetHeight || 40;
+          const alt = img.alt || 'Err';
+          const placeholder = `https://placehold.co/${w}x${h}/1f2937/6B7280?text=${encodeURIComponent(alt)}`;
+          console.warn(`Image error: ${img.src || 'No src'}. Replacing with: ${placeholder}`);
+          img.src = placeholder;
+          img.style.objectFit = 'contain';
+          img.style.backgroundColor = '#1f2937';
+          img.onerror = null;
+      }
+
+      // --- TOC Active Link Highlighting on Scroll ---
+      const observerOptions = {
+          root: null,
+          rootMargin: '-25% 0px -75% 0px', // Attempts to highlight when section is in middle 50% of viewport
+          threshold: 0 // Trigger as soon as any part of the target is visible within rootMargin
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+          let visibleSectionId = null;
+          // Find the first entry that is intersecting, which is usually the topmost visible one within the rootMargin
+          const intersectingEntry = entries.find(entry => entry.isIntersecting);
+          if (intersectingEntry) {
+              visibleSectionId = intersectingEntry.target.id;
+          }
+
+          tocLinks.forEach(link => {
+              link.classList.remove('active');
+              const parentLink = link.closest('ul')?.closest('li')?.querySelector('a.toc-link');
+              if (parentLink) {
+                parentLink.classList.remove('active'); // Deactivate parent as well
+              }
+          });
+
+          if (visibleSectionId) {
+              const activeLink = document.querySelector(`#table-of-contents a.toc-link[href="#${visibleSectionId}"]`);
+              if (activeLink) {
+                  activeLink.classList.add('active');
+                  const parentLi = activeLink.closest('ul')?.closest('li');
+                  if (parentLi) {
+                      const parentAnchor = parentLi.querySelector('a.toc-link');
+                      if (parentAnchor) {
+                          parentAnchor.classList.add('active');
+                      }
+                  }
+              }
+          }
+      }, observerOptions);
+
+      sections.forEach(section => {
+          if (section.id) {
+            observer.observe(section);
+          }
+      });
+
+    }); // End DOMContentLoaded
+  </script>
+</body>
+</html>
