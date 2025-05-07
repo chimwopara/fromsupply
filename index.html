@@ -18,11 +18,15 @@
     />
     <style>
       /* Base body styling */
+      html {
+        font-size: 125%;
+        scroll-behavior: smooth;
+      }
       body {
         font-family: 'Space Grotesk', sans-serif;
         background-color: #030712; /* gray-950 */
-        overflow-x: hidden; /* Prevent horizontal scroll */
-        position: relative; /* Needed for z-index context */
+        overflow-x: hidden;
+        position: relative;
       }
 
       /* --- Header/Nav Styling --- */
@@ -41,7 +45,7 @@
         height: 100%;
         overflow: hidden;
         pointer-events: none;
-        z-index: -2; /* Behind everything */
+        z-index: -2;
       }
 
       /* Interactive Blobs */
@@ -51,35 +55,33 @@
         filter: blur(120px);
         opacity: 0.35;
         mix-blend-mode: screen;
-        transition: background-color 2s ease-in-out; /* Only transition color smoothly */
+        transition: background-color 2s ease-in-out;
         pointer-events: none;
       }
 
-      /* --- UPDATED Hero Video Section --- */
+      /* --- Hero Video Section --- */
       #hero-video {
-        height: 100vh; /* Full viewport height */
-        width: 100vw; /* Full viewport width */
-        position: relative; /* Needed for absolute children */
-        overflow: hidden; /* Crucial to hide overflow/cropping */
-        z-index: -1; /* Behind content */
-        background-color: #000; /* Add black background in case video fails */
+        height: 100vh;
+        width: 100vw;
+        position: relative;
+        overflow: hidden;
+        z-index: -1;
+        background-color: #000;
       }
-      /* Styling for the background video element */
       #hero-video video {
-         position: absolute;
-         top: 50%; /* Center vertically */
-         left: 50%; /* Center horizontally */
-         width: 100%; /* Use 100% width/height */
-         height: 100%;
-         transform: translate(-50%, -50%);
-         min-width: 100%; /* Ensure it covers width */
-         min-height: 100%; /* Ensure it covers height */
-         object-fit: cover; /* Fill container, maintain aspect ratio, crop */
-         pointer-events: none; /* Prevent interaction with background video */
-         opacity: 0; /* Start hidden, fade in on load */
-         transition: opacity 0.5s ease-in-out;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 100%;
+          height: 100%;
+          transform: translate(-50%, -50%);
+          min-width: 100%;
+          min-height: 100%;
+          object-fit: cover;
+          pointer-events: none;
+          opacity: 0;
+          transition: opacity 0.5s ease-in-out;
       }
-      /* Style for video error state (applied to container) */
       .video-error {
         background-color: #030712;
         background-image: url('https://placehold.co/1920x1080/030712/6B7280?text=Video+Unavailable');
@@ -87,57 +89,80 @@
         background-repeat: no-repeat;
         background-position: center;
       }
-      /* Hide the video tag if it fails to load */
       .video-error video {
         display: none;
       }
 
-      /* --- UPDATED Hero Search Bar --- */
+      /* --- Hero Search Bar --- */
       #hero-search-container {
         position: absolute;
-        bottom: 5%; /* Position near the bottom */
+        bottom: 5%;
         left: 50%;
         transform: translateX(-50%);
-        z-index: 10; /* Above video */
-        width: 90%; /* Responsive width */
-        max-width: 600px; /* Max width */
+        z-index: 10;
+        width: 90%;
+        max-width: 600px;
+        display: flex; 
+        align-items: center; 
+        background-color: rgba(17, 24, 39, 0.7); 
+        backdrop-filter: blur(8px); 
+        border: 1px solid rgba(55, 65, 81, 0.5); 
+        border-radius: 9999px; 
+        padding-left: 1.5rem; 
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
       }
       #hero-search-input {
-        background-color: rgba(17, 24, 39, 0.7); /* Semi-transparent dark */
-        backdrop-filter: blur(8px); /* Frosted glass effect */
-        border: 1px solid rgba(55, 65, 81, 0.5); /* Subtle border */
-        color: #E5E7EB; /* Light text */
-        padding: 0.75rem 1.5rem; /* Padding */
-        border-radius: 9999px; /* Pill shape */
-        width: 100%; /* Full width of container */
-        font-size: 1rem; /* Text size */
-        transition: all 0.3s ease; /* Smooth transitions */
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Subtle shadow */
-        text-align: center; /* Center align the input text */
+        background-color: transparent; 
+        border: none; 
+        color: #E5E7EB;
+        padding: 0.75rem 0.5rem; 
+        width: 100%;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        text-align: center;
+        flex-grow: 1; 
       }
       #hero-search-input::placeholder {
-        color: #6B7280; /* Placeholder color */
+        color: #D1D5DB;
+        opacity: 0.6;
         transition: color 0.3s ease, opacity 0.1s ease;
-        opacity: 1; /* Ensure placeholder is visible */
-        text-align: center; /* Center align the placeholder text */
+        text-align: center;
       }
       #hero-search-input:focus {
-        outline: none; /* Remove default focus outline */
-        border-color: rgba(255, 255, 255, 0.3); /* Lighter border on focus */
-        background-color: rgba(17, 24, 39, 0.85); /* Slightly less transparent on focus */
+        outline: none;
       }
-      /* Typing animation cursor - handled by JS adding/removing '|' */
-      @keyframes blink-caret-visual { /* Only defines the blink look */
+      #hero-search-container:focus-within { 
+        border-color: rgba(255, 255, 255, 0.4);
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+      }
+      @keyframes blink-caret-visual {
         from, to { border-right-color: transparent; }
-        50% { border-right-color: #6B7280; } /* Simulates cursor blink */
+        50% { border-right-color: #D1D5DB; }
       }
       #hero-search-input:focus::placeholder {
-        /* Stop JS animation on focus */
-        color: #6B7280; /* Keep placeholder color */
+        color: #9CA3AF;
+        opacity: 0.8;
+      }
+      #hero-search-button {
+        background-color: transparent;
+        border: none;
+        color: #9CA3AF; 
+        padding: 0.75rem 1.25rem 0.75rem 0.5rem; 
+        cursor: pointer;
+        font-size: 1.1rem;
+        transition: color 0.3s ease;
+        border-top-right-radius: 9999px; 
+        border-bottom-right-radius: 9999px;
+      }
+      #hero-search-button:hover {
+        color: #E5E7EB;
+      }
+      #hero-search-button:active {
+        transform: scale(0.95);
       }
 
 
-      /* Product Card Styling (Unchanged) */
+      /* Product Card Styling */
       .card {
         background-color: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px);
         border: 1px solid rgba(71, 85, 105, 0.2); transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -168,10 +193,15 @@
       }
       .card-action-button:hover { background-color: #374151; transform: scale(1.05); }
       .card-action-button.open-state {
-        background-color: rgba(255, 255, 255, 0.15); backdrop-filter: blur(8px); color: #E5E7EB;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background-color: rgba(34, 197, 94, 0.2);
+        backdrop-filter: blur(8px); color: #A7F3D0;
+        border: 1px solid rgba(34, 197, 94, 0.3);
       }
-      .card-action-button.open-state:hover { background-color: rgba(255, 255, 255, 0.25); color: #ffffff; transform: scale(1.05); }
+      .card-action-button.open-state:hover {
+        background-color: rgba(34, 197, 94, 0.3);
+        color: #D1FAE5;
+        transform: scale(1.05);
+      }
       .card .video-container {
         position: relative; width: 100%; padding-top: 56.25%; overflow: hidden; background-color: #111827;
         border-top-left-radius: 0.75rem; border-top-right-radius: 0.75rem; border-bottom-left-radius: 0; border-bottom-right-radius: 0;
@@ -188,14 +218,14 @@
       .card .video-container.video-error iframe { display: none; }
 
 
-      /* General Text & Links (Unchanged) */
+      /* General Text & Links */
       .glow-text { color: #ffffff; text-shadow: 0 0 8px rgba(255, 255, 255, 0.2); }
       .footer-link { transition: color 0.2s ease; }
       .footer-link:hover { color: #ffffff; }
       .social-icon { transition: all 0.3s ease; }
       .social-icon:hover { background-color: #ffffff; color: #030712; transform: scale(1.1); }
 
-      /* Star Button & Dropdown (Unchanged) */
+      /* Star Button & Dropdown */
       .star-button-container { position: relative; z-index: 50; }
       .star-button {
         position: relative; background-color: rgba(17, 24, 39, 0.5); backdrop-filter: blur(8px); border: 1px solid rgba(55, 65, 81, 0.4);
@@ -245,10 +275,10 @@
       .popup-text h4 { color: #FDE68A; font-weight: 600; margin-bottom: 0.5rem; }
       .popup-text ul { list-style: disc; padding-left: 1.25rem; color: #FEF3C7; font-size: 0.875rem; line-height: 1.5; }
 
-      /* Particle animation (Unchanged) */
+      /* Particle animation */
       .particle {
-        position: fixed; /* Changed to fixed for viewport positioning */
-        border-radius: 50%; pointer-events: none; z-index: 5; /* Below nav */
+        position: fixed;
+        border-radius: 50%; pointer-events: none; z-index: 5;
         opacity: 0; animation: particleFade 3s ease-out forwards;
       }
       @keyframes particleFade {
@@ -256,7 +286,18 @@
         100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.5); }
       }
 
-      /* Utility to hide scrollbars (Unchanged) */
+      /* Search Results Modal */
+      #search-results-overlay {
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+      }
+      #search-results-modal {
+        opacity: 0;
+        transform: scale(0.95);
+        transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+      }
+
+      /* Utility to hide scrollbars */
       .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       .hide-scrollbar::-webkit-scrollbar { display: none; }
     </style>
@@ -274,9 +315,9 @@
       <div class="flex items-center gap-4">
         <a href="index.html" class="flex items-center gap-3 group">
              <img
-                src="logo.jpg" alt="Fromsupply Logo" class="h-10 w-10 object-contain rounded-md flex-shrink-0"
-                id="logo-image" onerror="this.onerror=null; this.src='https://placehold.co/40x40/030712/FFFFFF?text=FS';"
-            />
+               src="logo.jpg" alt="Fromsupply Logo" class="h-10 w-10 object-contain rounded-md flex-shrink-0"
+               id="logo-image" onerror="this.onerror=null; this.src='https://placehold.co/40x40/030712/FFFFFF?text=FS';"
+           />
              <span class="text-lg font-semibold text-gray-200 group-hover:text-white transition-colors duration-200 hidden sm:inline">Fromsupply</span>
         </a>
       </div>
@@ -289,7 +330,7 @@
           <button id="star-button" class="star-button" aria-haspopup="true" aria-expanded="false">
             <span>⭐️ 0</span> </button>
           <div id="star-dropdown" class="star-dropdown" role="menu">
-             <div id="new-stuff-item" class="dropdown-item hidden" role="menuitem" data-link="#">
+              <div id="new-stuff-item" class="dropdown-item hidden" role="menuitem" data-link="#">
                 <img src="newstuff.png" alt="New Stuff Icon" class="dropdown-item-icon" onerror="this.onerror=null; this.src='https://placehold.co/40x40/374151/FFFFFF?text=NEW';">
                 <div class="dropdown-item-content">
                   <div id="new-stuff-title" class="dropdown-item-title">Upgrade ?</div>
@@ -309,22 +350,22 @@
                     </div>
                 </div>
               </div>
+              <div class="dropdown-item" role="menuitem" data-link="#">
+               <img src="clubcard.jpeg" alt="Membership Icon" class="dropdown-item-icon" onerror="this.onerror=null; this.src='https://placehold.co/40x40/374151/FFFFFF?text=FS';">
+               <div class="dropdown-item-content">
+                 <div class="dropdown-item-title">fs Membership</div>
+                 <div class="dropdown-item-desc">access paid features monthly</div>
+               </div>
+               <button class="dropdown-item-price" data-action="buy-membership">$5.99</button>
+             </div>
              <div class="dropdown-item" role="menuitem" data-link="#">
-              <img src="clubcard.jpeg" alt="Membership Icon" class="dropdown-item-icon" onerror="this.onerror=null; this.src='https://placehold.co/40x40/374151/FFFFFF?text=FS';">
-              <div class="dropdown-item-content">
-                <div class="dropdown-item-title">fs Membership</div>
-                <div class="dropdown-item-desc">access paid features monthly</div>
-              </div>
-              <button class="dropdown-item-price" data-action="buy-membership">$5.99</button>
-            </div>
-            <div class="dropdown-item" role="menuitem" data-link="#">
-              <img src="10kcard.jpeg" alt="Cheat Code Icon" class="dropdown-item-icon" onerror="this.onerror=null; this.src='https://placehold.co/40x40/374151/FFFFFF?text=10K';">
-              <div class="dropdown-item-content">
-                <div class="dropdown-item-title">Cheat Code</div>
-                <div class="dropdown-item-desc">Begin your journey with 10 thousands Reserves</div>
-              </div>
-              <button class="dropdown-item-price" data-action="buy-stars">$19.99</button>
-            </div>
+               <img src="10kcard.jpeg" alt="Cheat Code Icon" class="dropdown-item-icon" onerror="this.onerror=null; this.src='https://placehold.co/40x40/374151/FFFFFF?text=10K';">
+               <div class="dropdown-item-content">
+                 <div class="dropdown-item-title">Cheat Code</div>
+                 <div class="dropdown-item-desc">Begin your journey with 10 thousands Reserves</div>
+               </div>
+               <button class="dropdown-item-price" data-action="buy-stars">$19.99</button>
+             </div>
             </div>
         </div>
       </div>
@@ -348,6 +389,9 @@
             id="hero-search-input"
             placeholder="" aria-label="Search for topics"
         />
+        <button id="hero-search-button" aria-label="Submit search">
+            <i class="fas fa-search"></i>
+        </button>
     </div>
   </section>
 
@@ -432,7 +476,7 @@
               <button class="card-action-button" data-link="teams.html">Get</button>
             </div>
           </div>
-        </div>
+          </div>
       </main>
 
       <div class="w-full max-w-7xl mb-16 px-4 sm:px-6">
@@ -447,39 +491,54 @@
 
   <footer class="w-full bg-gray-900/80 backdrop-blur-md border-t border-gray-800 pt-12 pb-6 relative z-10">
     <div class="mx-auto px-6 max-w-7xl">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-        <div>
-          <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
-            <img src="logo.jpg" alt="" class="h-6 w-6 rounded-sm inline-block" onerror="this.style.display='none'"> Fromsupply <span id="app-version-display" class="text-xs font-normal text-gray-500 opacity-75">fs v</span>
-          </h3>
-          <p class="text-gray-400 text-sm mb-6">Building the future of developer tools and experiences through innovative solutions.</p>
-          <div class="flex space-x-3">
-            <a href="https://github.com/chimwopara/fromsupply" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 social-icon"><i class="fab fa-github"></i></a>
-            <a href="https://instagram.com/fromsupply" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 social-icon"><i class="fab fa-instagram"></i></a>
-            <a href="#" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 social-icon"><i class="fab fa-linkedin-in"></i></a>
-          </div>
-          <div class="mt-6 text-gray-500 text-xs">© 2025 Fromsupply. All rights reserved.</div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 items-start md:justify-items-stretch">
+        <div class="md:text-left">
+            <h3 class="text-white font-semibold mb-4">Resources</h3>
+            <ul class="space-y-2 text-sm">
+                <li><a href="https://www.youtube.com/playlist?list=PLaXy2djTTbXh0hlOvARCHAiGFo2n-EdyT&playnext=1&index=1" target="_blank" rel="noopener noreferrer" class="text-gray-400 footer-link">Tutorials</a></li>
+                <li><a href="terms.html" class="text-gray-400 footer-link">Terms</a></li>
+            </ul>
         </div>
 
-        <div>
-          <h3 class="text-white font-semibold mb-4">Resources</h3>
-          <ul class="space-y-2 text-sm">
-            <li><a href="https://www.youtube.com/playlist?list=PLaXy2djTTbXh0hlOvARCHAiGFo2n-EdyT&playnext=1&index=1" target="_blank" rel="noopener noreferrer" class="text-gray-400 footer-link">Tutorials</a></li>
-            <li><a href="terms.html" class="text-gray-400 footer-link">Terms</a></li>
-             </ul>
+        <div class="flex flex-col items-center">
+            <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2 justify-center">
+                <img src="logo.jpg" alt="Fromsupply Logo" class="h-6 w-6 rounded-sm inline-block" onerror="this.onerror=null; this.style.display='none'; const newImg = document.createElement('span'); newImg.textContent='FS'; newImg.classList.add('w-6', 'h-6', 'rounded-sm', 'bg-gray-700', 'text-white', 'flex', 'items-center', 'justify-center', 'font-bold'); this.parentNode.insertBefore(newImg, this); this.remove();"> Fromsupply <span id="app-version-display" class="text-xs font-normal text-gray-500 opacity-75">fs v</span>
+            </h3>
+            <p class="text-gray-400 text-sm mb-6 text-center">Building the future of developer tools and experiences through innovative solutions.</p>
+            <div class="flex space-x-3 justify-center">
+                <a href="https://github.com/chimwopara/fromsupply" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 social-icon"><i class="fab fa-github"></i></a>
+                <a href="https://instagram.com/fromsupply" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 social-icon"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 social-icon"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+            <div class="mt-6 text-gray-500 text-xs text-center">© 2025 Fromsupply. All rights reserved.</div>
         </div>
 
-        <div>
-          <h3 class="text-white font-semibold mb-4">Contact</h3>
-          <ul class="space-y-2 text-sm mb-6">
-            <li class="flex items-center gap-2 text-gray-400"><i class="fa-regular fa-envelope w-4 text-center"></i><a href="mailto:support@fromsupply.com" class="footer-link">support@fromsupply.com</a></li>
-            <li class="flex items-center gap-2 text-gray-400"><i class="fa-solid fa-location-dot w-4 text-center"></i><span>Alberta, Canada</span></li>
-            <li><a href="support.html" class="text-gray-400 footer-link flex items-center gap-2"><i class="fa-regular fa-life-ring w-4 text-center"></i>Support Center</a></li>
-          </ul>
-          </div>
+        <div class="md:text-right">
+            <h3 class="text-white font-semibold mb-4">Contact</h3>
+            <ul class="space-y-2 text-sm mb-6">
+                <li class="flex items-center md:justify-end gap-2 text-gray-400"><i class="fa-regular fa-envelope w-4 text-center"></i><a href="mailto:support@fromsupply.com" class="footer-link">support@fromsupply.com</a></li>
+                <li class="flex items-center md:justify-end gap-2 text-gray-400"><i class="fa-solid fa-location-dot w-4 text-center"></i><span>Alberta, Canada</span></li>
+                <li><a href="support.html" class="text-gray-400 footer-link flex items-center md:justify-end gap-2"><i class="fa-regular fa-life-ring w-4 text-center"></i>Support Center</a></li>
+            </ul>
+        </div>
       </div>
     </div>
   </footer>
+
+  <div id="search-results-overlay" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[60] p-4">
+    <div id="search-results-modal" class="bg-gray-800/90 backdrop-blur-md rounded-lg shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col">
+        <div class="flex justify-between items-center p-4 border-b border-gray-700">
+            <h2 class="text-xl font-semibold text-white">Search Results</h2>
+            <button id="close-search-results" class="text-gray-400 hover:text-white text-2xl leading-none p-1">×</button>
+        </div>
+        <div id="search-results-list" class="p-4 space-y-3 overflow-y-auto hide-scrollbar">
+            </div>
+        <div id="no-search-results" class="hidden p-6 text-center text-gray-400">
+            No results found for your query.
+        </div>
+    </div>
+  </div>
+
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -488,26 +547,36 @@
       const productCards = document.querySelectorAll('#product-showcase .card');
       const starButton = document.getElementById('star-button');
       const starDropdown = document.getElementById('star-dropdown');
-      const heroVideoSection = document.getElementById('hero-video');
-      // Updated selector for the background video element
-      const backgroundVideo = document.getElementById('background-video');
       const blobs = blobsContainer ? blobsContainer.querySelectorAll('.interactive-blob') : [];
       const newStuffItem = document.getElementById('new-stuff-item');
       const newStuffButton = document.getElementById('new-stuff-button');
       const newStuffTitle = document.getElementById('new-stuff-title');
       const newStuffPopupTitle = document.getElementById('new-stuff-popup-title');
       const appVersionDisplay = document.getElementById('app-version-display');
-      const heroSearchInput = document.getElementById('hero-search-input'); // Selector for new search input
+      const heroSearchInput = document.getElementById('hero-search-input');
+      const heroSearchButton = document.getElementById('hero-search-button'); 
+      const productShowcaseSection = document.getElementById('product-showcase');
+      const topNav = document.querySelector('.top-nav');
 
-      // --- App Version ---
+      const searchResultsOverlay = document.getElementById('search-results-overlay');
+      const searchResultsModal = document.getElementById('search-results-modal');
+      const searchResultsList = document.getElementById('search-results-list');
+      const noSearchResultsMessage = document.getElementById('no-search-results');
+      const closeSearchResultsButton = document.getElementById('close-search-results');
+
+      if (!heroSearchInput) console.error("Hero search input not found!");
+      if (!heroSearchButton) console.error("Hero search button not found!");
+      if (!searchResultsOverlay || !searchResultsModal || !searchResultsList || !noSearchResultsMessage || !closeSearchResultsButton) {
+          console.error("CRITICAL: One or more search UI elements are missing from the DOM! Search functionality may be impaired.");
+      }
+
       const APP_VERSION = "0.5";
       const APP_MAJOR_VERSION = parseInt(APP_VERSION.split('.')[0]);
-
-      // --- LocalStorage Keys ---
       const LS_HAS_MAX = 'fs_hasPurchasedMax';
       const LS_NEW_STUFF_VERSION = 'fs_newStuffPurchasedVersion';
+      const PRODUCT_STATUS_PREFIX = 'fs_product_status_';
+      // const SS_AUTOSCROLL_PERFORMED_KEY = 'fs_autoScrollPerformedThisSession'; // No longer needed for this revised logic
 
-      // --- Set Footer & New Stuff Title Version ---
       if (appVersionDisplay) appVersionDisplay.textContent = `fs v${APP_VERSION}`;
       if (newStuffTitle) newStuffTitle.textContent = `Upgrade ? (fs v${APP_VERSION})`;
       if (newStuffPopupTitle) {
@@ -517,30 +586,22 @@
            newStuffPopupTitle.textContent = `${month} ${year}`;
        }
 
-      // --- Blob Animation State ---
       let blobHues = [270, 220, 170, 250];
-      let animationFrameId = null;
-
-      // --- Mouse Position Tracking ---
-      let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
       document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX; mouseY = e.clientY;
         if (Math.random() > 0.97) createParticle(e.clientX, e.clientY);
       });
 
-      // --- Background Blob Animation ---
       function animateBackgroundBlobs() {
          if (blobsContainer && blobs.length > 0) {
-            blobs.forEach((blob, index) => {
+             blobs.forEach((blob, index) => {
                  blobHues[index] = (blobHues[index] + 0.1) % 360;
                  blob.style.backgroundColor = `hsl(${blobHues[index]}, 70%, 60%)`;
-            });
+             });
          }
-         animationFrameId = requestAnimationFrame(animateBackgroundBlobs);
+         requestAnimationFrame(animateBackgroundBlobs);
       }
       if (blobsContainer && blobs.length > 0) animateBackgroundBlobs();
 
-      // --- Particle Effect ---
       function createParticle(x, y) {
         const p = document.createElement('div'); p.className = 'particle';
         const s = Math.random()*2.5+1; p.style.width=`${s}px`; p.style.height=`${s}px`;
@@ -552,7 +613,6 @@
         setTimeout(() => { if (p.parentNode) p.parentNode.removeChild(p); }, 3000);
       }
 
-       // --- Check and Display/Configure "New Stuff" Item ---
        function checkAndDisplayNewStuff() {
            if (!newStuffItem || !newStuffButton || !newStuffTitle) return;
            const hasPurchasedMax = localStorage.getItem(LS_HAS_MAX) === 'true';
@@ -570,15 +630,13 @@
            }
        }
 
-      // --- Product Card Button Logic ---
       productCards.forEach(card => {
           const actionButton = card.querySelector('.card-action-button');
-          const link = actionButton ? actionButton.getAttribute('data-link') : null;
           const productTitleElement = card.querySelector('.card-title');
+          const link = actionButton ? actionButton.getAttribute('data-link') : null;
           const videoContainer = card.querySelector('.video-container');
           const iframe = videoContainer ? videoContainer.querySelector('iframe') : null;
 
-          // Handle iframe errors within cards specifically
           if (iframe) {
               iframe.onerror = function() {
                   console.warn(`Card video iframe failed to load for: ${productTitleElement ? productTitleElement.textContent.trim() : 'Unknown Card'}`);
@@ -586,14 +644,28 @@
               }
           }
 
-          if (actionButton && link && productTitleElement && starDropdown) {
+          if (actionButton && productTitleElement && link && starDropdown) {
+              const productName = productTitleElement.textContent.trim();
+              const productIdentifier = productName.toLowerCase().replace(/\s+/g, '-');
+              const productStatusKey = PRODUCT_STATUS_PREFIX + productIdentifier;
+
+              if (localStorage.getItem(productStatusKey) === 'Open') {
+                  actionButton.textContent = 'Open';
+                  actionButton.classList.add('open-state');
+              } else {
+                  actionButton.textContent = 'Get';
+                  actionButton.classList.remove('open-state');
+              }
+
               actionButton.addEventListener('click', (event) => {
                   event.stopPropagation();
                   if (actionButton.textContent === 'Get') {
-                      actionButton.textContent = 'Open'; actionButton.classList.add('open-state');
+                      actionButton.textContent = 'Open';
+                      actionButton.classList.add('open-state');
+                      localStorage.setItem(productStatusKey, 'Open');
                       localStorage.setItem(LS_HAS_MAX, 'true');
-                      const productName = productTitleElement.textContent.trim();
-                      const upgradeAction = `buy-max-${productName.toLowerCase().replace(/\s+/g, '-')}`;
+
+                      const upgradeAction = `buy-max-${productIdentifier}`;
                       const existingMaxItem = starDropdown.querySelector(`button[data-action="${upgradeAction}"]`);
                       if (!existingMaxItem) {
                           const newItem = document.createElement('div'); newItem.className = 'dropdown-item'; newItem.setAttribute('role', 'menuitem'); newItem.setAttribute('data-link', '#');
@@ -603,17 +675,17 @@
                               <button class="dropdown-item-price" data-action="${upgradeAction}">$9.99</button>`;
                            if (newStuffItem && newStuffItem.parentNode === starDropdown) newStuffItem.insertAdjacentElement('afterend', newItem);
                            else starDropdown.appendChild(newItem);
-                          const newPriceButton = newItem.querySelector('.dropdown-item-price');
-                          if (newPriceButton) {
-                              newPriceButton.addEventListener('click', (e) => {
-                                  e.stopPropagation(); const action = newPriceButton.getAttribute('data-action'); console.log('Max button clicked:', action); alert(`Action triggered for: ${action}`);
-                                  starDropdown.classList.remove('active'); starButton.setAttribute('aria-expanded', 'false');
-                              });
-                          }
-                           newItem.addEventListener('click', (e) => {
-                               if (e.target.closest('.dropdown-item-price')) return; console.log(`Clicked ${productName} Max item area.`);
-                               starDropdown.classList.remove('active'); starButton.setAttribute('aria-expanded', 'false');
-                           });
+                           const newPriceButton = newItem.querySelector('.dropdown-item-price');
+                           if (newPriceButton) {
+                               newPriceButton.addEventListener('click', (e) => {
+                                   e.stopPropagation(); const action = newPriceButton.getAttribute('data-action'); console.log('Max button clicked:', action); alert(`Action triggered for: ${action}`);
+                                   starDropdown.classList.remove('active'); starButton.setAttribute('aria-expanded', 'false');
+                               });
+                           }
+                            newItem.addEventListener('click', (e) => {
+                                if (e.target.closest('.dropdown-item-price')) return; console.log(`Clicked ${productName} Max item area.`);
+                                starDropdown.classList.remove('active'); starButton.setAttribute('aria-expanded', 'false');
+                            });
                       }
                       checkAndDisplayNewStuff();
                   } else if (actionButton.textContent === 'Open') {
@@ -623,16 +695,12 @@
           }
 
            card.addEventListener('click', (event) => {
-               // Prevent card click navigation if clicking on iframe or button
                if (event.target.tagName === 'IFRAME' || event.target.closest('.card-action-button')) return;
-               // Allow clicking within video container *unless* it's the iframe itself
                if (event.target.closest('.video-container') && event.target.tagName !== 'IFRAME') return;
-               // If button state is 'Open', navigate on card click
                if (actionButton && actionButton.textContent === 'Open' && link) window.location.href = link;
            });
       });
 
-      // --- Star Button Dropdown Logic ---
       if (starButton && starDropdown) {
           starButton.addEventListener('click', (event) => {
               event.stopPropagation(); const isActive = starDropdown.classList.toggle('active'); starButton.setAttribute('aria-expanded', isActive);
@@ -657,7 +725,6 @@
           });
       }
 
-       // --- "New Stuff" Button Logic ---
        if (newStuffButton && newStuffItem) {
            newStuffButton.addEventListener('click', (e) => {
                e.stopPropagation(); if (newStuffButton.disabled) return;
@@ -671,19 +738,14 @@
            });
        }
 
-      // --- Initial Check on Load ---
       checkAndDisplayNewStuff();
 
-      // --- Robust Image Error Handling ---
       document.querySelectorAll('img').forEach(img => {
-        // Check if image is already broken or has no src, and hasn't been handled
         if (((img.complete && img.naturalWidth === 0) || !img.src) && !img.getAttribute('data-error-handled')) {
             handleImageError(img);
         }
-        // Assign onerror handler if not already handled
         else if (!img.getAttribute('data-error-handled')) {
             img.onerror = function() {
-                // Check again inside onerror to prevent potential race conditions
                 if (!this.getAttribute('data-error-handled')) {
                     handleImageError(this);
                 }
@@ -691,118 +753,364 @@
         }
       });
       function handleImageError(img) {
-          // Mark as handled to prevent infinite loops if placeholder fails
           img.setAttribute('data-error-handled', 'true');
-          const w = img.getAttribute('width') || img.offsetWidth || 40; // Get width or default
-          const h = img.getAttribute('height') || img.offsetHeight || 40; // Get height or default
-          const alt = img.alt || 'Err'; // Use alt text or default
-          const placeholder = `https://placehold.co/${w}x${h}/1f2937/6B7280?text=${encodeURIComponent(alt)}`;
-          console.warn(`Image error: ${img.src || 'No src'}. Replacing with: ${placeholder}`);
-          img.src = placeholder; // Set placeholder source
-          img.style.objectFit='contain'; // Ensure placeholder text is visible
-          img.style.backgroundColor='#1f2937'; // Add background color
-          img.onerror=null; // Remove onerror to prevent loops if placeholder itself fails
+          const w = img.getAttribute('width') || img.offsetWidth || 40;
+          const h = img.getAttribute('height') || img.offsetHeight || 40;
+          const alt = img.alt || 'Err';
+          let placeholderText = alt;
+          if (img.id === 'logo-image' || (img.alt && img.alt.toLowerCase().includes('logo'))) {
+            placeholderText = 'FS';
+          }
+          const placeholder = `https://placehold.co/${w}x${h}/1f2937/6B7280?text=${encodeURIComponent(placeholderText)}`;
+          console.warn(`Image error: ${img.src || 'No src'}. Alt: "${alt}". Replacing with: ${placeholder}`);
+          img.src = placeholder;
+          img.style.objectFit='contain';
+          img.style.backgroundColor='#1f2937';
+          img.onerror=null;
       }
 
-      // --- UPDATED: Search Placeholder Typing & Submission Logic ---
-      if (heroSearchInput) {
-            const suggestions = [ "pointers in c", "organic chemistry intro", "prompts", "vibe coding clinic", "how does chim type work?", "maze pathfinding algorithms" ];
-            let suggestionIndex = 0, charIndex = 0, isDeleting = false, typingTimeout, blinkTimeout, isPaused = false;
-            const typeSpeed = 120, deleteSpeed = 70, pauseBeforeDelete = 1500, pauseBeforeType = 300, blinkInterval = 500;
-
-            // Function to add/remove the blinking cursor visually
-            function setCursorVisibility(visible) {
-                let currentPlaceholder = heroSearchInput.placeholder.replace('|', '');
-                heroSearchInput.placeholder = visible ? currentPlaceholder + '|' : currentPlaceholder;
+      if (closeSearchResultsButton && searchResultsOverlay && searchResultsModal) {
+        function openSearchModal() {
+            console.log("openSearchModal called."); 
+            if (!searchResultsOverlay || !searchResultsModal) {
+                console.error("Search overlay or modal element not found in openSearchModal.");
+                return;
             }
-
-            // Function to handle the blinking effect
-            function blinkCursor(count, callback) {
-                let isVisible = true, currentCount = 0;
-                function blink() {
-                    setCursorVisibility(isVisible); isVisible = !isVisible; currentCount++;
-                    if (currentCount < count * 2) blinkTimeout = setTimeout(blink, blinkInterval / 2);
-                    else { setCursorVisibility(false); if (callback) callback(); } // Execute callback after blinking
-                } blink();
-            }
-
-            // Main function for the typing animation loop
-            function animatePlaceholder() {
-                clearTimeout(typingTimeout); clearTimeout(blinkTimeout);
-                const currentSuggestion = suggestions[suggestionIndex]; isPaused = false;
-                let textWithoutCursor = heroSearchInput.placeholder.replace('|', '');
-
-                if (isDeleting) { // Deleting phase
-                    textWithoutCursor = currentSuggestion.substring(0, charIndex - 1);
-                    heroSearchInput.placeholder = textWithoutCursor; setCursorVisibility(true); charIndex--;
-                    if (charIndex === 0) { // Finished deleting
-                        isDeleting = false; suggestionIndex = (suggestionIndex + 1) % suggestions.length;
-                        setCursorVisibility(false); typingTimeout = setTimeout(animatePlaceholder, pauseBeforeType);
-                    } else { // Continue deleting
-                        typingTimeout = setTimeout(animatePlaceholder, deleteSpeed);
-                    }
-                } else { // Typing phase
-                    textWithoutCursor = currentSuggestion.substring(0, charIndex + 1);
-                    heroSearchInput.placeholder = textWithoutCursor; setCursorVisibility(true); charIndex++;
-                    if (charIndex === currentSuggestion.length) { // Finished typing
-                        isDeleting = true; isPaused = true;
-                        blinkCursor(3, () => { // Blink 3 times then start deleting
-                            isPaused = false; typingTimeout = setTimeout(animatePlaceholder, deleteSpeed);
-                        });
-                    } else { // Continue typing
-                        typingTimeout = setTimeout(animatePlaceholder, typeSpeed);
-                    }
-                }
-            }
-
-            // --- Search Submission Function ---
-            function performSearch(query) {
-                // Trim whitespace from the query
-                const trimmedQuery = query.trim();
-                if (trimmedQuery === '') {
-                    console.log("Search query is empty.");
-                    // Optionally provide feedback to the user
-                    // alert("Please enter something to search for.");
-                    return; // Don't search if empty
-                }
-
-                console.log(`Performing search for: "${trimmedQuery}"`);
-                // ** Placeholder:** In a real application, you would replace the console log
-                // with actual search logic. This might involve:
-                // 1. Sending the `trimmedQuery` to a backend API endpoint.
-                // 2. The backend would search database records, site content, files, etc.
-                // 3. The results would be returned and displayed on the page (e.g., navigating
-                //    to a search results page or updating a section dynamically).
-                alert(`Simulating search for: "${trimmedQuery}"\n(Check console for details)`);
-                // Example: window.location.href = `/search?q=${encodeURIComponent(trimmedQuery)}`;
-            }
-
-            // --- Event Listeners for Search Input ---
-            heroSearchInput.addEventListener('focus', () => { // Stop animation on focus
-                clearTimeout(typingTimeout); clearTimeout(blinkTimeout); isPaused = false;
-                heroSearchInput.placeholder = heroSearchInput.placeholder.replace('|', '');
-                // Optional: Set a static placeholder like 'Search...' on focus
-            });
-
-            heroSearchInput.addEventListener('blur', () => { // Restart animation on blur if empty
-                if (heroSearchInput.value === '') {
-                    heroSearchInput.placeholder = ''; charIndex = 0; isDeleting = false;
-                    animatePlaceholder(); // Restart animation
-                }
-            });
-
-            // --- Listen for Enter key press to trigger search ---
-            heroSearchInput.addEventListener('keydown', (event) => {
-                if (event.key === 'Enter') {
-                    event.preventDefault(); // Prevent default form submission (if it were in a form)
-                    performSearch(heroSearchInput.value); // Call the search function
-                }
-            });
-
-            // Start the placeholder animation initially
-            heroSearchInput.placeholder = ''; // Start empty
-            animatePlaceholder(); // Start animation
+            searchResultsOverlay.classList.remove('hidden');
+            searchResultsOverlay.style.opacity = '1';
+            searchResultsModal.style.opacity = '1';
+            searchResultsModal.style.transform = 'scale(1)';
+            console.log("Search modal should be visible now.");
         }
+        function closeSearchModal() {
+            console.log("Attempting to close search modal...");
+            if (!searchResultsOverlay || !searchResultsModal) {
+                console.error("Search overlay or modal element not found in closeSearchModal.");
+                return;
+            }
+            searchResultsOverlay.style.opacity = '0';
+            searchResultsModal.style.opacity = '0';
+            searchResultsModal.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                searchResultsOverlay.classList.add('hidden');
+                console.log("Search modal hidden.");
+            }, 300);
+        }
+
+        closeSearchResultsButton.addEventListener('click', closeSearchModal);
+        searchResultsOverlay.addEventListener('click', (event) => {
+            if (event.target === searchResultsOverlay) {
+                closeSearchModal();
+            }
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && searchResultsOverlay && !searchResultsOverlay.classList.contains('hidden')) {
+                closeSearchModal();
+            }
+        });
+      }
+
+
+      // --- Search Placeholder Typing, Submission & Scroll Logic ---
+      if (heroSearchInput && heroSearchButton) { 
+           const suggestions = [ "pointers in c", "organic chemistry intro", "prompts", "vibe coding clinic", "how does chim type work?", "maze pathfinding algorithms", "terms of service", "support center" ];
+           let suggestionIndex = 0, charIndex = 0, isDeleting = false, typingTimeout, blinkTimeout, isPaused = false;
+           const typeSpeed = 120, deleteSpeed = 70, pauseBeforeDelete = 1500, pauseBeforeType = 300, blinkInterval = 500;
+
+           function setCursorVisibility(visible) {
+               let currentPlaceholder = heroSearchInput.placeholder.replace('|', '');
+               heroSearchInput.placeholder = visible ? currentPlaceholder + '|' : currentPlaceholder;
+           }
+
+           function blinkCursor(count, callback) {
+               let isVisible = true, currentCount = 0;
+               function blink() {
+                   setCursorVisibility(isVisible); isVisible = !isVisible; currentCount++;
+                   if (currentCount < count * 2) blinkTimeout = setTimeout(blink, blinkInterval / 2);
+                   else { setCursorVisibility(false); if (callback) callback(); }
+               } blink();
+           }
+
+           function animatePlaceholder() {
+               clearTimeout(typingTimeout); clearTimeout(blinkTimeout);
+               if (document.activeElement === heroSearchInput || isPaused) {
+                   if (document.activeElement === heroSearchInput && heroSearchInput.value === '') {
+                       heroSearchInput.placeholder = 'Search topics or pages...';
+                   } else if (document.activeElement === heroSearchInput) {
+                       heroSearchInput.placeholder = '';
+                   }
+                   heroSearchInput.placeholder = heroSearchInput.placeholder.replace('|','');
+                   return;
+               }
+
+               const currentSuggestion = suggestions[suggestionIndex];
+               let textWithoutCursor = heroSearchInput.placeholder.replace('|', '');
+
+               if (isDeleting) {
+                   textWithoutCursor = currentSuggestion.substring(0, charIndex - 1);
+                   heroSearchInput.placeholder = textWithoutCursor; setCursorVisibility(true); charIndex--;
+                   if (charIndex === 0) {
+                       isDeleting = false; suggestionIndex = (suggestionIndex + 1) % suggestions.length;
+                       setCursorVisibility(false); typingTimeout = setTimeout(animatePlaceholder, pauseBeforeType);
+                   } else {
+                       typingTimeout = setTimeout(animatePlaceholder, deleteSpeed);
+                   }
+               } else {
+                   textWithoutCursor = currentSuggestion.substring(0, charIndex + 1);
+                   heroSearchInput.placeholder = textWithoutCursor; setCursorVisibility(true); charIndex++;
+                   if (charIndex === currentSuggestion.length) {
+                       isDeleting = true; isPaused = true;
+                       blinkCursor(3, () => {
+                           isPaused = false;
+                           typingTimeout = setTimeout(animatePlaceholder, deleteSpeed);
+                       });
+                   } else {
+                       typingTimeout = setTimeout(animatePlaceholder, typeSpeed);
+                   }
+               }
+           }
+
+           const pageData = {
+               "chimcode.html": { title: "Chim Code", description: "Debug complex systems faster.", iconClass: "fa-solid fa-code", defaultIconText: "CC", link: "chimcode.html", isProduct: true },
+               "type.html": { title: "Chim Type", description: "Type faster with adaptive training.", iconClass: "fa-solid fa-keyboard", defaultIconText: "CT", link: "type.html", isProduct: true },
+               "maze.html": { title: "Chim Maze", description: "Immersive subject learning.", iconClass: "fa-solid fa-cube", defaultIconText: "CM", link: "maze.html", isProduct: true },
+               "clinic.html": { title: "Chim Clinic", description: "Expert dev help & diagnostics.", iconClass: "fa-solid fa-laptop-medical", defaultIconText: "CL", link: "clinic.html", isProduct: true },
+               "prompts.html": { title: "Chim Prompts", description: "AI prompt engineering tools.", iconClass: "fa-solid fa-terminal", defaultIconText: "CP", link: "prompts.html", isProduct: true },
+               "teams.html": { title: "Chim Team", description: "Risk-free team challenges.", iconClass: "fa-solid fa-users", defaultIconText: "TE", link: "teams.html", isProduct: true },
+               "terms.html": { title: "Terms of Service", description: "Read our terms and conditions.", iconClass: "fa-solid fa-file-contract", defaultIconText: "ToS", link: "terms.html", isProduct: false },
+               "support.html": { title: "Support Center", description: "Get help and support.", iconClass: "fa-solid fa-life-ring", defaultIconText: "Sup", link: "support.html", isProduct: false }
+           };
+           const searchKeywords = {
+               "chimcode": "chimcode.html", "chim code": "chimcode.html", "code": "chimcode.html", "debug": "chimcode.html",
+               "type": "type.html", "chimtype": "type.html", "chim type": "type.html", "typing": "type.html",
+               "maze": "maze.html", "chimmaze": "maze.html", "chim maze": "maze.html", "learning": "maze.html",
+               "clinic": "clinic.html", "chimclinic": "clinic.html", "chim clinic": "clinic.html", "diagnostics": "clinic.html",
+               "prompts": "prompts.html", "chimprompts": "prompts.html", "chim prompts": "prompts.html", "ai": "prompts.html",
+               "teams": "teams.html", "chimteam": "teams.html", "chim team": "teams.html",
+               "terms": "terms.html", "terms of service": "terms.html", "service terms": "terms.html",
+               "support": "support.html", "support center": "support.html", "help": "support.html", "contact": "support.html"
+           };
+
+           function performSearch(query) {
+               console.log(`performSearch called with query: "${query}"`); 
+               if (!searchResultsList || !noSearchResultsMessage) {
+                   console.error("Search results list or no-results message element not found in performSearch.");
+                   return;
+               }
+               const trimmedQuery = query.trim().toLowerCase();
+               if (trimmedQuery === '') {
+                   console.log("Search query is empty. Focusing input.");
+                   heroSearchInput.focus(); 
+                   const searchContainer = document.getElementById('hero-search-container');
+                   if(searchContainer){
+                       searchContainer.style.borderColor = 'rgba(239, 68, 68, 0.7)'; 
+                       setTimeout(() => { searchContainer.style.borderColor = ''; }, 1500);
+                   }
+                   return;
+               }
+
+               searchResultsList.innerHTML = '';
+               noSearchResultsMessage.classList.add('hidden');
+               let foundResults = [];
+               const matchedPageFiles = new Set();
+
+               if (searchKeywords[trimmedQuery]) {
+                   matchedPageFiles.add(searchKeywords[trimmedQuery]);
+               }
+               for (const keyword in searchKeywords) {
+                   if (trimmedQuery.includes(keyword) || keyword.includes(trimmedQuery)) {
+                       matchedPageFiles.add(searchKeywords[keyword]);
+                   }
+               }
+               for (const pageFile in pageData) {
+                   const data = pageData[pageFile];
+                   if (data.title.toLowerCase().includes(trimmedQuery) || data.description.toLowerCase().includes(trimmedQuery)) {
+                       matchedPageFiles.add(pageFile);
+                   }
+               }
+
+               matchedPageFiles.forEach(pageFile => {
+                   if (pageData[pageFile]) {
+                       foundResults.push(pageData[pageFile]);
+                   }
+               });
+               console.log(`Found ${foundResults.length} results.`);
+
+               if (foundResults.length > 0) {
+                   foundResults.forEach(result => {
+                       const item = document.createElement('div');
+                       item.className = "search-result-item flex items-center p-3 bg-gray-700/60 rounded-md hover:bg-gray-600/80 transition-colors cursor-pointer border border-transparent hover:border-gray-500/70";
+                       item.addEventListener('click', (e) => {
+                           if (!e.target.closest('.search-result-action-button')) {
+                               window.location.href = result.link;
+                           }
+                       });
+
+                       const productIdentifier = result.title.toLowerCase().replace(/\s+/g, '-');
+                       const productStatusKey = PRODUCT_STATUS_PREFIX + productIdentifier;
+                       const currentStatus = localStorage.getItem(productStatusKey);
+
+                       let buttonText, buttonClass;
+                       if (result.isProduct) {
+                           buttonText = (currentStatus === 'Open') ? 'Open' : 'Get';
+                           buttonClass = (currentStatus === 'Open') ? "bg-green-600 hover:bg-green-500" : "bg-indigo-600 hover:bg-indigo-500";
+                       } else {
+                           buttonText = "View";
+                           buttonClass = "bg-gray-600 hover:bg-gray-500";
+                       }
+
+                       item.innerHTML = `
+                           <span class="w-10 h-10 rounded-md mr-3 flex-shrink-0 border border-gray-600 bg-gray-700 flex items-center justify-center">
+                               <i class="${result.iconClass} text-gray-300 text-lg"></i>
+                           </span>
+                           <div class="flex-grow mr-2 overflow-hidden">
+                               <h3 class="text-md font-medium text-gray-100 truncate">${result.title}</h3>
+                               <p class="text-xs text-gray-400 truncate">${result.description}</p>
+                           </div>
+                           <button class="search-result-action-button text-xs font-semibold ${buttonClass} text-white px-3 py-1.5 rounded-full transition-colors whitespace-nowrap" data-link="${result.link}">${buttonText}</button>
+                       `;
+
+                       const actionBtn = item.querySelector('.search-result-action-button');
+                       if(actionBtn){
+                           actionBtn.addEventListener('click', (e) => {
+                               e.stopPropagation();
+                               if (actionBtn.textContent === 'Get' && result.isProduct) {
+                                   localStorage.setItem(productStatusKey, 'Open');
+                                   localStorage.setItem(LS_HAS_MAX, 'true');
+                                   actionBtn.textContent = 'Open';
+                                   actionBtn.className = "search-result-action-button text-xs font-semibold bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded-full transition-colors whitespace-nowrap";
+
+                                   const mainPageCard = Array.from(productCards).find(card => card.querySelector('.card-title')?.textContent.trim() === result.title);
+                                   if (mainPageCard) {
+                                       const mainPageButton = mainPageCard.querySelector('.card-action-button');
+                                       if (mainPageButton) {
+                                           mainPageButton.textContent = 'Open';
+                                           mainPageButton.classList.add('open-state');
+                                       }
+                                   }
+                                   checkAndDisplayNewStuff();
+                                   return;
+                               }
+                               window.location.href = result.link;
+                           });
+                       }
+                       searchResultsList.appendChild(item);
+                   });
+               } else {
+                   console.log("No results found, showing message.");
+                   noSearchResultsMessage.classList.remove('hidden');
+               }
+
+               if (typeof openSearchModal === 'function') { 
+                  openSearchModal();
+               } else {
+                  console.error("openSearchModal function is not defined when trying to open modal.");
+               }
+           }
+
+           if (heroSearchInput) {
+                heroSearchInput.addEventListener('touchstart', (event) => {
+                    console.log('Hero search input touchstart triggered.');
+                    heroSearchInput.focus();
+                }, { passive: true });
+
+                heroSearchInput.addEventListener('click', () => {
+                        console.log('Hero search input click triggered.');
+                        heroSearchInput.focus();
+                });
+                
+                heroSearchInput.addEventListener('focus', () => {
+                    clearTimeout(typingTimeout);
+                    clearTimeout(blinkTimeout);
+                    isPaused = true;
+                    if(heroSearchInput.value === '') {
+                        heroSearchInput.placeholder = 'Search topics or pages...';
+                    } else {
+                        heroSearchInput.placeholder = '';
+                    }
+                    heroSearchInput.placeholder = heroSearchInput.placeholder.replace('|','');
+                    if (productShowcaseSection && topNav) {
+                        const navHeight = topNav.offsetHeight || 80;
+                        const targetScrollPosition = productShowcaseSection.offsetTop - navHeight - 20;
+                        window.scrollTo({
+                            top: Math.max(0, targetScrollPosition),
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+
+                heroSearchInput.addEventListener('blur', () => {
+                    isPaused = false;
+                    if (heroSearchInput.value === '') {
+                        heroSearchInput.placeholder = '';
+                        charIndex = 0; isDeleting = false;
+                        animatePlaceholder();
+                    }
+                });
+
+                heroSearchInput.addEventListener('keydown', (event) => {
+                    console.log(`Keydown event: ${event.key}`);
+                    if (event.key === 'Enter') {
+                        console.log("Enter key pressed, calling performSearch.");
+                        event.preventDefault();
+                        performSearch(heroSearchInput.value);
+                    }
+                });
+           }
+           
+           if (heroSearchButton) {
+                console.log("Attaching click listener to heroSearchButton.");
+                heroSearchButton.addEventListener('click', () => {
+                    console.log('Hero search button explicitly clicked, calling performSearch.');
+                    performSearch(heroSearchInput.value);
+                });
+           } else {
+                console.error("Hero search button element not found for attaching event listener.");
+           }
+
+           heroSearchInput.placeholder = '';
+           animatePlaceholder();
+       }
+
+
+       // --- Auto Scroll Logic - Simplified for "every refresh at top" ---
+       let userHasScrolledThisPageLoad = (window.scrollY !== 0); 
+
+       if (userHasScrolledThisPageLoad) {
+           console.log("Page loaded scrolled. Auto-scroll will be skipped for this specific page view.");
+       }
+
+       const handleUserInteractionToPreventAutoScroll = () => {
+           if (!userHasScrolledThisPageLoad) { 
+               userHasScrolledThisPageLoad = true;
+               console.log("User interacted (scroll/touch) before 5s timer. Auto-scroll cancelled for this specific page view.");
+           }
+       };
+
+       window.addEventListener('scroll', handleUserInteractionToPreventAutoScroll, { once: true });
+       window.addEventListener('touchstart', handleUserInteractionToPreventAutoScroll, { once: true });
+
+       setTimeout(() => {
+           console.log("Auto-scroll timer (5s) fired. Checking conditions...");
+           console.log(` - User has scrolled/interacted this page load? ${userHasScrolledThisPageLoad}`);
+           console.log(` - Current window.scrollY: ${window.scrollY}`);
+           
+           if (!userHasScrolledThisPageLoad && window.scrollY === 0) {
+               console.log("Conditions met. Performing auto-scroll (630px).");
+               window.scrollBy({
+                   top: 630,
+                   behavior: 'smooth'
+               });
+               // After auto-scrolling, we can consider this "initial interaction" done for this page load.
+               // This helps prevent the focus scroll on search input from fighting it if user clicks search immediately after.
+               userHasScrolledThisPageLoad = true; 
+           } else {
+               console.log("Auto-scroll conditions not met for this page view. Skipping scroll.");
+               if (userHasScrolledThisPageLoad && window.scrollY === 0) console.log("   - Reason: User interacted or page loaded scrolled, but is now at top.");
+               else if (userHasScrolledThisPageLoad) console.log("   - Reason: User interacted or page loaded scrolled.");
+               else if (window.scrollY !== 0) console.log("   - Reason: Page is no longer at the top (scrolled between listeners and timeout).");
+           }
+       }, 5000); 
 
     }); // End DOMContentLoaded
   </script>
