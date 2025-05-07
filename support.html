@@ -415,52 +415,35 @@
 
   <footer class="w-full bg-gray-900/80 backdrop-blur-md border-t border-gray-800 pt-12 pb-6 relative z-10">
     <div class="mx-auto px-6 max-w-7xl">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-        <div>
-          <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
-            <img src="logo.jpg" alt="Fromsupply Logo" class="h-6 w-6 rounded-sm inline-block" onerror="this.style.display='none'; const fsText = document.createElement('span'); fsText.textContent='FS'; fsText.className='w-6 h-6 bg-gray-700 text-white flex items-center justify-center rounded-sm text-xs font-semibold'; this.parentNode.insertBefore(fsText, this);"> Fromsupply
-            <span id="app-version-display" class="text-xs font-normal text-gray-500 opacity-75">fs v</span>
-          </h3>
-          <p class="text-gray-400 text-sm mb-6">Building the future of developer tools and experiences through innovative solutions.</p>
-          <div class="flex space-x-3">
-            <a href="https://github.com/chimwopara/fromsupply" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 social-icon" aria-label="GitHub">
-              <i class="fab fa-github"></i>
-            </a>
-            <a href="https://instagram.com/fromsupply" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 social-icon" aria-label="Instagram">
-              <i class="fab fa-instagram"></i>
-            </a>
-            <a href="#" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 social-icon" aria-label="LinkedIn">
-              <i class="fab fa-linkedin-in"></i>
-            </a>
-          </div>
-          <div class="mt-6 text-gray-500 text-xs">© 2025 Fromsupply. All rights reserved.</div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 items-start md:justify-items-stretch">
+        <div class="md:text-left">
+            <h3 class="text-white font-semibold mb-4">Resources</h3>
+            <ul class="space-y-2 text-sm">
+                <li><a href="https://www.youtube.com/playlist?list=PLaXy2djTTbXh0hlOvARCHAiGFo2n-EdyT&playnext=1&index=1" target="_blank" rel="noopener noreferrer" class="text-gray-400 footer-link">Tutorials</a></li>
+                <li><a href="terms.html" class="text-gray-400 footer-link">Terms</a></li>
+            </ul>
         </div>
-  
-        <div>
-          <h3 class="text-white font-semibold mb-4">Resources</h3>
-          <ul class="space-y-2 text-sm">
-            <li><a href="https://www.youtube.com/playlist?list=PLaXy2djTTbXh0hlOvARCHAiGFo2n-EdyT&playnext=1&index=1" target="_blank" rel="noopener noreferrer" class="text-gray-400 footer-link">Tutorials</a></li>
-            <li><a href="terms.html" class="text-gray-400 footer-link">Terms</a></li>
-          </ul>
+
+        <div class="flex flex-col items-center">
+            <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2 justify-center">
+                <img src="logo.jpg" alt="Fromsupply Logo" class="h-6 w-6 rounded-sm inline-block" onerror="this.onerror=null; this.style.display='none'; const newImg = document.createElement('span'); newImg.textContent='FS'; newImg.classList.add('w-6', 'h-6', 'rounded-sm', 'bg-gray-700', 'text-white', 'flex', 'items-center', 'justify-center', 'font-bold'); this.parentNode.insertBefore(newImg, this); this.remove();"> Fromsupply <span id="app-version-display" class="text-xs font-normal text-gray-500 opacity-75">fs v</span>
+            </h3>
+            <p class="text-gray-400 text-sm mb-6 text-center">Building the future of developer tools and experiences through innovative solutions.</p>
+            <div class="flex space-x-3 justify-center">
+                <a href="https://github.com/chimwopara/fromsupply" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 social-icon"><i class="fab fa-github"></i></a>
+                <a href="https://instagram.com/fromsupply" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 social-icon"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 social-icon"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+            <div class="mt-6 text-gray-500 text-xs text-center">© 2025 Fromsupply. All rights reserved.</div>
         </div>
-  
-        <div>
-          <h3 class="text-white font-semibold mb-4">Contact</h3>
-          <ul class="space-y-2 text-sm mb-6">
-            <li class="flex items-center gap-2 text-gray-400">
-              <i class="fa-regular fa-envelope w-4 text-center"></i>
-              <a href="mailto:support@fromsupply.com" class="footer-link">support@fromsupply.com</a>
-            </li>
-            <li class="flex items-center gap-2 text-gray-400">
-              <i class="fa-solid fa-location-dot w-4 text-center"></i>
-              <span>Alberta, Canada</span>
-            </li>
-            <li>
-              <a href="support.html" class="text-gray-400 footer-link flex items-center gap-2">
-                <i class="fa-regular fa-life-ring w-4 text-center"></i>Support Center
-              </a>
-            </li>
-          </ul>
+
+        <div class="md:text-right">
+            <h3 class="text-white font-semibold mb-4">Contact</h3>
+            <ul class="space-y-2 text-sm mb-6">
+                <li class="flex items-center md:justify-end gap-2 text-gray-400"><i class="fa-regular fa-envelope w-4 text-center"></i><a href="mailto:support@fromsupply.com" class="footer-link">support@fromsupply.com</a></li>
+                <li class="flex items-center md:justify-end gap-2 text-gray-400"><i class="fa-solid fa-location-dot w-4 text-center"></i><span>Alberta, Canada</span></li>
+                <li><a href="support.html" class="text-gray-400 footer-link flex items-center md:justify-end gap-2"><i class="fa-regular fa-life-ring w-4 text-center"></i>Support Center</a></li>
+            </ul>
         </div>
       </div>
     </div>
