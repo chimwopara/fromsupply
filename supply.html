@@ -348,6 +348,67 @@
         background-color: #2D3748; 
       }
 
+      /* Location Modal Styles */
+      #location-modal-overlay {
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+      }
+      #location-modal-content {
+        opacity: 0;
+        transform: scale(0.95);
+        transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        max-height: 80vh; /* Ensure it doesn't get too tall */
+      }
+      #location-country-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem; /* Space between country items */
+      }
+      .location-country-item {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        background-color: rgba(55, 65, 81, 0.4); /* Similar to nav-dropdown-item */
+        border-radius: 0.5rem;
+        transition: background-color 0.2s ease, transform 0.15s ease;
+        cursor: pointer;
+        border: 1px solid transparent;
+        font-size: 0.9rem; /* Slightly larger for readability */
+        color: #E5E7EB;
+      }
+      .location-country-item:hover {
+        background-color: rgba(75, 85, 99, 0.6);
+        transform: translateX(4px);
+        border-color: rgba(107, 114, 128, 0.5);
+      }
+      .location-country-item .flag-emoji {
+        margin-right: 0.75rem;
+        font-size: 1.5rem; /* Adjust flag size */
+        line-height: 1;
+      }
+      .location-current-button { /* Style for the "Use Current Location" button */
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        background-color: rgba(75, 85, 99, 0.5); /* Slightly different to stand out */
+        border-radius: 0.5rem;
+        transition: background-color 0.2s ease;
+        cursor: pointer;
+        border: 1px solid rgba(107, 114, 128, 0.5);
+        font-size: 0.9rem;
+        color: #F3F4F6;
+        font-weight: 500;
+        margin-bottom: 0.75rem; /* Space before the country list */
+      }
+      .location-current-button:hover {
+        background-color: rgba(107, 114, 128, 0.7);
+      }
+      .location-current-button .fa-location-crosshairs {
+        margin-right: 0.75rem;
+        font-size: 1.1rem;
+      }
+
+
       .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       .hide-scrollbar::-webkit-scrollbar { display: none; }
     </style>
@@ -403,8 +464,8 @@
 
         <div class="relative library-button-container">
             <button id="library-button" class="nav-button" aria-haspopup="true" aria-expanded="false">
-                 <span class="hidden sm:inline">Library</span>
-                 <i class="fas fa-book-open icon sm:hidden"></i> </button>
+                <span class="hidden sm:inline">Library</span>
+                <i class="fas fa-book-open icon sm:hidden"></i> </button>
             <div id="library-dropdown" class="nav-dropdown" role="menu">
                 <div id="library-empty-message" class="nav-dropdown-empty-message">Your library is empty. "Get" products to add them!</div>
                 </div>
@@ -845,6 +906,17 @@
     </div>
   </div>
 
+  <div id="location-modal-overlay" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[70] p-4">
+    <div id="location-modal-content" class="bg-gray-800/90 backdrop-blur-md rounded-lg shadow-2xl w-full max-w-md flex flex-col">
+        <div class="flex justify-between items-center p-4 border-b border-gray-700">
+            <h2 class="text-xl font-semibold text-white">Select Your Location</h2>
+            <button id="close-location-modal" class="text-gray-400 hover:text-white text-2xl leading-none p-1">×</button>
+        </div>
+        <div id="location-country-list-container" class="p-4 overflow-y-auto hide-scrollbar">
+            </div>
+    </div>
+  </div>
+
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -852,7 +924,6 @@
       const userLocationSpan = document.getElementById('user-location');
 
       // --- Element Selectors ---
-      // ... (all other selectors remain the same)
       const blobsContainer = document.getElementById('blobs-container');
       const productCards = document.querySelectorAll('#product-showcase .card'); 
       const catalogButton = document.getElementById('catalog-button');
@@ -884,22 +955,25 @@
       const deliveryNoteInput = document.getElementById('delivery-note');
       const deliveryForMeCheckbox = document.getElementById('delivery-for-me');
       
+      // Location Modal Elements
+      const locationModalOverlay = document.getElementById('location-modal-overlay');
+      const locationModalContent = document.getElementById('location-modal-content');
+      const closeLocationModalButton = document.getElementById('close-location-modal');
+      const locationCountryListContainer = document.getElementById('location-country-list-container'); // Changed ID for clarity
+
       let libraryActionsContainer = null; 
       let overallDeliveryButton = null; 
       let shareAllLibraryButton = null;
       const blobs = blobsContainer ? blobsContainer.querySelectorAll('.interactive-blob') : [];
 
 
-      const APP_VERSION = "0.9.9"; // Updated version for API integration
+      const APP_VERSION = "0.9.9"; 
       const LS_PRODUCT_GOTTEN_PREFIX = 'supply_gotten_'; 
       const LS_LIBRARY_ITEMS = 'supply_library_items';
       const LS_LIBRARY_ITEM_QTY_PREFIX = 'supply_library_qty_';
       const LS_SELECTED_CATALOG = 'supply_selected_catalog';
       const LS_STAR_BALANCE = 'supply_star_balance';
-      // IMPORTANT: Replace "YOUR_API_KEY_HERE" with your actual geocode.maps.co API key.
-      // WARNING: Exposing API keys client-side is a security risk for production applications.
-      // Consider a server-side solution for a live website.
-      const GEOCODE_MAPS_CO_API_KEY = "681b1c274ddc6654628463eag32adad"; 
+      const GEOCODE_MAPS_CO_API_KEY = "681b1c274ddc6654628463eag32adad"; // Dummy API Key
 
 
       const prefilledDeliveryData = {
@@ -913,61 +987,232 @@
       if (appVersionDisplay) appVersionDisplay.textContent = `fs v${APP_VERSION}`;
       
       // --- Location Logic ---
+      // Comprehensive list of countries with their emoji flags
+      const countriesData = [
+        { name: "Afghanistan", flag: "🇦🇫" }, { name: "Albania", flag: "🇦🇱" },
+        { name: "Algeria", flag: "🇩🇿" }, { name: "Andorra", flag: "🇦🇩" },
+        { name: "Angola", flag: "🇦🇴" }, { name: "Antigua and Barbuda", flag: "🇦🇬" },
+        { name: "Argentina", flag: "🇦🇷" }, { name: "Armenia", flag: "🇦🇲" },
+        { name: "Australia", flag: "🇦🇺" }, { name: "Austria", flag: "🇦🇹" },
+        { name: "Azerbaijan", flag: "🇦🇿" }, { name: "Bahamas", flag: "🇧🇸" },
+        { name: "Bahrain", flag: "🇧🇭" }, { name: "Bangladesh", flag: "🇧🇩" },
+        { name: "Barbados", flag: "🇧🇧" }, { name: "Belarus", flag: "🇧🇾" },
+        { name: "Belgium", flag: "🇧🇪" }, { name: "Belize", flag: "🇧🇿" },
+        { name: "Benin", flag: "🇧🇯" }, { name: "Bhutan", flag: "🇧🇹" },
+        { name: "Bolivia", flag: "🇧🇴" }, { name: "Bosnia and Herzegovina", flag: "🇧🇦" },
+        { name: "Botswana", flag: "🇧🇼" }, { name: "Brazil", flag: "🇧🇷" },
+        { name: "Brunei", flag: "🇧🇳" }, { name: "Bulgaria", flag: "🇧🇬" },
+        { name: "Burkina Faso", flag: "🇧🇫" }, { name: "Burundi", flag: "🇧🇮" },
+        { name: "Cabo Verde", flag: "🇨🇻" }, { name: "Cambodia", flag: "🇰🇭" },
+        { name: "Cameroon", flag: "🇨🇲" }, { name: "Canada", flag: "🇨🇦" },
+        { name: "Central African Republic", flag: "🇨🇫" }, { name: "Chad", flag: "🇹🇩" },
+        { name: "Chile", flag: "🇨🇱" }, { name: "China", flag: "🇨🇳" },
+        { name: "Colombia", flag: "🇨🇴" }, { name: "Comoros", flag: "🇰🇲" },
+        { name: "Congo, Democratic Republic of the", flag: "🇨🇩" }, { name: "Congo, Republic of the", flag: "🇨🇬" },
+        { name: "Costa Rica", flag: "🇨🇷" }, { name: "Croatia", flag: "🇭🇷" },
+        { name: "Cuba", flag: "🇨🇺" }, { name: "Cyprus", flag: "🇨🇾" },
+        { name: "Czech Republic", flag: "🇨🇿" }, { name: "Denmark", flag: "🇩🇰" },
+        { name: "Djibouti", flag: "🇩🇯" }, { name: "Dominica", flag: "🇩🇲" },
+        { name: "Dominican Republic", flag: "🇩🇴" }, { name: "Ecuador", flag: "🇪🇨" },
+        { name: "Egypt", flag: "🇪🇬" }, { name: "El Salvador", flag: "🇸🇻" },
+        { name: "Equatorial Guinea", flag: "🇬🇶" }, { name: "Eritrea", flag: "🇪🇷" },
+        { name: "Estonia", flag: "🇪🇪" }, { name: "Eswatini", flag: "🇸🇿" },
+        { name: "Ethiopia", flag: "🇪🇹" }, { name: "Fiji", flag: "🇫🇯" },
+        { name: "Finland", flag: "🇫🇮" }, { name: "France", flag: "🇫🇷" },
+        { name: "Gabon", flag: "🇬🇦" }, { name: "Gambia", flag: "🇬🇲" },
+        { name: "Georgia", flag: "🇬🇪" }, { name: "Germany", flag: "🇩🇪" },
+        { name: "Ghana", flag: "🇬🇭" }, { name: "Greece", flag: "🇬🇷" },
+        { name: "Grenada", flag: "🇬🇩" }, { name: "Guatemala", flag: "🇬🇹" },
+        { name: "Guinea", flag: "🇬🇳" }, { name: "Guinea-Bissau", flag: "🇬🇼" },
+        { name: "Guyana", flag: "🇬🇾" }, { name: "Haiti", flag: "🇭🇹" },
+        { name: "Honduras", flag: "🇭🇳" }, { name: "Hungary", flag: "🇭🇺" },
+        { name: "Iceland", flag: "🇮🇸" }, { name: "India", flag: "🇮🇳" },
+        { name: "Indonesia", flag: "🇮🇩" }, { name: "Iran", flag: "🇮🇷" },
+        { name: "Iraq", flag: "🇮🇶" }, { name: "Ireland", flag: "🇮🇪" },
+        { name: "Israel", flag: "🇮🇱" }, { name: "Italy", flag: "🇮🇹" },
+        { name: "Jamaica", flag: "🇯🇲" }, { name: "Japan", flag: "🇯🇵" },
+        { name: "Jordan", flag: "🇯🇴" }, { name: "Kazakhstan", flag: "🇰🇿" },
+        { name: "Kenya", flag: "🇰🇪" }, { name: "Kiribati", flag: "🇰🇮" },
+        { name: "Kuwait", flag: "🇰🇼" }, { name: "Kyrgyzstan", flag: "🇰🇬" },
+        { name: "Laos", flag: "🇱🇦" }, { name: "Latvia", flag: "🇱🇻" },
+        { name: "Lebanon", flag: "🇱🇧" }, { name: "Lesotho", flag: "🇱🇸" },
+        { name: "Liberia", flag: "🇱🇷" }, { name: "Libya", flag: "🇱🇾" },
+        { name: "Liechtenstein", flag: "🇱🇮" }, { name: "Lithuania", flag: "🇱🇹" },
+        { name: "Luxembourg", flag: "🇱🇺" }, { name: "Madagascar", flag: "🇲🇬" },
+        { name: "Malawi", flag: "🇲🇼" }, { name: "Malaysia", flag: "🇲🇾" },
+        { name: "Maldives", flag: "🇲🇻" }, { name: "Mali", flag: "🇲🇱" },
+        { name: "Malta", flag: "🇲🇹" }, { name: "Marshall Islands", flag: "🇲🇭" },
+        { name: "Mauritania", flag: "🇲🇷" }, { name: "Mauritius", flag: "🇲🇺" },
+        { name: "Mexico", flag: "🇲🇽" }, { name: "Micronesia", flag: "🇫🇲" },
+        { name: "Moldova", flag: "🇲🇩" }, { name: "Monaco", flag: "🇲🇨" },
+        { name: "Mongolia", flag: "🇲🇳" }, { name: "Montenegro", flag: "🇲🇪" },
+        { name: "Morocco", flag: "🇲🇦" }, { name: "Mozambique", flag: "🇲🇿" },
+        { name: "Myanmar", flag: "🇲🇲" }, { name: "Namibia", flag: "🇳🇦" },
+        { name: "Nauru", flag: "🇳🇷" }, { name: "Nepal", flag: "🇳🇵" },
+        { name: "Netherlands", flag: "🇳🇱" }, { name: "New Zealand", flag: "🇳🇿" },
+        { name: "Nicaragua", flag: "🇳🇮" }, { name: "Niger", flag: "🇳🇪" },
+        { name: "Nigeria", flag: "🇳🇬" }, { name: "North Korea", flag: "🇰🇵" },
+        { name: "North Macedonia", flag: "🇲🇰" }, { name: "Norway", flag: "🇳🇴" },
+        { name: "Oman", flag: "🇴🇲" }, { name: "Pakistan", flag: "🇵🇰" },
+        { name: "Palau", flag: "🇵🇼" }, { name: "Palestine", flag: "🇵🇸" },
+        { name: "Panama", flag: "🇵🇦" }, { name: "Papua New Guinea", flag: "🇵🇬" },
+        { name: "Paraguay", flag: "🇵🇾" }, { name: "Peru", flag: "🇵🇪" },
+        { name: "Philippines", flag: "🇵🇭" }, { name: "Poland", flag: "🇵🇱" },
+        { name: "Portugal", flag: "🇵🇹" }, { name: "Qatar", flag: "🇶🇦" },
+        { name: "Romania", flag: "🇷🇴" }, { name: "Russia", flag: "🇷🇺" },
+        { name: "Rwanda", flag: "🇷🇼" }, { name: "Saint Kitts and Nevis", flag: "🇰🇳" },
+        { name: "Saint Lucia", flag: "🇱🇨" }, { name: "Saint Vincent and the Grenadines", flag: "🇻🇨" },
+        { name: "Samoa", flag: "🇼🇸" }, { name: "San Marino", flag: "🇸🇲" },
+        { name: "Sao Tome and Principe", flag: "🇸🇹" }, { name: "Saudi Arabia", flag: "🇸🇦" },
+        { name: "Senegal", flag: "🇸🇳" }, { name: "Serbia", flag: "🇷🇸" },
+        { name: "Seychelles", flag: "🇸🇨" }, { name: "Sierra Leone", flag: "🇸🇱" },
+        { name: "Singapore", flag: "🇸🇬" }, { name: "Slovakia", flag: "🇸🇰" },
+        { name: "Slovenia", flag: "🇸🇮" }, { name: "Solomon Islands", flag: "🇸🇧" },
+        { name: "Somalia", flag: "🇸🇴" }, { name: "South Africa", flag: "🇿🇦" },
+        { name: "South Korea", flag: "🇰🇷" }, { name: "South Sudan", flag: "🇸🇸" },
+        { name: "Spain", flag: "🇪🇸" }, { name: "Sri Lanka", flag: "🇱🇰" },
+        { name: "Sudan", flag: "🇸🇩" }, { name: "Suriname", flag: "🇸🇷" },
+        { name: "Sweden", flag: "🇸🇪" }, { name: "Switzerland", flag: "🇨🇭" },
+        { name: "Syria", flag: "🇸🇾" }, { name: "Taiwan", flag: "🇹🇼" },
+        { name: "Tajikistan", flag: "🇹🇯" }, { name: "Tanzania", flag: "🇹🇿" },
+        { name: "Thailand", flag: "🇹🇭" }, { name: "Timor-Leste", flag: "🇹🇱" },
+        { name: "Togo", flag: "🇹🇬" }, { name: "Tonga", flag: "🇹🇴" },
+        { name: "Trinidad and Tobago", flag: "🇹🇹" }, { name: "Tunisia", flag: "🇹🇳" },
+        { name: "Turkey", flag: "🇹🇷" }, { name: "Turkmenistan", flag: "🇹🇲" },
+        { name: "Tuvalu", flag: "🇹🇻" }, { name: "Uganda", flag: "🇺🇬" },
+        { name: "Ukraine", flag: "🇺🇦" }, { name: "United Arab Emirates", flag: "🇦🇪" },
+        { name: "United Kingdom", flag: "🇬🇧" }, { name: "United States", flag: "🇺🇸" },
+        { name: "Uruguay", flag: "🇺🇾" }, { name: "Uzbekistan", flag: "🇺🇿" },
+        { name: "Vanuatu", flag: "🇻🇺" }, { name: "Vatican City", flag: "🇻🇦" },
+        { name: "Venezuela", flag: "🇻🇪" }, { name: "Vietnam", flag: "🇻🇳" },
+        { name: "Yemen", flag: "🇾🇪" }, { name: "Zambia", flag: "🇿🇲" },
+        { name: "Zimbabwe", flag: "🇿🇼" }
+      ];
+
+
       function updateUserLocationDisplay(location) {
         if (userLocationSpan) {
             userLocationSpan.textContent = location;
         }
       }
 
-      function askForLocation() {
-        const currentLocation = localStorage.getItem(LS_USER_LOCATION) || "Lagos";
-        const newLocation = prompt("Please enter your city or country (e.g., Edmonton, London, Nigeria):", currentLocation);
-        if (newLocation && newLocation.trim() !== "" && newLocation.trim() !== currentLocation) {
-            localStorage.setItem(LS_USER_LOCATION, newLocation.trim());
-            updateUserLocationDisplay(newLocation.trim());
-        } else {
-            updateUserLocationDisplay(currentLocation);
-        }
+      function openLocationModal() {
+        if (!locationModalOverlay || !locationModalContent || !locationCountryListContainer) return;
+
+        locationCountryListContainer.innerHTML = ''; // Clear previous list and button
+
+        // Create and add "Use Current Location" button
+        const currentLocationButton = document.createElement('button');
+        currentLocationButton.className = 'location-current-button';
+        currentLocationButton.innerHTML = `<i class="fas fa-location-crosshairs"></i> Use Current Location`;
+        currentLocationButton.addEventListener('click', () => {
+            // Attempt to use geolocation, then close modal
+            // Set a flag in localStorage to indicate auto-detection attempt
+            localStorage.setItem('supply_force_geolocate', 'true');
+            initializeLocation(); // This will now try to geolocate
+            closeLocationModal();
+        });
+        locationCountryListContainer.appendChild(currentLocationButton);
+
+        // Create a div for the scrollable country list
+        const countryListDiv = document.createElement('div');
+        countryListDiv.id = 'location-country-list'; // Re-add id for styling if needed, or style via container
+        countryListDiv.className = 'flex flex-col gap-2'; // Tailwind classes for layout
+
+        countriesData.sort((a, b) => a.name.localeCompare(b.name)); // Sort countries alphabetically
+
+        countriesData.forEach(country => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'location-country-item';
+            itemDiv.innerHTML = `<span class="flag-emoji">${country.flag}</span> ${country.name}`;
+            itemDiv.addEventListener('click', () => {
+                localStorage.setItem(LS_USER_LOCATION, country.name);
+                updateUserLocationDisplay(country.name);
+                localStorage.removeItem('supply_force_geolocate'); // Clear the flag
+                closeLocationModal();
+            });
+            countryListDiv.appendChild(itemDiv);
+        });
+        locationCountryListContainer.appendChild(countryListDiv);
+
+
+        locationModalOverlay.classList.remove('hidden');
+        locationModalOverlay.style.opacity = '0';
+        locationModalContent.style.opacity = '0';
+        locationModalContent.style.transform = 'scale(0.95)';
+
+        requestAnimationFrame(() => {
+            locationModalOverlay.style.opacity = '1';
+            locationModalContent.style.opacity = '1';
+            locationModalContent.style.transform = 'scale(1)';
+        });
+      }
+
+      function closeLocationModal() {
+        if (!locationModalOverlay || !locationModalContent) return;
+        locationModalOverlay.style.opacity = '0';
+        locationModalContent.style.opacity = '0';
+        locationModalContent.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            locationModalOverlay.classList.add('hidden');
+        }, 300);
+      }
+
+      if (closeLocationModalButton) {
+        closeLocationModalButton.addEventListener('click', closeLocationModal);
+      }
+      if (locationModalOverlay) {
+        locationModalOverlay.addEventListener('click', (event) => {
+            if (event.target === locationModalOverlay) {
+                closeLocationModal();
+            }
+        });
       }
       
-      // Fallback function if API fails or for manual setting
-      function setLocationManually(reason) {
+      function setLocationManually(reason, bypassAlert = false) {
         console.warn(reason);
-        const defaultLocation = "Lagos"; // Default if everything fails
-        const placeholderLocation = "Your Area"; // More generic if API fails after coords
+        const defaultLocation = "Lagos"; 
+        const placeholderLocation = "Your Area";
         
         let finalLocation = defaultLocation;
-        let alertMessage = `Could not automatically determine your precise location (${reason}). Defaulting to ${defaultLocation}.`;
+        let alertMessage = `Could not automatically determine your location (${reason}). Defaulting to ${defaultLocation}. Click the location to select from a list.`;
 
-        if (reason.includes("API") || reason.includes("Parse")) { // If API call was attempted
+        if (reason.includes("API") || reason.includes("Parse")) {
             finalLocation = placeholderLocation;
-            alertMessage = `Could not fetch city/country from coordinates. Displaying as '${finalLocation}'. Click the location to set it manually.`;
+            alertMessage = `Could not fetch city/country from coordinates. Displaying as '${finalLocation}'. Click the location to select from a list.`;
         } else if (reason.includes("Denied")) {
-             alertMessage = `Location access was denied. Defaulting to ${defaultLocation}. You can click the location name to change it manually.`;
+            alertMessage = `Location access was denied. Defaulting to ${defaultLocation}. Click the location to select from a list.`;
         } else if (reason.includes("Unavailable") || reason.includes("Timeout")) {
-            alertMessage = `Geolocation is currently unavailable. Defaulting to ${defaultLocation}. You can click the location name to change it manually.`;
+            alertMessage = `Geolocation is currently unavailable. Defaulting to ${defaultLocation}. Click the location to select from a list.`;
         }
         
-        alert(alertMessage);
+        if (!bypassAlert) { // Only show alert if not bypassed (e.g. after "Use Current Location" click)
+            alert(alertMessage);
+        }
         localStorage.setItem(LS_USER_LOCATION, finalLocation); 
         updateUserLocationDisplay(finalLocation);
+        localStorage.removeItem('supply_force_geolocate'); // Clear the flag
       }
 
-      function initializeLocation() {
+      function initializeLocation(forceGeolocate = false) {
         const storedLocation = localStorage.getItem(LS_USER_LOCATION);
-        if (storedLocation && storedLocation !== "Your Area (Auto-Detected)" && storedLocation !== "Your Area") { // Prioritize user-set location
+        const shouldForceGeolocate = localStorage.getItem('supply_force_geolocate') === 'true';
+
+        if (storedLocation && !shouldForceGeolocate && storedLocation !== "Your Area (Auto-Detected)" && storedLocation !== "Your Area") {
             updateUserLocationDisplay(storedLocation);
         } else {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
-                    async (position) => { // Made this async to use await for fetch
+                    async (position) => { 
                         const { latitude, longitude } = position.coords;
                         console.log("Geolocation permission granted. Coordinates:", latitude, longitude);
 
-                        if (GEOCODE_MAPS_CO_API_KEY === "YOUR_API_KEY_HERE") {
-                            console.warn("geocode.maps.co API key is not set. Using placeholder location.");
-                            setLocationManually("API key missing");
-                            alert("Developer Note: geocode.maps.co API key is not set. Automatic city/country lookup disabled. Please set it in the script. You can click the location to set it manually.");
+                        if (GEOCODE_MAPS_CO_API_KEY === "YOUR_API_KEY_HERE" || GEOCODE_MAPS_CO_API_KEY === "681b1c274ddc6654628463eag32adad") {
+                            console.warn("geocode.maps.co API key is not set or is a dummy. Using placeholder location.");
+                            setLocationManually("API key missing/dummy", shouldForceGeolocate); // Pass bypass flag
+                            if (!shouldForceGeolocate) { // Only show this specific alert if not forced
+                                alert("Developer Note: geocode.maps.co API key is not set or is a dummy. Automatic city/country lookup disabled. Click the location to select from a list.");
+                            }
                             return;
                         }
                         
@@ -981,54 +1226,59 @@
 
                             let fetchedLocation = "";
                             if (data.address) {
-                                // Prefer more specific terms first
                                 if (data.address.city) fetchedLocation = data.address.city;
                                 else if (data.address.town) fetchedLocation = data.address.town;
                                 else if (data.address.village) fetchedLocation = data.address.village;
                                 else if (data.address.hamlet) fetchedLocation = data.address.hamlet;
-                                else if (data.address.county) fetchedLocation = data.address.county; // Fallback to county
+                                else if (data.address.county) fetchedLocation = data.address.county;
 
-                                if (data.address.country && fetchedLocation) {
+                                if (data.address.country && fetchedLocation && fetchedLocation !== data.address.country) { // Avoid "Country, Country"
                                     fetchedLocation += `, ${data.address.country}`;
-                                } else if (data.address.country) {
+                                } else if (data.address.country && !fetchedLocation) {
                                     fetchedLocation = data.address.country;
+                                } else if (!fetchedLocation && data.address.country) { // Fallback to just country if no city parts
+                                     fetchedLocation = data.address.country;
                                 }
                             }
 
                             if (fetchedLocation) {
                                 localStorage.setItem(LS_USER_LOCATION, fetchedLocation);
                                 updateUserLocationDisplay(fetchedLocation);
-                                alert(`Location automatically set to: ${fetchedLocation}. You can click it to change if needed.`);
+                                if (shouldForceGeolocate) { // More direct feedback if user clicked "Use Current Location"
+                                     alert(`Location updated to: ${fetchedLocation}.`);
+                                } else {
+                                     alert(`Location automatically set to: ${fetchedLocation}. You can click it to change if needed.`);
+                                }
                             } else {
-                                // If API returns data but no usable address components
-                                setLocationManually("Parse API response for address parts");
+                                setLocationManually("Parse API response for address parts", shouldForceGeolocate);
                             }
                         } catch (apiError) {
                             console.error("Error fetching location from geocode.maps.co API:", apiError);
-                            setLocationManually("API call failed");
+                            setLocationManually("API call failed", shouldForceGeolocate);
+                        } finally {
+                             localStorage.removeItem('supply_force_geolocate'); // Always clear the flag
                         }
                     },
                     (error) => {
                         console.warn(`Geolocation error: ${error.message} (Code: ${error.code})`);
-                        if (error.code === error.PERMISSION_DENIED) setLocationManually("Denied");
-                        else if (error.code === error.POSITION_UNAVAILABLE) setLocationManually("Unavailable");
-                        else if (error.code === error.TIMEOUT) setLocationManually("Timeout");
-                        else setLocationManually("Unknown geolocation error");
+                        let reason = "Unknown geolocation error";
+                        if (error.code === error.PERMISSION_DENIED) reason = "Denied";
+                        else if (error.code === error.POSITION_UNAVAILABLE) reason = "Unavailable";
+                        else if (error.code === error.TIMEOUT) reason = "Timeout";
+                        setLocationManually(reason, shouldForceGeolocate);
                     }
                 );
             } else {
                 console.warn("Geolocation not supported by this browser.");
-                setLocationManually("Geolocation not supported");
+                setLocationManually("Geolocation not supported", shouldForceGeolocate);
             }
         }
       }
 
       if (userLocationSpan) {
-        userLocationSpan.addEventListener('click', askForLocation);
+        userLocationSpan.addEventListener('click', openLocationModal);
       }
-      initializeLocation();
-
-      // ... (rest of the JavaScript code remains the same as in supply_marketplace_v2)
+      initializeLocation(); // Initial call on page load
 
 
       const starBalanceDisplay = starButton ? starButton.querySelector('span') : null;
@@ -1472,11 +1722,15 @@
         if (button && dropdown) {
             button.addEventListener('click', (event) => {
                 event.stopPropagation();
-                [starDropdown, libraryDropdown, catalogDropdown].forEach(dd => {
+                [starDropdown, libraryDropdown, catalogDropdown, locationModalOverlay].forEach(dd => {
                     if (dd && dd !== dropdown && dd.classList.contains('active')) {
                         dd.classList.remove('active');
-                        const correspondingButton = dd.id.includes('star') ? starButton : (dd.id.includes('library') ? libraryButton : catalogButton);
+                        const correspondingButton = dd.id.includes('star') ? starButton : 
+                                                  (dd.id.includes('library') ? libraryButton : 
+                                                  (dd.id.includes('catalog') ? catalogButton : null));
                         if(correspondingButton) correspondingButton.setAttribute('aria-expanded', 'false');
+                    } else if (dd && dd !== dropdown && !dd.classList.contains('hidden') && dd.id.includes('location-modal')) {
+                        if (typeof closeLocationModal === 'function') closeLocationModal();
                     }
                 });
                 const isActive = dropdown.classList.toggle('active');
@@ -1502,7 +1756,9 @@
       });
         document.addEventListener('keydown', (event) => {
           if (event.key === 'Escape') {
-              if (deliveryModal && !deliveryModal.classList.contains('hidden')) {
+              if (locationModalOverlay && !locationModalOverlay.classList.contains('hidden')) {
+                  closeLocationModal();
+              } else if (deliveryModal && !deliveryModal.classList.contains('hidden')) {
                   closeDeliveryModal();
               } else if (searchResultsOverlay && !searchResultsOverlay.classList.contains('hidden')) {
                   if (typeof closeSearchModal === 'function') closeSearchModal();
@@ -1722,6 +1978,8 @@
                 userHasScrolledThisPageLoad = true; 
             }
         }, 4000); 
+
+        
 
     }); // End DOMContentLoaded
   </script>
