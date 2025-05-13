@@ -16,6 +16,7 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
       /* Base body styling */
       html {
@@ -35,6 +36,36 @@
         backdrop-filter: blur(10px);
         border-bottom: 1px solid rgba(55, 65, 81, 0.3);
       }
+
+      /* Google Sign-In Button Custom Styling (May need adjustment with Google's rendered button) */
+      /* This targets the container where Google's button is rendered */
+      #google-auth-button-slot {
+        /* Add any container-specific styles if needed.
+           The .nav-button-container class is already applied.
+           Direct styling of Google's button internals is limited. */
+      }
+      /* These styles were attempting to style Google's button directly.
+         They might have some effect if Google's button structure matches,
+         but rely on renderButton options primarily. */
+      .nav-button-container .g_id_signin {
+        margin: 0 !important; /* Override default margins from Google */
+        display: inline-block !important;
+        border-radius: 9999px !important; /* Apply to Google's wrapper */
+        overflow: hidden; /* Ensure child elements also get rounded */
+      }
+      .nav-button-container .g_id_signin div[role="button"] {
+        border-radius: 9999px !important;
+        border: 1px solid rgba(55, 65, 81, 0.4) !important;
+        background-color: rgba(17, 24, 39, 0.7) !important;
+        backdrop-filter: blur(8px);
+        color: #D1D5DB !important; /* Adjust text color if needed */
+        /* min-width: 100px; /* Example: Ensure a minimum width */
+        /* padding: 0.5rem 1rem !important; /* Match your .nav-button padding if possible */
+      }
+       .nav-button-container .g_id_signin iframe {
+        border-radius: 9999px !important; /* Ensure iframe is also rounded */
+      }
+
 
       /* Interactive Blobs Container */
       #blobs-container {
@@ -102,25 +133,29 @@
         z-index: 10;
         width: 90%;
         max-width: 600px;
-        display: flex; 
-        align-items: center; 
-        background-color: rgba(17, 24, 39, 0.7); 
-        backdrop-filter: blur(8px); 
-        border: 1px solid rgba(55, 65, 81, 0.5); 
-        border-radius: 9999px; 
-        padding-left: 1.5rem; 
+        display: flex;
+        align-items: center;
+        background-color: rgba(17, 24, 39, 0.7);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(55, 65, 81, 0.5);
+        border-radius: 9999px;
+        padding-left: 1.5rem;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        z-index: 20; /* Ensure it's above other elements */
+        pointer-events: auto !important; /* Force pointer events */
       }
       #hero-search-input {
-        background-color: transparent; 
-        border: none; 
+        background-color: transparent;
+        border: none;
         color: #E5E7EB;
-        padding: 0.75rem 0.5rem; 
+        padding: 0.75rem 0.5rem;
         width: 100%;
         font-size: 1rem;
         transition: all 0.3s ease;
         text-align: center;
-        flex-grow: 1; 
+        flex-grow: 1;
+        pointer-events: auto !important; /* Force pointer events */
+        position: relative; /* Ensure proper stacking context */
       }
       #hero-search-input::placeholder {
         color: #D1D5DB;
@@ -131,7 +166,7 @@
       #hero-search-input:focus {
         outline: none;
       }
-      #hero-search-container:focus-within { 
+      #hero-search-container:focus-within {
         border-color: rgba(255, 255, 255, 0.4);
         box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
       }
@@ -146,13 +181,16 @@
       #hero-search-button {
         background-color: transparent;
         border: none;
-        color: #9CA3AF; 
-        padding: 0.75rem 1.25rem 0.75rem 0.5rem; 
+        color: #9CA3AF;
+        padding: 0.75rem 1.25rem 0.75rem 0.5rem;
         cursor: pointer;
         font-size: 1.1rem;
         transition: color 0.3s ease;
-        border-top-right-radius: 9999px; 
+        border-top-right-radius: 9999px;
         border-bottom-right-radius: 9999px;
+        position: relative; /* Ensure proper stacking context */
+        z-index: 21; /* Ensure it's above the input */
+        pointer-events: auto !important; /* Force pointer events */
       }
       #hero-search-button:hover {
         color: #E5E7EB;
@@ -161,6 +199,17 @@
         transform: scale(0.95);
       }
 
+      /* Mobile-specific search styles */
+      @media (max-width: 640px) {
+        #hero-search-container {
+          bottom: 10%;
+          width: 85%;
+        }
+        #hero-search-input {
+          font-size: 0.9rem;
+          padding: 0.6rem 0.4rem;
+        }
+      }
 
       /* Product Card Styling */
       .card {
@@ -217,6 +266,27 @@
       }
       .card .video-container.video-error iframe { display: none; }
 
+      /* Mobile card styling */
+      @media (max-width: 640px) {
+        .card-info-area {
+          padding: 0.75rem;
+          gap: 0.5rem;
+        }
+        .card-icon-container {
+          width: 2.5rem;
+          height: 2.5rem;
+        }
+        .card-title {
+          font-size: 1rem;
+        }
+        .card-description {
+          font-size: 0.75rem;
+        }
+        .card-action-button {
+          font-size: 0.75rem;
+          padding: 0.4rem 0.8rem;
+        }
+      }
 
       /* General Text & Links */
       .glow-text { color: #ffffff; text-shadow: 0 0 8px rgba(255, 255, 255, 0.2); }
@@ -225,43 +295,89 @@
       .social-icon { transition: all 0.3s ease; }
       .social-icon:hover { background-color: #ffffff; color: #030712; transform: scale(1.1); }
 
-      /* Star Button & Dropdown */
-      .star-button-container { position: relative; z-index: 50; }
-      .star-button {
+      /* Star Button & Dropdown - Also used for Library */
+      .nav-button-container { position: relative; z-index: 50; }
+      .nav-button {
         position: relative; background-color: rgba(17, 24, 39, 0.5); backdrop-filter: blur(8px); border: 1px solid rgba(55, 65, 81, 0.4);
         transition: all 0.3s ease; overflow: hidden; padding: 0.5rem 1rem; border-radius: 9999px; display: flex; align-items: center; gap: 0.5rem;
         font-size: 0.875rem; color: #D1D5DB; cursor: pointer;
       }
-      .star-button:hover { border-color: rgba(255, 255, 255, 0.5); background-color: rgba(17, 24, 39, 0.7); color: #ffffff; }
-      .star-button::before {
+      .nav-button:hover { border-color: rgba(255, 255, 255, 0.5); background-color: rgba(17, 24, 39, 0.7); color: #ffffff; }
+      .nav-button::before {
         content: ''; position: absolute; top: 0; left: 0; width: 200%; height: 200%;
         background: conic-gradient(transparent, transparent, transparent, rgba(255, 255, 255, 0.5));
         animation: rotate 4s linear infinite; transform-origin: center center; z-index: -1; opacity: 0;
         transition: opacity 0.3s ease; transform: translate(-25%, -25%);
       }
-      .star-button:hover::before { opacity: 1; }
+      .nav-button:hover::before { opacity: 1; }
       @keyframes rotate { from { transform: translate(-25%, -25%) rotate(0deg); } to { transform: translate(-25%, -25%) rotate(360deg); } }
-      .star-dropdown {
+      .nav-dropdown {
         position: absolute; top: calc(100% + 0.5rem); right: 0; background-color: rgba(31, 41, 55, 0.9); backdrop-filter: blur(12px);
         border: 1px solid rgba(75, 85, 99, 0.5); border-radius: 0.75rem; padding: 0.75rem; width: 320px; z-index: 60;
         opacity: 0; visibility: hidden; transform: translateY(-10px) scale(0.98); transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
         display: flex; flex-direction: column; gap: 0.75rem; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
       }
-      .star-dropdown.active { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+      .nav-dropdown.active { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
       .dropdown-item {
         display: flex; align-items: center; padding: 0.75rem; background-color: rgba(55, 65, 81, 0.4); border-radius: 0.5rem;
         transition: background-color 0.2s ease, transform 0.15s ease; cursor: pointer; border: 1px solid transparent; position: relative;
+        margin-bottom: 0.75rem; /* Added space between items */
       }
+      .dropdown-item:last-child { margin-bottom: 0; } /* No margin on last item */
       .dropdown-item:hover { background-color: rgba(75, 85, 99, 0.6); transform: translateX(4px); border-color: rgba(107, 114, 128, 0.5); }
       .dropdown-item-icon { width: 40px; height: 40px; border-radius: 0.375rem; margin-right: 0.75rem; object-fit: cover; flex-shrink: 0; border: 1px solid rgba(75, 85, 99, 0.5); }
       .dropdown-item-content { flex-grow: 1; margin-right: 0.5rem; }
       .dropdown-item-title { color: #F3F4F6; font-weight: 500; font-size: 0.875rem; line-height: 1.2; margin-bottom: 2px; }
       .dropdown-item-desc { color: #9CA3AF; font-size: 0.75rem; line-height: 1.3; }
-      .dropdown-item-price {
+      .dropdown-item-price, .dropdown-item-button {
         background-color: #4B5563; color: #ffffff; font-size: 0.75rem; font-weight: 600; padding: 0.25rem 0.6rem; border-radius: 9999px;
         transition: background-color 0.2s ease, transform 0.15s ease, opacity 0.2s ease; white-space: nowrap; border: none; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       }
-      .dropdown-item:hover .dropdown-item-price:not(.new-stuff-button[disabled]) { background-color: #374151; transform: scale(1.05); }
+      .dropdown-item:hover .dropdown-item-price:not(.new-stuff-button[disabled]),
+      .dropdown-item:hover .dropdown-item-button { background-color: #374151; transform: scale(1.05); }
+      .dropdown-section-title {
+        color: #D1D5DB;
+        font-size: 0.85rem;
+        padding: 0.5rem 0.75rem;
+        margin-top: 0.25rem;
+        margin-bottom: 0.75rem; /* Added space below title */
+        border-bottom: 1px solid rgba(75, 85, 99, 0.5);
+      }
+      .empty-library-message {
+        color: #9CA3AF;
+        font-size: 0.85rem;
+        padding: 1rem;
+        text-align: center;
+        font-style: italic;
+      }
+
+      /* Add scrolling to dropdown content containers */
+      #library-items-container, #star-dropdown .dropdown-items-container {
+        max-height: 380px; /* Height for 5 items plus some padding */
+        overflow-y: auto;
+        padding-right: 0.5rem; /* Space for scrollbar */
+        margin-right: -0.5rem; /* Offset the padding */
+      }
+
+      /* Custom scrollbar for dropdowns */
+      #library-items-container::-webkit-scrollbar,
+      #star-dropdown .dropdown-items-container::-webkit-scrollbar {
+        width: 4px;
+      }
+      #library-items-container::-webkit-scrollbar-track,
+      #star-dropdown .dropdown-items-container::-webkit-scrollbar-track {
+        background: rgba(55, 65, 81, 0.2);
+        border-radius: 10px;
+      }
+      #library-items-container::-webkit-scrollbar-thumb,
+      #star-dropdown .dropdown-items-container::-webkit-scrollbar-thumb {
+        background: rgba(107, 114, 128, 0.5);
+        border-radius: 10px;
+      }
+      #library-items-container::-webkit-scrollbar-thumb:hover,
+      #star-dropdown .dropdown-items-container::-webkit-scrollbar-thumb:hover {
+        background: rgba(156, 163, 175, 0.5);
+      }
       .new-stuff-button[disabled] { background-color: #374151; color: #6b7280; cursor: not-allowed; opacity: 0.6; transform: none; }
       .new-stuff-button[disabled]:hover { background-color: #374151; transform: none; }
       .new-stuff-popup {
@@ -274,6 +390,128 @@
       .popup-icon { width: 32px; height: 32px; border-radius: 0.25rem; flex-shrink: 0; }
       .popup-text h4 { color: #FDE68A; font-weight: 600; margin-bottom: 0.5rem; }
       .popup-text ul { list-style: disc; padding-left: 1.25rem; color: #FEF3C7; font-size: 0.875rem; line-height: 1.5; }
+
+      /* Mobile nav buttons */
+      @media (max-width: 640px) {
+        .nav-button {
+          padding: 0.4rem 0.7rem;
+          font-size: 0.8rem;
+        }
+        .nav-dropdown {
+          width: 280px;
+          right: -40px; /* Offset to center better for small screens */
+        }
+        .nav-dropdown::before {
+          content: '';
+          position: absolute;
+          top: -6px;
+          right: 48px;
+          width: 12px;
+          height: 12px;
+          background-color: rgba(31, 41, 55, 0.9);
+          transform: rotate(45deg);
+          border-left: 1px solid rgba(75, 85, 99, 0.5);
+          border-top: 1px solid rgba(75, 85, 99, 0.5);
+        }
+      }
+
+      /* User Profile Menu */
+      .user-profile-container {
+        position: relative;
+        z-index: 50;
+      }
+      .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 2px solid rgba(75, 85, 99, 0.5);
+        transition: all 0.2s ease;
+      }
+      .user-avatar:hover {
+        border-color: rgba(255, 255, 255, 0.7);
+        transform: scale(1.05);
+      }
+      .user-profile-menu {
+        position: absolute;
+        top: calc(100% + 0.5rem);
+        right: 0;
+        background-color: rgba(31, 41, 55, 0.9);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(75, 85, 99, 0.5);
+        border-radius: 0.75rem;
+        padding: 0.75rem;
+        width: 260px;
+        z-index: 60;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px) scale(0.98);
+        transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      }
+      .user-profile-menu.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0) scale(1);
+      }
+      .user-profile-header {
+        display: flex;
+        align-items: center;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid rgba(75, 85, 99, 0.5);
+      }
+      .user-profile-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        margin-right: 0.75rem;
+        border: 2px solid rgba(75, 85, 99, 0.5);
+      }
+      .user-profile-info {
+        flex-grow: 1;
+      }
+      .user-profile-name {
+        color: #F3F4F6;
+        font-weight: 500;
+        font-size: 0.95rem;
+        margin-bottom: 2px;
+      }
+      .user-profile-email {
+        color: #9CA3AF;
+        font-size: 0.75rem;
+        max-width: 180px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .user-profile-menu-item {
+        display: flex;
+        align-items: center;
+        padding: 0.6rem 0.75rem;
+        color: #D1D5DB;
+        font-size: 0.85rem;
+        border-radius: 0.5rem;
+        transition: all 0.2s ease;
+        cursor: pointer;
+      }
+      .user-profile-menu-item:hover {
+        background-color: rgba(75, 85, 99, 0.6);
+        color: #F9FAFB;
+      }
+      .user-profile-menu-item i {
+        width: 20px;
+        margin-right: 0.75rem;
+        text-align: center;
+      }
+      .user-profile-menu-item.logout {
+        color: #EF4444;
+      }
+      .user-profile-menu-item.logout:hover {
+        background-color: rgba(239, 68, 68, 0.2);
+      }
 
       /* Particle animation */
       .particle {
@@ -300,6 +538,17 @@
       /* Utility to hide scrollbars */
       .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       .hide-scrollbar::-webkit-scrollbar { display: none; }
+
+      /* Additional styles to ensure buttons are clickable */
+      .card-action-button, .nav-button, #hero-search-button, #mobile-search-button {
+        cursor: pointer !important;
+        position: relative !important;
+        z-index: 10 !important;
+        pointer-events: auto !important;
+      }
+      .card-action-button {
+        box-shadow: 0 0 5px rgba(255, 255, 255, 0.4) !important;
+      }
     </style>
 </head>
 <body class="text-gray-100 min-h-screen flex flex-col justify-between">
@@ -314,58 +563,100 @@
     <div class="mx-auto h-full flex items-center justify-between px-4 sm:px-6">
       <div class="flex items-center gap-4">
         <a href="index.html" class="flex items-center gap-3 group">
-             <img
-               src="logo.jpg" alt="Fromsupply Logo" class="h-10 w-10 object-contain rounded-md flex-shrink-0"
-               id="logo-image" onerror="this.onerror=null; this.src='https://placehold.co/40x40/030712/FFFFFF?text=FS';"
-           />
-             <span class="text-lg font-semibold text-gray-200 group-hover:text-white transition-colors duration-200 hidden sm:inline">Fromsupply</span>
+            <img
+              src="logo.jpg" alt="Fromsupply Logo" class="h-10 w-10 object-contain rounded-md flex-shrink-0"
+              id="logo-image" onerror="this.onerror=null; this.src='https://placehold.co/40x40/030712/FFFFFF?text=FS';"
+            />
+            <span class="text-lg font-semibold text-gray-200 group-hover:text-white transition-colors duration-200 hidden sm:inline">Fromsupply</span>
         </a>
       </div>
-      <div class="flex items-center gap-4">
-        <a href="#" class="group flex items-center gap-2 bg-gray-800/60 hover:bg-gray-700/80 border border-gray-700 hover:border-gray-500 px-4 py-2 rounded-full transition-all duration-300 text-gray-300 hover:text-white text-sm">
-          <i class="fa-brands fa-google text-sm"></i>
-          <span class="hidden sm:inline">Sign in</span>
-        </a>
-        <div class="star-button-container">
-          <button id="star-button" class="star-button" aria-haspopup="true" aria-expanded="false">
-            <span>⭐️ 0</span> </button>
-          <div id="star-dropdown" class="star-dropdown" role="menu">
-              <div id="new-stuff-item" class="dropdown-item hidden" role="menuitem" data-link="#">
-                <img src="newstuff.png" alt="New Stuff Icon" class="dropdown-item-icon" onerror="this.onerror=null; this.src='https://placehold.co/40x40/374151/FFFFFF?text=NEW';">
-                <div class="dropdown-item-content">
-                  <div id="new-stuff-title" class="dropdown-item-title">Upgrade ?</div>
-                  <div class="dropdown-item-desc">Get all the new features across all your max purchases</div>
-                </div>
-                <button id="new-stuff-button" class="dropdown-item-price new-stuff-button" data-action="buy-new-stuff" disabled>$2.49</button>
-                <div class="new-stuff-popup">
-                    <div class="popup-content">
-                        <img src="newstuff.png" alt="New Stuff Icon" class="popup-icon" onerror="this.onerror=null; this.src='https://placehold.co/32x32/111827/FFFFFF?text=N';">
-                        <div class="popup-text">
-                            <h4 id="new-stuff-popup-title"></h4> <ul>
-                                <li>Added new chimcode languages</li>
-                                <li>Updated chimtype algorithms</li>
-                                <li>New maze environments</li>
-                            </ul>
-                        </div>
-                    </div>
+      <div class="flex items-center gap-2 sm:gap-4">
+        <div id="google-auth-button-slot" class="nav-button-container" style="display: none;">
+            </div>
+
+        <div id="user-profile-container" class="user-profile-container hidden">
+            <img id="user-avatar" class="user-avatar" src="https://placehold.co/32x32/4B5563/FFFFFF?text=U" alt="User Profile">
+            <div id="user-profile-menu" class="user-profile-menu">
+              <div class="user-profile-header">
+                <img id="user-profile-avatar" class="user-profile-avatar" src="https://placehold.co/48x48/4B5563/FFFFFF?text=U" alt="User Profile">
+                <div class="user-profile-info">
+                  <div id="user-profile-name" class="user-profile-name">User Name</div>
+                  <div id="user-profile-email" class="user-profile-email">user@example.com</div>
                 </div>
               </div>
-              <div class="dropdown-item" role="menuitem" data-link="#">
-               <img src="clubcard.jpeg" alt="Membership Icon" class="dropdown-item-icon" onerror="this.onerror=null; this.src='https://placehold.co/40x40/374151/FFFFFF?text=FS';">
-               <div class="dropdown-item-content">
-                 <div class="dropdown-item-title">fs Membership</div>
-                 <div class="dropdown-item-desc">access paid features monthly</div>
-               </div>
-               <button class="dropdown-item-price" data-action="buy-membership">$5.99</button>
-             </div>
-             <div class="dropdown-item" role="menuitem" data-link="#">
-               <img src="10kcard.jpeg" alt="Cheat Code Icon" class="dropdown-item-icon" onerror="this.onerror=null; this.src='https://placehold.co/40x40/374151/FFFFFF?text=10K';">
-               <div class="dropdown-item-content">
-                 <div class="dropdown-item-title">Cheat Code</div>
-                 <div class="dropdown-item-desc">Begin your journey with 10 thousands Reserves</div>
-               </div>
-               <button class="dropdown-item-price" data-action="buy-stars">$19.99</button>
-             </div>
+              <div class="user-profile-menu-item">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+              </div>
+              <div class="user-profile-menu-item">
+                <i class="fas fa-history"></i>
+                <span>Activity History</span>
+              </div>
+              <div id="logout-button" class="user-profile-menu-item logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Sign out</span>
+              </div>
+            </div>
+        </div>
+
+        <a href="#" id="mobile-search-button" class="md:hidden bg-gray-800/60 hover:bg-gray-700/80 border border-gray-700 hover:border-gray-500 px-3 py-2 rounded-full transition-all duration-300 text-gray-300 hover:text-white text-sm">
+          <i class="fas fa-search"></i>
+        </a>
+
+        <div class="nav-button-container">
+          <a href="#" id="library-button" class="nav-button" aria-haspopup="true" aria-expanded="false">
+            <span>Library</span>
+          </a>
+          <div id="library-dropdown" class="nav-dropdown" role="menu">
+            <div id="library-items-container">
+              <div class="empty-library-message">Your library is empty. Get some products!</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="nav-button-container">
+          <a href="#" id="star-button" class="nav-button" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-star text-sm mr-1"></i><span id="stars-count">0</span>
+          </a>
+          <div id="star-dropdown" class="nav-dropdown" role="menu">
+              <div class="dropdown-items-container">
+                <div id="new-stuff-item" class="dropdown-item hidden" role="menuitem" data-link="#">
+                  <img src="newstuff.png" alt="New Stuff Icon" class="dropdown-item-icon" onerror="this.onerror=null; this.src='https://placehold.co/40x40/374151/FFFFFF?text=NEW';">
+                  <div class="dropdown-item-content">
+                    <div id="new-stuff-title" class="dropdown-item-title">Upgrade ?</div>
+                    <div class="dropdown-item-desc">Get all the new features across all your max purchases</div>
+                  </div>
+                  <button id="new-stuff-button" class="dropdown-item-price new-stuff-button" data-action="buy-new-stuff" disabled>$2.49</button>
+                  <div class="new-stuff-popup">
+                      <div class="popup-content">
+                          <img src="newstuff.png" alt="New Stuff Icon" class="popup-icon" onerror="this.onerror=null; this.src='https://placehold.co/32x32/111827/FFFFFF?text=N';">
+                          <div class="popup-text">
+                              <h4 id="new-stuff-popup-title"></h4> <ul>
+                                  <li>Added new chimcode languages</li>
+                                  <li>Updated chimtype algorithms</li>
+                                  <li>New maze environments</li>
+                              </ul>
+                          </div>
+                      </div>
+                  </div>
+                </div>
+                <div class="dropdown-item" role="menuitem" data-link="#">
+                  <img src="clubcard.jpeg" alt="Membership Icon" class="dropdown-item-icon" onerror="this.onerror=null; this.src='https://placehold.co/40x40/374151/FFFFFF?text=FS';">
+                  <div class="dropdown-item-content">
+                    <div class="dropdown-item-title">fs Membership</div>
+                    <div class="dropdown-item-desc">access paid features monthly</div>
+                  </div>
+                  <a href="#" class="dropdown-item-price" data-action="buy-membership">$5.99</a>
+                </div>
+                <div class="dropdown-item" role="menuitem" data-link="#">
+                  <img src="10kcard.jpeg" alt="Cheat Code Icon" class="dropdown-item-icon" onerror="this.onerror=null; this.src='https://placehold.co/40x40/374151/FFFFFF?text=10K';">
+                  <div class="dropdown-item-content">
+                    <div class="dropdown-item-title">Cheat Code</div>
+                    <div class="dropdown-item-desc">Begin your journey with 10 thousands Reserves</div>
+                  </div>
+                  <a href="#" class="dropdown-item-price" data-action="buy-stars">$19.99</a>
+                </div>
+              </div>
             </div>
         </div>
       </div>
@@ -383,15 +674,17 @@
         style="opacity:0;"
         aria-label="Background video loop"
     ></video>
-    <div id="hero-search-container">
+    <div id="hero-search-container" style="z-index: 20;">
         <input
             type="text"
             id="hero-search-input"
-            placeholder="" aria-label="Search for topics"
+            placeholder="Search topics or pages..."
+            aria-label="Search for topics"
+            style="pointer-events: auto;"
         />
-        <button id="hero-search-button" aria-label="Submit search">
+        <a href="#" id="hero-search-button" aria-label="Submit search" style="pointer-events: auto;">
             <i class="fas fa-search"></i>
-        </button>
+        </a>
     </div>
   </section>
 
@@ -400,7 +693,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div class="card">
             <div class="video-container">
-              <iframe src="https://www.youtube.com/embed/QROdGVs_4pM?controls=0&autoplay=1&mute=1&loop=1&playlist=QROdGVs_4pM" title="Chim Code Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen onerror="this.parentElement.classList.add('video-error')"></iframe>
+              <iframe src="https://www.youtube.com/embed/QROdGVs_4pM?controls=0&mute=1&loop=1&playlist=QROdGVs_4pM" title="Chim Code Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen onerror="this.parentElement.classList.add('video-error')"></iframe>
             </div>
             <div class="card-info-area">
               <div class="card-icon-container"><i class="fa-solid fa-code card-icon"></i></div>
@@ -408,12 +701,12 @@
                 <h2 class="card-title">Chim Code</h2>
                 <p class="card-description">Debug complex systems faster.</p>
               </div>
-              <button class="card-action-button" data-link="chimcode.html">Get</button>
+              <a href="chimcode.html" class="card-action-button" data-product="chim-code">Get</a>
             </div>
           </div>
           <div class="card">
             <div class="video-container">
-              <iframe src="https://www.youtube.com/embed/L_LUpnjgPso?controls=0&autoplay=1&mute=1&loop=1&playlist=L_LUpnjgPso" title="Chim Type Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen onerror="this.parentElement.classList.add('video-error')"></iframe>
+              <iframe src="https://www.youtube.com/embed/L_LUpnjgPso?controls=0&mute=1&loop=1&playlist=L_LUpnjgPso" title="Chim Type Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen onerror="this.parentElement.classList.add('video-error')"></iframe>
             </div>
             <div class="card-info-area">
               <div class="card-icon-container"><i class="fa-solid fa-keyboard card-icon"></i></div>
@@ -421,12 +714,12 @@
                 <h2 class="card-title">Chim Type</h2>
                 <p class="card-description">Type faster with adaptive training.</p>
               </div>
-              <button class="card-action-button" data-link="type.html">Get</button>
+              <a href="type.html" class="card-action-button" data-product="chim-type">Get</a>
             </div>
           </div>
           <div class="card">
             <div class="video-container">
-              <iframe src="https://www.youtube.com/embed/QH2-TGUlwu4?controls=0&autoplay=1&mute=1&loop=1&playlist=QH2-TGUlwu4" title="Chim Maze Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen onerror="this.onerror=null; this.parentElement.classList.add('video-error')"></iframe>
+              <iframe src="https://www.youtube.com/embed/QH2-TGUlwu4?controls=0&mute=1&loop=1&playlist=QH2-TGUlwu4" title="Chim Maze Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen onerror="this.parentElement.classList.add('video-error')"></iframe>
             </div>
             <div class="card-info-area">
               <div class="card-icon-container"><i class="fa-solid fa-cube card-icon"></i></div>
@@ -434,12 +727,12 @@
                 <h2 class="card-title">Chim Maze</h2>
                 <p class="card-description">Immersive subject learning.</p>
               </div>
-              <button class="card-action-button" data-link="maze.html">Get</button>
+              <a href="maze.html" class="card-action-button" data-product="chim-maze">Get</a>
             </div>
           </div>
           <div class="card">
             <div class="video-container">
-              <iframe src="https://www.youtube.com/embed/3JZ_D3ELwOQ?controls=0&autoplay=1&mute=1&loop=1&playlist=3JZ_D3ELwOQ" title="Chim Clinic Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen onerror="this.parentElement.classList.add('video-error')"></iframe>
+              <iframe src="https://www.youtube.com/embed/3JZ_D3ELwOQ?controls=0&mute=1&loop=1&playlist=3JZ_D3ELwOQ" title="Chim Clinic Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen onerror="this.parentElement.classList.add('video-error')"></iframe>
             </div>
             <div class="card-info-area">
               <div class="card-icon-container"><i class="fa-solid fa-laptop-medical card-icon"></i></div>
@@ -447,12 +740,12 @@
                 <h2 class="card-title">Chim Clinic</h2>
                 <p class="card-description">Expert dev help & diagnostics.</p>
               </div>
-              <button class="card-action-button" data-link="clinic.html">Get</button>
+              <a href="clinic.html" class="card-action-button" data-product="chim-clinic">Get</a>
             </div>
           </div>
           <div class="card">
             <div class="video-container">
-              <iframe src="https://www.youtube.com/embed/6avJHaC3C2U?controls=0&autoplay=1&mute=1&loop=1&playlist=6avJHaC3C2U" title="Chim Prompts Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen onerror="this.parentElement.classList.add('video-error')"></iframe>
+              <iframe src="https://www.youtube.com/embed/6avJHaC3C2U?controls=0&mute=1&loop=1&playlist=6avJHaC3C2U" title="Chim Prompts Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen onerror="this.parentElement.classList.add('video-error')"></iframe>
             </div>
             <div class="card-info-area">
               <div class="card-icon-container"><i class="fa-solid fa-terminal card-icon"></i></div>
@@ -460,12 +753,12 @@
                 <h2 class="card-title">Chim Prompts</h2>
                 <p class="card-description">AI prompt engineering tools.</p>
               </div>
-              <button class="card-action-button" data-link="prompts.html">Get</button>
+              <a href="prompts.html" class="card-action-button" data-product="chim-prompts">Get</a>
             </div>
           </div>
           <div class="card">
             <div class="video-container">
-              <iframe src="https://www.youtube.com/embed/uHKfrz65KSU?controls=0&autoplay=1&mute=1&loop=1&playlist=uHKfrz65KSU" title="Supply Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen onerror="this.parentElement.classList.add('video-error')"></iframe>
+              <iframe src="https://www.youtube.com/embed/uHKfrz65KSU?controls=0&mute=1&loop=1&playlist=uHKfrz65KSU" title="Supply Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen onerror="this.parentElement.classList.add('video-error')"></iframe>
             </div>
             <div class="card-info-area">
               <div class="card-icon-container"><i class="fa-solid fa-users card-icon"></i></div>
@@ -473,12 +766,12 @@
                 <h2 class="card-title">Supply</h2>
                 <p class="card-description">From supply, with love, to you.</p>
               </div>
-              <button class="card-action-button" data-link="supply.html">Get</button>
+              <a href="supply.html" class="card-action-button" data-product="supply">Get</a>
             </div>
           </div>
           <div class="card">
             <div class="video-container">
-              <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?controls=0&autoplay=1&mute=1&loop=1&playlist=dQw4w9WgXcQ" title="Chim Farms Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen onerror="this.parentElement.classList.add('video-error')"></iframe>
+              <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?controls=0&mute=1&loop=1&playlist=dQw4w9WgXcQ" title="Chim Farms Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen onerror="this.parentElement.classList.add('video-error')"></iframe>
             </div>
             <div class="card-info-area">
               <div class="card-icon-container"><i class="fa-solid fa-seedling card-icon"></i></div>
@@ -486,12 +779,12 @@
                 <h2 class="card-title">Chim Farms</h2>
                 <p class="card-description">Virtual farming and resource management.</p>
               </div>
-              <button class="card-action-button" data-link="chimfarms.html">Get</button>
+              <a href="chimfarms.html" class="card-action-button" data-product="chim-farms">Get</a>
             </div>
           </div>
           <div class="card">
             <div class="video-container">
-              <iframe src="https://www.youtube.com/embed/9bZkp7q19f0?controls=0&autoplay=1&mute=1&loop=1&playlist=9bZkp7q19f0" title="Club Belong Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen onerror="this.parentElement.classList.add('video-error')"></iframe>
+              <iframe src="https://www.youtube.com/embed/9bZkp7q19f0?controls=0&mute=1&loop=1&playlist=9bZkp7q19f0" title="Club Belong Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen onerror="this.parentElement.classList.add('video-error')"></iframe>
             </div>
             <div class="card-info-area">
               <div class="card-icon-container"><i class="fa-solid fa-users-rectangle card-icon"></i></div>
@@ -499,12 +792,12 @@
                 <h2 class="card-title">Club Belong</h2>
                 <p class="card-description">Find your community and interests.</p>
               </div>
-              <button class="card-action-button" data-link="clubbelong.html">Get</button>
+              <a href="clubbelong.html" class="card-action-button" data-product="club-belong">Get</a>
             </div>
           </div>
           <div class="card">
             <div class="video-container">
-              <iframe src="https://www.youtube.com/embed/ZyhrYis509A?controls=0&autoplay=1&mute=1&loop=1&playlist=ZyhrYis509A" title="FiveTaps Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen onerror="this.parentElement.classList.add('video-error')"></iframe>
+              <iframe src="https://www.youtube.com/embed/ZyhrYis509A?controls=0&mute=1&loop=1&playlist=ZyhrYis509A" title="FiveTaps Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen onerror="this.parentElement.classList.add('video-error')"></iframe>
             </div>
             <div class="card-info-area">
               <div class="card-icon-container"><i class="fa-solid fa-hand-pointer card-icon"></i></div>
@@ -512,7 +805,7 @@
                 <h2 class="card-title">FiveTaps</h2>
                 <p class="card-description">Simplified mobile interaction system.</p>
               </div>
-              <button class="card-action-button" data-link="fivetaps.html">Get</button>
+              <a href="fivetaps.html" class="card-action-button" data-product="fivetaps">Get</a>
             </div>
           </div>
           </div>
@@ -535,6 +828,7 @@
             <h3 class="text-white font-semibold mb-4">Resources</h3>
             <ul class="space-y-2 text-sm">
                 <li><a href="https://www.youtube.com/playlist?list=PLaXy2djTTbXh0hlOvARCHAiGFo2n-EdyT&playnext=1&index=1" target="_blank" rel="noopener noreferrer" class="text-gray-400 footer-link">Tutorials</a></li>
+                <li><a href="create.html" class="text-gray-400 footer-link">Create products</a></li>
                 <li><a href="terms.html" class="text-gray-400 footer-link">Terms</a></li>
             </ul>
         </div>
@@ -568,7 +862,7 @@
     <div id="search-results-modal" class="bg-gray-800/90 backdrop-blur-md rounded-lg shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col">
         <div class="flex justify-between items-center p-4 border-b border-gray-700">
             <h2 class="text-xl font-semibold text-white">Search Results</h2>
-            <button id="close-search-results" class="text-gray-400 hover:text-white text-2xl leading-none p-1">×</button>
+            <a href="#" id="close-search-results" class="text-gray-400 hover:text-white text-2xl leading-none p-1">×</a>
         </div>
         <div id="search-results-list" class="p-4 space-y-3 overflow-y-auto hide-scrollbar">
             </div>
@@ -580,584 +874,725 @@
 
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // --- Element Selectors ---
-      const blobsContainer = document.getElementById('blobs-container');
-      const productCards = document.querySelectorAll('#product-showcase .card');
-      const starButton = document.getElementById('star-button');
-      const starDropdown = document.getElementById('star-dropdown');
-      const blobs = blobsContainer ? blobsContainer.querySelectorAll('.interactive-blob') : [];
-      const newStuffItem = document.getElementById('new-stuff-item');
-      const newStuffButton = document.getElementById('new-stuff-button');
-      const newStuffTitle = document.getElementById('new-stuff-title');
-      const newStuffPopupTitle = document.getElementById('new-stuff-popup-title');
-      const appVersionDisplay = document.getElementById('app-version-display');
-      const heroSearchInput = document.getElementById('hero-search-input');
-      const heroSearchButton = document.getElementById('hero-search-button'); 
-      const productShowcaseSection = document.getElementById('product-showcase');
-      const topNav = document.querySelector('.top-nav');
+    // Isolate all code in an immediately-invoked function expression
+    // to prevent variable conflicts with other scripts
+    (function() {
+      // Global error handler
+      window.onerror = function(message, source, lineno, colno, error) {
+        console.error('Caught error:', message, 'at', source, lineno, colno, error);
+        // return true; // Prevents browser from showing the error, use for production
+        return false; // Allows browser to show error during development
+      };
 
-      const searchResultsOverlay = document.getElementById('search-results-overlay');
-      const searchResultsModal = document.getElementById('search-results-modal');
-      const searchResultsList = document.getElementById('search-results-list');
-      const noSearchResultsMessage = document.getElementById('no-search-results');
-      const closeSearchResultsButton = document.getElementById('close-search-results');
+      // DOM element cache to avoid redeclarations
+      var domCache = {};
 
-      if (!heroSearchInput) console.error("Hero search input not found!");
-      if (!heroSearchButton) console.error("Hero search button not found!");
-      if (!searchResultsOverlay || !searchResultsModal || !searchResultsList || !noSearchResultsMessage || !closeSearchResultsButton) {
-          console.error("CRITICAL: One or more search UI elements are missing from the DOM! Search functionality may be impaired.");
-      }
-
-      const APP_VERSION = "0.5";
-      const APP_MAJOR_VERSION = parseInt(APP_VERSION.split('.')[0]);
-      const LS_HAS_MAX = 'fs_hasPurchasedMax';
-      const LS_NEW_STUFF_VERSION = 'fs_newStuffPurchasedVersion';
-      const PRODUCT_STATUS_PREFIX = 'fs_product_status_';
-      // const SS_AUTOSCROLL_PERFORMED_KEY = 'fs_autoScrollPerformedThisSession'; // No longer needed for this revised logic
-
-      if (appVersionDisplay) appVersionDisplay.textContent = `fs v${APP_VERSION}`;
-      if (newStuffTitle) newStuffTitle.textContent = `Upgrade ? (fs v${APP_VERSION})`;
-      if (newStuffPopupTitle) {
-           const now = new Date();
-           const month = now.toLocaleString('default', { month: 'long' });
-           const year = now.getFullYear();
-           newStuffPopupTitle.textContent = `${month} ${year}`;
-       }
-
-      let blobHues = [270, 220, 170, 250];
-      document.addEventListener('mousemove', (e) => {
-        if (Math.random() > 0.97) createParticle(e.clientX, e.clientY);
-      });
-
-      function animateBackgroundBlobs() {
-         if (blobsContainer && blobs.length > 0) {
-             blobs.forEach((blob, index) => {
-                 blobHues[index] = (blobHues[index] + 0.1) % 360;
-                 blob.style.backgroundColor = `hsl(${blobHues[index]}, 70%, 60%)`;
-             });
-         }
-         requestAnimationFrame(animateBackgroundBlobs);
-      }
-      if (blobsContainer && blobs.length > 0) animateBackgroundBlobs();
-
-      function createParticle(x, y) {
-        const p = document.createElement('div'); p.className = 'particle';
-        const s = Math.random()*2.5+1; p.style.width=`${s}px`; p.style.height=`${s}px`;
-        const c = ['#FFFFFF','#E5E7EB','#D1D5DB','#9CA3AF'][Math.floor(Math.random()*4)]; p.style.backgroundColor=c;
-        p.style.position='fixed'; p.style.left=`${x}px`; p.style.top=`${y}px`;
-        const tx = (Math.random()-0.5)*60, ty = (Math.random()-0.5)*60;
-        p.style.setProperty('--tx',`${tx}px`); p.style.setProperty('--ty',`${ty}px`);
-        document.body.appendChild(p);
-        setTimeout(() => { if (p.parentNode) p.parentNode.removeChild(p); }, 3000);
-      }
-
-       function checkAndDisplayNewStuff() {
-           if (!newStuffItem || !newStuffButton || !newStuffTitle) return;
-           const hasPurchasedMax = localStorage.getItem(LS_HAS_MAX) === 'true';
-           const lastPurchasedMajorVersion = parseInt(localStorage.getItem(LS_NEW_STUFF_VERSION) || '-1');
-           newStuffTitle.textContent = `Upgrade ? (fs v${APP_VERSION})`;
-           if (hasPurchasedMax) {
-               newStuffItem.classList.remove('hidden');
-               if (APP_MAJOR_VERSION > lastPurchasedMajorVersion) {
-                   newStuffButton.disabled = false; newStuffButton.classList.remove('new-stuff-button'); newStuffButton.style.cursor = 'pointer';
-               } else {
-                   newStuffButton.disabled = true; newStuffButton.classList.add('new-stuff-button'); newStuffButton.style.cursor = 'not-allowed';
-               }
-           } else {
-               newStuffItem.classList.add('hidden');
-           }
-       }
-
-      productCards.forEach(card => {
-          const actionButton = card.querySelector('.card-action-button');
-          const productTitleElement = card.querySelector('.card-title');
-          const link = actionButton ? actionButton.getAttribute('data-link') : null;
-          const videoContainer = card.querySelector('.video-container');
-          const iframe = videoContainer ? videoContainer.querySelector('iframe') : null;
-
-          if (iframe) {
-              iframe.onerror = function() {
-                  console.warn(`Card video iframe failed to load for: ${productTitleElement ? productTitleElement.textContent.trim() : 'Unknown Card'}`);
-                  if (videoContainer) videoContainer.classList.add('video-error');
-              }
-          }
-
-          if (actionButton && productTitleElement && link && starDropdown) {
-              const productName = productTitleElement.textContent.trim();
-              const productIdentifier = productName.toLowerCase().replace(/\s+/g, '-');
-              const productStatusKey = PRODUCT_STATUS_PREFIX + productIdentifier;
-
-              if (localStorage.getItem(productStatusKey) === 'Open') {
-                  actionButton.textContent = 'Open';
-                  actionButton.classList.add('open-state');
-              } else {
-                  actionButton.textContent = 'Get';
-                  actionButton.classList.remove('open-state');
-              }
-
-              actionButton.addEventListener('click', (event) => {
-                  event.stopPropagation();
-                  if (actionButton.textContent === 'Get') {
-                      actionButton.textContent = 'Open';
-                      actionButton.classList.add('open-state');
-                      localStorage.setItem(productStatusKey, 'Open');
-                      localStorage.setItem(LS_HAS_MAX, 'true');
-
-                      const upgradeAction = `buy-max-${productIdentifier}`;
-                      const existingMaxItem = starDropdown.querySelector(`button[data-action="${upgradeAction}"]`);
-                      if (!existingMaxItem) {
-                          const newItem = document.createElement('div'); newItem.className = 'dropdown-item'; newItem.setAttribute('role', 'menuitem'); newItem.setAttribute('data-link', '#');
-                          newItem.innerHTML = `
-                              <img src="max.jpeg" alt="${productName} Max Icon" class="dropdown-item-icon" onerror="this.onerror=null; this.src='https://placehold.co/40x40/374151/FFFFFF?text=MAX';">
-                              <div class="dropdown-item-content"> <div class="dropdown-item-title">${productName} Max</div> <div class="dropdown-item-desc">purchase all the current features.</div> </div>
-                              <button class="dropdown-item-price" data-action="${upgradeAction}">$9.99</button>`;
-                           if (newStuffItem && newStuffItem.parentNode === starDropdown) newStuffItem.insertAdjacentElement('afterend', newItem);
-                           else starDropdown.appendChild(newItem);
-                           const newPriceButton = newItem.querySelector('.dropdown-item-price');
-                           if (newPriceButton) {
-                               newPriceButton.addEventListener('click', (e) => {
-                                   e.stopPropagation(); const action = newPriceButton.getAttribute('data-action'); console.log('Max button clicked:', action); alert(`Action triggered for: ${action}`);
-                                   starDropdown.classList.remove('active'); starButton.setAttribute('aria-expanded', 'false');
-                               });
-                           }
-                            newItem.addEventListener('click', (e) => {
-                                if (e.target.closest('.dropdown-item-price')) return; console.log(`Clicked ${productName} Max item area.`);
-                                starDropdown.classList.remove('active'); starButton.setAttribute('aria-expanded', 'false');
-                            });
-                      }
-                      checkAndDisplayNewStuff();
-                  } else if (actionButton.textContent === 'Open') {
-                      window.location.href = link;
-                  }
-              });
-          }
-
-           card.addEventListener('click', (event) => {
-               if (event.target.tagName === 'IFRAME' || event.target.closest('.card-action-button')) return;
-               if (event.target.closest('.video-container') && event.target.tagName !== 'IFRAME') return;
-               if (actionButton && actionButton.textContent === 'Open' && link) window.location.href = link;
-           });
-      });
-
-      if (starButton && starDropdown) {
-          starButton.addEventListener('click', (event) => {
-              event.stopPropagation(); const isActive = starDropdown.classList.toggle('active'); starButton.setAttribute('aria-expanded', isActive);
-          });
-          document.addEventListener('click', (event) => {
-              if (!starButton.contains(event.target) && !starDropdown.contains(event.target)) {
-                  if (starDropdown.classList.contains('active')) { starDropdown.classList.remove('active'); starButton.setAttribute('aria-expanded', 'false'); }
-              }
-          });
-          document.addEventListener('keydown', (event) => {
-              if (event.key === 'Escape' && starDropdown.classList.contains('active')) { starDropdown.classList.remove('active'); starButton.setAttribute('aria-expanded', 'false'); }
-          });
-          starDropdown.querySelectorAll('.dropdown-item:not(#new-stuff-item)').forEach(item => {
-              const priceButton = item.querySelector('.dropdown-item-price'); const action = priceButton ? priceButton.getAttribute('data-action') : null; const link = item.getAttribute('data-link');
-              item.addEventListener('click', (event) => {
-                  if (priceButton && priceButton.contains(event.target)) {
-                      event.stopPropagation(); console.log('Action button clicked:', action); alert(`Action triggered for: ${action}`);
-                      starDropdown.classList.remove('active'); starButton.setAttribute('aria-expanded', 'false');
-                  } else if (link && link !== '#') { window.location.href = link; }
-                  else { console.log('Clicked item area without specific action/link.'); starDropdown.classList.remove('active'); starButton.setAttribute('aria-expanded', 'false'); }
-              });
-          });
-      }
-
-       if (newStuffButton && newStuffItem) {
-           newStuffButton.addEventListener('click', (e) => {
-               e.stopPropagation(); if (newStuffButton.disabled) return;
-               const action = newStuffButton.getAttribute('data-action'); console.log('New Stuff button clicked:', action); alert(`Purchased New Stuff Features for Version ${APP_MAJOR_VERSION}.0!`);
-               localStorage.setItem(LS_NEW_STUFF_VERSION, APP_MAJOR_VERSION.toString()); checkAndDisplayNewStuff();
-               if (starDropdown.classList.contains('active')) { starDropdown.classList.remove('active'); starButton.setAttribute('aria-expanded', 'false'); }
-           });
-           newStuffItem.addEventListener('click', (e) => {
-               if (e.target.closest('.dropdown-item-price')) return; console.log('Clicked New Stuff item area.');
-               starDropdown.classList.remove('active'); starButton.setAttribute('aria-expanded', 'false');
-           });
-       }
-
-      checkAndDisplayNewStuff();
-
-      document.querySelectorAll('img').forEach(img => {
-        if (((img.complete && img.naturalWidth === 0) || !img.src) && !img.getAttribute('data-error-handled')) {
-            handleImageError(img);
+      // Get DOM element safely
+      function getEl(id) {
+        if (!domCache[id]) {
+          domCache[id] = document.getElementById(id);
         }
-        else if (!img.getAttribute('data-error-handled')) {
-            img.onerror = function() {
-                if (!this.getAttribute('data-error-handled')) {
-                    handleImageError(this);
-                }
+        return domCache[id];
+      }
+
+      // Check if storage is available
+      function canUseStorage() {
+        try {
+          var x = '__test__';
+          localStorage.setItem(x, x);
+          localStorage.removeItem(x);
+          return true;
+        } catch(e) {
+          return false;
+        }
+      }
+
+      // Use in-memory storage as fallback
+      var memStore = {};
+      function getItem(key) {
+        try {
+          if (canUseStorage()) {
+            return localStorage.getItem(key);
+          }
+        } catch(e) { console.warn("localStorage getItem error:", e); }
+        return memStore[key] || null;
+      }
+
+      function setItem(key, value) {
+        try {
+          memStore[key] = value; // Always store in memory
+          if (canUseStorage()) {
+            localStorage.setItem(key, value);
+          }
+        } catch(e) {
+          console.warn('localStorage setItem error:', e);
+        }
+      }
+
+      // User data
+      var userData = {
+        isLoggedIn: false,
+        stars: 0,
+        products: {},
+        profile: null
+      };
+
+      // Handle button clicks
+      function setupButton(id, callback) {
+        try {
+          var el = getEl(id);
+          if (el) {
+            el.onclick = function(e) {
+              if (e) e.preventDefault();
+              if (callback) callback();
+              return false;
             };
+          } else {
+            // console.warn(`Button with id '${id}' not found for setup.`);
+          }
+        } catch (e) {
+          console.error('Button setup error for id ' + id + ':', e);
+        }
+      }
+
+      // Update UI element
+      function updateUI(id, fn) {
+        try {
+          var el = getEl(id);
+          if (el && fn) {
+            fn(el);
+          } else if (!el) {
+            // console.warn(`UI element with id '${id}' not found for update.`);
+          }
+        } catch (e) {
+          console.error('UI update error for id ' + id + ':', e);
+        }
+      }
+
+      // Function to update library content
+      function updateLibraryUI() {
+        try {
+          var container = getEl('library-items-container');
+          if (!container) return;
+
+          var hasProducts = Object.keys(userData.products).length > 0;
+          container.innerHTML = ''; // Clear the container
+
+          if (hasProducts) {
+            Object.keys(userData.products).forEach(function(pid) {
+              var productEl = document.querySelector(`.card-action-button[data-product="${pid}"]`);
+              if (!productEl) return;
+
+              var card = productEl.closest('.card');
+              if (!card) return;
+
+              var title = card.querySelector('.card-title').textContent;
+              var description = card.querySelector('.card-description').textContent;
+              var iconClass = card.querySelector('.card-icon').className;
+
+              var item = document.createElement('div');
+              item.className = 'dropdown-item';
+              item.setAttribute('role', 'menuitem');
+              item.setAttribute('data-product', pid);
+
+              var iconContainer = document.createElement('div');
+              iconContainer.className = 'dropdown-item-icon flex items-center justify-center bg-gray-700';
+
+              var icon = document.createElement('i');
+              icon.className = iconClass; // This already includes 'card-icon'
+              iconContainer.appendChild(icon);
+
+              var content = document.createElement('div');
+              content.className = 'dropdown-item-content';
+
+              var titleEl = document.createElement('div');
+              titleEl.className = 'dropdown-item-title';
+              titleEl.textContent = title;
+
+              var descEl = document.createElement('div');
+              descEl.className = 'dropdown-item-desc';
+              descEl.textContent = description;
+
+              content.appendChild(titleEl);
+              content.appendChild(descEl);
+
+              var button = document.createElement('button');
+              button.className = 'dropdown-item-button';
+              button.textContent = 'Open';
+              button.onclick = function(e) {
+                e.stopPropagation();
+                var href = productEl.getAttribute('href');
+                if (href) window.location.href = href;
+              };
+
+              item.appendChild(iconContainer);
+              item.appendChild(content);
+              item.appendChild(button);
+
+              container.appendChild(item);
+            });
+          } else {
+            container.innerHTML = '<div class="empty-library-message">Your library is empty. Get some products!</div>';
+          }
+        } catch (e) {
+          console.error('Library UI update error:', e);
+        }
+      }
+
+      // Load saved data and set initial UI state
+      function loadData() {
+        try {
+          // Load product statuses
+          if (canUseStorage()) {
+            for (var i = 0; i < localStorage.length; i++) {
+              try {
+                var key = localStorage.key(i);
+                if (key && key.startsWith('fs_product_status_')) {
+                  var pid = key.replace('fs_product_status_', '');
+                  var status = localStorage.getItem(key);
+                  if (status === 'Open') {
+                    userData.products[pid] = true;
+                  }
+                }
+              } catch(e) { console.warn("Error reading product status from localStorage:", e); }
+            }
+          }
+
+          document.querySelectorAll('.card-action-button').forEach(function(btn) {
+            try {
+              var pid = btn.getAttribute('data-product');
+              if (pid && userData.products[pid]) {
+                btn.textContent = 'Open';
+                btn.classList.add('open-state');
+              }
+            } catch (e) { console.warn("Error updating product button state:", e); }
+          });
+
+          updateUI('stars-count', function(el) {
+            el.textContent = userData.stars || 0; // Will be updated if logged in
+          });
+          updateLibraryUI();
+
+          const googleAuthSlot = getEl('google-auth-button-slot');
+          const userProfileContainer = getEl('user-profile-container');
+
+          if (getItem('fs_user_logged_in') === 'true') {
+            var profileData = getItem('fs_user_profile');
+            if (profileData) {
+              try {
+                var profile = JSON.parse(profileData);
+                userData.isLoggedIn = true;
+                userData.stars = parseInt(getItem('fs_user_stars')) || 50; // Load stars or default
+                userData.profile = profile;
+
+                if (googleAuthSlot) googleAuthSlot.style.display = 'none';
+                if (userProfileContainer) {
+                  userProfileContainer.classList.remove('hidden');
+                  updateUI('user-profile-name', function(el) { el.textContent = profile.name || 'User'; });
+                  updateUI('user-profile-email', function(el) { el.textContent = profile.email || 'user@example.com'; });
+                  if (profile.picture) {
+                    updateUI('user-avatar', function(el) { el.src = profile.picture; });
+                    updateUI('user-profile-avatar', function(el) { el.src = profile.picture; });
+                  }
+                }
+                updateUI('stars-count', function(el) { el.textContent = userData.stars; });
+
+              } catch (e) {
+                console.error('Error parsing profile data from localStorage:', e);
+                // Treat as logged out if profile data is corrupt
+                userData.isLoggedIn = false;
+                userData.profile = null;
+                setItem('fs_user_logged_in', 'false'); // Correct the state
+                localStorage.removeItem('fs_user_profile');
+                localStorage.removeItem('fs_user_stars');
+                if (googleAuthSlot) googleAuthSlot.style.display = 'block'; // Or 'flex' or as appropriate
+                if (userProfileContainer) userProfileContainer.classList.add('hidden');
+              }
+            } else {
+              // Logged in flag is true, but no profile data. This is an inconsistent state.
+              console.warn("User logged in flag is true, but no profile data found. Logging out.");
+              userData.isLoggedIn = false;
+              setItem('fs_user_logged_in', 'false');
+              localStorage.removeItem('fs_user_stars');
+              if (googleAuthSlot) googleAuthSlot.style.display = 'block';
+              if (userProfileContainer) userProfileContainer.classList.add('hidden');
+            }
+          } else {
+            // Not logged in
+            if (googleAuthSlot) googleAuthSlot.style.display = 'block'; // Or 'flex' or as appropriate
+            if (userProfileContainer) userProfileContainer.classList.add('hidden');
+          }
+        } catch (e) {
+          console.error('Data load error:', e);
+        }
+      }
+
+
+      // Setup product buttons
+      function setupProducts() {
+        try {
+          document.querySelectorAll('.card-action-button').forEach(function(btn) {
+            btn.onclick = function(e) {
+              if (e) e.preventDefault();
+              try {
+                var pid = this.getAttribute('data-product');
+                var href = this.getAttribute('href');
+
+                if (this.textContent === 'Get') {
+                  this.textContent = 'Open';
+                  this.classList.add('open-state');
+                  userData.products[pid] = true;
+                  setItem('fs_product_status_' + pid, 'Open');
+                  updateLibraryUI();
+                  // No navigation on "Get"
+                } else if (this.textContent === 'Open') {
+                  if (href) window.location.href = href;
+                }
+              } catch (err) {
+                console.error('Product button error:', err);
+              }
+              return false; // Important to prevent default link behavior if it's an <a>
+            };
+          });
+        } catch (e) {
+          console.error('Products setup error:', e);
+        }
+      }
+
+      // Function to perform search
+      function performSearch() {
+        try {
+          var input = getEl('hero-search-input');
+          if (!input) return;
+
+          var query = input.value.trim().toLowerCase();
+          if (!query) return;
+
+          var results = [];
+          document.querySelectorAll('.card').forEach(function(card) {
+            var title = card.querySelector('.card-title').textContent.toLowerCase();
+            var desc = card.querySelector('.card-description').textContent.toLowerCase();
+
+            if (title.includes(query) || desc.includes(query)) {
+              var action = card.querySelector('.card-action-button');
+              results.push({
+                title: card.querySelector('.card-title').textContent,
+                description: card.querySelector('.card-description').textContent,
+                icon: card.querySelector('.card-icon').className,
+                pid: action.getAttribute('data-product'),
+                href: action.getAttribute('href'),
+                status: action.textContent
+              });
+            }
+          });
+
+          var overlay = getEl('search-results-overlay');
+          var modal = getEl('search-results-modal');
+          var resultsList = getEl('search-results-list');
+          var noResults = getEl('no-search-results');
+
+          if (overlay && modal && resultsList && noResults) {
+            resultsList.innerHTML = '';
+            overlay.classList.remove('hidden');
+            overlay.style.opacity = '1';
+            modal.style.opacity = '1';
+            modal.style.transform = 'scale(1)';
+
+            if (results.length > 0) {
+              resultsList.classList.remove('hidden');
+              noResults.classList.add('hidden');
+              results.forEach(function(result) {
+                var item = document.createElement('div');
+                item.className = 'flex items-center p-3 border border-gray-700 rounded-lg bg-gray-800/60 hover:bg-gray-700/80 transition-colors cursor-pointer';
+
+                var iconContainer = document.createElement('div');
+                iconContainer.className = 'w-10 h-10 rounded flex items-center justify-center bg-gray-700 mr-3 flex-shrink-0';
+                var iconEl = document.createElement('i');
+                iconEl.className = result.icon; // Includes 'card-icon'
+                iconContainer.appendChild(iconEl);
+
+                var content = document.createElement('div');
+                content.className = 'flex-grow overflow-hidden';
+                var titleEl = document.createElement('div');
+                titleEl.className = 'text-white font-medium truncate';
+                titleEl.textContent = result.title;
+                var descEl = document.createElement('div');
+                descEl.className = 'text-gray-400 text-sm truncate';
+                descEl.textContent = result.description;
+                content.appendChild(titleEl);
+                content.appendChild(descEl);
+
+                var button = document.createElement('a');
+                button.href = result.href;
+                button.className = 'ml-3 px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded-full text-sm text-white flex-shrink-0';
+                button.textContent = result.status;
+                if (result.status === 'Open') {
+                  button.classList.add('open-state'); // Assuming this class exists and styles it
+                }
+                 button.onclick = function(e) { // Prevent item click if button is clicked
+                    e.stopPropagation();
+                    // Default <a> behavior will navigate
+                };
+
+
+                item.appendChild(iconContainer);
+                item.appendChild(content);
+                item.appendChild(button);
+
+                item.onclick = function() { // Click on the whole item navigates
+                  if (result.href) window.location.href = result.href;
+                };
+                resultsList.appendChild(item);
+              });
+            } else {
+              resultsList.classList.add('hidden');
+              noResults.classList.remove('hidden');
+            }
+          }
+        } catch (e) {
+          console.error('Search error:', e);
+        }
+      }
+
+      // Setup interactions
+      function setupInteractions() {
+        try {
+          var userAvatar = getEl('user-avatar');
+          var userMenu = getEl('user-profile-menu');
+          if (userAvatar && userMenu) {
+            userAvatar.onclick = function() { userMenu.classList.toggle('active'); };
+            document.addEventListener('click', function(e) {
+              if (!userAvatar.contains(e.target) && !userMenu.contains(e.target)) {
+                userMenu.classList.remove('active');
+              }
+            });
+          }
+
+          setupButton('library-button', function() { getEl('library-dropdown').classList.toggle('active'); });
+          setupButton('star-button', function() { getEl('star-dropdown').classList.toggle('active'); });
+          setupButton('hero-search-button', performSearch);
+          setupButton('close-search-results', function() {
+            var overlay = getEl('search-results-overlay');
+            if (overlay) {
+              overlay.style.opacity = '0';
+              var modal = getEl('search-results-modal');
+              if (modal) {
+                modal.style.opacity = '0';
+                modal.style.transform = 'scale(0.95)';
+              }
+              setTimeout(function() { overlay.classList.add('hidden'); }, 300);
+            }
+          });
+          setupButton('mobile-search-button', function() {
+            var input = getEl('hero-search-input');
+            if (input) input.focus();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+
+          var searchInput = getEl('hero-search-input');
+          if (searchInput) {
+            searchInput.onkeydown = function(e) {
+              if (e.key === 'Enter') { e.preventDefault(); performSearch(); }
+            };
+          }
+
+          setupButton('logout-button', function() {
+            userData.isLoggedIn = false;
+            userData.stars = 0;
+            userData.profile = null;
+
+            updateUI('stars-count', function(el) { el.textContent = 0; });
+
+            const googleAuthSlot = getEl('google-auth-button-slot');
+            const userProfileContainer = getEl('user-profile-container');
+
+            if (userProfileContainer) userProfileContainer.classList.add('hidden');
+            if (googleAuthSlot) googleAuthSlot.style.display = 'block'; // Or 'flex'
+
+            if (window.google && window.google.accounts && window.google.accounts.id) {
+              window.google.accounts.id.disableAutoSelect();
+              // Optional: Revoke token. This logs user out of Google for this app specifically.
+              // Consider if this is needed on every sign-out.
+              // const currentEmail = getItem('fs_user_profile') ? JSON.parse(getItem('fs_user_profile')).email : null;
+              // if (currentEmail) {
+              //   window.google.accounts.id.revoke(currentEmail, done => {
+              //     console.log('Google token revoked for ' + currentEmail + ': ' + done.successful);
+              //     // Clear local storage and reload AFTER revocation attempt
+              //     setItem('fs_user_logged_in', 'false');
+              //     localStorage.removeItem('fs_user_profile');
+              //     localStorage.removeItem('fs_user_stars');
+              //     window.location.reload();
+              //   });
+              //   return; // Prevent immediate reload if revoke is async
+              // }
+            }
+            setItem('fs_user_logged_in', 'false');
+            localStorage.removeItem('fs_user_profile');
+            localStorage.removeItem('fs_user_stars');
+            window.location.reload(); // Reload to reset state and re-render Google button correctly
+          });
+
+          document.addEventListener('click', function(e) {
+            var libraryButton = getEl('library-button');
+            var libraryDropdown = getEl('library-dropdown');
+            var starButton = getEl('star-button');
+            var starDropdown = getEl('star-dropdown');
+
+            if (libraryButton && libraryDropdown && !libraryButton.contains(e.target) && !libraryDropdown.contains(e.target)) {
+              libraryDropdown.classList.remove('active');
+            }
+            if (starButton && starDropdown && !starButton.contains(e.target) && !starDropdown.contains(e.target)) {
+              starDropdown.classList.remove('active');
+            }
+          });
+
+        } catch (e) {
+          console.error('Interactions setup error:', e);
+        }
+      }
+
+      // Setup search placeholder animation
+      function setupSearchPlaceholder() {
+        try {
+          var input = getEl('hero-search-input');
+          if (!input) return;
+          var suggestions = ["pointers in c", "organic chemistry intro", "prompts", "coding clinic", "chim type", "maze algorithms", "fivetaps tutorial"];
+          var idx = 0, charPos = 0, deleting = false, timer;
+
+          function animatePlaceholder() {
+            if (document.activeElement === input && input.value !== '') return; // Stop if user is typing
+            if (document.activeElement === input && input.value === '') { // If focused and empty, show default
+                input.placeholder = 'Search topics or pages...';
+                return;
+            }
+
+
+            var current = suggestions[idx];
+            if (deleting) {
+              input.placeholder = current.substring(0, charPos - 1);
+              charPos--;
+              if (charPos === 0) {
+                deleting = false;
+                idx = (idx + 1) % suggestions.length;
+                timer = setTimeout(animatePlaceholder, 500);
+              } else {
+                timer = setTimeout(animatePlaceholder, 50);
+              }
+            } else {
+              input.placeholder = current.substring(0, charPos + 1);
+              charPos++;
+              if (charPos === current.length) {
+                deleting = true;
+                timer = setTimeout(animatePlaceholder, 1500);
+              } else {
+                timer = setTimeout(animatePlaceholder, 100);
+              }
+            }
+          }
+          setTimeout(animatePlaceholder, 1000); // Initial call
+
+          input.onfocus = function() {
+            clearTimeout(timer);
+            this.placeholder = 'Search topics or pages...';
+          };
+          input.onblur = function() {
+            if (this.value === '') { // Only restart animation if field is empty
+              clearTimeout(timer);
+              this.placeholder = ''; // Clear it to restart animation smoothly
+              charPos = 0;
+              deleting = false;
+              idx = Math.floor(Math.random() * suggestions.length); // Start from a random suggestion
+              animatePlaceholder();
+            }
+          };
+        } catch (e) {
+          console.error('Search placeholder setup error:', e);
+        }
+      }
+
+      // Setup auto-scroll
+      function setupScroll() {
+        try {
+          var scrolled = window.scrollY > 0;
+          function markScrolled() { scrolled = true; }
+          window.addEventListener('scroll', markScrolled, { once: true });
+          window.addEventListener('click', markScrolled, { once: true });
+          window.addEventListener('touchstart', markScrolled, { once: true });
+
+          setTimeout(function() {
+            if (!scrolled) {
+              var distance = window.innerWidth < 768 ? 500 : 630;
+              window.scrollTo({ top: distance, behavior: 'smooth' });
+            }
+          }, 5000);
+        } catch (e) {
+          console.error('Scroll setup error:', e);
+        }
+      }
+
+      // Setup hover effects for videos (basic iframe reload for autoplay)
+      function setupVideos() {
+        try {
+          document.querySelectorAll('.card').forEach(function(card) {
+            var iframe = card.querySelector('iframe');
+            if (iframe) {
+              var baseSrc = iframe.getAttribute('src'); // Get initial src
+              if (!baseSrc) return;
+
+              var hasAutoplayParam = baseSrc.includes('autoplay=1');
+
+              card.addEventListener('mouseenter', function() {
+                // Only change src if autoplay is not already set to 1
+                if (iframe.getAttribute('src').includes('autoplay=1')) return;
+
+                var newSrc = baseSrc + (baseSrc.includes('?') ? '&' : '?') + 'autoplay=1&mute=1'; // Mute autoplayed videos
+                iframe.setAttribute('src', newSrc);
+              });
+
+              card.addEventListener('mouseleave', function() {
+                // Revert to original src without autoplay, or with autoplay=0
+                var originalSrcNoAutoplay = baseSrc.replace(/&?autoplay=1/g, '').replace(/\?&/, '?').replace(/\?$/, '');
+                iframe.setAttribute('src', originalSrcNoAutoplay);
+              });
+            }
+          });
+        } catch (e) {
+          console.error('Videos setup error:', e);
+        }
+      }
+
+      // Global callback function for Google Sign-In
+      window.handleCredentialResponse = function(response) {
+        try {
+          console.log('Google Sign-In response received');
+          var base64Url = response.credential.split('.')[1];
+          var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+          var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+          }).join(''));
+
+          var profile = JSON.parse(jsonPayload);
+          console.log('Profile data received:', profile.name, profile.email);
+
+          userData.isLoggedIn = true;
+          userData.stars = 50; // Default stars on new login
+          userData.profile = {
+            name: profile.name,
+            email: profile.email,
+            picture: profile.picture
+          };
+
+          updateUI('stars-count', function(el) { el.textContent = userData.stars; });
+
+          const googleAuthSlot = getEl('google-auth-button-slot');
+          const userProfileContainer = getEl('user-profile-container');
+
+          if (googleAuthSlot) googleAuthSlot.style.display = 'none';
+          if (userProfileContainer) {
+            userProfileContainer.classList.remove('hidden');
+            updateUI('user-profile-name', function(el) { el.textContent = profile.name; });
+            updateUI('user-profile-email', function(el) { el.textContent = profile.email; });
+            updateUI('user-avatar', function(el) { el.src = profile.picture; });
+            updateUI('user-profile-avatar', function(el) { el.src = profile.picture; });
+          }
+
+          setItem('fs_user_logged_in', 'true');
+          setItem('fs_user_profile', JSON.stringify(userData.profile));
+          setItem('fs_user_stars', userData.stars.toString()); // Save stars
+
+          console.log('User logged in successfully');
+        } catch (e) {
+          console.error('Google Sign-In callback error:', e);
+          // Do not fallback to demo login here; user remains logged out.
+          // UI should reflect logged-out state if this fails.
+          const googleAuthSlot = getEl('google-auth-button-slot');
+          const userProfileContainer = getEl('user-profile-container');
+          if (googleAuthSlot) googleAuthSlot.style.display = 'block';
+          if (userProfileContainer) userProfileContainer.classList.add('hidden');
+        }
+      };
+
+
+      // Initialize everything on page load
+      window.addEventListener('load', function() {
+        try {
+          console.log('Page fully loaded, initializing...');
+
+          // Initialize Google Sign-In Client
+          if (window.google && window.google.accounts && window.google.accounts.id) {
+            google.accounts.id.initialize({
+              client_id: "495690405484-ikrq0pgtkuc0fcqj9p6cski79dleagma.apps.googleusercontent.com", // !!! IMPORTANT: REPLACE THIS WITH YOUR ACTUAL GOOGLE CLIENT ID !!!
+              callback: handleCredentialResponse
+              // auto_select: true, // Optional: attempts to sign in user automatically if they previously signed in
+              // login_uri: 'your_login_endpoint' // Optional: if you have a backend login endpoint
+            });
+
+            const signInButtonContainer = getEl('google-auth-button-slot');
+            if (signInButtonContainer) {
+               // Only render the button if the user is not already logged in (determined by loadData)
+              if (!userData.isLoggedIn) { // userData.isLoggedIn will be false before loadData runs, or if loadData determines logged out
+                google.accounts.id.renderButton(
+                  signInButtonContainer,
+                  {
+                    theme: "outline",
+                    size: "large",
+                    type: "standard",
+                    shape: "pill", // "pill" makes it rounded like your other nav buttons
+                    text: "signin_with", // "signin_with", "signup_with", "continue_with", "signin"
+                    logo_alignment: "left",
+                    // width: "150" // Optional: Adjust width. Google's button has min/max widths.
+                  }
+                );
+                signInButtonContainer.style.display = 'block'; // Ensure it's visible if meant to be
+              } else {
+                 signInButtonContainer.style.display = 'none';
+              }
+            } else {
+              console.error("Google Sign-In button container 'google-auth-button-slot' not found.");
+            }
+            // Optional: Display the One Tap prompt if not auto-signing in and not signed in
+            // if (!userData.isLoggedIn && !google.accounts.id.isAutoSelected()) {
+            //    google.accounts.id.prompt();
+            // }
+
+          } else {
+            console.error("Google Sign-In library (GSI) not loaded. Sign-in button will not be rendered.");
+            // You might want to display a message to the user or retry initialization.
+            const signInButtonContainer = getEl('google-auth-button-slot');
+            if(signInButtonContainer) signInButtonContainer.innerHTML = "<p class='text-xs text-gray-400'>Sign-in unavailable</p>";
+          }
+
+
+          updateUI('app-version-display', function(el) { el.textContent = 'fs v0.5.1'; }); // Updated version
+
+          // Load data from localStorage and set initial UI state (shows/hides Google button vs profile)
+          loadData(); // This should run AFTER GSI init but before trying to render button based on login state
+
+          setupInteractions();
+          setupSearchPlaceholder(); // Changed from setupSearch to setupSearchPlaceholder
+          setupScroll();
+          setupVideos();
+          setupProducts();
+
+
+          console.log('Initialization complete');
+        } catch (e) {
+          console.error('Initialization error:', e);
         }
       });
-      function handleImageError(img) {
-          img.setAttribute('data-error-handled', 'true');
-          const w = img.getAttribute('width') || img.offsetWidth || 40;
-          const h = img.getAttribute('height') || img.offsetHeight || 40;
-          const alt = img.alt || 'Err';
-          let placeholderText = alt;
-          if (img.id === 'logo-image' || (img.alt && img.alt.toLowerCase().includes('logo'))) {
-            placeholderText = 'FS';
-          }
-          const placeholder = `https://placehold.co/${w}x${h}/1f2937/6B7280?text=${encodeURIComponent(placeholderText)}`;
-          console.warn(`Image error: ${img.src || 'No src'}. Alt: "${alt}". Replacing with: ${placeholder}`);
-          img.src = placeholder;
-          img.style.objectFit='contain';
-          img.style.backgroundColor='#1f2937';
-          img.onerror=null;
-      }
-
-      if (closeSearchResultsButton && searchResultsOverlay && searchResultsModal) {
-        function openSearchModal() {
-            console.log("openSearchModal called."); 
-            if (!searchResultsOverlay || !searchResultsModal) {
-                console.error("Search overlay or modal element not found in openSearchModal.");
-                return;
-            }
-            searchResultsOverlay.classList.remove('hidden');
-            searchResultsOverlay.style.opacity = '1';
-            searchResultsModal.style.opacity = '1';
-            searchResultsModal.style.transform = 'scale(1)';
-            console.log("Search modal should be visible now.");
-        }
-        function closeSearchModal() {
-            console.log("Attempting to close search modal...");
-            if (!searchResultsOverlay || !searchResultsModal) {
-                console.error("Search overlay or modal element not found in closeSearchModal.");
-                return;
-            }
-            searchResultsOverlay.style.opacity = '0';
-            searchResultsModal.style.opacity = '0';
-            searchResultsModal.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                searchResultsOverlay.classList.add('hidden');
-                console.log("Search modal hidden.");
-            }, 300);
-        }
-
-        closeSearchResultsButton.addEventListener('click', closeSearchModal);
-        searchResultsOverlay.addEventListener('click', (event) => {
-            if (event.target === searchResultsOverlay) {
-                closeSearchModal();
-            }
-        });
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape' && searchResultsOverlay && !searchResultsOverlay.classList.contains('hidden')) {
-                closeSearchModal();
-            }
-        });
-      }
-
-
-      // --- Search Placeholder Typing, Submission & Scroll Logic ---
-      if (heroSearchInput && heroSearchButton) { 
-           const suggestions = [ "pointers in c", "organic chemistry intro", "prompts", "vibe coding clinic", "how does chim type work?", "maze pathfinding algorithms", "terms of service", "support center" ];
-           let suggestionIndex = 0, charIndex = 0, isDeleting = false, typingTimeout, blinkTimeout, isPaused = false;
-           const typeSpeed = 120, deleteSpeed = 70, pauseBeforeDelete = 1500, pauseBeforeType = 300, blinkInterval = 500;
-
-           function setCursorVisibility(visible) {
-               let currentPlaceholder = heroSearchInput.placeholder.replace('|', '');
-               heroSearchInput.placeholder = visible ? currentPlaceholder + '|' : currentPlaceholder;
-           }
-
-           function blinkCursor(count, callback) {
-               let isVisible = true, currentCount = 0;
-               function blink() {
-                   setCursorVisibility(isVisible); isVisible = !isVisible; currentCount++;
-                   if (currentCount < count * 2) blinkTimeout = setTimeout(blink, blinkInterval / 2);
-                   else { setCursorVisibility(false); if (callback) callback(); }
-               } blink();
-           }
-
-           function animatePlaceholder() {
-               clearTimeout(typingTimeout); clearTimeout(blinkTimeout);
-               if (document.activeElement === heroSearchInput || isPaused) {
-                   if (document.activeElement === heroSearchInput && heroSearchInput.value === '') {
-                       heroSearchInput.placeholder = 'Search topics or pages...';
-                   } else if (document.activeElement === heroSearchInput) {
-                       heroSearchInput.placeholder = '';
-                   }
-                   heroSearchInput.placeholder = heroSearchInput.placeholder.replace('|','');
-                   return;
-               }
-
-               const currentSuggestion = suggestions[suggestionIndex];
-               let textWithoutCursor = heroSearchInput.placeholder.replace('|', '');
-
-               if (isDeleting) {
-                   textWithoutCursor = currentSuggestion.substring(0, charIndex - 1);
-                   heroSearchInput.placeholder = textWithoutCursor; setCursorVisibility(true); charIndex--;
-                   if (charIndex === 0) {
-                       isDeleting = false; suggestionIndex = (suggestionIndex + 1) % suggestions.length;
-                       setCursorVisibility(false); typingTimeout = setTimeout(animatePlaceholder, pauseBeforeType);
-                   } else {
-                       typingTimeout = setTimeout(animatePlaceholder, deleteSpeed);
-                   }
-               } else {
-                   textWithoutCursor = currentSuggestion.substring(0, charIndex + 1);
-                   heroSearchInput.placeholder = textWithoutCursor; setCursorVisibility(true); charIndex++;
-                   if (charIndex === currentSuggestion.length) {
-                       isDeleting = true; isPaused = true;
-                       blinkCursor(3, () => {
-                           isPaused = false;
-                           typingTimeout = setTimeout(animatePlaceholder, deleteSpeed);
-                       });
-                   } else {
-                       typingTimeout = setTimeout(animatePlaceholder, typeSpeed);
-                   }
-               }
-           }
-
-           const pageData = {
-               "chimcode.html": { title: "Chim Code", description: "Debug complex systems faster.", iconClass: "fa-solid fa-code", defaultIconText: "CC", link: "chimcode.html", isProduct: true },
-               "type.html": { title: "Chim Type", description: "Type faster with adaptive training.", iconClass: "fa-solid fa-keyboard", defaultIconText: "CT", link: "type.html", isProduct: true },
-               "maze.html": { title: "Chim Maze", description: "Immersive subject learning.", iconClass: "fa-solid fa-cube", defaultIconText: "CM", link: "maze.html", isProduct: true },
-               "clinic.html": { title: "Chim Clinic", description: "Expert dev help & diagnostics.", iconClass: "fa-solid fa-laptop-medical", defaultIconText: "CL", link: "clinic.html", isProduct: true },
-               "prompts.html": { title: "Chim Prompts", description: "AI prompt engineering tools.", iconClass: "fa-solid fa-terminal", defaultIconText: "CP", link: "prompts.html", isProduct: true },
-               "supply.html": { title: "Supply", description: "From Supply, with love, to you.", iconClass: "fa-solid fa-users", defaultIconText: "TE", link: "supply.html", isProduct: true },
-               "terms.html": { title: "Terms of Service", description: "Read our terms and conditions.", iconClass: "fa-solid fa-file-contract", defaultIconText: "ToS", link: "terms.html", isProduct: false },
-               "support.html": { title: "Support Center", description: "Get help and support.", iconClass: "fa-solid fa-life-ring", defaultIconText: "Sup", link: "support.html", isProduct: false },
-               "chimfarms.html": { title: "Chim Farms", description: "Virtual farming and resource management.", iconClass: "fa-solid fa-seedling", defaultIconText: "CF", link: "chimfarms.html", isProduct: true },
-               "clubbelong.html": { title: "Club Belong", description: "Find your community and interests.", iconClass: "fa-solid fa-users-rectangle", defaultIconText: "CB", link: "clubbelong.html", isProduct: true },
-               "fivetaps.html": { title: "FiveTaps", description: "Simplified mobile interaction system.", iconClass: "fa-solid fa-hand-pointer", defaultIconText: "FT", link: "fivetaps.html", isProduct: true }
-           };
-           const searchKeywords = {
-               "chimcode": "chimcode.html", "chim code": "chimcode.html", "code": "chimcode.html", "debug": "chimcode.html",
-               "type": "type.html", "chimtype": "type.html", "chim type": "type.html", "typing": "type.html",
-               "maze": "maze.html", "chimmaze": "maze.html", "chim maze": "maze.html", "learning": "maze.html",
-               "clinic": "clinic.html", "chimclinic": "clinic.html", "chim clinic": "clinic.html", "diagnostics": "clinic.html",
-               "prompts": "prompts.html", "chimprompts": "prompts.html", "chim prompts": "prompts.html", "ai": "prompts.html",
-               "suply": "supply.html", "supply": "supply.html", "supply": "supply.html",
-               "terms": "terms.html", "terms of service": "terms.html", "service terms": "terms.html",
-               "support": "support.html", "support center": "support.html", "help": "support.html", "contact": "support.html",
-               "farms": "chimfarms.html", "chimfarms": "chimfarms.html", "chim farms": "chimfarms.html", "farming": "chimfarms.html",
-               "belong": "clubbelong.html", "club": "clubbelong.html", "club belong": "clubbelong.html", "community": "clubbelong.html",
-               "fivetaps": "fivetaps.html", "five taps": "fivetaps.html", "taps": "fivetaps.html", "mobile": "fivetaps.html"
-           };
-
-           function performSearch(query) {
-               console.log(`performSearch called with query: "${query}"`); 
-               if (!searchResultsList || !noSearchResultsMessage) {
-                   console.error("Search results list or no-results message element not found in performSearch.");
-                   return;
-               }
-               const trimmedQuery = query.trim().toLowerCase();
-               if (trimmedQuery === '') {
-                   console.log("Search query is empty. Focusing input.");
-                   heroSearchInput.focus(); 
-                   const searchContainer = document.getElementById('hero-search-container');
-                   if(searchContainer){
-                       searchContainer.style.borderColor = 'rgba(239, 68, 68, 0.7)'; 
-                       setTimeout(() => { searchContainer.style.borderColor = ''; }, 1500);
-                   }
-                   return;
-               }
-
-               searchResultsList.innerHTML = '';
-               noSearchResultsMessage.classList.add('hidden');
-               let foundResults = [];
-               const matchedPageFiles = new Set();
-
-               if (searchKeywords[trimmedQuery]) {
-                   matchedPageFiles.add(searchKeywords[trimmedQuery]);
-               }
-               for (const keyword in searchKeywords) {
-                   if (trimmedQuery.includes(keyword) || keyword.includes(trimmedQuery)) {
-                       matchedPageFiles.add(searchKeywords[keyword]);
-                   }
-               }
-               for (const pageFile in pageData) {
-                   const data = pageData[pageFile];
-                   if (data.title.toLowerCase().includes(trimmedQuery) || data.description.toLowerCase().includes(trimmedQuery)) {
-                       matchedPageFiles.add(pageFile);
-                   }
-               }
-
-               matchedPageFiles.forEach(pageFile => {
-                   if (pageData[pageFile]) {
-                       foundResults.push(pageData[pageFile]);
-                   }
-               });
-               console.log(`Found ${foundResults.length} results.`);
-
-               if (foundResults.length > 0) {
-                   foundResults.forEach(result => {
-                       const item = document.createElement('div');
-                       item.className = "search-result-item flex items-center p-3 bg-gray-700/60 rounded-md hover:bg-gray-600/80 transition-colors cursor-pointer border border-transparent hover:border-gray-500/70";
-                       item.addEventListener('click', (e) => {
-                           if (!e.target.closest('.search-result-action-button')) {
-                               window.location.href = result.link;
-                           }
-                       });
-
-                       const productIdentifier = result.title.toLowerCase().replace(/\s+/g, '-');
-                       const productStatusKey = PRODUCT_STATUS_PREFIX + productIdentifier;
-                       const currentStatus = localStorage.getItem(productStatusKey);
-
-                       let buttonText, buttonClass;
-                       if (result.isProduct) {
-                           buttonText = (currentStatus === 'Open') ? 'Open' : 'Get';
-                           buttonClass = (currentStatus === 'Open') ? "bg-green-600 hover:bg-green-500" : "bg-indigo-600 hover:bg-indigo-500";
-                       } else {
-                           buttonText = "View";
-                           buttonClass = "bg-gray-600 hover:bg-gray-500";
-                       }
-
-                       item.innerHTML = `
-                           <span class="w-10 h-10 rounded-md mr-3 flex-shrink-0 border border-gray-600 bg-gray-700 flex items-center justify-center">
-                               <i class="${result.iconClass} text-gray-300 text-lg"></i>
-                           </span>
-                           <div class="flex-grow mr-2 overflow-hidden">
-                               <h3 class="text-md font-medium text-gray-100 truncate">${result.title}</h3>
-                               <p class="text-xs text-gray-400 truncate">${result.description}</p>
-                           </div>
-                           <button class="search-result-action-button text-xs font-semibold ${buttonClass} text-white px-3 py-1.5 rounded-full transition-colors whitespace-nowrap" data-link="${result.link}">${buttonText}</button>
-                       `;
-
-                       const actionBtn = item.querySelector('.search-result-action-button');
-                       if(actionBtn){
-                           actionBtn.addEventListener('click', (e) => {
-                               e.stopPropagation();
-                               if (actionBtn.textContent === 'Get' && result.isProduct) {
-                                   localStorage.setItem(productStatusKey, 'Open');
-                                   localStorage.setItem(LS_HAS_MAX, 'true');
-                                   actionBtn.textContent = 'Open';
-                                   actionBtn.className = "search-result-action-button text-xs font-semibold bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded-full transition-colors whitespace-nowrap";
-
-                                   const mainPageCard = Array.from(productCards).find(card => card.querySelector('.card-title')?.textContent.trim() === result.title);
-                                   if (mainPageCard) {
-                                       const mainPageButton = mainPageCard.querySelector('.card-action-button');
-                                       if (mainPageButton) {
-                                           mainPageButton.textContent = 'Open';
-                                           mainPageButton.classList.add('open-state');
-                                       }
-                                   }
-                                   checkAndDisplayNewStuff();
-                                   return;
-                               }
-                               window.location.href = result.link;
-                           });
-                       }
-                       searchResultsList.appendChild(item);
-                   });
-               } else {
-                   console.log("No results found, showing message.");
-                   noSearchResultsMessage.classList.remove('hidden');
-               }
-
-               if (typeof openSearchModal === 'function') { 
-                  openSearchModal();
-               } else {
-                  console.error("openSearchModal function is not defined when trying to open modal.");
-               }
-           }
-
-           if (heroSearchInput) {
-                heroSearchInput.addEventListener('touchstart', (event) => {
-                    console.log('Hero search input touchstart triggered.');
-                    heroSearchInput.focus();
-                }, { passive: true });
-
-                heroSearchInput.addEventListener('click', () => {
-                        console.log('Hero search input click triggered.');
-                        heroSearchInput.focus();
-                });
-                
-                heroSearchInput.addEventListener('focus', () => {
-                    clearTimeout(typingTimeout);
-                    clearTimeout(blinkTimeout);
-                    isPaused = true;
-                    if(heroSearchInput.value === '') {
-                        heroSearchInput.placeholder = 'Search topics or pages...';
-                    } else {
-                        heroSearchInput.placeholder = '';
-                    }
-                    heroSearchInput.placeholder = heroSearchInput.placeholder.replace('|','');
-                    if (productShowcaseSection && topNav) {
-                        const navHeight = topNav.offsetHeight || 80;
-                        const targetScrollPosition = productShowcaseSection.offsetTop - navHeight - 20;
-                        window.scrollTo({
-                            top: Math.max(0, targetScrollPosition),
-                            behavior: 'smooth'
-                        });
-                    }
-                });
-
-                heroSearchInput.addEventListener('blur', () => {
-                    isPaused = false;
-                    if (heroSearchInput.value === '') {
-                        heroSearchInput.placeholder = '';
-                        charIndex = 0; isDeleting = false;
-                        animatePlaceholder();
-                    }
-                });
-
-                heroSearchInput.addEventListener('keydown', (event) => {
-                    console.log(`Keydown event: ${event.key}`);
-                    if (event.key === 'Enter') {
-                        console.log("Enter key pressed, calling performSearch.");
-                        event.preventDefault();
-                        performSearch(heroSearchInput.value);
-                    }
-                });
-           }
-           
-           if (heroSearchButton) {
-                console.log("Attaching click listener to heroSearchButton.");
-                heroSearchButton.addEventListener('click', () => {
-                    console.log('Hero search button explicitly clicked, calling performSearch.');
-                    performSearch(heroSearchInput.value);
-                });
-           } else {
-                console.error("Hero search button element not found for attaching event listener.");
-           }
-
-           heroSearchInput.placeholder = '';
-           animatePlaceholder();
-       }
-
-
-       // --- Auto Scroll Logic - Simplified for "every refresh at top" ---
-       let userHasScrolledThisPageLoad = (window.scrollY !== 0); 
-
-       if (userHasScrolledThisPageLoad) {
-           console.log("Page loaded scrolled. Auto-scroll will be skipped for this specific page view.");
-       }
-
-       const handleUserInteractionToPreventAutoScroll = () => {
-           if (!userHasScrolledThisPageLoad) { 
-               userHasScrolledThisPageLoad = true;
-               console.log("User interacted (scroll/touch) before 5s timer. Auto-scroll cancelled for this specific page view.");
-           }
-       };
-
-       window.addEventListener('scroll', handleUserInteractionToPreventAutoScroll, { once: true });
-       window.addEventListener('touchstart', handleUserInteractionToPreventAutoScroll, { once: true });
-
-       setTimeout(() => {
-           console.log("Auto-scroll timer (5s) fired. Checking conditions...");
-           console.log(` - User has scrolled/interacted this page load? ${userHasScrolledThisPageLoad}`);
-           console.log(` - Current window.scrollY: ${window.scrollY}`);
-           
-           if (!userHasScrolledThisPageLoad && window.scrollY === 0) {
-               console.log("Conditions met. Performing auto-scroll (630px).");
-               window.scrollBy({
-                   top: 630,
-                   behavior: 'smooth'
-               });
-               // After auto-scrolling, we can consider this "initial interaction" done for this page load.
-               // This helps prevent the focus scroll on search input from fighting it if user clicks search immediately after.
-               userHasScrolledThisPageLoad = true; 
-           } else {
-               console.log("Auto-scroll conditions not met for this page view. Skipping scroll.");
-               if (userHasScrolledThisPageLoad && window.scrollY === 0) console.log("   - Reason: User interacted or page loaded scrolled, but is now at top.");
-               else if (userHasScrolledThisPageLoad) console.log("   - Reason: User interacted or page loaded scrolled.");
-               else if (window.scrollY !== 0) console.log("   - Reason: Page is no longer at the top (scrolled between listeners and timeout).");
-           }
-       }, 5000); 
-
-    }); // End DOMContentLoaded
+    })(); // End of IIFE
   </script>
 </body>
 </html>
+```
+
+**Before you test this:**
+
+1.  **Replace `YOUR_GOOGLE_CLIENT_ID_HERE`**: In the JavaScript, find the line:
+    `client_id: "YOUR_GOOGLE_CLIENT_ID_HERE",`
+    You **MUST** replace `"YOUR_GOOGLE_CLIENT_ID_HERE"` with your actual Google Client ID from the [Google Cloud Console](https://console.cloud.google.com/). Without this, Google Sign-In will not function.
+2.  **Authorized JavaScript Origins and Redirect URIs:** In your Google Cloud Console, ensure that the domain where you are hosting this page (e.g., `http://localhost:xxxx`, `https://yourdomain.com`) is listed in the "Authorized JavaScript origins". For this client-side implementation, "Authorized redirect URIs" are typically not needed unless you use a different flow (like server-side auth code flow).
+3.  **Clear Cache:** Clear your browser cache and cookies for the site before testing, just in case old scripts or states are interfering.
+4.  **Test `loadData()` order:** I've placed `loadData()` after GSI initialization but it sets `userData.isLoggedIn`. The `renderButton` logic now checks this. This should correctly prevent rendering the Google button if the user is already found to be logged in from local storage.
+
+After making these changes, the Google Sign-In button should render and function correctly. The styling of Google's button can be tweaked using the `renderButton` options or by carefully targeting the container C
