@@ -1584,15 +1584,3 @@
   </script>
 </body>
 </html>
-```
-
-**Before you test this:**
-
-1.  **Replace `YOUR_GOOGLE_CLIENT_ID_HERE`**: In the JavaScript, find the line:
-    `client_id: "YOUR_GOOGLE_CLIENT_ID_HERE",`
-    You **MUST** replace `"YOUR_GOOGLE_CLIENT_ID_HERE"` with your actual Google Client ID from the [Google Cloud Console](https://console.cloud.google.com/). Without this, Google Sign-In will not function.
-2.  **Authorized JavaScript Origins and Redirect URIs:** In your Google Cloud Console, ensure that the domain where you are hosting this page (e.g., `http://localhost:xxxx`, `https://yourdomain.com`) is listed in the "Authorized JavaScript origins". For this client-side implementation, "Authorized redirect URIs" are typically not needed unless you use a different flow (like server-side auth code flow).
-3.  **Clear Cache:** Clear your browser cache and cookies for the site before testing, just in case old scripts or states are interfering.
-4.  **Test `loadData()` order:** I've placed `loadData()` after GSI initialization but it sets `userData.isLoggedIn`. The `renderButton` logic now checks this. This should correctly prevent rendering the Google button if the user is already found to be logged in from local storage.
-
-After making these changes, the Google Sign-In button should render and function correctly. The styling of Google's button can be tweaked using the `renderButton` options or by carefully targeting the container C
