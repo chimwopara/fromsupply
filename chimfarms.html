@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Prast Farms</title>
-    <link rel="icon" href="logo.jpg" type="image/jpeg" onerror="this.onerror=null; this.href='https://placehold.co/32x32/030712/FFFFFF?text=PF';">
+    <title>Chim Farms</title>
+    <link rel="icon" href="logo.jpg" type="image/jpeg" onerror="this.onerror=null; this.href='https://placehold.co/32x32/030712/FFFFFF?text=CF';">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -31,12 +31,19 @@
         color: #E5E7EB;
       }
 
-      .top-nav {
-        background-color: rgba(3, 7, 18, 0.8);
-        backdrop-filter: blur(10px);
-        border-bottom: 1px solid rgba(55, 65, 81, 0.5);
-        height: 70px;
-      }
+      
+      /* Target the top-nav more specifically and use !important to override any other styles */
+.top-nav, nav.top-nav, .fixed.top-0 {
+  background-color: rgba(3, 7, 18, 0.01) !important; /* Almost completely transparent */
+  backdrop-filter: blur(40px) !important; /* Very strong blur */
+  -webkit-backdrop-filter: blur(40px) !important; /* For Safari support */
+  border-bottom: 1px solid rgba(55, 65, 81, 0.05) !important;
+}
+
+/* Also target any potential child containers that might have backgrounds */
+.top-nav > div, .top-nav > .mx-auto, .top-nav > .container {
+  background-color: transparent !important;
+}
 
       #blobs-container {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -118,17 +125,241 @@
         100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.5); }
       }
 
-      .game-footer {
-          position: fixed; bottom: 0; left: 0; width: 100%;
-          background-color: rgba(3, 7, 18, 0.7); backdrop-filter: blur(5px);
-          padding: 0.5rem 1rem; text-align: center; font-size: 0.75rem; color: #9CA3AF;
-          z-index: 50; border-top: 1px solid rgba(55, 65, 81, 0.3);
-      }
+      /* Footer removed per requirement */
+      
       .crosshair {
         position: fixed; top: 50%; left: 50%; width: 10px; height: 10px;
         border: 1px solid white; background-color: rgba(255,255,255,0.3);
         border-radius: 50%; transform: translate(-50%, -50%);
         pointer-events: none; z-index: 1000; display: none;
+      }
+      
+      .payment-options-dropdown {
+        position: absolute;
+        background-color: rgba(31, 41, 55, 0.98);
+        border: 1px solid rgba(75, 85, 99, 0.8);
+        border-radius: 0.5rem;
+        padding: 0.5rem;
+        z-index: 70;
+        width: 300px;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+        display: none;
+      }
+      
+      .payment-option {
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+        border-radius: 0.375rem;
+        background-color: rgba(55, 65, 81, 0.7);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      .payment-option:hover {
+        background-color: rgba(75, 85, 99, 0.9);
+        transform: translateX(4px);
+      }
+      
+      .payment-option-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      
+      .third-party-warning {
+        font-size: 0.7rem;
+        color: #FCA5A5;
+        padding: 0.25rem 0.5rem;
+        background-color: rgba(153, 27, 27, 0.3);
+        border-radius: 4px;
+        margin-top: 0.25rem;
+      }
+      
+      .shop-header-notice {
+        color: #E5E7EB;
+        font-size: 0.75rem;
+        line-height: 1.3;
+        padding: 0.75rem;
+        background-color: rgba(79, 70, 229, 0.2);
+        border: 1px solid rgba(79, 70, 229, 0.4);
+        border-radius: 0.5rem;
+        margin-bottom: 0.75rem;
+      }
+      
+      .demo-badge {
+        font-size: 0.65rem;
+        padding: 0.15rem 0.4rem;
+        background-color: rgba(245, 158, 11, 0.2);
+        color: #FBBF24;
+        border: 1px solid rgba(245, 158, 11, 0.4);
+        border-radius: 9999px;
+        margin-left: 0.5rem;
+        vertical-align: middle;
+      }
+      
+      .live-badge {
+        font-size: 0.65rem;
+        padding: 0.15rem 0.4rem;
+        background-color: rgba(16, 185, 129, 0.2);
+        color: #34D399;
+        /* Removed border per requirement */
+        border-radius: 9999px;
+        margin-left: 0.5rem;
+        vertical-align: middle;
+        display: none;
+      }
+      
+      .third-party-farms-section {
+        display: none;
+        margin-top: 0.5rem;
+      }
+      
+      /* New aerial view styling */
+      #aerial-view-container {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        width: 100vw;
+        height: calc(100vh - 70px);
+        z-index: 2;
+        display: none;
+        background-color: rgba(3, 7, 18, 0.9);
+      }
+      
+      /* Mode selection popup */
+      #mode-selection-popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(31, 41, 55, 0.95);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(75, 85, 99, 0.7);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        width: 300px;
+        z-index: 75;
+         box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        display: none;
+      }
+      
+      .mode-option {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        background-color: rgba(55, 65, 81, 0.6);
+        border-radius: 0.5rem;
+        border: 1px solid transparent;
+        transition: all 0.2s ease;
+        cursor: pointer;
+      }
+      
+      .mode-option:hover {
+        background-color: rgba(75, 85, 99, 0.8);
+        border-color: rgba(107, 114, 128, 0.7);
+        transform: translateY(-2px);
+      }
+      
+      .mode-icon {
+        font-size: 1.5rem;
+        margin-right: 1rem;
+      }
+      
+      .mode-content h3 {
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 0.25rem;
+      }
+      
+      .mode-content p {
+        font-size: 0.8rem;
+        color: #9CA3AF;
+      }
+      
+      /* Prast Farms popup */
+      #prast-farms-popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(31, 41, 55, 0.95);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(75, 85, 99, 0.7);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        width: 450px;
+        z-index: 80;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        display: none;
+      }
+      
+      .prast-farms-header {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-align: center;
+      }
+      
+      .prast-farms-subheader {
+        font-size: 0.85rem;
+        color: #9CA3AF;
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+      
+      /* Third party farms prompt */
+      .third-party-prompt {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem;
+        background-color: rgba(79, 70, 229, 0.2);
+        border: 1px solid rgba(79, 70, 229, 0.4);
+        border-radius: 0.5rem;
+        margin-top: 0.5rem;
+      }
+      
+      /* Search functionality */
+      .search-container {
+        display: flex;
+        margin-bottom: 1rem;
+        position: relative;
+      }
+      
+      .search-input {
+        flex-grow: 1;
+        background-color: rgba(55, 65, 81, 0.6);
+        border: 1px solid rgba(75, 85, 99, 0.5);
+        border-radius: 0.5rem;
+        padding: 0.5rem 1rem;
+        color: #E5E7EB;
+        font-size: 0.875rem;
+      }
+      
+      .search-input:focus {
+        outline: none;
+        border-color: rgba(107, 114, 128, 0.8);
+        background-color: rgba(55, 65, 81, 0.8);
+      }
+      
+      .search-button {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #9CA3AF;
+        cursor: pointer;
+        padding: 0.25rem;
+      }
+      
+      .search-button:hover {
+        color: #E5E7EB;
       }
     </style>
 </head>
@@ -141,26 +372,41 @@
   <nav class="top-nav fixed top-0 left-0 right-0 z-50">
     <div class="mx-auto h-full flex items-center justify-between px-4 sm:px-6">
       <div class="flex items-center gap-3">
-        <i class="fa-solid fa-tractor text-amber-400 text-2xl"></i>
-        <span class="text-xl font-bold text-amber-400 group-hover:text-white transition-colors duration-200">Prast Farms</span>
+       
+        <span class="text-xl font-bold text-white group-hover:text-white transition-colors duration-200"> <!-- Changed from amber-400 to white -->
+          Chim Farms
+          <span class="demo-badge" id="app-mode-badge">demo</span>
+          <span class="live-badge" id="live-mode-badge">live</span>
+        </span>
       </div>
       <div class="flex items-center gap-4">
-        <a href="#" id="records-button" class="group flex items-center gap-2 bg-gray-800/60 hover:bg-gray-700/80 border border-gray-700 hover:border-gray-500 px-4 py-2 rounded-full transition-all duration-300 text-gray-300 hover:text-white text-sm">
-          <i class="fa-solid fa-book text-sm"></i>
-          <span class="hidden sm:inline">Records</span>
+        <a href="#" id="library-button" class="group flex items-center gap-2 bg-gray-800/60 hover:bg-gray-700/80 border border-gray-700 hover:border-gray-500 px-4 py-2 rounded-full transition-all duration-300 text-gray-300 hover:text-white text-sm">
+          <!-- Removed book icon per requirement -->
+          <span>Library</span> <!-- Changed from "Records" to "Library" -->
         </a>
         <div class="star-button-container">
           <button id="reserves-button" class="star-button" aria-haspopup="true" aria-expanded="false">
             <i class="fas fa-star"></i> <span id="reserves-amount">2000</span>
           </button>
           <div id="farm-store-dropdown" class="star-dropdown" role="menu">
+            <!-- Add search functionality to main Stars Store -->
+            <div class="search-container">
+              <input type="text" class="search-input" placeholder="Search for farms or items...">
+              <button class="search-button">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+            
+            <div class="shop-header-notice">
+              Buying in live partners you with real farms globally; you'll need to be approved by our Farm Auditors before you are charged. Note: Auditing fees incur for third party farms.
+            </div>
              <div class="dropdown-item" role="menuitem" data-type="animal" data-id="chicken" data-cost="500">
                <div class="dropdown-item-icon bg-yellow-700">🐔</div>
                <div class="dropdown-item-content">
                  <div class="dropdown-item-title">Chicken Farm</div>
                  <div class="dropdown-item-desc">80% annual return. Produces eggs.</div>
                </div>
-               <button class="dropdown-item-price" data-action="buy-chicken-farm">$500</button>
+               <button class="dropdown-item-price" data-action="get-chicken-farm">Get</button>
              </div>
              <div class="dropdown-item" role="menuitem" data-type="animal" data-id="pig" data-cost="1000">
                <div class="dropdown-item-icon bg-pink-400">🐖</div>
@@ -168,7 +414,7 @@
                  <div class="dropdown-item-title">Pig Farm</div>
                  <div class="dropdown-item-desc">100% annual return. Hardy animals.</div>
                </div>
-               <button class="dropdown-item-price" data-action="buy-pig-farm">$1000</button>
+               <button class="dropdown-item-price" data-action="get-pig-farm">Get</button>
              </div>
              <div class="dropdown-item" role="menuitem" data-type="animal" data-id="cow" data-cost="2499">
                 <div class="dropdown-item-icon bg-gray-400">🐄</div>
@@ -176,7 +422,7 @@
                   <div class="dropdown-item-title">Cow Farm</div>
                   <div class="dropdown-item-desc">130% annual return. Milk and more.</div>
                 </div>
-                <button class="dropdown-item-price" data-action="buy-cow-farm">$2499</button>
+                <button class="dropdown-item-price" data-action="get-cow-farm">Get</button>
               </div>
              <div class="dropdown-item" role="menuitem" data-type="animal" data-id="goat" data-cost="749">
                 <div class="dropdown-item-icon bg-stone-400">🐐</div>
@@ -184,7 +430,7 @@
                   <div class="dropdown-item-title">Goat Farm</div>
                   <div class="dropdown-item-desc">60% annual return. Agile climbers.</div>
                 </div>
-                <button class="dropdown-item-price" data-action="buy-goat-farm">$749</button>
+                <button class="dropdown-item-price" data-action="get-goat-farm">Get</button>
               </div>
              <div class="dropdown-item" role="menuitem" data-type="animal" data-id="fish" data-cost="99">
                 <div class="dropdown-item-icon bg-sky-400">🐟</div>
@@ -192,7 +438,7 @@
                   <div class="dropdown-item-title">Fish Pond</div>
                   <div class="dropdown-item-desc">60% annual return. Fresh catches.</div>
                 </div>
-                <button class="dropdown-item-price" data-action="buy-fish-farm">$99</button>
+                <button class="dropdown-item-price" data-action="get-fish-farm">Get</button>
               </div>
               <hr class="border-gray-600 my-2">
               <div class="px-2 py-1 text-xs text-gray-400 uppercase">Plants (Max 1 Each)</div>
@@ -201,7 +447,7 @@
                   <div class="dropdown-item-title">Plantain Seeds</div>
                   <div class="dropdown-item-desc">~50% annual return. Versatile fruit.</div>
                 </div>
-                <button class="dropdown-item-price" data-action="buy-plantain">$50</button>
+                <button class="dropdown-item-price" data-action="get-plantain">Get</button>
               </div>
               <div class="dropdown-item" role="menuitem" data-type="plant" data-id="banana" data-cost="50" data-max="1">
                 <div class="dropdown-item-icon bg-yellow-500">🍌</div>
@@ -209,7 +455,7 @@
                   <div class="dropdown-item-title">Banana Sapling</div>
                   <div class="dropdown-item-desc">~50% annual return. Sweet yield.</div>
                 </div>
-                <button class="dropdown-item-price" data-action="buy-banana">$50</button>
+                <button class="dropdown-item-price" data-action="get-banana">Get</button>
               </div>
               <div class="dropdown-item" role="menuitem" data-type="plant" data-id="orange" data-cost="50" data-max="1">
                 <div class="dropdown-item-icon bg-orange-500">🍊</div>
@@ -217,14 +463,14 @@
                   <div class="dropdown-item-title">Orange Tree Seedling</div>
                   <div class="dropdown-item-desc">~50% annual return. Juicy harvest.</div>
                 </div>
-                <button class="dropdown-item-price" data-action="buy-orange">$50</button>
+                <button class="dropdown-item-price" data-action="get-orange">Get</button>
               </div>
               <div class="dropdown-item" role="menuitem" data-type="plant" data-id="sugarcane" data-cost="50" data-max="1">
                 <div class="dropdown-item-icon bg-green-700">🌿</div> <div class="dropdown-item-content">
                   <div class="dropdown-item-title">Sugar Cane Stalk</div>
                   <div class="dropdown-item-desc">~50% annual return. Sweet raw material.</div>
                 </div>
-                <button class="dropdown-item-price" data-action="buy-sugarcane">$50</button>
+                <button class="dropdown-item-price" data-action="get-sugarcane">Get</button>
               </div>
               <div class="dropdown-item" role="menuitem" data-type="plant" data-id="coconut" data-cost="50" data-max="1">
                 <div class="dropdown-item-icon bg-yellow-800">🥥</div>
@@ -232,14 +478,14 @@
                   <div class="dropdown-item-title">Coconut Seed</div>
                   <div class="dropdown-item-desc">~50% annual return. Tropical delight.</div>
                 </div>
-                <button class="dropdown-item-price" data-action="buy-coconut">$50</button>
+                <button class="dropdown-item-price" data-action="get-coconut">Get</button>
               </div>
               <div class="dropdown-item" role="menuitem" data-type="plant" data-id="papaya" data-cost="50" data-max="1">
                 <div class="dropdown-item-icon bg-orange-400">🥭</div> <div class="dropdown-item-content">
                   <div class="dropdown-item-title">Papaya Seeds</div>
                   <div class="dropdown-item-desc">~50% annual return. Exotic fruit.</div>
                 </div>
-                <button class="dropdown-item-price" data-action="buy-papaya">$50</button>
+                <button class="dropdown-item-price" data-action="get-papaya">Get</button>
               </div>
               <div class="dropdown-item" role="menuitem" data-type="plant" data-id="carrot" data-cost="50" data-max="1">
                 <div class="dropdown-item-icon bg-orange-600">🥕</div>
@@ -247,7 +493,89 @@
                   <div class="dropdown-item-title">Carrot Seeds</div>
                   <div class="dropdown-item-desc">~50% annual return. Root vegetable.</div>
                 </div>
-                <button class="dropdown-item-price" data-action="buy-carrot">$50</button>
+                <button class="dropdown-item-price" data-action="get-carrot">Get</button>
+              </div>
+              <hr class="border-gray-600 my-2">
+              <div class="px-2 py-1 text-xs text-gray-400 uppercase">Land & Partnerships</div>
+              <div class="dropdown-item" role="menuitem" data-type="land" data-id="expansion" data-cost="2000">
+                <div class="dropdown-item-icon bg-emerald-800">🏞️</div>
+                <div class="dropdown-item-content">
+                  <div class="dropdown-item-title">Land Expansion</div>
+                  <div class="dropdown-item-desc">Expand your land by 100%. More room for farms.</div>
+                </div>
+                <button class="dropdown-item-price" data-action="get-land-expansion">Get</button>
+              </div>
+              
+              <!-- Third Party Farms prompt added -->
+              <div class="third-party-prompt">
+                <div>
+                  <span class="font-semibold">Want to purchase from third party farms?</span>
+                  <p class="text-xs text-gray-400">Explore more farming options globally</p>
+                </div>
+                <button class="dropdown-item-price" data-action="show-third-party-farms">View</button>
+              </div>
+              
+              <div class="third-party-farms-section" id="third-party-farms">
+                <div class="px-2 py-1 text-xs text-amber-300">THIRD PARTY FARMS</div>
+                
+                <!-- Search for third party farms -->
+                <div class="search-container">
+                  <input type="text" class="search-input" placeholder="Find a farm...">
+                  <button class="search-button">
+                    <i class="fas fa-search"></i>
+                  </button>
+                </div>
+                
+                <div class="dropdown-item" role="menuitem" data-type="third-party" data-id="sunshine-acres" data-cost="1500" data-return="85">
+                  <div class="dropdown-item-icon bg-yellow-600">🌞</div>
+                  <div class="dropdown-item-content">
+                    <div class="dropdown-item-title">Sunshine Acres</div>
+                    <div class="dropdown-item-desc">85% annual return. Organic methods.</div>
+                    <div class="third-party-warning">Requires auditing fee</div>
+                  </div>
+                  <button class="dropdown-item-price" data-action="get-third-party-farm">Get</button>
+                </div>
+                
+                <div class="dropdown-item" role="menuitem" data-type="third-party" data-id="azure-fields" data-cost="3500" data-return="120">
+                  <div class="dropdown-item-icon bg-blue-400">🌾</div>
+                  <div class="dropdown-item-content">
+                    <div class="dropdown-item-title">Azure Fields</div>
+                    <div class="dropdown-item-desc">120% annual return. Scale operations.</div>
+                    <div class="third-party-warning">Requires auditing fee</div>
+                  </div>
+                  <button class="dropdown-item-price" data-action="get-third-party-farm">Get</button>
+                </div>
+                
+                <div class="dropdown-item" role="menuitem" data-type="third-party" data-id="emerald-valleys" data-cost="7500" data-return="150">
+                  <div class="dropdown-item-icon bg-emerald-500">🏞️</div>
+                  <div class="dropdown-item-content">
+                    <div class="dropdown-item-title">Emerald Valleys</div>
+                    <div class="dropdown-item-desc">150% annual return. Premium operation.</div>
+                    <div class="third-party-warning">Requires auditing fee</div>
+                  </div>
+                  <button class="dropdown-item-price" data-action="get-third-party-farm">Get</button>
+                </div>
+                
+                <!-- Added 2 more farms to make it 5 total -->
+                <div class="dropdown-item" role="menuitem" data-type="third-party" data-id="mountain-vista" data-cost="5000" data-return="135">
+                  <div class="dropdown-item-icon bg-indigo-500">⛰️</div>
+                  <div class="dropdown-item-content">
+                    <div class="dropdown-item-title">Mountain Vista</div>
+                    <div class="dropdown-item-desc">135% annual return. Highland specialty crops.</div>
+                    <div class="third-party-warning">Requires auditing fee</div>
+                  </div>
+                  <button class="dropdown-item-price" data-action="get-third-party-farm">Get</button>
+                </div>
+                
+                <div class="dropdown-item" role="menuitem" data-type="third-party" data-id="coastal-breeze" data-cost="4200" data-return="125">
+                  <div class="dropdown-item-icon bg-cyan-400">🌊</div>
+                  <div class="dropdown-item-content">
+                    <div class="dropdown-item-title">Coastal Breeze</div>
+                    <div class="dropdown-item-desc">125% annual return. Seaside agriculture.</div>
+                    <div class="third-party-warning">Requires auditing fee</div>
+                  </div>
+                  <button class="dropdown-item-price" data-action="get-third-party-farm">Get</button>
+                </div>
               </div>
             </div>
         </div>
@@ -256,19 +584,85 @@
   </nav>
 
   <div id="game-container">
-    </div>
+  </div>
+  
+  <!-- Aerial view container -->
+  <div id="aerial-view-container">
+    <!-- This will hold the aerial view canvas -->
+  </div>
+  
   <div class="crosshair" id="crosshair"></div>
 
   <div id="game-ui">
     <p>Move: WASD | Look: Mouse | Jump: Space</p>
-    <p>Toggle Mouse Lock: L | Toggle Weather: P (dev)</p>
+    <p>Toggle Mouse Lock: Enter | Toggle Weather: P (dev)</p>
   </div>
 
-  <div id="message-box">Sample Message</div>
+  <div id="message-box">tap enter to explore</div> <!-- Updated initial message -->
+  
+  <!-- Payment options modal/dropdown -->
+  <div id="payment-options" class="payment-options-dropdown">
+    <div class="px-2 py-1 mb-2 text-xs text-gray-300 text-center font-semibold">SELECT PAYMENT METHOD</div>
+    <div class="payment-option" data-payment="stars">
+      <div class="payment-option-label">
+        <i class="fas fa-star text-yellow-400"></i>
+        <span>Pay with Stars <span class="text-xs text-gray-400">(demo)</span></span>
+      </div>
+      <span class="payment-price" id="stars-price">500</span>
+    </div>
+    <div class="payment-option" data-payment="real">
+      <div class="payment-option-label">
+        <i class="fas fa-dollar-sign text-green-400"></i>
+        <span>Pay with $ <span class="text-xs text-green-400">(live mode)</span></span>
+      </div>
+      <span class="payment-price" id="dollar-price">$7.99</span>
+    </div>
+  </div>
+  
+  <!-- Mode selection popup -->
+  <div id="mode-selection-popup">
+    <h2 class="text-xl font-bold mb-4 text-center">Select Mode</h2>
+    
+    <div class="mode-option" data-mode="demo">
+      <div class="mode-icon">
+        <i class="fas fa-star text-yellow-400"></i>
+      </div>
+      <div class="mode-content">
+        <h3>Demo Mode</h3>
+        <p>Use stars to purchase virtual farms. Try out the experience with no real money.</p>
+      </div>
+    </div>
+    
+    <div class="mode-option" data-mode="live">
+      <div class="mode-icon">
+        <i class="fas fa-dollar-sign text-green-400"></i>
+      </div>
+      <div class="mode-content">
+        <h3>Live Mode</h3>
+        <p>Partner with real farms globally. Real investments with audited returns.</p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Prast Farms popup -->
+  <div id="prast-farms-popup">
+    <div class="prast-farms-header">Prast Farms</div>
+    <div class="prast-farms-subheader">
+      Buying in live partners you with real farms globally; you'll need to be approved by our Farm Auditors before you are charged. Note: Auditing fees incur for third party farms.
+    </div>
+    
+    <!-- Content will be populated dynamically similar to the store -->
+    <div class="prast-farms-content">
+      <!-- Farm items will go here -->
+    </div>
+    
+    <div class="mt-4 flex justify-end">
+      <button class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-md mr-2" id="prast-farms-close">Close</button>
+      <button class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-md" id="prast-farms-continue">Continue</button>
+    </div>
+  </div>
 
-  <footer class="game-footer">
-    © 2025 Prast Farms. All rights reserved. (Enhanced 3D Experience)
-  </footer>
+  <!-- Footer removed as per requirement -->
 
   <script>
     // Ensure THREE is available
@@ -279,19 +673,41 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       const gameContainer = document.getElementById('game-container');
+      const aerialViewContainer = document.getElementById('aerial-view-container');
       const reservesButton = document.getElementById('reserves-button');
       const reservesAmountSpan = document.getElementById('reserves-amount');
       const farmStoreDropdown = document.getElementById('farm-store-dropdown');
-      const recordsButton = document.getElementById('records-button');
+      const libraryButton = document.getElementById('library-button'); // Changed from recordsButton
       const messageBox = document.getElementById('message-box');
       const crosshair = document.getElementById('crosshair');
+      const paymentOptions = document.getElementById('payment-options');
+      const appModeBadge = document.getElementById('app-mode-badge');
+      const liveModeBadge = document.getElementById('live-mode-badge');
+      const thirdPartyFarmsSection = document.getElementById('third-party-farms');
+      const modeSelectionPopup = document.getElementById('mode-selection-popup');
+      const prastFarmsPopup = document.getElementById('prast-farms-popup');
 
       let playerReserves = 2000;
-      // Stores counts for animals, and a flag (1 if purchased) for plants
-      let purchasedItems = {
+      let isLiveMode = false;
+      let currentPaymentItem = null;
+      let isAerialView = false;
+      let aerialViewCamera, aerialViewRenderer, aerialViewControls; // For aerial view
+      
+      // Separate inventory for each mode
+      let demoInventory = {
         chicken: 0, pig: 0, cow: 0, goat: 0, fish: 0,
-        plantain: 0, banana: 0, orange: 0, sugarcane: 0, coconut: 0, papaya: 0, carrot: 0
+        plantain: 0, banana: 0, orange: 0, sugarcane: 0, coconut: 0, papaya: 0, carrot: 0,
+        expansion: 0, // Land expansion
       };
+      
+      let liveInventory = {
+        chicken: 0, pig: 0, cow: 0, goat: 0, fish: 0,
+        plantain: 0, banana: 0, orange: 0, sugarcane: 0, coconut: 0, papaya: 0, carrot: 0,
+        expansion: 0, // Land expansion
+      };
+      
+      // Use the appropriate inventory based on the current mode
+      let purchasedItems = demoInventory;
 
       let scene, camera, renderer, player, زمین;
       let playerVelocity = new THREE.Vector3();
@@ -304,6 +720,10 @@
       let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
       let worldObjects = []; // For farms, plants, trees, stream for potential interaction/collision
       let chickenAIMeshes = []; // Store chickens that need AI updates
+      
+      // Land size configuration
+      let worldSize = 100; // Reduced to 1/3 of original (was 300)
+      let landExpansionMultiplier = 1.0; // Will increase with land purchases
 
       // Weather variables
       let isRaining = false;
@@ -311,13 +731,13 @@
       let lightningActive = false;
       let lightningTimeout, nextLightningStrikeTimeout;
       let clouds = [];
-      const initialFogColor = new THREE.Color(0x87CEEB);
-      const rainFogColor = new THREE.Color(0x5A6A7B); // Darker, grayish blue
+      const initialFogColor = new THREE.Color(0x030712); // Changed from 0x87CEEB
+const rainFogColor = new THREE.Color(0x1A202C); // Darker fog for rain
 
       function initThreeJS() {
         scene = new THREE.Scene();
-        scene.background = initialFogColor.clone();
-        scene.fog = new THREE.Fog(scene.background, 50, 200); // Adjusted fog start
+scene.background = new THREE.Color(0x030712); // Dark background matching the header
+scene.fog = new THREE.Fog(scene.background, 20, worldSize * 0.7);
 
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / (window.innerHeight - 70), 0.1, 1000); // Increased far plane
         camera.position.set(0, playerHeight, 0); // Camera is at player's eye level within player object
@@ -354,7 +774,7 @@
         // Improved Ground (زمین) with Texture
         const groundTexture = createGrassTexture(512,512);
         const groundMaterial = new THREE.MeshStandardMaterial({ map: groundTexture, side: THREE.DoubleSide, roughness: 0.8, metalness: 0.2 });
-        const groundGeometry = new THREE.PlaneGeometry(300, 300, 50, 50); // Added segments for potential displacement
+        const groundGeometry = new THREE.PlaneGeometry(worldSize, worldSize, 50, 50); // Added segments for potential displacement
         زمین = new THREE.Mesh(groundGeometry, groundMaterial);
         زمین.rotation.x = -Math.PI / 2;
         زمین.receiveShadow = true;
@@ -362,11 +782,116 @@
         worldObjects.push(زمین);
 
 
-        createEnvironmentFeatures(); // Trees, stream, clouds
+        createEnvironmentFeatures(); // Trees, clouds (removed stream per requirements)
         setupControls();
         animate();
         window.addEventListener('resize', onWindowResize, false);
         updateReservesDisplay();
+        
+        // Show initial message
+        showGameMessage("tap enter to explore", "info", 0); // No timeout, stay visible
+      }
+      
+      // Initialize aerial view
+      function initAerialView() {
+        aerialViewCamera = new THREE.PerspectiveCamera(60, window.innerWidth / (window.innerHeight - 70), 0.1, 1000);
+        aerialViewCamera.position.set(0, 50, 50); // Position high above
+        aerialViewCamera.lookAt(0, 0, 0);
+        
+        aerialViewRenderer = new THREE.WebGLRenderer({ antialias: true });
+        aerialViewRenderer.setSize(window.innerWidth, window.innerHeight - 70);
+        aerialViewRenderer.setPixelRatio(window.devicePixelRatio);
+        aerialViewRenderer.shadowMap.enabled = true;
+        
+        // Clear the container first
+        while (aerialViewContainer.firstChild) {
+          aerialViewContainer.removeChild(aerialViewContainer.firstChild);
+        }
+        
+        aerialViewContainer.appendChild(aerialViewRenderer.domElement);
+        
+        // Add orbit controls for rotation
+        aerialViewControls = new THREE.OrbitControls(aerialViewCamera, aerialViewRenderer.domElement);
+        aerialViewControls.enableDamping = true;
+        aerialViewControls.dampingFactor = 0.05;
+        aerialViewControls.screenSpacePanning = false;
+        aerialViewControls.minDistance = 20;
+        aerialViewControls.maxDistance = 150;
+        aerialViewControls.maxPolarAngle = Math.PI / 2.2; // Don't go below horizon
+        
+        // Start aerial view animation
+        animateAerialView();
+      }
+      
+      function animateAerialView() {
+        if (!isAerialView) return;
+        
+        requestAnimationFrame(animateAerialView);
+        
+        aerialViewControls.update();
+        aerialViewRenderer.render(scene, aerialViewCamera);
+      }
+      
+      function toggleAerialView() {
+  // Always activate aerial view on library button click, don't toggle
+  isAerialView = true;
+  
+  // Hide game view, show aerial view
+  gameContainer.style.display = 'none';
+  aerialViewContainer.style.display = 'block';
+  
+  // Initialize aerial view if not already done
+  if (!aerialViewRenderer) {
+    initAerialView();
+  }
+  
+  // Position mode selection UI in top right instead of center
+  modeSelectionPopup.style.display = 'block';
+  modeSelectionPopup.style.position = 'absolute';
+  modeSelectionPopup.style.top = '80px'; // Just below the header
+  modeSelectionPopup.style.right = '20px';
+  modeSelectionPopup.style.left = 'auto'; // Override any left positioning
+  modeSelectionPopup.style.transform = 'none'; // Remove any centering transform
+  
+  // Make sure aerialViewControls is initialized
+  if (!aerialViewControls && aerialViewRenderer) {
+    aerialViewControls = new THREE.OrbitControls(aerialViewCamera, aerialViewRenderer.domElement);
+    aerialViewControls.enableDamping = true;
+    aerialViewControls.dampingFactor = 0.05;
+    aerialViewControls.screenSpacePanning = false;
+    aerialViewControls.minDistance = 20;
+    aerialViewControls.maxDistance = 150;
+    aerialViewControls.maxPolarAngle = Math.PI / 2.2;
+  }
+  
+  // Force render the aerial view immediately
+  if (aerialViewRenderer) {
+    aerialViewRenderer.render(scene, aerialViewCamera);
+    animateAerialView(); // Start animation loop
+  }
+}
+
+// REPLACE the libraryButton event listener with this version
+if (libraryButton) {
+  libraryButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (document.pointerLockElement === document.body) document.exitPointerLock();
+    
+    // Directly go to aerial view without toggling
+    toggleAerialView();
+  });
+
+
+// ADD this function to handle returning from aerial view
+function exitAerialView() {
+  isAerialView = false;
+  gameContainer.style.display = 'block';
+  aerialViewContainer.style.display = 'none';
+  
+  // Hide popups
+  modeSelectionPopup.style.display = 'none';
+  prastFarmsPopup.style.display = 'none';
+}
       }
       
       function createGrassTexture(width, height) {
@@ -399,34 +924,30 @@
 
 
       function createEnvironmentFeatures() {
-        // Trees
-        for (let i = 0; i < 50; i++) { // More trees
+        // Trees - fewer than before due to smaller land
+        for (let i = 0; i < 20; i++) { // Reduced from 50
             const tree = createTree();
             tree.position.set(
-                (Math.random() - 0.5) * 280, // Spread over ground
+                (Math.random() - 0.5) * (worldSize - 20), // Spread over ground
                 0,
-                (Math.random() - 0.5) * 280
+                (Math.random() - 0.5) * (worldSize - 20)
             );
             // Avoid placing trees too close to initial spawn or center farm area
-            if (tree.position.length() > 30) { // Don't place too close to origin (0,0,0)
+            if (tree.position.length() > 15) { // Don't place too close to origin (0,0,0)
                  scene.add(tree);
                  worldObjects.push(tree);
             }
         }
 
-        // Stream
-        const stream = createStream();
-        stream.position.set(0, 0.05, -50); // Position it in the world
-        scene.add(stream);
-        worldObjects.push(stream);
+        // Stream REMOVED per requirements
 
-        // Clouds
-        for (let i = 0; i < 15; i++) {
+        // Clouds - fewer
+        for (let i = 0; i < 8; i++) { // Reduced from 15
             const cloud = createCloud();
             cloud.position.set(
-                (Math.random() - 0.5) * 300,
-                Math.random() * 20 + 60, // Cloud height
-                (Math.random() - 0.5) * 300
+                (Math.random() - 0.5) * worldSize * 1.5,
+                Math.random() * 20 + 40, // Cloud height
+                (Math.random() - 0.5) * worldSize * 1.5
             );
             scene.add(cloud);
             clouds.push(cloud);
@@ -463,41 +984,8 @@
         return treeGroup;
       }
 
-      function createStream() {
-        const streamGroup = new THREE.Group();
-        const streamWidth = 4;
-        const streamLength = 200;
-        const streamDepth = 0.2;
+      // Stream creation function removed per requirements
 
-        // Water Surface
-        const waterGeometry = new THREE.PlaneGeometry(streamWidth, streamLength, 10, 50); // Segments for animation
-        const waterMaterial = new THREE.MeshStandardMaterial({
-            color: 0x3399FF,
-            transparent: true,
-            opacity: 0.7,
-            roughness: 0.2,
-            metalness: 0.1,
-        });
-        const waterSurface = new THREE.Mesh(waterGeometry, waterMaterial);
-        waterSurface.rotation.x = -Math.PI / 2;
-        waterSurface.position.y = -streamDepth / 2 + 0.01; // Slightly above bed
-        streamGroup.add(waterSurface);
-
-        // Stream Bed
-        const bedMaterial = new THREE.MeshStandardMaterial({ color: 0x967969 }); // Muddy brown
-        const bedGeometry = new THREE.BoxGeometry(streamWidth + 1, streamDepth, streamLength);
-        const streamBed = new THREE.Mesh(bedGeometry, bedMaterial);
-        streamBed.position.y = -streamDepth; // Below surface
-        streamBed.receiveShadow = true;
-        streamGroup.add(streamBed);
-        
-        // Store for animation
-        streamGroup.userData.waterSurface = waterSurface;
-        streamGroup.userData.time = 0;
-
-        return streamGroup;
-      }
-      
       function createCloud() {
         const cloudGroup = new THREE.Group();
         const baseMaterial = new THREE.MeshStandardMaterial({
@@ -529,6 +1017,12 @@
         camera.aspect = window.innerWidth / (window.innerHeight - 70);
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight - 70);
+        
+        if (aerialViewRenderer) {
+          aerialViewCamera.aspect = window.innerWidth / (window.innerHeight - 70);
+          aerialViewCamera.updateProjectionMatrix();
+          aerialViewRenderer.setSize(window.innerWidth, window.innerHeight - 70);
+        }
       }
 
       const clock = new THREE.Clock();
@@ -541,25 +1035,14 @@
             updatePlayer(deltaTime);
         }
         
-        // Animate stream water
-        worldObjects.forEach(obj => {
-            if (obj.userData.waterSurface) {
-                obj.userData.time += deltaTime * 0.5;
-                const vertices = obj.userData.waterSurface.geometry.attributes.position;
-                for (let i = 0; i < vertices.count; i++) {
-                    const y = vertices.getY(i); // Get original Y (which is Z in world space for plane)
-                    vertices.setZ(i, Math.sin(y * 0.5 + obj.userData.time) * 0.1); // Animate Z (which is Y in world space)
-                }
-                vertices.needsUpdate = true;
-            }
-        });
-
+        // Stream animation removed per requirements
+        
         // Animate clouds
         clouds.forEach(cloud => {
             cloud.position.x += deltaTime * (Math.random()*1+0.5); // Vary speed slightly
-            if (cloud.position.x > 200) { // Reset cloud position if it goes too far
-                cloud.position.x = -200;
-                cloud.position.z = (Math.random() - 0.5) * 300; // New Z position
+            if (cloud.position.x > worldSize) { // Reset cloud position if it goes too far
+                cloud.position.x = -worldSize;
+                cloud.position.z = (Math.random() - 0.5) * worldSize; // New Z position
             }
         });
         
@@ -607,6 +1090,8 @@
           if (document.pointerLockElement === document.body) {
             crosshair.style.display = 'block';
             gameContainer.classList.add('pointer-locked');
+            // Update message when exploring mode is activated
+            showGameMessage("Use arrow keys and mouse to move around", "info", 5000);
           } else {
             crosshair.style.display = 'none';
             gameContainer.classList.remove('pointer-locked');
@@ -626,7 +1111,8 @@
       }
 
       function onKeyDown(event) {
-        if (event.code === 'KeyL') { // Toggle pointer lock with 'L'
+        // Changed from L key to Enter key as per requirement
+        if (event.code === 'Enter') { 
             if (document.pointerLockElement === document.body) {
                 document.exitPointerLock();
             } else {
@@ -636,20 +1122,38 @@
         if (event.code === 'KeyP') { // Dev key to toggle weather
             toggleWeather();
         }
+        if (event.code === 'Delete') { // Added Delete key to exit pointer lock
+            if (document.pointerLockElement === document.body) {
+                document.exitPointerLock();
+            }
+        }
 
-        if (document.pointerLockElement !== document.body && !['KeyL', 'KeyP', 'Escape'].includes(event.code) ) return; // Only allow L, P, Esc if not locked
+        if (document.pointerLockElement !== document.body && !['Enter', 'KeyP', 'Escape', 'Delete'].includes(event.code)) return; // Only allow Enter, P, Delete, Esc if not locked
 
         switch (event.code) {
           case 'KeyW': case 'ArrowUp': moveForward = true; break;
           case 'KeyS': case 'ArrowDown': moveBackward = true; break;
-          case 'KeyA': case 'ArrowLeft': moveLeft = true; break;
-          case 'KeyD': case 'ArrowRight': moveRight = true; break;
+          case 'KeyA': case 'ArrowLeft': moveRight = true; break; // FIXED: Left and right were swapped
+          case 'KeyD': case 'ArrowRight': moveLeft = true; break; // FIXED: Left and right were swapped
           case 'Space': if (playerOnGround) playerVelocity.y = playerJumpForce; break;
           case 'Escape':
             if (document.pointerLockElement === document.body) document.exitPointerLock();
             if (farmStoreDropdown.classList.contains('active')) {
                 farmStoreDropdown.classList.remove('active');
                 reservesButton.setAttribute('aria-expanded', 'false');
+            }
+            if (paymentOptions.style.display === 'block') {
+                paymentOptions.style.display = 'none';
+                currentPaymentItem = null;
+            }
+            if (isAerialView) {
+                 exitAerialView();
+            }
+            if (modeSelectionPopup.style.display === 'block') {
+                modeSelectionPopup.style.display = 'none';
+            }
+            if (prastFarmsPopup.style.display === 'block') {
+                prastFarmsPopup.style.display = 'none';
             }
             break;
         }
@@ -659,8 +1163,8 @@
         switch (event.code) {
           case 'KeyW': case 'ArrowUp': moveForward = false; break;
           case 'KeyS': case 'ArrowDown': moveBackward = false; break;
-          case 'KeyA': case 'ArrowLeft': moveLeft = false; break;
-          case 'KeyD': case 'ArrowRight': moveRight = false; break;
+          case 'KeyA': case 'ArrowLeft': moveRight = false; break; // FIXED: Left and right were swapped
+          case 'KeyD': case 'ArrowRight': moveLeft = false; break; // FIXED: Left and right were swapped
         }
       }
 
@@ -694,7 +1198,8 @@
           playerOnGround = false;
         }
         
-        const worldBoundary = 145;
+        // Calculate world boundary based on land expansion
+        const worldBoundary = (worldSize / 2) * landExpansionMultiplier;
         player.position.x = Math.max(-worldBoundary, Math.min(worldBoundary, player.position.x));
         player.position.z = Math.max(-worldBoundary, Math.min(worldBoundary, player.position.z));
       }
@@ -713,14 +1218,92 @@
                 if (itemType === 'plant' && purchasedItems[itemId] >= maxPurchases) {
                     alreadyMaxed = true;
                 }
-                button.disabled = playerReserves < cost || alreadyMaxed;
-                if (alreadyMaxed) {
+                
+                if (itemType === 'land' && itemId === 'expansion' && purchasedItems[itemId] >= 3) {
+                    alreadyMaxed = true;
+                }
+                
+                // Don't disable "View" buttons
+                if (button.dataset.action === 'show-third-party-farms') {
+                    button.disabled = false;
+                } else if (alreadyMaxed) {
+                    button.disabled = true;
                     button.textContent = "Owned";
                 } else {
-                    button.textContent = `$${cost}`;
+                    button.disabled = playerReserves < cost && !button.dataset.action.startsWith('get-');
+                    button.textContent = button.dataset.action.startsWith('get-') ? "Get" : `${cost}`;
                 }
             }
         });
+      }
+      
+      function setAppMode(isLive) {
+        isLiveMode = isLive;
+        appModeBadge.style.display = isLive ? 'none' : 'inline';
+        liveModeBadge.style.display = isLive ? 'inline' : 'none';
+        
+        // Switch inventories
+        purchasedItems = isLive ? liveInventory : demoInventory;
+        updateReservesDisplay();
+      }
+      
+      function purchaseWithPayment(paymentType) {
+        if (!currentPaymentItem) return;
+        
+        const {itemType, itemId, cost} = currentPaymentItem;
+        
+        if (paymentType === 'stars') {
+            // Use stars (demo mode)
+            if (playerReserves >= cost) {
+                playerReserves -= cost;
+                purchasedItems[itemId]++;
+                updateReservesDisplay();
+                addPurchasedItemToWorld(itemType, itemId, purchasedItems[itemId]);
+                showGameMessage(`${itemId.charAt(0).toUpperCase() + itemId.slice(1)} ${itemType === 'plant' ? 'seeds' : 'Farm'} purchased!`, 'success');
+            } else {
+                showGameMessage("Not enough stars!", 'error');
+            }
+        } else if (paymentType === 'real') {
+            // Simulated real money purchase (live mode)
+            purchasedItems[itemId]++;
+            if (!isLiveMode) {
+                setAppMode(true);
+                showGameMessage("Switched to LIVE mode!", 'success');
+            }
+            updateReservesDisplay();
+            addPurchasedItemToWorld(itemType, itemId, purchasedItems[itemId]);
+            showGameMessage(`${itemId.charAt(0).toUpperCase() + itemId.slice(1)} ${itemType === 'plant' ? 'seeds' : 'Farm'} purchased with real money!`, 'success');
+        }
+        
+        // Close payment dropdown
+        paymentOptions.style.display = 'none';
+        currentPaymentItem = null;
+        
+        // Close store if needed
+        if (paymentType === 'real' || (itemType === 'plant' && purchasedItems[itemId] >= 1)) {
+            farmStoreDropdown.classList.remove('active');
+            reservesButton.setAttribute('aria-expanded', 'false');
+        }
+      }
+      
+      function expandLand() {
+        if (purchasedItems.expansion >= 3) {
+            showGameMessage("You've reached the maximum land expansion!", 'info');
+            return;
+        }
+        
+        purchasedItems.expansion++;
+        landExpansionMultiplier += 0.33; // Each purchase adds 33% more land
+        
+        // Update fog and other elements according to new size
+        scene.fog.near = 20 * landExpansionMultiplier;
+        scene.fog.far = worldSize * 0.7 * landExpansionMultiplier;
+        
+        // Update ground size
+        زمین.geometry.dispose();
+        زمین.geometry = new THREE.PlaneGeometry(worldSize * landExpansionMultiplier, worldSize * landExpansionMultiplier, 50, 50);
+        
+        showGameMessage(`Land expanded! New area: ${Math.floor(worldSize * landExpansionMultiplier)}×${Math.floor(worldSize * landExpansionMultiplier)}`, 'success');
       }
 
       if (reservesButton && farmStoreDropdown) {
@@ -732,25 +1315,79 @@
               if (isActive) updateReservesDisplay(); // Refresh disabled states when opening
           });
           document.addEventListener('click', (event) => {
-              if (!reservesButton.contains(event.target) && !farmStoreDropdown.contains(event.target)) {
+              if (!reservesButton.contains(event.target) && !farmStoreDropdown.contains(event.target) && !paymentOptions.contains(event.target)) {
                   if (farmStoreDropdown.classList.contains('active')) {
                       farmStoreDropdown.classList.remove('active');
                       reservesButton.setAttribute('aria-expanded', 'false');
                   }
+                  if (paymentOptions.style.display === 'block') {
+                      paymentOptions.style.display = 'none';
+                      currentPaymentItem = null;
+                  }
               }
+          });
+
+          // Setup payment options
+          document.querySelectorAll('.payment-option').forEach(option => {
+              option.addEventListener('click', (e) => {
+                  const paymentType = option.dataset.payment;
+                  purchaseWithPayment(paymentType);
+              });
+          });
+          
+          // Handle third party farms view button
+          document.querySelector('[data-action="show-third-party-farms"]').addEventListener('click', (e) => {
+              e.stopPropagation();
+              thirdPartyFarmsSection.style.display = thirdPartyFarmsSection.style.display === 'block' ? 'none' : 'block';
           });
 
           farmStoreDropdown.querySelectorAll('.dropdown-item').forEach(item => {
               const itemId = item.dataset.id;
               const itemType = item.dataset.type;
-              const cost = parseInt(item.dataset.cost);
+              const cost = parseInt(item.dataset.cost || '0');
               const maxPurchases = item.dataset.max ? parseInt(item.dataset.max) : Infinity;
               const purchaseButton = item.querySelector('.dropdown-item-price');
 
               if (purchaseButton) {
                   purchaseButton.addEventListener('click', (event) => {
                       event.stopPropagation();
-                      if (playerReserves >= cost && purchasedItems[itemId] < maxPurchases) {
+                      
+                      // Special cases for special actions
+                      if (purchaseButton.dataset.action === 'show-third-party-farms') {
+                          return; // This is handled separately
+                      }
+                      
+                      // Land expansion direct purchase
+                      if (itemType === 'land' && itemId === 'expansion') {
+                          if (playerReserves >= cost) {
+                              playerReserves -= cost;
+                              expandLand();
+                              updateReservesDisplay();
+                          } else {
+                              showGameMessage("Not enough stars for land expansion!", 'error');
+                          }
+                          return;
+                      }
+                      
+                      // For regular items, show payment options
+                      if (purchaseButton.dataset.action.startsWith('get-') || purchaseButton.dataset.action === 'get-third-party-farm') {
+                          // Get position for dropdown
+                          const rect = purchaseButton.getBoundingClientRect();
+                          paymentOptions.style.display = 'block';
+                          paymentOptions.style.top = `${rect.bottom + 5}px`;
+                          paymentOptions.style.left = `${rect.left - paymentOptions.offsetWidth + rect.width}px`;
+                          
+                          // Set the current payment item
+                          currentPaymentItem = {
+                              itemType: itemType,
+                              itemId: itemId,
+                              cost: cost
+                          };
+                          
+                          // Update payment options display
+                          document.getElementById('stars-price').textContent = cost;
+                          document.getElementById('dollar-price').textContent = `$${(cost / 100).toFixed(2)}`;
+                      } else if (playerReserves >= cost && purchasedItems[itemId] < maxPurchases) {
                           playerReserves -= cost;
                           purchasedItems[itemId]++;
                           updateReservesDisplay();
@@ -770,7 +1407,85 @@
           });
       }
       
-      function showGameMessage(message, type = 'info') {
+      // Changed from recordsButton to libraryButton with new functionality
+      if (libraryButton) {
+        libraryButton.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (document.pointerLockElement === document.body) document.exitPointerLock();
+          
+          // Toggle aerial view
+          toggleAerialView();
+        });
+      }
+      
+      // Setup mode selection popup
+      document.querySelectorAll('.mode-option').forEach(option => {
+        option.addEventListener('click', () => {
+          const mode = option.dataset.mode;
+          
+          if (mode === 'demo') {
+            // Show store with stars prices
+            setAppMode(false);
+            farmStoreDropdown.classList.add('active');
+            reservesButton.setAttribute('aria-expanded', 'true');
+            updateReservesDisplay();
+          } else if (mode === 'live') {
+            // Show Prast Farms popup
+            prastFarmsPopup.style.display = 'block';
+            // Populate the Prast Farms popup content with clones of the store items
+            const prastFarmsContent = prastFarmsPopup.querySelector('.prast-farms-content');
+            prastFarmsContent.innerHTML = '';
+            
+            // Add search functionality
+            const searchContainer = document.createElement('div');
+            searchContainer.className = 'search-container';
+            searchContainer.innerHTML = `
+              <input type="text" class="search-input" placeholder="Search Prast Farms...">
+              <button class="search-button">
+                <i class="fas fa-search"></i>
+              </button>
+            `;
+            prastFarmsContent.appendChild(searchContainer);
+            
+            // Clone and update store items
+            farmStoreDropdown.querySelectorAll('.dropdown-item').forEach(item => {
+              if (item.dataset.type !== 'land' && item.dataset.id !== 'third-party') {
+                const clone = item.cloneNode(true);
+                const button = clone.querySelector('.dropdown-item-price');
+                if (button) {
+                  button.textContent = 'Get';
+                  button.addEventListener('click', () => {
+                    // Handle "Get" button in live mode
+                    setAppMode(true);
+                    const itemType = clone.dataset.type;
+                    const itemId = clone.dataset.id;
+                    purchasedItems[itemId]++;
+                    addPurchasedItemToWorld(itemType, itemId, purchasedItems[itemId]);
+                    showGameMessage(`${itemId.charAt(0).toUpperCase() + itemId.slice(1)} ${itemType === 'plant' ? 'seeds' : 'Farm'} purchased in live mode!`, 'success');
+                    prastFarmsPopup.style.display = 'none';
+                  });
+                }
+                prastFarmsContent.appendChild(clone);
+              }
+            });
+          }
+          
+          modeSelectionPopup.style.display = 'none';
+        });
+      });
+      
+      // Setup Prast Farms popup buttons
+      document.getElementById('prast-farms-close').addEventListener('click', () => {
+        prastFarmsPopup.style.display = 'none';
+      });
+      
+      document.getElementById('prast-farms-continue').addEventListener('click', () => {
+        setAppMode(true);
+        showGameMessage("Switched to LIVE mode!", 'success');
+        prastFarmsPopup.style.display = 'none';
+      });
+      
+      function showGameMessage(message, type = 'info', timeout = 3000) {
         if (!messageBox) return;
         messageBox.textContent = message;
         messageBox.className = 'message-box visible'; // Add visible directly
@@ -781,10 +1496,24 @@
         } else {
             messageBox.style.backgroundColor = 'rgba(23, 37, 84, 0.9)'; messageBox.style.borderColor = 'rgba(79, 70, 229, 0.7)';
         }
-        setTimeout(() => { messageBox.classList.remove('visible'); }, 3000);
+        
+        if (timeout > 0) {
+          setTimeout(() => { messageBox.classList.remove('visible'); }, timeout);
+        }
       }
 
       function addPurchasedItemToWorld(itemType, itemId, count) {
+        // Special handling for land expansion
+        if (itemType === 'land' && itemId === 'expansion') {
+            return; // Land expansion is handled separately
+        }
+        
+        // Special handling for third party farms - they don't appear in the world
+        if (itemType === 'third-party') {
+            showGameMessage(`Partnership established with ${itemId.replace(/-/g, ' ')}!`, 'success');
+            return;
+        }
+      
         let itemGroup;
         if (itemType === 'animal') {
             itemGroup = createAnimalFarmStructure(itemId, count);
@@ -994,203 +1723,135 @@
                 plantGeo1 = new THREE.CylinderGeometry(0.15, 0.25, 1.2, 6); // Trunk
                 plantGeo2 = new THREE.SphereGeometry(0.8, 6, 5); // Foliage
                 plantColor1 = 0x8B4513; plantColor2 = 0x2E8B57; scale = 1.1;
-                 // Add fruit if coconut/orange
+                // Add fruit if coconut/orange
                 if (plantId === 'orange') {
-                    const fruitGeo = new THREE.SphereGeometry(0.15, 5,4);
-                    const fruitMat = new THREE.MeshStandardMaterial({color:0xFF8C00});
+                    const fruitGeo = new THREE.SphereGeometry(0.15, 5, 4);
+                    const fruitMat = new THREE.MeshStandardMaterial({color: 0xFF8C00});
                     for(let f=0; f<3; f++) {
                         const fruit = new THREE.Mesh(fruitGeo, fruitMat);
-                        fruit.position.set((Math.random()-0.5)*0.5, 1.2+(Math.random()-0.5)*0.5, (Math.random()-0.5)*0.5);
+                        fruit.position.set(
+                            (Math.random()-0.5)*0.5, 
+                            1.2+(Math.random()-0.5)*0.5, 
+                            (Math.random()-0.5)*0.5
+                        );
                         plotGroup.add(fruit);
+                    }
+                } else if (plantId === 'coconut') {
+                    const coconutGeo = new THREE.SphereGeometry(0.2, 5, 4);
+                    const coconutMat = new THREE.MeshStandardMaterial({color: 0x8B4513});
+                    for(let f=0; f<2; f++) {
+                        const coconut = new THREE.Mesh(coconutGeo, coconutMat);
+                        coconut.position.set(
+                            (Math.random()-0.5)*0.5, 
+                            1.2+(Math.random()-0.5)*0.5, 
+                            (Math.random()-0.5)*0.5
+                        );
+                        plotGroup.add(coconut);
+                    }
+                } else if (plantId === 'papaya') {
+                    const papayaGeo = new THREE.SphereGeometry(0.18, 5, 4);
+                    const papayaMat = new THREE.MeshStandardMaterial({color: 0xFFA500});
+                    for(let f=0; f<2; f++) {
+                        const papaya = new THREE.Mesh(papayaGeo, papayaMat);
+                        papaya.position.set(
+                            (Math.random()-0.5)*0.5, 
+                            1.1+(Math.random()-0.5)*0.4, 
+                            (Math.random()-0.5)*0.5
+                        );
+                        plotGroup.add(papaya);
                     }
                 }
                 break;
             case 'sugarcane':
                 plantGeo1 = new THREE.CylinderGeometry(0.05, 0.05, 2.0, 6); // Tall stalk
                 plantColor1 = 0x90EE90;
+                // Add multiple stalks for more visual interest
+                for(let i=0; i<3; i++) {
+                    const stalkOffset = new THREE.Vector3(
+                        (Math.random()-0.5)*0.3, 
+                        0, 
+                        (Math.random()-0.5)*0.3
+                    );
+                    const stalk = new THREE.Mesh(
+                        new THREE.CylinderGeometry(0.05, 0.05, 1.5 + Math.random()*0.5, 6),
+                        new THREE.MeshStandardMaterial({color: 0x90EE90})
+                    );
+                    stalk.position.copy(stalkOffset);
+                    stalk.position.y = stalk.geometry.parameters.height/2;
+                    stalk.rotation.set(
+                        (Math.random()-0.5)*0.2, 
+                        0, 
+                        (Math.random()-0.5)*0.2
+                    ); // Slight random tilt
+                    stalk.castShadow = true;
+                    plotGroup.add(stalk);
+                }
                 break;
             case 'carrot':
-                plantGeo1 = new THREE.ConeGeometry(0.2, 0.5, 6); // Carrot root (mostly underground)
-                plantGeo2 = new THREE.SphereGeometry(0.3, 5, 3); // Leafy top
-                plantColor1 = 0xFF8C00; plantColor2 = 0x32CD32;
+                // Create soil patch
+                const soilGeo = new THREE.CylinderGeometry(0.8, 0.8, 0.1, 8);
+                const soilMat = new THREE.MeshStandardMaterial({color: 0x5C4033});
+                const soil = new THREE.Mesh(soilGeo, soilMat);
+                soil.position.y = -0.05;
+                soil.receiveShadow = true;
+                plotGroup.add(soil);
+                
+                // Add multiple small carrot tops
+                for(let i=0; i<5; i++) {
+                    const leafClump = new THREE.Mesh(
+                        new THREE.SphereGeometry(0.15, 4, 3),
+                        new THREE.MeshStandardMaterial({color: 0x32CD32})
+                    );
+                    leafClump.position.set(
+                        (Math.random()-0.5)*0.8,
+                        0.1,
+                        (Math.random()-0.5)*0.8
+                    );
+                    leafClump.castShadow = true;
+                    plotGroup.add(leafClump);
+                    
+                    // Add a small carrot top sticking out
+                    if (Math.random() > 0.6) {
+                        const carrotTop = new THREE.Mesh(
+                            new THREE.ConeGeometry(0.05, 0.1, 4),
+                            new THREE.MeshStandardMaterial({color: 0xFF8C00})
+                        );
+                        carrotTop.position.copy(leafClump.position);
+                        carrotTop.position.y = 0.05;
+                        carrotTop.rotation.x = Math.PI; // Flip it upside down
+                        carrotTop.castShadow = true;
+                        plotGroup.add(carrotTop);
+                    }
+                }
                 break;
-            default: plantGeo1 = new THREE.BoxGeometry(0.3,0.8,0.3);
+            default:
+                plantGeo1 = new THREE.BoxGeometry(0.3, 0.8, 0.3);
+                break;
         }
 
-        const mat1 = new THREE.MeshStandardMaterial({color: plantColor1});
-        const part1 = new THREE.Mesh(plantGeo1, mat1);
-        part1.castShadow = true;
-        part1.position.y = (plantId==='carrot' ? 0.1 : (plantGeo1.parameters.height || 0.8) /2 );
-        plotGroup.add(part1);
+        // For standard plant types that use the trunk/foliage pattern
+        if (plantGeo1 && !['sugarcane', 'carrot'].includes(plantId)) {
+            const mat1 = new THREE.MeshStandardMaterial({color: plantColor1});
+            const part1 = new THREE.Mesh(plantGeo1, mat1);
+            part1.castShadow = true;
+            part1.position.y = (plantGeo1.parameters.height || 0.8) / 2;
+            plotGroup.add(part1);
 
-        if (plantGeo2) {
-            const mat2 = new THREE.MeshStandardMaterial({color: plantColor2});
-            const part2 = new THREE.Mesh(plantGeo2, mat2);
-            part2.castShadow = true;
-            part2.position.y = (plantId==='carrot' ? 0.4 : (plantGeo1.parameters.height || 0.8) -0.1 + (plantGeo2.parameters.radius || 0.3)/2);
-            plotGroup.add(part2);
+            if (plantGeo2) {
+                const mat2 = new THREE.MeshStandardMaterial({color: plantColor2});
+                const part2 = new THREE.Mesh(plantGeo2, mat2);
+                part2.castShadow = true;
+                part2.position.y = (plantGeo1.parameters.height || 0.8) - 0.1 + (plantGeo2.parameters.radius || 0.3) / 2;
+                plotGroup.add(part2);
+            }
         }
-        plotGroup.scale.set(scale,scale,scale);
+
+        plotGroup.scale.set(scale, scale, scale);
         return plotGroup;
       }
-
-
-      // --- Weather System ---
-      function toggleWeather() {
-        isRaining = !isRaining;
-        if (isRaining) {
-            startRain();
-            showGameMessage("It started raining...", "info");
-            scheduleLightning();
-            scene.fog.color.set(rainFogColor);
-            scene.background.set(rainFogColor);
-        } else {
-            stopRain();
-            showGameMessage("The rain stopped.", "info");
-            clearTimeout(lightningTimeout);
-            clearTimeout(nextLightningStrikeTimeout);
-            lightningActive = false;
-            const lightningFlash = scene.getObjectByName("lightningFlash");
-            if(lightningFlash) scene.remove(lightningFlash);
-            scene.fog.color.set(initialFogColor);
-            scene.background.set(initialFogColor);
-        }
-      }
-      window.toggleWeather = toggleWeather; // Make it callable from console for dev
-
-      function startRain() {
-        const particleCount = 10000;
-        const particles = new THREE.BufferGeometry();
-        const positions = new Float32Array(particleCount * 3);
-        const velocities = new Float32Array(particleCount * 3); // For y-velocity
-
-        for (let i = 0; i < particleCount; i++) {
-            positions[i * 3] = (Math.random() - 0.5) * 200; // x
-            positions[i * 3 + 1] = Math.random() * 100 + 20;  // y (start high)
-            positions[i * 3 + 2] = (Math.random() - 0.5) * 200; // z
-            velocities[i*3+1] = -(Math.random() * 15 + 10); // downward velocity
-        }
-        particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        particles.setAttribute('velocity', new THREE.BufferAttribute(velocities, 3)); // Store velocities
-
-        rainMaterial = new THREE.PointsMaterial({ color: 0xaaaaee, size: 0.2, transparent: true, opacity: 0.6 });
-        rainParticles = new THREE.Points(particles, rainMaterial);
-        rainParticles.name = "rainEffect";
-        scene.add(rainParticles);
-      }
-
-      function updateRain(deltaTime) {
-        if (rainParticles) {
-            const positions = rainParticles.geometry.attributes.position;
-            const velocities = rainParticles.geometry.attributes.velocity;
-            for (let i = 0; i < positions.count; i++) {
-                positions.array[i * 3 + 1] += velocities.array[i*3+1] * deltaTime; // Update y position
-                if (positions.array[i * 3 + 1] < 0) { // Reset if hit ground
-                    positions.array[i * 3 + 1] = Math.random() * 50 + 50; // Reset high
-                    positions.array[i * 3] = player.position.x + (Math.random() - 0.5) * 100; // Reset around player
-                    positions.array[i * 3 + 2] = player.position.z + (Math.random() - 0.5) * 100;
-                }
-            }
-            positions.needsUpdate = true;
-        }
-      }
-
-      function stopRain() {
-        const rainEffect = scene.getObjectByName("rainEffect");
-        if (rainEffect) {
-            scene.remove(rainEffect);
-            rainEffect.geometry.dispose();
-            rainEffect.material.dispose();
-        }
-        rainParticles = null;
-      }
-
-      function scheduleLightning() {
-        if (!isRaining) return;
-        const strikeDelay = Math.random() * 15000 + 10000; // 10-25 seconds
-        nextLightningStrikeTimeout = setTimeout(() => {
-            if (isRaining) triggerLightning();
-            scheduleLightning(); // Schedule next one
-        }, strikeDelay);
-      }
-
-      function triggerLightning() {
-        if (lightningActive) return;
-        lightningActive = true;
-
-        const lightningFlash = new THREE.DirectionalLight(0xffffff, 2.5); // Intense white flash
-        lightningFlash.position.set((Math.random()-0.5)*100, 100, (Math.random()-0.5)*100);
-        lightningFlash.name = "lightningFlash";
-        scene.add(lightningFlash);
-        
-        // Darken sky more
-        const originalFogColor = scene.fog.color.clone();
-        scene.fog.color.set(0x101020);
-        scene.background.set(0x101020);
-
-
-        // Flash effect
-        setTimeout(() => {
-            if(scene.getObjectByName("lightningFlash")) scene.remove(lightningFlash);
-        }, 100); // Short flash
-        setTimeout(() => {
-            if(scene.getObjectByName("lightningFlash")) scene.remove(lightningFlash); // Ensure removal
-        }, 250); // Second flash (softer)
-         setTimeout(() => {
-            if(scene.getObjectByName("lightningFlash")) scene.remove(lightningFlash);
-             if (isRaining) { // Restore rain fog color if still raining
-                scene.fog.color.set(rainFogColor);
-                scene.background.set(rainFogColor);
-             } else { // Else restore initial fog
-                scene.fog.color.set(initialFogColor);
-                scene.background.set(initialFogColor);
-             }
-            lightningActive = false;
-        }, 400);
-      }
-
-
-      // --- Placeholder for Records ---
-      if (recordsButton) {
-        recordsButton.addEventListener('click', (e) => {
-          e.preventDefault();
-          if (document.pointerLockElement === document.body) document.exitPointerLock();
-          let recordMsg = "Current Holdings:\n";
-          for (const item in purchasedItems) {
-              if (purchasedItems[item] > 0) {
-                  recordMsg += `${item.charAt(0).toUpperCase() + item.slice(1)}: ${purchasedItems[item]}\n`;
-              }
-          }
-          if (recordMsg === "Current Holdings:\n") recordMsg = "No items purchased yet.";
-          showGameMessage(recordMsg, 'info');
-        });
-      }
-
-      const blobsContainer = document.getElementById('blobs-container');
-      const htmlBlobs = blobsContainer ? blobsContainer.querySelectorAll('.interactive-blob') : [];
-      let blobHues = [270, 220];
-      function animateBackgroundBlobs() {
-         if (blobsContainer && htmlBlobs.length > 0) {
-             htmlBlobs.forEach((blob, index) => {
-                 blobHues[index] = (blobHues[index] + 0.05) % 360;
-                 blob.style.backgroundColor = `hsl(${blobHues[index]}, 70%, 60%)`;
-             });
-         }
-         requestAnimationFrame(animateBackgroundBlobs);
-      }
-      if (blobsContainer && htmlBlobs.length > 0) animateBackgroundBlobs();
-
-      document.addEventListener('mousemove', (e) => {
-        if (Math.random() > 0.99) createParticle(e.clientX, e.clientY); // Even less frequent
-      });
-      function createParticle(x, y) { /* ... (same as before, shortened for brevity) ... */ }
-
-      document.querySelectorAll('img').forEach(img => { /* ... (same as before) ... */ });
-      function handleImageError(img) { /* ... (same as before, ensure it handles new emoji/text placeholders) ... */ }
-      
-      initThreeJS();
+       initThreeJS();
       updateReservesDisplay();
-      showGameMessage("Welcome to Prast Farms! Press L to toggle mouse lock for controls.", "info");
+      showGameMessage("Tap ENTTER to begin.", "info");
 
     });
   </script>
