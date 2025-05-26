@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Chim Farms</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23030712'/%3E%3Ctext x='16' y='20' font-family='sans-serif' font-size='14' fill='white' text-anchor='middle'%3ECF%3C/text%3E%3C/svg%3E" type="image/svg+xml">
+    <link rel="icon" href="data:,">
    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -16,9 +16,20 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-  <script src="https://preview.babylonjs.com/babylon.js"></script>
-<script src="https://preview.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
-<script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script>
+// Check if Babylon.js loads properly
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    if (typeof BABYLON === 'undefined') {
+      console.error('Babylon.js failed to load from CDN');
+      document.body.innerHTML = '<div style="color: white; text-align: center; padding: 50px;">Error: Failed to load 3D engine. Please refresh the page.</div>';
+    }
+  }, 2000);
+});
+</script>
+<script src="https://cdn.babylonjs.com/babylon.js"></script>
+<script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+<script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
     
     <style>
 
@@ -57,10 +68,8 @@ body {
 
 #game-container {
   height: 100vh !important;
-  top: 0 !important;        
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
+  width: 100vw !important;
+  position: relative;
 }
       #game-container.pointer-locked {
         cursor: none; /* Hide cursor when locked */
@@ -115,7 +124,7 @@ body {
       .dropdown-item-price[disabled] { background-color: #374151; color: #6b7280; cursor: not-allowed; opacity: 0.6; }
       .dropdown-item-price[disabled]:hover { background-color: #374151; transform: none; }
 
-      
+      @import "tailwindcss";
       @keyframes particleFade {
         0% { opacity: 0.7; transform: translate(0, 0) scale(1); }
         100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.5); }
@@ -797,46 +806,111 @@ if (typeof BABYLON === 'undefined') {
 </div>
 
   <script>
-    // Ensure BABYLON is available
-   document.addEventListener('DOMContentLoaded', () => {
-    if (typeof BABYLON === 'undefined') {
-        console.error("Babylon.js failed to load. Attempting to reload...");
-        // Try to load from backup CDN
-        const script = document.createElement('script');
-        script.src = 'https://cdn.babylonjs.com/babylon.js';
-        script.onload = () => {
-            console.log("Babylon.js loaded from backup CDN");
-            initBabylonJS();
-        };
-        script.onerror = () => {
-            alert("Babylon.js failed to load from all sources. Please check your internet connection.");
-        };
-        document.head.appendChild(script);
-        return;
+ 
+document.addEventListener('DOMContentLoaded', () => {
+  // MOVE ALL VARIABLE DECLARATIONS TO THE TOP FIRST
+  const gameContainer = document.getElementById('game-container');
+  const aerialViewContainer = document.getElementById('aerial-view-container');
+  const reservesButton = document.getElementById('reserves-button');
+  const reservesAmountSpan = document.getElementById('reserves-amount');
+  const farmStoreDropdown = document.getElementById('farm-store-dropdown');
+  const libraryButton = document.getElementById('library-button');
+  const messageBox = document.getElementById('message-box');
+  const crosshair = document.getElementById('crosshair');
+  const paymentOptions = document.getElementById('payment-options');
+  const appModeBadge = document.getElementById('app-mode-badge');
+  const liveModeBadge = document.getElementById('live-mode-badge');
+  const thirdPartyFarmsSection = document.getElementById('third-party-farms');
+  const modeSelectionPopup = document.getElementById('mode-selection-popup');
+  const prastFarmsPopup = document.getElementById('prast-farms-popup');
+
+function initBabylonJS(gameContainer) {
+const canvas = document.createElement('canvas');
+canvas.style.width = '100%';
+canvas.style.height = '100%';
+canvas.style.display = 'block';
+canvas.style.position = 'absolute';
+canvas.style.top = '0';
+canvas.style.left = '0';
+gameContainer.appendChild(canvas);
+
+// Add this after: gameContainer.appendChild(canvas);
+canvas.style.width = '100%';
+canvas.style.height = '100%';
+canvas.style.display = 'block';
+
+// Let the CSS handle the sizing automatically
+
+console.log("Canvas created:", canvas);
+console.log("Canvas dimensions:", canvas.width, canvas.height);
+
+        engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+        scene = new BABYLON.Scene(engine);
+        scene.clearColor = new BABYLON.Color3(0.0117, 0.0275, 0.0706); // #030712
+        scene.fogMode = BABYLON.Scene.FOGMODE_LINEAR;
+        scene.fogColor = initialFogColor;
+        scene.fogStart = 20;
+        scene.fogEnd = worldSize * 0.7;
+
+        camera = new BABYLON.UniversalCamera("camera", new BABYLON.Vector3(0, playerHeight, 0), scene);
+camera.setTarget(BABYLON.Vector3.Zero());
+camera.minZ = 0.1;
+camera.maxZ = 1000;
+
+player = new BABYLON.TransformNode("player", scene);
+player.position = new BABYLON.Vector3(0, playerHeight / 2, 5);
+camera.parent = player;
+
+// ADD THIS LINE:
+scene.activeCamera = camera;
+
+        // Enable shadows
+        const directionalLight = new BABYLON.DirectionalLight("directionalLight", new BABYLON.Vector3(-50, -80, -30), scene);
+        directionalLight.intensity = 1.0;
+        directionalLight.position = new BABYLON.Vector3(50, 80, 30);
+        
+        const shadowGenerator = new BABYLON.ShadowGenerator(4096, directionalLight);
+        shadowGenerator.useExponentialShadowMap = true;
+
+        const ambientLight = new BABYLON.HemisphericLight("ambientLight", new BABYLON.Vector3(0, 1, 0), scene);
+        ambientLight.intensity = 0.7;
+
+        // Create ground with grass texture
+        const groundTexture = createGrassTexture(512, 512);
+        const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
+        groundMaterial.diffuseTexture = groundTexture;
+        groundMaterial.roughness = 0.8;
+
+        ground = BABYLON.MeshBuilder.CreateDisc("ground", {radius: worldSize/2, tessellation: 64}, scene);
+        ground.rotation.x = -Math.PI / 2;
+        ground.material = groundMaterial;
+        ground.receiveShadows = true;
+        worldObjects.push(ground);
+
+        // Add ocean and boat
+        createOceanAndBoat();
+
+        createEnvironmentFeatures();
+        setupControls();
+        animate();
+        window.addEventListener('resize', onWindowResize, false);
+        updateReservesDisplay();
+      }
+
+  // NOW DEFINE THE BABYLON.JS LOADING FUNCTION
+  function waitForBabylon() {
+    if (typeof BABYLON !== 'undefined') {
+      console.log('Babylon.js loaded successfully');
+      initBabylonJS(gameContainer);
+      updateReservesDisplay();
+    } else {
+      console.log('Waiting for Babylon.js...');
+      setTimeout(waitForBabylon, 100);
     }
-    
-    // Your existing code continues here...
-    const gameContainer = document.getElementById('game-container');
-    // ... rest of your initialization
-});
+  }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const gameContainer = document.getElementById('game-container');
-      const aerialViewContainer = document.getElementById('aerial-view-container');
-      const reservesButton = document.getElementById('reserves-button');
-      const reservesAmountSpan = document.getElementById('reserves-amount');
-      const farmStoreDropdown = document.getElementById('farm-store-dropdown');
-      const libraryButton = document.getElementById('library-button');
-      const messageBox = document.getElementById('message-box');
-      const crosshair = document.getElementById('crosshair');
-      const paymentOptions = document.getElementById('payment-options');
-      const appModeBadge = document.getElementById('app-mode-badge');
-      const liveModeBadge = document.getElementById('live-mode-badge');
-      const thirdPartyFarmsSection = document.getElementById('third-party-farms');
-      const modeSelectionPopup = document.getElementById('mode-selection-popup');
-      const prastFarmsPopup = document.getElementById('prast-farms-popup');
-
-const occupiedSpaces = []; 
+  // START THE LOADING PROCESS
+  waitForBabylon();
 
 function isPositionAvailable(position, radius) {
   for (const space of occupiedSpaces) {
@@ -999,68 +1073,9 @@ function createAnimalData(type) {
       const initialFogColor = new BABYLON.Color3(0.0117, 0.0275, 0.0706); // #030712
       const rainFogColor = new BABYLON.Color3(0.102, 0.125, 0.173); // #1A202C
 
-      function initBabylonJS() {
-        const canvas = document.createElement('canvas');
-        canvas.style.width = '100%';
-        canvas.style.height = '100%';
-        canvas.style.display = 'block';
-        gameContainer.appendChild(canvas);
+      
 
-        // Set canvas dimensions to match container size
-        const rect = gameContainer.getBoundingClientRect();
-        canvas.width = rect.width;
-        canvas.height = rect.height;
 
-        engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
-        scene = new BABYLON.Scene(engine);
-        scene.clearColor = new BABYLON.Color3(0.0117, 0.0275, 0.0706); // #030712
-        scene.fogMode = BABYLON.Scene.FOGMODE_LINEAR;
-        scene.fogColor = initialFogColor;
-        scene.fogStart = 20;
-        scene.fogEnd = worldSize * 0.7;
-
-        camera = new BABYLON.UniversalCamera("camera", new BABYLON.Vector3(0, playerHeight, 0), scene);
-        camera.setTarget(BABYLON.Vector3.Zero());
-        camera.minZ = 0.1;
-        camera.maxZ = 1000;
-
-        player = new BABYLON.TransformNode("player", scene);
-        player.position = new BABYLON.Vector3(0, playerHeight / 2, 5);
-        camera.parent = player;
-        scene.activeCamera = camera;
-
-        // Enable shadows
-        const directionalLight = new BABYLON.DirectionalLight("directionalLight", new BABYLON.Vector3(-50, -80, -30), scene);
-        directionalLight.intensity = 1.0;
-        directionalLight.position = new BABYLON.Vector3(50, 80, 30);
-        
-        const shadowGenerator = new BABYLON.ShadowGenerator(4096, directionalLight);
-        shadowGenerator.useExponentialShadowMap = true;
-
-        const ambientLight = new BABYLON.HemisphericLight("ambientLight", new BABYLON.Vector3(0, 1, 0), scene);
-        ambientLight.intensity = 0.7;
-
-        // Create ground with grass texture
-        const groundTexture = createGrassTexture(512, 512);
-        const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
-        groundMaterial.diffuseTexture = groundTexture;
-        groundMaterial.roughness = 0.8;
-
-        ground = BABYLON.MeshBuilder.CreateDisc("ground", {radius: worldSize/2, tessellation: 64}, scene);
-        ground.rotation.x = -Math.PI / 2;
-        ground.material = groundMaterial;
-        ground.receiveShadows = true;
-        worldObjects.push(ground);
-
-        // Add ocean and boat
-        createOceanAndBoat();
-
-        createEnvironmentFeatures();
-        setupControls();
-        animate();
-        window.addEventListener('resize', onWindowResize, false);
-        updateReservesDisplay();
-      }
       
      function initAerialView() {
         const canvas = document.createElement('canvas');
@@ -3015,6 +3030,13 @@ document.addEventListener('click', () => {
       }
 
       initBabylonJS();
+
+      // Add this after initBabylonJS(); call for debugging
+console.log("Game container:", gameContainer);
+console.log("Canvas elements:", gameContainer.querySelectorAll('canvas'));
+console.log("Engine:", engine);
+console.log("Scene:", scene);
+console.log("Camera:", camera);
       updateReservesDisplay();
     });
   </script>

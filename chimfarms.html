@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Chim Farms</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23030712'/%3E%3Ctext x='16' y='20' font-family='sans-serif' font-size='14' fill='white' text-anchor='middle'%3ECF%3C/text%3E%3C/svg%3E" type="image/svg+xml">
-   <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="logo.jpg" type="image/jpeg" onerror="this.onerror=null; this.href='https://placehold.co/32x32/030712/FFFFFF?text=CF';">
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
@@ -16,13 +16,11 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-  <script src="https://preview.babylonjs.com/babylon.js"></script>
-<script src="https://preview.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
-<script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <style>
 
-        
+
 /* Replace existing header styles with this */
 .top-nav {
   background: rgba(255, 255, 255, 0.08) !important;
@@ -354,131 +352,8 @@ body {
       .search-button:hover {
         color: #E5E7EB;
       }
-
-      /* Farm Management Panel Styles */
-      #farm-management {
-        width: calc(100% - 32px) !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-        right: auto !important;
-        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
-      }
-      
-      #farm-management.hidden {
-        transform: translateX(-50%) translateY(100%) !important;
-        display: none;
-      }
-      
-      @media (max-width: 640px) {
-        #farm-management {
-          width: calc(100% - 16px) !important;
-        }
-      }
-      
-      .animal-item {
-        background-color: rgba(31, 41, 55, 0.8);
-        border-radius: 0.75rem;
-        padding: 1rem;
-        min-width: 220px;
-        flex-shrink: 0;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        border: 1px solid rgba(75, 85, 99, 0.4);
-      }
-      
-      .animal-item:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
-        border-color: rgba(75, 85, 99, 0.6);
-      }
-      
-      .animal-header {
-        display: flex;
-        align-items: center;
-        margin-bottom: 0.75rem;
-      }
-      
-      .animal-icon {
-        width: 32px;
-        height: 32px;
-        border-radius: 0.375rem;
-        background-color: rgba(55, 65, 81, 0.8);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 0.75rem;
-        font-size: 1.125rem;
-      }
-      
-      .animal-name {
-        font-weight: 600;
-        font-size: 1.25rem;
-        color: white;
-        flex-grow: 1;
-        cursor: text;
-        padding: 2px 4px;
-        border-radius: 4px;
-      }
-      
-      .animal-name:hover {
-        background-color: rgba(75, 85, 99, 0.6);
-      }
-      
-      .animal-stat {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 0.5rem;
-        font-size: 0.875rem;
-        color: #e5e7eb;
-      }
-      
-      .health-bar {
-        width: 100%;
-        height: 8px;
-        background-color: rgba(239, 68, 68, 0.2);
-        border-radius: 4px;
-        overflow: hidden;
-        margin-bottom: 1rem;
-      }
-      
-      .health-bar-fill {
-        height: 100%;
-        background-color: rgb(34, 197, 94);
-        border-radius: 4px;
-      }
-      
-      .animal-actions {
-        display: flex;
-        gap: 0.5rem;
-      }
-      
-      .animal-action-btn {
-        flex: 1;
-        padding: 0.5rem;
-        border-radius: 0.375rem;
-        font-size: 0.875rem;
-        font-weight: 500;
-        text-align: center;
-        color: white;
-        border: none;
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
     </style>
 </head>
-<script>
-// Check if Babylon.js loaded correctly
-if (typeof BABYLON === 'undefined') {
-    console.error('Babylon.js failed to load from CDN');
-    // Fallback to a different CDN
-    document.write('<script src="https://cdn.babylonjs.com/babylon.js"><\/script>');
-    document.write('<script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"><\/script>');
-    document.write('<script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"><\/script>');
-}
-</script>
 <body class="text-gray-100 min-h-screen flex flex-col">
   
 
@@ -757,68 +632,18 @@ if (typeof BABYLON === 'undefined') {
     </div>
   </div>
 
-<!-- Farm Management Panel -->
-<div id="farm-management" class="fixed bottom-0 left-1/2 transform -translate-x-1/2 z-50 hidden flex-col w-[calc(100%-32px)] rounded-t-xl overflow-hidden shadow-2xl border border-gray-700 border-b-0">
-  <div class="w-full bg-gray-800/90 backdrop-blur-xl p-3 flex justify-between items-center">
-    <h3 id="farm-management-title" class="text-lg font-semibold text-white">Managing Chicken Farm</h3>
-    <div class="flex items-center gap-3">
-      <button id="buy-animals" class="px-5 py-2 bg-green-700 hover:bg-green-600 rounded-md text-white text-sm md:text-lg transition-colors">Buy</button>
-      <button id="sell-all-animals" class="px-5 py-2 bg-red-700 hover:bg-red-600 rounded-md text-white text-sm md:text-lg transition-colors">Sell All</button>
-      <button id="exit-management" class="ml-2 w-8 h-8 flex items-center justify-center bg-gray-700 hover:bg-gray-600 rounded-full transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
-  </div>
-  
-  <div class="w-full bg-gray-900/80 backdrop-blur-xl p-3 overflow-x-auto">
-    <div id="animals-list" class="flex gap-3 pb-1">
-    </div>
-  </div>
-</div>
-
-<div id="buy-animals-popup" class="fixed inset-0 z-60 hidden items-center justify-center">
-  <div class="bg-gray-900 p-4 rounded-lg border border-gray-700 w-80">
-    <h3 class="text-center text-lg font-bold mb-3">Buy Animals</h3>
-    <div class="flex items-center justify-between mb-4">
-      <span>Quantity:</span>
-      <div class="flex items-center">
-        <button id="decrease-qty" class="px-2 py-1 bg-gray-700 rounded-l-md">-</button>
-        <input id="animal-qty" type="number" value="1" min="1" class="w-16 px-2 py-1 text-center bg-gray-800 border-0">
-        <button id="increase-qty" class="px-2 py-1 bg-gray-700 rounded-r-md">+</button>
-      </div>
-    </div>
-    <div class="flex justify-between">
-      <button id="cancel-buy" class="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded-md">Cancel</button>
-      <button id="confirm-buy" class="px-3 py-1 bg-green-700 hover:bg-green-600 rounded-md">Confirm</button>
-    </div>
-  </div>
-</div>
-
   <script>
-    // Ensure BABYLON is available
-   document.addEventListener('DOMContentLoaded', () => {
-    if (typeof BABYLON === 'undefined') {
-        console.error("Babylon.js failed to load. Attempting to reload...");
-        // Try to load from backup CDN
-        const script = document.createElement('script');
-        script.src = 'https://cdn.babylonjs.com/babylon.js';
-        script.onload = () => {
-            console.log("Babylon.js loaded from backup CDN");
-            initBabylonJS();
-        };
-        script.onerror = () => {
-            alert("Babylon.js failed to load from all sources. Please check your internet connection.");
-        };
-        document.head.appendChild(script);
-        return;
+    // Ensure THREE is available
+    if (typeof THREE === 'undefined') {
+        alert("THREE.js failed to load. Game cannot start.");
+        // Potentially load it dynamically or show a more graceful error
     }
-    
-    // Your existing code continues here...
-    const gameContainer = document.getElementById('game-container');
-    // ... rest of your initialization
-});
+     // Ensure OrbitControls is available
+    if (typeof THREE.OrbitControls === 'undefined') {
+        console.warn("THREE.OrbitControls failed to load. Aerial view controls might not work.");
+        // You might want to load it dynamically or inform the user if it's critical
+    }
+
 
     document.addEventListener('DOMContentLoaded', () => {
       const gameContainer = document.getElementById('game-container');
@@ -826,7 +651,7 @@ if (typeof BABYLON === 'undefined') {
       const reservesButton = document.getElementById('reserves-button');
       const reservesAmountSpan = document.getElementById('reserves-amount');
       const farmStoreDropdown = document.getElementById('farm-store-dropdown');
-      const libraryButton = document.getElementById('library-button');
+      const libraryButton = document.getElementById('library-button'); // Changed from recordsButton
       const messageBox = document.getElementById('message-box');
       const crosshair = document.getElementById('crosshair');
       const paymentOptions = document.getElementById('payment-options');
@@ -840,13 +665,14 @@ const occupiedSpaces = [];
 
 function isPositionAvailable(position, radius) {
   for (const space of occupiedSpaces) {
-    const distance = BABYLON.Vector3.Distance(position, space.position);
+    const distance = position.distanceTo(space.position);
     if (distance < (radius + space.radius)) {
       return false; 
     }
   }
   return true;
 }
+
 
 function markPositionOccupied(position, radius) {
   occupiedSpaces.push({
@@ -873,6 +699,9 @@ const animalLifespans = {
     carrot: 365       // 1 year
   };
 
+  
+
+  // ADD THIS FUNCTION
   function calculateAgePercent(type, daysOld) {
     const maxLifespan = animalLifespans[type] || plantLifespans[type] || 1825; // Default to 5 years
     return Math.min(Math.round((daysOld / maxLifespan) * 100), 100); // Cap at 100%
@@ -882,7 +711,7 @@ const animalLifespans = {
       let isLiveMode = false;
       let currentPaymentItem = null;
       let isAerialView = false;
-      let aerialViewCamera, aerialViewEngine, aerialViewScene; // For aerial view
+      let aerialViewCamera, aerialViewRenderer, aerialViewControls; // For aerial view
 
       
       
@@ -904,6 +733,8 @@ const animalLifespans = {
         papaya: 0.50,    // 50% annual return
         carrot: 0.50     // 50% annual return
       };
+
+      // Add to your script section - after the UI elements are defined
 
 // Animal tracking data structure
 const animalData = {
@@ -952,6 +783,168 @@ function createAnimalData(type) {
   };
 }
 
+function showFarmManagement(animalType) {
+  const managementUI = document.getElementById('farm-management');
+  const title = document.getElementById('farm-management-title');
+  
+  // Update title
+  title.textContent = `Managing ${animalType.charAt(0).toUpperCase() + animalType.slice(1)} Farm`;
+  
+  // Position camera near the animals
+  const farm = worldObjects.find(obj => obj.userData && 
+    obj.userData.itemType === 'animal' && 
+    obj.userData.itemId === animalType);
+  
+  if (farm) {
+    // Position and rotate player to face the farm
+    const farmPos = farm.position.clone();
+    player.position.set(farmPos.x - 5, playerHeight / 2, farmPos.z - 5);
+    player.rotation.y = Math.atan2(player.position.x - farmPos.x, player.position.z - farmPos.z);
+  }
+  
+  // Populate animals list
+  populateAnimalsList(animalType);
+  
+  // Make popup appear with animation
+  managementUI.classList.remove('hidden');
+  // Ensure flex display is applied after the hidden class is removed
+  setTimeout(() => {
+    managementUI.style.display = 'flex';
+    managementUI.style.flexDirection = 'column';
+  }, 10);
+}
+
+function hideFarmManagement() {
+  const managementUI = document.getElementById('farm-management');
+  managementUI.classList.add('hidden');
+  // Hide after animation completes
+  setTimeout(() => {
+    managementUI.style.display = 'none';
+  }, 300); // Match transition duration
+}
+
+// Updated function to populate animals in a horizontal layout
+function populateAnimalsList(animalType) {
+  const animalsList = document.getElementById('animals-list');
+  animalsList.innerHTML = ''; // Clear existing items
+  
+  // Animal type to emoji mapping
+  const animalIcons = {
+    'chicken': '🐔',
+    'pig': '🐖',
+    'cow': '🐄',
+    'goat': '🐐',
+    'fish': '🐟'
+  };
+  
+   // Create animal items
+  animalData[animalType].forEach(animal => {
+    // Calculate age percentage
+    const agePercent = calculateAgePercent(animalType, animal.age);
+    
+    const animalItem = document.createElement('div');
+    animalItem.className = 'animal-item';
+    animalItem.dataset.id = animal.id;
+    
+    animalItem.innerHTML = `
+      <div class="animal-header">
+        <div class="animal-icon">${animalIcons[animalType] || '🐾'}</div>
+        <div class="animal-name" contenteditable="true">${animal.name}</div>
+      </div>
+      <div class="animal-stat">
+        <span>Age:</span>
+        <span>${animal.age} days (${agePercent}%)</span>
+      </div>
+      <div class="health-bar">
+        <div class="health-bar-fill" style="width: ${animal.health}%"></div>
+      </div>
+      <div class="animal-actions">
+        <button class="animal-action-btn bg-blue-700 hover:bg-blue-600" data-action="feed">Feed</button>
+        <button class="animal-action-btn bg-green-700 hover:bg-green-600" data-action="heal">Heal</button>
+        <button class="animal-action-btn bg-red-700 hover:bg-red-600" data-action="sell">Sell</button>
+      </div>
+    `;
+    
+    animalsList.appendChild(animalItem);
+  });
+  
+  // Add event listeners for animal actions
+  document.querySelectorAll('.animal-action-btn').forEach(btn => {
+    btn.addEventListener('click', handleAnimalAction);
+  });
+
+  
+  
+  // Add event listeners for editable names
+  document.querySelectorAll('.animal-name').forEach(nameElem => {
+    nameElem.addEventListener('blur', function() {
+      const animalId = this.closest('.animal-item').dataset.id;
+      const newName = this.textContent;
+      updateAnimalName(animalType, animalId, newName);
+    });
+  });
+}
+
+// Function to handle animal actions (feed, heal, sell)
+function handleAnimalAction(event) {
+  const action = event.target.dataset.action;
+  const animalItem = event.target.closest('.animal-item');
+  const animalId = animalItem.dataset.id;
+  const animalType = document.getElementById('farm-management-title').textContent.split(' ')[1].toLowerCase();
+  
+  switch(action) {
+    case 'feed':
+      feedAnimal(animalType, animalId);
+      break;
+    case 'heal':
+      healAnimal(animalType, animalId);
+      break;
+    case 'sell':
+      sellAnimal(animalType, animalId);
+      break;
+  }
+  
+  // Update the display
+  populateAnimalsList(animalType);
+}
+
+// Function implementations for animal actions
+function feedAnimal(animalType, animalId) {
+  const animal = animalData[animalType].find(a => a.id === animalId);
+  if (animal) {
+    animal.health = Math.min(100, animal.health + 10);
+    animal.lastFed = new Date();
+  }
+}
+
+function healAnimal(animalType, animalId) {
+  const animal = animalData[animalType].find(a => a.id === animalId);
+  if (animal) {
+    animal.health = 100;
+  }
+}
+
+function sellAnimal(animalType, animalId) {
+  const index = animalData[animalType].findIndex(a => a.id === animalId);
+  if (index !== -1) {
+    const animal = animalData[animalType][index];
+    // Remove from array
+    animalData[animalType].splice(index, 1);
+    // Add stars based on animal type and age
+    const baseValue = getItemCost(animalType) / 2;
+    const ageBonus = animal.age * 0.05 * baseValue; // 5% per day age bonus
+    playerReserves += Math.floor(baseValue + ageBonus);
+    updateReservesDisplay();
+  }
+}
+
+function updateAnimalName(animalType, animalId, newName) {
+  const animal = animalData[animalType].find(a => a.id === animalId);
+  if (animal) {
+    animal.name = newName;
+  }
+}
+      
       // Track farm purchase dates and investment amounts
       let farmValues = {
         demo: {}, // Will track values for demo mode farms
@@ -974,8 +967,8 @@ function createAnimalData(type) {
       // Use the appropriate inventory based on the current mode
       let purchasedItems = demoInventory;
 
-      let scene, camera, engine, player, ground;
-      let playerVelocity = new BABYLON.Vector3();
+      let scene, camera, renderer, player, زمین;
+      let playerVelocity = new THREE.Vector3();
       let playerOnGround = false;
       const playerHeight = 1.8; // Player's eye height
       const playerCapsuleRadius = 0.4; // For potential future capsule collision
@@ -992,100 +985,103 @@ function createAnimalData(type) {
 
       // Weather variables
       let isRaining = false;
-      let rainParticles, rainParticleSystem;
+      let rainParticles, rainMaterial;
       let lightningActive = false;
       let lightningTimeout, nextLightningStrikeTimeout;
       let clouds = [];
-      const initialFogColor = new BABYLON.Color3(0.0117, 0.0275, 0.0706); // #030712
-      const rainFogColor = new BABYLON.Color3(0.102, 0.125, 0.173); // #1A202C
+      const initialFogColor = new THREE.Color(0x030712); // Changed from 0x87CEEB
+      const rainFogColor = new THREE.Color(0x1A202C); // Darker fog for rain
 
-      function initBabylonJS() {
-        const canvas = document.createElement('canvas');
-        canvas.style.width = '100%';
-        canvas.style.height = '100%';
-        canvas.style.display = 'block';
-        gameContainer.appendChild(canvas);
+      function initThreeJS() {
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x030712); // Dark background matching the header
+        scene.fog = new THREE.Fog(scene.background, 20, worldSize * 0.7);
 
-        // Set canvas dimensions to match container size
-        const rect = gameContainer.getBoundingClientRect();
-        canvas.width = rect.width;
-        canvas.height = rect.height;
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, playerHeight, 0); // Camera is at player's eye level within player object
 
-        engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
-        scene = new BABYLON.Scene(engine);
-        scene.clearColor = new BABYLON.Color3(0.0117, 0.0275, 0.0706); // #030712
-        scene.fogMode = BABYLON.Scene.FOGMODE_LINEAR;
-        scene.fogColor = initialFogColor;
-        scene.fogStart = 20;
-        scene.fogEnd = worldSize * 0.7;
+        player = new THREE.Object3D();
+        player.position.set(0, playerHeight / 2, 5); // Player object center, feet on ground
+        scene.add(player);
+        player.add(camera);
 
-        camera = new BABYLON.UniversalCamera("camera", new BABYLON.Vector3(0, playerHeight, 0), scene);
-        camera.setTarget(BABYLON.Vector3.Zero());
-        camera.minZ = 0.1;
-        camera.maxZ = 1000;
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        gameContainer.appendChild(renderer.domElement);
 
-        player = new BABYLON.TransformNode("player", scene);
-        player.position = new BABYLON.Vector3(0, playerHeight / 2, 5);
-        camera.parent = player;
-        scene.activeCamera = camera;
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        scene.add(ambientLight);
 
-        // Enable shadows
-        const directionalLight = new BABYLON.DirectionalLight("directionalLight", new BABYLON.Vector3(-50, -80, -30), scene);
-        directionalLight.intensity = 1.0;
-        directionalLight.position = new BABYLON.Vector3(50, 80, 30);
-        
-        const shadowGenerator = new BABYLON.ShadowGenerator(4096, directionalLight);
-        shadowGenerator.useExponentialShadowMap = true;
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0); // Slightly brighter
+        directionalLight.position.set(50, 80, 30); // Higher and more angled
+        directionalLight.castShadow = true;
+        directionalLight.shadow.mapSize.width = 4096; // Increased shadow map size
+        directionalLight.shadow.mapSize.height = 4096;
+        directionalLight.shadow.camera.near = 0.5;
+        directionalLight.shadow.camera.far = 200; // Adjusted shadow camera far
+        directionalLight.shadow.camera.left = -100;
+        directionalLight.shadow.camera.right = 100;
+        directionalLight.shadow.camera.top = 100;
+        directionalLight.shadow.camera.bottom = -100;
+        scene.add(directionalLight);
+        // const helper = new THREE.CameraHelper( directionalLight.shadow.camera ); scene.add( helper );
 
-        const ambientLight = new BABYLON.HemisphericLight("ambientLight", new BABYLON.Vector3(0, 1, 0), scene);
-        ambientLight.intensity = 0.7;
-
-        // Create ground with grass texture
+        // Improved Ground (زمین) with Texture
+        // Circular Ground (زمین) with Texture
         const groundTexture = createGrassTexture(512, 512);
-        const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
-        groundMaterial.diffuseTexture = groundTexture;
-        groundMaterial.roughness = 0.8;
+        const groundMaterial = new THREE.MeshStandardMaterial({ map: groundTexture, side: THREE.DoubleSide, roughness: 0.8, metalness: 0.2 });
 
-        ground = BABYLON.MeshBuilder.CreateDisc("ground", {radius: worldSize/2, tessellation: 64}, scene);
-        ground.rotation.x = -Math.PI / 2;
-        ground.material = groundMaterial;
-        ground.receiveShadows = true;
-        worldObjects.push(ground);
+        // Use CircleGeometry instead of PlaneGeometry
+        const groundGeometry = new THREE.CircleGeometry(worldSize/2, 64); // Radius is half of worldSize, 64 segments for smoothness
+        زمین = new THREE.Mesh(groundGeometry, groundMaterial);
+        زمین.rotation.x = -Math.PI / 2;
+        زمین.receiveShadow = true;
+        scene.add(زمین);
+        worldObjects.push(زمین);
+        // Add this after creating the ground (زمین)
+const { ocean, dockGroup, boatGroup } = createOceanAndBoat();
 
-        // Add ocean and boat
-        createOceanAndBoat();
-
-        createEnvironmentFeatures();
+        createEnvironmentFeatures(); // Trees, clouds (removed stream per requirements)
         setupControls();
         animate();
         window.addEventListener('resize', onWindowResize, false);
         updateReservesDisplay();
       }
       
-     function initAerialView() {
-        const canvas = document.createElement('canvas');
-        canvas.style.width = '100%';
-        canvas.style.height = '100%';
-        canvas.style.display = 'block';
+      // Initialize aerial view
+      function initAerialView() {
+       aerialViewCamera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        aerialViewCamera.position.set(0, 50, 50); // Position high above
+        aerialViewCamera.lookAt(0, 0, 0);
+        
+        aerialViewRenderer = new THREE.WebGLRenderer({ antialias: true });
+        aerialViewRenderer.setSize(window.innerWidth, window.innerHeight - 70);
+        aerialViewRenderer.setPixelRatio(window.devicePixelRatio);
+        aerialViewRenderer.shadowMap.enabled = true;
+         aerialViewRenderer.setSize(window.innerWidth, window.innerHeight);
         
         // Clear the container first
         while (aerialViewContainer.firstChild) {
           aerialViewContainer.removeChild(aerialViewContainer.firstChild);
         }
         
-        aerialViewContainer.appendChild(canvas);
+        aerialViewContainer.appendChild(aerialViewRenderer.domElement);
         
-        aerialViewEngine = new BABYLON.Engine(canvas, true);
-        aerialViewScene = scene; // Use the same scene
-        aerialViewCamera = new BABYLON.ArcRotateCamera("aerialCamera", 0, 0.5, 50, BABYLON.Vector3.Zero(), scene);
-        aerialViewCamera.setTarget(BABYLON.Vector3.Zero());
-        
-        // Set camera controls
-        aerialViewCamera.attachControls(canvas);
-        aerialViewCamera.lowerRadiusLimit = 20;
-        aerialViewCamera.upperRadiusLimit = 150;
-        aerialViewCamera.lowerBetaLimit = 0.1;
-        aerialViewCamera.upperBetaLimit = Math.PI / 2.2;
+        // Add orbit controls for rotation
+         if (typeof THREE.OrbitControls !== 'undefined') {
+            aerialViewControls = new THREE.OrbitControls(aerialViewCamera, aerialViewRenderer.domElement);
+            aerialViewControls.enableDamping = true;
+            aerialViewControls.dampingFactor = 0.05;
+            aerialViewControls.screenSpacePanning = false;
+            aerialViewControls.minDistance = 20;
+            aerialViewControls.maxDistance = 150;
+            aerialViewControls.maxPolarAngle = Math.PI / 2.2; // Don't go below horizon
+        } else {
+            console.warn("OrbitControls not available for aerial view.");
+        }
         
         // Start aerial view animation
         animateAerialView();
@@ -1094,11 +1090,10 @@ function createAnimalData(type) {
       function animateAerialView() {
         if (!isAerialView) return;
         
-        aerialViewEngine.runRenderLoop(() => {
-          if (aerialViewScene) {
-            aerialViewScene.render();
-          }
-        });
+        requestAnimationFrame(animateAerialView);
+        
+        if (aerialViewControls) aerialViewControls.update();
+        aerialViewRenderer.render(scene, aerialViewCamera);
       }
       
       function toggleAerialView() {
@@ -1110,27 +1105,40 @@ function createAnimalData(type) {
         aerialViewContainer.style.display = 'block';
         
         // Initialize aerial view if not already done
-        if (!aerialViewEngine) {
+        if (!aerialViewRenderer) {
           initAerialView();
         }
         
         // Position mode selection UI in top right instead of center
         modeSelectionPopup.style.display = 'block';
-        modeSelectionPopup.style.position = 'absolute';
-        modeSelectionPopup.style.top = '80px';
+        modeSelectionPopup.style.position = 'absolute'; // Changed from fixed for better context if aerial view has scroll
+        modeSelectionPopup.style.top = '80px'; // Just below the header
         modeSelectionPopup.style.right = '20px';
-        modeSelectionPopup.style.left = 'auto';
-        modeSelectionPopup.style.transform = 'none';
+        modeSelectionPopup.style.left = 'auto'; // Override any left positioning
+        modeSelectionPopup.style.transform = 'none'; // Remove any centering transform
+        
+        // Make sure aerialViewControls is initialized
+        if (!aerialViewControls && aerialViewRenderer && typeof THREE.OrbitControls !== 'undefined') {
+          aerialViewControls = new THREE.OrbitControls(aerialViewCamera, aerialViewRenderer.domElement);
+          aerialViewControls.enableDamping = true;
+          aerialViewControls.dampingFactor = 0.05;
+          aerialViewControls.screenSpacePanning = false;
+          aerialViewControls.minDistance = 20;
+          aerialViewControls.maxDistance = 150;
+          aerialViewControls.maxPolarAngle = Math.PI / 2.2;
+        }
+        
+        // Force render the aerial view immediately
+        if (aerialViewRenderer) {
+          aerialViewRenderer.render(scene, aerialViewCamera);
+          animateAerialView(); // Start animation loop
+        }
       }
       
       function exitAerialView() {
         isAerialView = false;
         gameContainer.style.display = 'block';
         aerialViewContainer.style.display = 'none';
-        
-        if (aerialViewEngine) {
-          aerialViewEngine.stopRenderLoop();
-        }
         
         // Hide popups
         modeSelectionPopup.style.display = 'none';
@@ -1158,11 +1166,10 @@ function createAnimalData(type) {
               context.fillStyle = `rgba(${r},${g},${b},${alpha})`;
               context.fillRect(x, y, Math.random()*2+1, Math.random()*2+1); // Vary speckle size
           }
-          const texture = new BABYLON.Texture("data:" + canvas.toDataURL(), scene);
-          texture.wrapU = BABYLON.Texture.WRAP_ADDRESSMODE;
-          texture.wrapV = BABYLON.Texture.WRAP_ADDRESSMODE;
-          texture.uScale = 20;
-          texture.vScale = 20;
+          const texture = new THREE.CanvasTexture(canvas);
+          texture.wrapS = THREE.RepeatWrapping;
+          texture.wrapT = THREE.RepeatWrapping;
+          texture.repeat.set(20, 20); // How many times texture repeats on ground
           return texture;
       }
 
@@ -1183,11 +1190,12 @@ function createAnimalData(type) {
       const posZ = Math.sin(angle) * distance;
       
       // Check if this position works
-      const position = new BABYLON.Vector3(posX, 0, posZ);
+      const position = new THREE.Vector3(posX, 0, posZ);
       if (isPositionAvailable(position, radius)) {
-        tree.position.copyFrom(position);
+        tree.position.copy(position);
         // Avoid placing trees too close to initial spawn
         if (position.length() > 15) {
+          scene.add(tree);
           worldObjects.push(tree);
           markPositionOccupied(position, radius);
           placed = true;
@@ -1196,356 +1204,560 @@ function createAnimalData(type) {
       }
     }
     
-    // If we couldn't place the tree after 10 attempts, dispose it
+    // If we couldn't place the tree after 10 attempts, just skip it
     if (!placed) {
-      tree.dispose();
+      tree.geometry.dispose();
+      tree.material.dispose();
     }
   }
 
   // Clouds - fewer
   for (let i = 0; i < 8; i++) {
     const cloud = createCloud();
-    cloud.position = new BABYLON.Vector3(
+    cloud.position.set(
       (Math.random() - 0.5) * worldSize * 1.5,
       Math.random() * 20 + 40, // Cloud height
       (Math.random() - 0.5) * worldSize * 1.5
     );
+    scene.add(cloud);
     clouds.push(cloud);
   }
 }
       
 
       function createTree() {
-        const treeGroup = new BABYLON.TransformNode("tree", scene);
-        
+        const treeGroup = new THREE.Group();
         // Trunk
         const trunkHeight = Math.random() * 4 + 4; // Vary height
         const trunkRadius = Math.random() * 0.2 + 0.3;
-        const trunk = BABYLON.MeshBuilder.CreateCylinder("trunk", {
-          height: trunkHeight, 
-          diameterTop: trunkRadius * 0.7 * 2, 
-          diameterBottom: trunkRadius * 2, 
-          tessellation: 8
-        }, scene);
-        const trunkMaterial = new BABYLON.StandardMaterial("trunkMaterial", scene);
-        trunkMaterial.diffuseColor = new BABYLON.Color3(0.396, 0.263, 0.129); // Brown
-        trunk.material = trunkMaterial;
-        trunk.receiveShadows = true;
+        const trunkGeometry = new THREE.CylinderGeometry(trunkRadius * 0.7, trunkRadius, trunkHeight, 8);
+        const trunkMaterial = new THREE.MeshStandardMaterial({ color: 0x654321 }); // Brown
+        const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
+        trunk.castShadow = true;
         trunk.position.y = trunkHeight / 2;
-        trunk.parent = treeGroup;
+        treeGroup.add(trunk);
 
         // Leaves (multiple spheres for a fuller look)
-        const leavesMaterial = new BABYLON.StandardMaterial("leavesMaterial", scene);
-        leavesMaterial.diffuseColor = new BABYLON.Color3(0.133, 0.545, 0.133); // ForestGreen
+        const leavesMaterial = new THREE.MeshStandardMaterial({ color: 0x228B22 }); // ForestGreen
         const numLeafBlobs = Math.floor(Math.random() * 3) + 3;
         for(let i=0; i < numLeafBlobs; i++) {
             const leafRadius = Math.random() * 1.5 + 1.5;
-            const leaves = BABYLON.MeshBuilder.CreateSphere("leaves", {diameter: leafRadius * 2, segments: 6}, scene);
-            leaves.material = leavesMaterial;
-            leaves.receiveShadows = true;
-            leaves.position = new BABYLON.Vector3(
+            const leavesGeometry = new THREE.SphereGeometry(leafRadius, 6, 5);
+            const leaves = new THREE.Mesh(leavesGeometry, leavesMaterial);
+            leaves.castShadow = true;
+            leaves.position.set(
                 (Math.random() - 0.5) * leafRadius * 0.5, // Slight horizontal offset
                 trunkHeight + (Math.random() - 0.3) * leafRadius * 0.6, // Overlap with trunk and each other
                 (Math.random() - 0.5) * leafRadius * 0.5  // Slight depth offset
             );
-            leaves.parent = treeGroup;
+            treeGroup.add(leaves);
         }
 
-        treeGroup.metadata = {
-          collisionRadius: 2, // Fixed size that's large enough for all trees
-          itemType: 'environment',
-          itemId: 'tree',
-          isCollidable: true // Explicit flag to check
-        };
+treeGroup.userData = {
+    collisionRadius: 2, // Fixed size that's large enough for all trees
+    itemType: 'environment',
+    itemId: 'tree',
+    isCollidable: true // Explicit flag to check
+  };
 
         return treeGroup;
       }
 
-      // FIXED Ocean creation function
-      function createOceanAndBoat() {
-        // 1. Create the ocean as a large disc with a hole (donut shape)
-        const oceanOuterRadius = worldSize * 1.5; // Ocean extends beyond the island
-        const oceanInnerRadius = worldSize / 2;   // Inner circle matches island edge
-        
-        // Create ocean using a simple approach - large outer disc
-        const ocean = BABYLON.MeshBuilder.CreateDisc("ocean", {
-          radius: oceanOuterRadius,
-          tessellation: 64
-        }, scene);
-        
-        const oceanMaterial = new BABYLON.StandardMaterial("oceanMaterial", scene);
-        oceanMaterial.diffuseColor = new BABYLON.Color3(0, 0.467, 0.745); // Ocean blue
-        oceanMaterial.alpha = 0.8;
-        oceanMaterial.roughness = 0.1;
-        
-        ocean.material = oceanMaterial;
-        ocean.rotation.x = -Math.PI / 2; // Lay flat
-        ocean.position.y = -0.1; // Slightly below ground level
-        ocean.receiveShadows = true;
-        
-        // 2. Create a simple wooden dock
-        const dockGroup = new BABYLON.TransformNode("dock", scene);
-        
-        // Base dock planks
-        const dockMaterial = new BABYLON.StandardMaterial("dockMaterial", scene);
-        dockMaterial.diffuseColor = new BABYLON.Color3(0.545, 0.271, 0.075); // Brown wood
-        
-        const dock = BABYLON.MeshBuilder.CreateBox("dockPlank", {width: 1.5, height: 0.2, depth: 6}, scene);
-        dock.material = dockMaterial;
-        dock.position.y = 0.1; // Slightly above water
-        dock.receiveShadows = true;
-        dock.parent = dockGroup;
-        
-        // Add dock posts
-        for (let i = 0; i < 3; i++) {
-          const post = BABYLON.MeshBuilder.CreateCylinder("post", {height: 1.2, diameter: 0.3, tessellation: 8}, scene);
-          post.material = dockMaterial;
-          post.position = new BABYLON.Vector3(0, -0.5, -2 + (i * 2)); // Space posts along the dock
-          post.parent = dockGroup;
-        }
-        
-        // 3. Create a simple boat
-        const boatGroup = new BABYLON.TransformNode("boat", scene);
-        
-        // Boat hull
-        const hullMaterial = new BABYLON.StandardMaterial("hullMaterial", scene);
-        hullMaterial.diffuseColor = new BABYLON.Color3(0.545, 0.271, 0.075); // Wood color
-        
-        const hull = BABYLON.MeshBuilder.CreateBox("hull", {width: 2, height: 0.8, depth: 4}, scene);
-        hull.material = hullMaterial;
-        hull.position.y = 0.4; // Half height
-        hull.parent = boatGroup;
-        
-        // Boat bottom
-        const bottomMaterial = new BABYLON.StandardMaterial("bottomMaterial", scene);
-        bottomMaterial.diffuseColor = new BABYLON.Color3(0.396, 0.263, 0.129); // Darker wood
-        
-        const bottom = BABYLON.MeshBuilder.CreateBox("bottom", {width: 1.6, height: 0.4, depth: 4}, scene);
-        bottom.material = bottomMaterial;
-        bottom.position.y = 0; // At water level
-        bottom.parent = boatGroup;
-        
-        // Add a simple mast
-        const mastMaterial = new BABYLON.StandardMaterial("mastMaterial", scene);
-        mastMaterial.diffuseColor = new BABYLON.Color3(0.545, 0.271, 0.075);
-        
-        const mast = BABYLON.MeshBuilder.CreateCylinder("mast", {height: 3, diameter: 0.2, tessellation: 8}, scene);
-        mast.material = mastMaterial;
-        mast.position = new BABYLON.Vector3(0, 2, -0.5); // Positioned toward back of boat
-        mast.parent = boatGroup;
-        
-        // Add a simple sail
-        const sailMaterial = new BABYLON.StandardMaterial("sailMaterial", scene);
-        sailMaterial.diffuseColor = new BABYLON.Color3(1, 0.98, 0.98); // Off-white
-        sailMaterial.backFaceCulling = false;
-        
-        const sail = BABYLON.MeshBuilder.CreatePlane("sail", {width: 1.5, height: 2}, scene);
-        sail.material = sailMaterial;
-        sail.position = new BABYLON.Vector3(0.8, 2, -0.5); // Offset from mast
-        sail.rotation.y = Math.PI / 2; // Rotate to face properly
-        sail.parent = boatGroup;
-        
-        // Position the boat and dock at the edge of the island
-        const angle = Math.PI / 4; // Position at northeast
-        const distance = oceanInnerRadius - 1; // Just inside the island edge
-        
-        const posX = Math.cos(angle) * distance;
-        const posZ = Math.sin(angle) * distance;
-        
-        // Position dock first
-        dockGroup.position = new BABYLON.Vector3(posX * 0.9, 0, posZ * 0.9); // Slightly inward from boat
-        dockGroup.lookAt(new BABYLON.Vector3(0, 0, 0)); // Point toward island center
-        dockGroup.rotate(BABYLON.Axis.Y, Math.PI); // Rotate to point outward
-        
-        // Position boat at the end of the dock
-        boatGroup.position = new BABYLON.Vector3(posX * 1.1, 0, posZ * 1.1); // Slightly outward from dock
-        boatGroup.lookAt(new BABYLON.Vector3(0, 0, 0)); // Face toward island center
-        boatGroup.rotate(BABYLON.Axis.Y, Math.PI); // Rotate to face outward
-        
-        // 4. Add gentle ocean movement animation
-        let oceanTime = 0;
-        scene.registerBeforeRender(() => {
-          oceanTime += 0.01;
-          // Subtle wave height adjustment
-          ocean.position.y = -0.1 + Math.sin(oceanTime) * 0.05;
-          
-          // Gentle boat rocking
-          boatGroup.rotation.z = Math.sin(oceanTime * 0.5) * 0.03;
-          boatGroup.position.y = Math.sin(oceanTime) * 0.1;
-        });
-        
-        return { ocean, dockGroup, boatGroup };
-      }
+      // Add this function to create the ocean and boat
+function createOceanAndBoat() {
+  // 1. Create the ocean (large water ring around the island)
+  const oceanOuterRadius = worldSize * 1.5; // Ocean extends beyond the island
+  const oceanInnerRadius = worldSize / 2;   // Inner circle matches island edge
+  
+  // Create a ring geometry for the ocean
+  const oceanGeometry = new THREE.RingGeometry(
+    oceanInnerRadius, 
+    oceanOuterRadius, 
+    64, // Segments for smooth circle
+    8   // Segments for the ring
+  );
+  
+  const oceanMaterial = new THREE.MeshStandardMaterial({
+    color: 0x0077be,        // Ocean blue
+    transparent: true,
+    opacity: 0.8,
+    roughness: 0.1,
+    metalness: 0.2
+  });
+  
+  const ocean = new THREE.Mesh(oceanGeometry, oceanMaterial);
+  ocean.rotation.x = -Math.PI / 2; // Same as ground
+  ocean.position.y = -0.1;         // Slightly below ground level
+  ocean.receiveShadow = true;
+  scene.add(ocean);
+  
+  // 2. Create a simple wooden dock
+  const dockGroup = new THREE.Group();
+  
+  // Base dock planks
+  const dockMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 }); // Brown wood
+  const dockGeometry = new THREE.BoxGeometry(1.5, 0.2, 6); // Width, height, length
+  const dock = new THREE.Mesh(dockGeometry, dockMaterial);
+  dock.position.set(0, 0.1, 0); // Slightly above water
+  dock.receiveShadow = true;
+  dock.castShadow = true;
+  dockGroup.add(dock);
+  
+  // Add dock posts
+  for (let i = 0; i < 3; i++) {
+    const postGeometry = new THREE.CylinderGeometry(0.15, 0.15, 1.2, 8);
+    const post = new THREE.Mesh(postGeometry, dockMaterial);
+    post.position.set(0, -0.5, -2 + (i * 2)); // Space posts along the dock
+    post.castShadow = true;
+    dockGroup.add(post);
+  }
+  
+  // 3. Create a simple boat
+  const boatGroup = new THREE.Group();
+  
+  // Boat hull
+  const hullMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 }); // Wood color
+  const hullGeometry = new THREE.BoxGeometry(2, 0.8, 4);
+  const hull = new THREE.Mesh(hullGeometry, hullMaterial);
+  hull.position.y = 0.4; // Half height
+  hull.castShadow = true;
+  boatGroup.add(hull);
+  
+  // Boat bottom (to make it more boat-shaped)
+  const bottomGeometry = new THREE.BoxGeometry(2, 0.4, 4);
+  const bottomMaterial = new THREE.MeshStandardMaterial({ color: 0x654321 }); // Darker wood
+  const bottom = new THREE.Mesh(bottomGeometry, bottomMaterial);
+  bottom.position.y = 0; // At water level
+  bottom.scale.x = 0.8; // Narrower at bottom
+  boatGroup.add(bottom);
+  
+  // Add a simple mast
+  const mastGeometry = new THREE.CylinderGeometry(0.1, 0.1, 3, 8);
+  const mastMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
+  const mast = new THREE.Mesh(mastGeometry, mastMaterial);
+  mast.position.set(0, 2, -0.5); // Positioned toward back of boat
+  mast.castShadow = true;
+  boatGroup.add(mast);
+  
+  // Add a simple sail
+  const sailGeometry = new THREE.PlaneGeometry(1.5, 2);
+  const sailMaterial = new THREE.MeshStandardMaterial({ 
+    color: 0xFFFAFA, 
+    side: THREE.DoubleSide 
+  });
+  const sail = new THREE.Mesh(sailGeometry, sailMaterial);
+  sail.position.set(0.8, 2, -0.5); // Offset from mast
+  sail.rotation.y = Math.PI / 2; // Rotate to face properly
+  sail.castShadow = true;
+  boatGroup.add(sail);
+  
+  // Position the boat and dock at the edge of the island
+  const angle = Math.PI / 4; // Position at northeast
+  const distance = oceanInnerRadius - 1; // Just inside the island edge
+  
+  const posX = Math.cos(angle) * distance;
+  const posZ = Math.sin(angle) * distance;
+  
+  // Position dock first
+  dockGroup.position.set(posX * 0.9, 0, posZ * 0.9); // Slightly inward from boat
+  dockGroup.lookAt(0, 0, 0); // Point toward island center
+  dockGroup.rotateY(Math.PI); // Rotate to point outward
+  scene.add(dockGroup);
+  
+  // Position boat at the end of the dock
+  boatGroup.position.set(posX * 1.1, 0, posZ * 1.1); // Slightly outward from dock
+  boatGroup.lookAt(0, 0, 0); // Face toward island center
+  boatGroup.rotateY(Math.PI); // Rotate to face outward
+  scene.add(boatGroup);
+  
+  // 4. Add gentle ocean movement animation
+  function animateOcean() {
+    // Subtle wave height adjustment
+    ocean.position.y = -0.1 + Math.sin(Date.now() * 0.001) * 0.05;
+    
+    // Gentle boat rocking
+    boatGroup.rotation.z = Math.sin(Date.now() * 0.0005) * 0.03;
+    boatGroup.position.y = Math.sin(Date.now() * 0.001) * 0.1;
+    
+    requestAnimationFrame(animateOcean);
+  }
+  
+  animateOcean();
+  
+  return { ocean, dockGroup, boatGroup };
+}
+
+      // Stream creation function removed per requirements
 
       function createCloud() {
-        const cloudGroup = new BABYLON.TransformNode("cloud", scene);
-        const baseMaterial = new BABYLON.StandardMaterial("cloudMaterial", scene);
-        baseMaterial.diffuseColor = new BABYLON.Color3(1, 1, 1);
-        baseMaterial.alpha = 0.85;
+        const cloudGroup = new THREE.Group();
+        const baseMaterial = new THREE.MeshStandardMaterial({
+            color: 0xffffff,
+            transparent: true,
+            opacity: 0.85,
+            flatShading: true // Gives a more cartoony, low-poly look
+        });
 
         const numBlobs = Math.floor(Math.random() * 4) + 3; // 3 to 6 blobs per cloud
         for (let i = 0; i < numBlobs; i++) {
             const blobSize = Math.random() * 8 + 5; // Size of each blob
-            const blobMesh = BABYLON.MeshBuilder.CreateSphere("cloudBlob", {diameter: blobSize, segments: 5}, scene);
-            blobMesh.material = baseMaterial;
-            blobMesh.position = new BABYLON.Vector3(
+            const blobGeometry = new THREE.SphereGeometry(blobSize, 5, 4); // Low poly spheres
+            const blobMesh = new THREE.Mesh(blobGeometry, baseMaterial);
+            blobMesh.position.set(
                 (Math.random() - 0.5) * blobSize * 1.5, // Overlap them
                 (Math.random() - 0.5) * blobSize * 0.5,
                 (Math.random() - 0.5) * blobSize * 1.0
             );
-            blobMesh.parent = cloudGroup;
+            blobMesh.castShadow = true; // Clouds can cast soft shadows
+            cloudGroup.add(blobMesh);
         }
-        cloudGroup.scaling.y = Math.random() * 0.3 + 0.6; // Make some clouds flatter
+        cloudGroup.scale.y = Math.random() * 0.3 + 0.6; // Make some clouds flatter
         return cloudGroup;
       }
 
 
       function onWindowResize() {
-        if (engine) {
-          engine.resize();
-        }
-        
-        if (aerialViewEngine) {
-          aerialViewEngine.resize();
-        }
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      
+      if (aerialViewRenderer) {
+        aerialViewCamera.aspect = window.innerWidth / window.innerHeight;
+        aerialViewCamera.updateProjectionMatrix();
+        aerialViewRenderer.setSize(window.innerWidth, window.innerHeight);
       }
+    }
+
+      const clock = new THREE.Clock();
 
       function animate() {
-        engine.runRenderLoop(() => {
-          const deltaTime = engine.getDeltaTime() / 1000; // Convert to seconds
+        requestAnimationFrame(animate);
+        const deltaTime = clock.getDelta();
 
-          if (document.pointerLockElement === document.body || gameContainer.classList.contains('pointer-locked')) {
-              updatePlayer(deltaTime);
-          }
-          
-          // Animate clouds
-          clouds.forEach(cloud => {
-              cloud.position.x += deltaTime * (Math.random()*1+0.5); // Vary speed slightly
-              if (cloud.position.x > worldSize) { // Reset cloud position if it goes too far
-                  cloud.position.x = -worldSize;
-                  cloud.position.z = (Math.random() - 0.5) * worldSize; // New Z position
-              }
-          });
-          
-          // Chicken AI
-          chickenAIMeshes.forEach(chickenData => {
-            chickenData.timer -= deltaTime;
-            if (chickenData.timer <= 0) {
-              // New random direction within pen
-              const penSize = chickenData.penSize - 0.5; // keep inside fence
-              
-              // Try multiple positions to avoid obstacles
-              let validPositionFound = false;
-              for (let attempt = 0; attempt < 5; attempt++) {
-                const randomX = (Math.random() - 0.5) * penSize;
-                const randomZ = (Math.random() - 0.5) * penSize;
-                const potentialTarget = new BABYLON.Vector3(randomX, chickenData.mesh.position.y, randomZ)
-                  .add(chickenData.penCenter);
-                
-                // Check if path is clear (simplified - just check endpoint)
-                let pathClear = true;
-                
-                // Only check collision with objects inside this pen
-                const penObjects = worldObjects.filter(obj => {
-                  if (!obj.metadata || !obj.metadata.collisionRadius) return false;
-                  
-                  // Check if object is within the pen
-                  const distToPen = BABYLON.Vector3.Distance(obj.position, chickenData.penCenter);
-                  return distToPen < chickenData.penSize;
-                });
-                
-                for (const obj of penObjects) {
-                  if (obj === chickenData.mesh) continue; // Skip self
-                  
-                  const objRadius = obj.metadata.collisionRadius || 0.5;
-                  const dist = BABYLON.Vector3.Distance(potentialTarget, obj.position);
-                  
-                  if (dist < objRadius + 0.2) { // 0.2 is chicken radius
-                    pathClear = false;
-                    break;
-                  }
-                }
-                
-                if (pathClear) {
-                  chickenData.targetPosition = potentialTarget;
-                  validPositionFound = true;
-                  break;
-                }
-              }
-              
-              // If no valid position found, just stay in place
-              if (!validPositionFound) {
-                chickenData.targetPosition = chickenData.mesh.position.clone();
-              }
-              
-              chickenData.timer = Math.random() * 3 + 2; // Next change in 2-5 seconds
+        if (document.pointerLockElement === document.body || gameContainer.classList.contains('pointer-locked')) {
+            updatePlayer(deltaTime);
+        }
+        
+        // Stream animation removed per requirements
+        
+        // Animate clouds
+        clouds.forEach(cloud => {
+            cloud.position.x += deltaTime * (Math.random()*1+0.5); // Vary speed slightly
+            if (cloud.position.x > worldSize) { // Reset cloud position if it goes too far
+                cloud.position.x = -worldSize;
+                cloud.position.z = (Math.random() - 0.5) * worldSize; // New Z position
             }
-            
-            // Move towards target with collision avoidance
-            const direction = chickenData.targetPosition.subtract(chickenData.mesh.position);
-            
-            if (direction.lengthSquared() > 0.01) {
-              direction.normalize();
-              
-              // Check for collisions before moving
-              const newPosition = chickenData.mesh.position.clone();
-              newPosition.addInPlace(direction.scale(deltaTime * 0.5));
-              
-              let canMove = true;
-              // Check against pen boundary
-              const distToCenter = BABYLON.Vector3.Distance(newPosition, chickenData.penCenter);
-              if (distToCenter > chickenData.penSize / 2 - 0.2) {
-                canMove = false;
-              }
-              
-              // Check against other objects in pen
-              if (canMove) {
-                for (const obj of worldObjects) {
-                  if (obj === chickenData.mesh) continue; // Skip self
-                  if (!obj.metadata || !obj.metadata.collisionRadius) continue;
-                  
-                  const objRadius = obj.metadata.collisionRadius || 0.5;
-                  const dist = BABYLON.Vector3.Distance(newPosition, obj.position);
-                  
-                  if (dist < objRadius + 0.2) { // 0.2 is chicken radius
-                    canMove = false;
-                    break;
-                  }
-                }
-              }
-              
-              if (canMove) {
-                chickenData.mesh.position.copyFrom(newPosition);
-              } else {
-                // Pick a new random direction if blocked
-                chickenData.timer = 0;
-              }
-              
-              // Make chicken look in direction of movement
-              chickenData.mesh.lookAt(chickenData.targetPosition);
-            }
-          });
-
-          if (isRaining) updateRain(deltaTime);
-          
-          // Periodically update portfolio value in live mode (every 2.5 seconds)
-          if (isLiveMode && Date.now() - lastPortfolioUpdate > 2500) {
-              updateReservesDisplay();
-          }
-
-          // Update animals periodically
-          if (!window.lastAnimalUpdate || Date.now() - window.lastAnimalUpdate > 60000) {
-              updateAnimals();
-              window.lastAnimalUpdate = Date.now();
-            }
-
-          scene.render();
         });
+        
+        // Chicken AI
+        // Update in the animate function where you handle chickenAIMeshes:
+chickenAIMeshes.forEach(chickenData => {
+  chickenData.timer -= deltaTime;
+  if (chickenData.timer <= 0) {
+    // New random direction within pen
+    const penSize = chickenData.penSize - 0.5; // keep inside fence
+    
+    // Try multiple positions to avoid obstacles
+    let validPositionFound = false;
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const randomX = (Math.random() - 0.5) * penSize;
+      const randomZ = (Math.random() - 0.5) * penSize;
+      const potentialTarget = new THREE.Vector3(randomX, chickenData.mesh.position.y, randomZ)
+        .add(chickenData.penCenter);
+      
+      // Check if path is clear (simplified - just check endpoint)
+      let pathClear = true;
+      
+      // Only check collision with objects inside this pen
+      const penObjects = worldObjects.filter(obj => {
+        if (!obj.userData || !obj.userData.collisionRadius) return false;
+        
+        // Check if object is within the pen
+        const distToPen = obj.position.distanceTo(chickenData.penCenter);
+        return distToPen < chickenData.penSize;
+      });
+      
+      for (const obj of penObjects) {
+        if (obj === chickenData.mesh) continue; // Skip self
+        
+        const objRadius = obj.userData.collisionRadius || 0.5;
+        const dist = potentialTarget.distanceTo(obj.position);
+        
+        if (dist < objRadius + 0.2) { // 0.2 is chicken radius
+          pathClear = false;
+          break;
+        }
+      }
+      
+      if (pathClear) {
+        chickenData.targetPosition = potentialTarget;
+        validPositionFound = true;
+        break;
+      }
+    }
+    
+    // If no valid position found, just stay in place
+    if (!validPositionFound) {
+      chickenData.targetPosition = chickenData.mesh.position.clone();
+    }
+    
+    chickenData.timer = Math.random() * 3 + 2; // Next change in 2-5 seconds
+  }
+  
+  // Move towards target with collision avoidance
+  const direction = new THREE.Vector3().subVectors(
+    chickenData.targetPosition, 
+    chickenData.mesh.position
+  );
+  
+  if (direction.lengthSq() > 0.01) {
+    direction.normalize();
+    
+    // Check for collisions before moving
+    const newPosition = chickenData.mesh.position.clone()
+      .addScaledVector(direction, deltaTime * 0.5);
+    
+    let canMove = true;
+    // Check against pen boundary
+    const distToCenter = newPosition.distanceTo(chickenData.penCenter);
+    if (distToCenter > chickenData.penSize / 2 - 0.2) {
+      canMove = false;
+    }
+    
+    // Check against other objects in pen
+    if (canMove) {
+      for (const obj of worldObjects) {
+        if (obj === chickenData.mesh) continue; // Skip self
+        if (!obj.userData || !obj.userData.collisionRadius) continue;
+        
+        const objRadius = obj.userData.collisionRadius || 0.5;
+        const dist = newPosition.distanceTo(obj.position);
+        
+        if (dist < objRadius + 0.2) { // 0.2 is chicken radius
+          canMove = false;
+          break;
+        }
+      }
+    }
+    
+    if (canMove) {
+      chickenData.mesh.position.copy(newPosition);
+    } else {
+      // Pick a new random direction if blocked
+      chickenData.timer = 0;
+    }
+    
+    // Make chicken look in direction of movement
+    chickenData.mesh.lookAt(
+      chickenData.targetPosition.x, 
+      chickenData.mesh.position.y, 
+      chickenData.targetPosition.z
+    );
+  }
+});
+        if (isRaining) updateRain(deltaTime);
+        
+        // Periodically update portfolio value in live mode (every 2.5 seconds)
+        if (isLiveMode && Date.now() - lastPortfolioUpdate > 2500) {
+            updateReservesDisplay();
+        }
+// Fix the age calculation in the updateAnimals function
+function updateAnimals() {
+  const now = new Date();
+  
+  // Update all animal types
+  Object.keys(animalData).forEach(animalType => {
+    animalData[animalType].forEach(animal => {
+      // Calculate time since last update
+      const lastFedHours = (now - new Date(animal.lastFed)) / (1000 * 60 * 60);
+      
+      // Update health (decrease if not fed recently)
+      if (lastFedHours > 24) {
+        animal.health = Math.max(0, animal.health - Math.floor(lastFedHours / 24));
+      }
+      
+      // Fix age calculation
+      if (animal.created) {
+        const daysSinceCreation = Math.floor((now - new Date(animal.created)) / (1000 * 60 * 60 * 24));
+        animal.age = daysSinceCreation;
+      } else {
+        // For legacy animals that might not have a created date
+        animal.created = now;
+        animal.age = 0;
+      }
+      
+      // Stage is still calculated (for internal logic) but not displayed
+      if (animal.age < 3) animal.stage = "Baby";
+      else if (animal.age < 10) animal.stage = "Young";
+      else if (animal.age < 30) animal.stage = "Adult";
+      else animal.stage = "Senior";
+    });
+  });
+  
+  // Update UI if farm management is open
+  const managementUI = document.getElementById('farm-management');
+  if (managementUI && getComputedStyle(managementUI).display !== 'none') {
+    const animalType = document.getElementById('farm-management-title').textContent.split(' ')[1].toLowerCase();
+    populateAnimalsList(animalType);
+  }
+}
+
+/**
+ * Populate the farm selector dropdown with all farms the user owns
+ */
+function populateFarmSelector() {
+  const dropdown = document.getElementById('farm-selector-dropdown');
+  if (!dropdown) return;
+  
+  dropdown.innerHTML = ''; // Clear existing options
+  
+  // Animal farm types and their icons
+  const farmTypes = {
+    'chicken': '🐔',
+    'pig': '🐖',
+    'cow': '🐄',
+    'goat': '🐐',
+    'fish': '🐟'
+  };
+  
+  // Plant farm types and their icons
+  const plantTypes = {
+    'plantain': '🍌',
+    'banana': '🍌',
+    'orange': '🍊',
+    'sugarcane': '🌿',
+    'coconut': '🥥',
+    'papaya': '🥭',
+    'carrot': '🥕'
+  };
+  
+  // Get current inventory based on mode
+  const currentInventory = isLiveMode ? liveInventory : demoInventory;
+  
+  // Add animal farms to dropdown
+  let hasOptions = false;
+  
+  // First add animal farms
+  Object.keys(farmTypes).forEach(farmType => {
+    if (currentInventory[farmType] && currentInventory[farmType] > 0) {
+      hasOptions = true;
+      
+      const option = document.createElement('div');
+      option.className = 'farm-option';
+      option.dataset.type = farmType;
+      option.innerHTML = `
+        <div class="farm-option-icon">${farmTypes[farmType]}</div>
+        <span>${farmType.charAt(0).toUpperCase() + farmType.slice(1)} Farm</span>
+      `;
+      
+      option.addEventListener('click', () => {
+        switchFarm(farmType);
+        dropdown.classList.add('hidden');
+      });
+      
+      dropdown.appendChild(option);
+    }
+  });
+  
+  // Add a separator if we have both animal and plant farms
+  let hasPlants = false;
+  Object.keys(plantTypes).forEach(plantType => {
+    if (currentInventory[plantType] && currentInventory[plantType] > 0) {
+      hasPlants = true;
+    }
+  });
+  
+  if (hasOptions && hasPlants) {
+    const separator = document.createElement('div');
+    separator.className = 'border-t border-gray-700 my-2';
+    dropdown.appendChild(separator);
+  }
+  
+  // Then add plant farms
+  Object.keys(plantTypes).forEach(plantType => {
+    if (currentInventory[plantType] && currentInventory[plantType] > 0) {
+      hasOptions = true;
+      
+      const option = document.createElement('div');
+      option.className = 'farm-option';
+      option.dataset.type = plantType;
+      option.innerHTML = `
+        <div class="farm-option-icon">${plantTypes[plantType]}</div>
+        <span>${plantType.charAt(0).toUpperCase() + plantType.slice(1)} Farm</span>
+      `;
+      
+      option.addEventListener('click', () => {
+        switchFarm(plantType);
+        dropdown.classList.add('hidden');
+      });
+      
+      dropdown.appendChild(option);
+    }
+  });
+  
+  // If no farms, show a message
+  if (!hasOptions) {
+    const noFarms = document.createElement('div');
+    noFarms.className = 'p-3 text-gray-400 text-center text-sm';
+    noFarms.textContent = 'No farms owned yet';
+    dropdown.appendChild(noFarms);
+  }
+}
+
+/**
+ * Switch to managing a different farm
+ * @param {string} farmType - The type of farm to switch to
+ */
+function switchFarm(farmType) {
+  // Update the title text
+  const titleElement = document.getElementById('farm-management-title');
+  if (titleElement) {
+    titleElement.textContent = `Managing ${farmType.charAt(0).toUpperCase() + farmType.slice(1)} Farm`;
+  }
+  
+  // Position camera near the selected farm
+  const farm = worldObjects.find(obj => 
+    obj.userData && 
+    (obj.userData.itemType === 'animal' || obj.userData.itemType === 'plant') && 
+    obj.userData.itemId === farmType
+  );
+  
+  if (farm) {
+    // Move camera to view the farm
+    const farmPos = farm.position.clone();
+    player.position.set(farmPos.x + 5, playerHeight / 2, farmPos.z + 5);
+    player.rotation.y = Math.atan2(farmPos.x - player.position.x, farmPos.z - player.position.z);
+  }
+  
+  // Update the animals/plants list for this farm type
+  if (farmType in animalData) {
+    // This is an animal farm
+    populateAnimalsList(farmType);
+  } else {
+    // This is a plant farm - you may need to implement plant management separately
+    // For now, we can clear the animals list and show a message
+    const animalsList = document.getElementById('animals-list');
+    if (animalsList) {
+      animalsList.innerHTML = `
+        <div class="p-4 bg-gray-800/70 rounded-lg text-center">
+          <p>Plant management coming soon!</p>
+        </div>
+      `;
+    }
+  }
+}
+
+// Call updateAnimals periodically
+setInterval(updateAnimals, 60000); // Check every minute
+if (!window.lastAnimalUpdate || Date.now() - window.lastAnimalUpdate > 60000) {
+    updateAnimals();
+    window.lastAnimalUpdate = Date.now();
+  }
+
+        renderer.render(scene, camera);
       }
 
       function setupControls() {
-        scene.actionManager = new BABYLON.ActionManager(scene);
-        
         document.addEventListener('mousemove', onMouseMove, false);
         document.addEventListener('keydown', onKeyDown, false);
         document.addEventListener('keyup', onKeyUp, false);
@@ -1579,6 +1791,8 @@ function createAnimalData(type) {
                 document.exitPointerLock();
             } else {
                 document.body.requestPointerLock().catch(err => {
+                    // console.warn("Pointer lock failed. User needs to click the game screen first or browser doesn't support it well without user gesture for the element.", err);
+                    // Potentially show a message to the user to click the game screen
                     if (!gameContainer.classList.contains('interacted')) {
                          showGameMessage("Click the game screen to enable mouse lock.", "info", 5000);
                     }
@@ -1594,7 +1808,7 @@ function createAnimalData(type) {
             }
         }
 
-        if (document.pointerLockElement !== document.body && !['Enter', 'KeyP', 'Escape', 'Delete'].includes(event.code)) return;
+        if (document.pointerLockElement !== document.body && !['Enter', 'KeyP', 'Escape', 'Delete'].includes(event.code)) return; // Only allow Enter, P, Delete, Esc if not locked
 
         switch (event.code) {
           case 'KeyW': case 'ArrowUp': moveForward = true; break;
@@ -1608,7 +1822,7 @@ function createAnimalData(type) {
                 farmStoreDropdown.classList.remove('active');
                 reservesButton.setAttribute('aria-expanded', 'false');
             }
-            if (paymentOptions && paymentOptions.style.display === 'block') {
+            if (paymentOptions.style.display === 'block') {
                 paymentOptions.style.display = 'none';
                 currentPaymentItem = null;
             }
@@ -1624,7 +1838,6 @@ function createAnimalData(type) {
             break;
         }
       }
-
         // Add a click listener to gameContainer to mark it as interacted
         if (gameContainer) {
             gameContainer.addEventListener('click', () => {
@@ -1634,8 +1847,9 @@ function createAnimalData(type) {
                         // console.warn("Pointer lock failed on click.", err);
                     });
                 }
-            }, { once: false });
+            }, { once: false }); // { once: false } to allow repeated attempts if needed
         }
+
 
       function onKeyUp(event) {
         switch (event.code) {
@@ -1647,96 +1861,99 @@ function createAnimalData(type) {
       }
 
       function updatePlayer(deltaTime) {
-        const moveSpeed = playerSpeed * deltaTime;
-        const moveDirection = new BABYLON.Vector3();
+  const moveSpeed = playerSpeed * deltaTime;
+  const moveDirection = new THREE.Vector3();
+  const cameraDirection = new THREE.Vector3();
+  camera.getWorldDirection(cameraDirection);
+  cameraDirection.y = 0;
+  cameraDirection.normalize();
+
+         const right = new THREE.Vector3().crossVectors(camera.up, cameraDirection).normalize();
+
+
+          if (moveForward) moveDirection.add(cameraDirection);
+  if (moveBackward) moveDirection.sub(cameraDirection);
+  if (moveLeft) moveDirection.sub(right);
+  if (moveRight) moveDirection.add(right);
+  
+  moveDirection.normalize();
+
+   // Calculate potential new position
+  const potentialPosition = player.position.clone()
+    .addScaledVector(moveDirection, moveSpeed);
+
+  // Check if new position would be inside the circular world boundary
+  const playerWorldLimit = (worldSize / 2) * landExpansionMultiplier;
+  const playerDistFromCenter = Math.sqrt(
+    potentialPosition.x * potentialPosition.x + 
+    potentialPosition.z * potentialPosition.z
+  );
+
+  let canMove = playerDistFromCenter <= playerWorldLimit;
+
+  // Check collision with world objects
+  if (canMove) {
+    const playerRadius = 0.5; // Player collision radius
+    
+    for (const obj of worldObjects) {
+      // Skip ground or objects without collision data
+      if (obj === زمین || !obj.userData || !obj.userData.collisionRadius) continue;
+      
+      const objRadius = obj.userData.collisionRadius || 1;
+      const collisionDist = new THREE.Vector2(
+        potentialPosition.x - obj.position.x,
+        potentialPosition.z - obj.position.z
+      ).length();
+      
+      if (collisionDist < playerRadius + objRadius) {
+    // Allow jumping over short obstacles
+    const isJumping = playerVelocity.y > 0 || player.position.y > playerHeight;
+    const canJumpOver = obj.userData.itemType === 'plant' || 
+                        (obj.userData.itemId === 'tree' && isJumping);
+    
+    if (isJumping && canJumpOver) {
+      // Can jump over this obstacle
+      canMove = true;
+    } else {
+      canMove = false;
+    }
+    
+    if (!canMove && DEBUG_COLLISIONS) {
+      console.log("Collision with:", obj.userData.itemId);
+    }
+    
+    if (!canMove) break;
+  }
+    }
+  }
+  
+  // Apply movement if valid
+  if (canMove) {
+    player.position.copy(potentialPosition);
+  }
+
+  // Handle vertical movement (jumping/falling)
+  playerVelocity.y += gravity * deltaTime;
+  player.position.y += playerVelocity.y * deltaTime;
+
+  if (player.position.y < playerHeight / 2) {
+    player.position.y = playerHeight / 2;
+    playerVelocity.y = 0;
+    playerOnGround = true;
+  } else {
+    playerOnGround = false;
+  }
         
-        // Get camera direction for forward/backward movement
-        const forward = camera.getDirection(BABYLON.Axis.Z).normalize();
-        forward.y = 0; // Don't move up/down when walking
-        forward.normalize();
-        
-        const right = camera.getDirection(BABYLON.Axis.X).normalize();
-        right.y = 0;
-        right.normalize();
-
-        if (moveForward) moveDirection.addInPlace(forward);
-        if (moveBackward) moveDirection.subtractInPlace(forward);
-        if (moveLeft) moveDirection.subtractInPlace(right);
-        if (moveRight) moveDirection.addInPlace(right);
-        
-        moveDirection.normalize();
-
-        // Calculate potential new position
-        const potentialPosition = player.position.clone()
-          .addInPlace(moveDirection.scale(moveSpeed));
-
-        // Check if new position would be inside the circular world boundary
-        const playerWorldLimit = (worldSize / 2) * landExpansionMultiplier;
-        const playerDistFromCenter = Math.sqrt(
-          potentialPosition.x * potentialPosition.x + 
-          potentialPosition.z * potentialPosition.z
-        );
-
-        let canMove = playerDistFromCenter <= playerWorldLimit;
-
-        // Check collision with world objects
-        if (canMove) {
-          const playerRadius = 0.5; // Player collision radius
-          
-          for (const obj of worldObjects) {
-            // Skip ground or objects without collision data
-            if (obj === ground || !obj.metadata || !obj.metadata.collisionRadius) continue;
-            
-            const objRadius = obj.metadata.collisionRadius || 1;
-            const collisionDist = BABYLON.Vector3.Distance(
-                new BABYLON.Vector3(potentialPosition.x, 0, potentialPosition.z),
-                new BABYLON.Vector3(obj.position.x, 0, obj.position.z)
-                );
-            
-            if (collisionDist < playerRadius + objRadius) {
-              // Allow jumping over short obstacles
-              const isJumping = playerVelocity.y > 0 || player.position.y > playerHeight;
-              const canJumpOver = obj.metadata.itemType === 'plant' || 
-                                  (obj.metadata.itemId === 'tree' && isJumping);
-              
-              if (isJumping && canJumpOver) {
-                // Can jump over this obstacle
-                canMove = true;
-              } else {
-                canMove = false;
-              }
-              
-              if (!canMove) break;
-            }
-          }
-        }
-        
-        // Apply movement if valid
-        if (canMove) {
-          player.position.copyFrom(potentialPosition);
-        }
-
-        // Handle vertical movement (jumping/falling)
-        playerVelocity.y += gravity * deltaTime;
-        player.position.y += playerVelocity.y * deltaTime;
-
-        if (player.position.y < playerHeight / 2) {
-          player.position.y = playerHeight / 2;
-          playerVelocity.y = 0;
-          playerOnGround = true;
-        } else {
-          playerOnGround = false;
-        }
         
         // Calculate circular world boundary based on land expansion
-        const worldRadius = (worldSize / 2) * landExpansionMultiplier;
-        const distanceFromCenter = Math.sqrt(player.position.x * player.position.x + player.position.z * player.position.z);
-        if (distanceFromCenter > worldRadius) {
-          // If player is beyond the boundary, move them back to the edge
-          const angle = Math.atan2(player.position.z, player.position.x);
-          player.position.x = Math.cos(angle) * worldRadius;
-          player.position.z = Math.sin(angle) * worldRadius;
-        }
+const worldRadius = (worldSize / 2) * landExpansionMultiplier;
+const distanceFromCenter = Math.sqrt(player.position.x * player.position.x + player.position.z * player.position.z);
+if (distanceFromCenter > worldRadius) {
+  // If player is beyond the boundary, move them back to the edge
+  const angle = Math.atan2(player.position.z, player.position.x);
+  player.position.x = Math.cos(angle) * worldRadius;
+  player.position.z = Math.sin(angle) * worldRadius;
+}
       }
 
       // Calculate portfolio value based on investments and their returns
@@ -1798,61 +2015,63 @@ function createAnimalData(type) {
       function updateReservesDisplay() {
         if (reservesAmountSpan) {
           if (isLiveMode) {
-            // Calculate total portfolio value in live mode
-            let totalValue = calculatePortfolioValue();
-            
-            // Update button appearance for live mode
-            const icon = reservesButton.querySelector('i');
-            if (icon) {
-              icon.className = 'fas fa-dollar-sign text-green-400';
-            }
-            
-            reservesAmountSpan.textContent = `${Math.round(totalValue)}`;
-          } else {
-            // Update button appearance for demo mode
-            const icon = reservesButton.querySelector('i');
-            if (icon) {
-              icon.className = 'fas fa-star text-yellow-400';
-            }
-            
-            reservesAmountSpan.textContent = playerReserves;
-          }
+  // Calculate total portfolio value in live mode
+  let totalValue = calculatePortfolioValue();
+  
+  // Update button appearance for live mode
+  const icon = reservesButton.querySelector('i');
+  if (icon) {
+    icon.className = 'fas fa-dollar-sign text-green-400';
+  }
+  
+  reservesAmountSpan.textContent = `${Math.round(totalValue)}`;
+} else {
+  // Update button appearance for demo mode
+  const icon = reservesButton.querySelector('i');
+  if (icon) {
+    icon.className = 'fas fa-star text-yellow-400';
+  }
+  
+  reservesAmountSpan.textContent = playerReserves;
+}
         }
         
-        // Update store items display
-        farmStoreDropdown.querySelectorAll('.dropdown-item').forEach(item => {
-          const cost = parseInt(item.dataset.cost);
-          const itemId = item.dataset.id;
-          const itemType = item.dataset.type;
-          const maxPurchases = item.dataset.max ? parseInt(item.dataset.max) : Infinity;
-          const button = item.querySelector('.dropdown-item-price');
+  // Update store items display - this part remains mostly the same
+  farmStoreDropdown.querySelectorAll('.dropdown-item').forEach(item => {
+    const cost = parseInt(item.dataset.cost);
+    const itemId = item.dataset.id;
+    const itemType = item.dataset.type;
+    const maxPurchases = item.dataset.max ? parseInt(item.dataset.max) : Infinity;
+    const button = item.querySelector('.dropdown-item-price');
 
-          // Skip items that are in the Manage section
-          if (item.closest('#manage-farms-section')) return;
+    // Skip items that are in the Manage section - these are handled differently
+    if (item.closest('#manage-farms-section')) return;
 
-          if (button) {
-            const currentInventory = isLiveMode ? liveInventory : demoInventory;
-            
-            // Special case for third-party button
-            if (button.dataset.action === 'show-third-party-farms') {
-              button.textContent = "View";
-              return;
-            }
+    if (button) {
+  const currentInventory = isLiveMode ? liveInventory : demoInventory;
+  
+  // Special case for third-party button
+  if (button.dataset.action === 'show-third-party-farms') {
+    button.textContent = "View";
+    return; // Use return to skip to the next iteration in a forEach callback
+  }
 
-            // Check if already owned
-            if (currentInventory[itemId] && currentInventory[itemId] > 0) {
-              button.textContent = "Manage";
-            } else {
-              // Not owned, show price
-              if (isLiveMode) {
-                button.textContent = `$${(cost / 100).toFixed(2)}`;
-              } else {
-                button.innerHTML = `<i class="fas fa-star text-yellow-400"></i> ${cost}`;
-              }
-            }
-          }
-        });
-      }
+  // Check if already owned
+  if (currentInventory[itemId] && currentInventory[itemId] > 0) {
+    button.textContent = "Manage";
+  } else {
+    // Not owned, show price
+    if (isLiveMode) {
+      button.textContent = `$${(cost / 100).toFixed(2)}`;
+    } else {
+      button.innerHTML = `<i class="fas fa-star text-yellow-400"></i> ${cost}`;
+    }
+  }
+}
+}
+);
+}
+
 
 // Add event listeners for the management popup actions
 document.querySelectorAll('#management-popup .payment-option').forEach(option => {
@@ -1873,15 +2092,13 @@ document.querySelectorAll('#management-popup .payment-option').forEach(option =>
       
       // Show payment options similar to regular farms
       const paymentOptions = document.getElementById('payment-options');
-      if (paymentOptions) {
-        paymentOptions.style.display = 'block';
-        paymentOptions.style.top = popup.style.top;
-        paymentOptions.style.left = popup.style.left;
-        
-        // Update payment options display
-        document.getElementById('stars-price').textContent = cost;
-        document.getElementById('dollar-price').textContent = `$${(cost / 100).toFixed(2)}`;
-      }
+      paymentOptions.style.display = 'block';
+      paymentOptions.style.top = popup.style.top;
+      paymentOptions.style.left = popup.style.left;
+      
+      // Update payment options display
+      document.getElementById('stars-price').textContent = cost;
+      document.getElementById('dollar-price').textContent = `$${(cost / 100).toFixed(2)}`;
     } 
     else if (action === 'sell-item') {
       // Handle selling logic
@@ -1924,12 +2141,13 @@ document.querySelectorAll('#management-popup .payment-option').forEach(option =>
   
   purchasedItems = isLive ? liveInventory : demoInventory;
 
-  // Control visibility of third-party elements
+  // UPDATED: Control visibility of third-party elements more aggressively
   const thirdPartyPrompt = document.querySelector('.third-party-prompt');
   const thirdPartyFarmsSection = document.getElementById('third-party-farms');
   
   if (isLive) { // Live Mode
     if (thirdPartyPrompt) thirdPartyPrompt.style.display = 'flex';
+    // Don't show the section automatically, just make the prompt available
   } else { // Demo Mode
     if (thirdPartyPrompt) thirdPartyPrompt.style.display = 'none';
     if (thirdPartyFarmsSection) thirdPartyFarmsSection.style.display = 'none';
@@ -1943,497 +2161,701 @@ document.querySelectorAll('#management-popup .payment-option').forEach(option =>
   updateReservesDisplay();
 }
       
+      
+      
       function expandLand() {
-        const currentExpansionLevel = isLiveMode ? liveInventory.expansion : demoInventory.expansion;
-        if (currentExpansionLevel >= 3) {
-          showGameMessage("You've reached the maximum land expansion!", 'info');
-          return false;
-        }
-        
-        if (isLiveMode) {
-          liveInventory.expansion++;
-        } else {
-          demoInventory.expansion++;
-        }
-        
-        landExpansionMultiplier = 1.0 + (isLiveMode ? liveInventory.expansion : demoInventory.expansion) * 0.33;
+  const currentExpansionLevel = isLiveMode ? liveInventory.expansion : demoInventory.expansion;
+  if (currentExpansionLevel >= 3) {
+    showGameMessage("You've reached the maximum land expansion!", 'info');
+    return false;
+  }
+  
+  if (isLiveMode) {
+    liveInventory.expansion++;
+  } else {
+    demoInventory.expansion++;
+  }
+  
+  landExpansionMultiplier = 1.0 + (isLiveMode ? liveInventory.expansion : demoInventory.expansion) * 0.33;
 
-        // Update fog for new size
-        scene.fogStart = 20 * landExpansionMultiplier;
-        scene.fogEnd = worldSize * 0.7 * landExpansionMultiplier;
-        
-        // Update ground size
-        if (ground) {
-          ground.dispose();
-          scene.removeMesh(ground);
-        }
+  // Update fog for new size
+  scene.fog.near = 20 * landExpansionMultiplier;
+  scene.fog.far = worldSize * 0.7 * landExpansionMultiplier;
+  
+  // Update ground size
+  if (زمین) {
+    scene.remove(زمین);
+    زمین.geometry.dispose();
+    زمین.material.dispose();
+  }
 
-        const groundTexture = createGrassTexture(512, 512);
-        const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
-        groundMaterial.diffuseTexture = groundTexture;
-        groundMaterial.roughness = 0.8;
+  
+  
+  const groundTexture = createGrassTexture(512, 512);
+  const groundMaterial = new THREE.MeshStandardMaterial({ map: groundTexture, side: THREE.DoubleSide, roughness: 0.8, metalness: 0.2 });
 
-        ground = BABYLON.MeshBuilder.CreateDisc("ground", {radius: (worldSize/2) * landExpansionMultiplier, tessellation: 64}, scene);
-        ground.rotation.x = -Math.PI / 2;
-        ground.material = groundMaterial;
-        ground.receiveShadows = true;
-        
-        showGameMessage(`Land expanded! New radius: ${Math.floor((worldSize/2) * landExpansionMultiplier)}`, 'success');
-        return true;
-      }
+   // When you recreate the ground:
+  const groundGeometry = new THREE.CircleGeometry((worldSize/2) * landExpansionMultiplier, 64);
+  زمین = new THREE.Mesh(groundGeometry, groundMaterial);
+  زمین.rotation.x = -Math.PI / 2;
+  زمین.receiveShadow = true;
+  scene.add(زمین);
+  
+  // ALSO update the ocean inner radius:
+  if (ocean) {
+    scene.remove(ocean);
+    ocean.geometry.dispose();
+    ocean.material.dispose();
+    
+    const oceanGeometry = new THREE.RingGeometry(
+      (worldSize/2) * landExpansionMultiplier, // New inner radius
+      worldSize * 1.5, // Keep same outer radius
+      64, 8
+    );
+    
+    const oceanMaterial = new THREE.MeshStandardMaterial({
+      color: 0x0077be,
+      transparent: true,
+      opacity: 0.8,
+      roughness: 0.1,
+      metalness: 0.2
+    });
+    
+    ocean = new THREE.Mesh(oceanGeometry, oceanMaterial);
+    ocean.rotation.x = -Math.PI / 2;
+    ocean.position.y = -0.1;
+    ocean.receiveShadow = true;
+    scene.add(ocean);
+  }
+  
+  showGameMessage(`Land expanded! New radius: ${Math.floor((worldSize/2) * landExpansionMultiplier)}`, 'success');
+  return true;
+
+  
+
+}
 
       function showGameMessage(message, type = 'info', timeout = 3000) {
         if (!messageBox) return;
         // Modified to handle hidden message box - don't show messages at all
       }
 
-      function showFarmManagement(animalType) {
-        const managementUI = document.getElementById('farm-management');
-        if (!managementUI) return;
-        
-        const title = document.getElementById('farm-management-title');
-        
-        // Update title
-        if (title) {
-          title.textContent = `Managing ${animalType.charAt(0).toUpperCase() + animalType.slice(1)} Farm`;
-        }
-        
-        // Position camera near the animals
-        const farm = worldObjects.find(obj => obj.metadata && 
-          obj.metadata.itemType === 'animal' && 
-          obj.metadata.itemId === animalType);
-        
-        if (farm) {
-          // Position and rotate player to face the farm
-          const farmPos = farm.position.clone();
-          player.position = new BABYLON.Vector3(farmPos.x - 5, playerHeight / 2, farmPos.z - 5);
-          player.rotation.y = Math.atan2(player.position.x - farmPos.x, player.position.z - farmPos.z);
-        }
-        
-        // Populate animals list
-        populateAnimalsList(animalType);
-        
-        // Make popup appear with animation
-        managementUI.classList.remove('hidden');
-        // Ensure flex display is applied after the hidden class is removed
-        setTimeout(() => {
-          managementUI.style.display = 'flex';
-          managementUI.style.flexDirection = 'column';
-        }, 10);
-      }
+      if (reservesButton && farmStoreDropdown) {
+  reservesButton.addEventListener('click', (event) => {
+    event.stopPropagation();
+    if (document.pointerLockElement === document.body) document.exitPointerLock();
+    const isActive = farmStoreDropdown.classList.toggle('active');
+    reservesButton.setAttribute('aria-expanded', isActive);
+    if (isActive) {
+      updateReservesDisplay(); // Refresh disabled states when opening
+      updateManageFarmsSection(); // Refresh the manage farms section
+    }
+  });
+  // Add this line to make the amount span also trigger the button click
+reservesAmountSpan.addEventListener('click', function(event) {
+  event.stopPropagation();
+  reservesButton.click();
+});
 
-      function hideFarmManagement() {
-        const managementUI = document.getElementById('farm-management');
-        if (!managementUI) return;
-        
-        managementUI.classList.add('hidden');
-        // Hide after animation completes
-        setTimeout(() => {
-          managementUI.style.display = 'none';
-        }, 300); // Match transition duration
-      }
-
-      // Updated function to populate animals in a horizontal layout
-      function populateAnimalsList(animalType) {
-        const animalsList = document.getElementById('animals-list');
-        if (!animalsList) return;
-        
-        animalsList.innerHTML = ''; // Clear existing items
-        
-        // Animal type to emoji mapping
-        const animalIcons = {
-          'chicken': '🐔',
-          'pig': '🐖',
-          'cow': '🐄',
-          'goat': '🐐',
-          'fish': '🐟'
-        };
-        
-         // Create animal items
-        animalData[animalType].forEach(animal => {
-          // Calculate age percentage
-          const agePercent = calculateAgePercent(animalType, animal.age);
-          
-          const animalItem = document.createElement('div');
-          animalItem.className = 'animal-item';
-          animalItem.dataset.id = animal.id;
-          
-          animalItem.innerHTML = `
-            <div class="animal-header">
-              <div class="animal-icon">${animalIcons[animalType] || '🐾'}</div>
-              <div class="animal-name" contenteditable="true">${animal.name}</div>
-            </div>
-            <div class="animal-stat">
-              <span>Age:</span>
-              <span>${animal.age} days (${agePercent}%)</span>
-            </div>
-            <div class="health-bar">
-              <div class="health-bar-fill" style="width: ${animal.health}%"></div>
-            </div>
-            <div class="animal-actions">
-              <button class="animal-action-btn bg-blue-700 hover:bg-blue-600" data-action="feed">Feed</button>
-              <button class="animal-action-btn bg-green-700 hover:bg-green-600" data-action="heal">Heal</button>
-              <button class="animal-action-btn bg-red-700 hover:bg-red-600" data-action="sell">Sell</button>
-            </div>
-          `;
-          
-          animalsList.appendChild(animalItem);
-        });
-        
-        // Add event listeners for animal actions
-        document.querySelectorAll('.animal-action-btn').forEach(btn => {
-          btn.addEventListener('click', handleAnimalAction);
-        });
-        
-        // Add event listeners for editable names
-        document.querySelectorAll('.animal-name').forEach(nameElem => {
-          nameElem.addEventListener('blur', function() {
-            const animalId = this.closest('.animal-item').dataset.id;
-            const newName = this.textContent;
-            updateAnimalName(animalType, animalId, newName);
-          });
-        });
-      }
-
-      // Function to handle animal actions (feed, heal, sell)
-      function handleAnimalAction(event) {
-        const action = event.target.dataset.action;
-        const animalItem = event.target.closest('.animal-item');
-        const animalId = animalItem.dataset.id;
-        const animalType = document.getElementById('farm-management-title')?.textContent.split(' ')[1]?.toLowerCase();
-        
-        if (!animalType) return;
-        
-        switch(action) {
-          case 'feed':
-            feedAnimal(animalType, animalId);
-            break;
-          case 'heal':
-            healAnimal(animalType, animalId);
-            break;
-          case 'sell':
-            sellAnimal(animalType, animalId);
-            break;
-        }
-        
-        // Update the display
-        populateAnimalsList(animalType);
-      }
-
-      // Function implementations for animal actions
-      function feedAnimal(animalType, animalId) {
-        const animal = animalData[animalType].find(a => a.id === animalId);
-        if (animal) {
-          animal.health = Math.min(100, animal.health + 10);
-          animal.lastFed = new Date();
-        }
-      }
-
-      function healAnimal(animalType, animalId) {
-        const animal = animalData[animalType].find(a => a.id === animalId);
-        if (animal) {
-          animal.health = 100;
-        }
-      }
-
-      function sellAnimal(animalType, animalId) {
-        const index = animalData[animalType].findIndex(a => a.id === animalId);
-        if (index !== -1) {
-          const animal = animalData[animalType][index];
-          // Remove from array
-          animalData[animalType].splice(index, 1);
-          // Add stars based on animal type and age
-          const baseValue = getItemCost(animalType) / 2;
-          const ageBonus = animal.age * 0.05 * baseValue; // 5% per day age bonus
-          playerReserves += Math.floor(baseValue + ageBonus);
-          updateReservesDisplay();
-        }
-      }
-
-      function updateAnimalName(animalType, animalId, newName) {
-        const animal = animalData[animalType].find(a => a.id === animalId);
-        if (animal) {
-          animal.name = newName;
-        }
-      }
-
-      // Fix the age calculation in the updateAnimals function
-      function updateAnimals() {
-        const now = new Date();
-        
-        // Update all animal types
-        Object.keys(animalData).forEach(animalType => {
-          animalData[animalType].forEach(animal => {
-            // Calculate time since last update
-            const lastFedHours = (now - new Date(animal.lastFed)) / (1000 * 60 * 60);
-            
-            // Update health (decrease if not fed recently)
-            if (lastFedHours > 24) {
-              animal.health = Math.max(0, animal.health - Math.floor(lastFedHours / 24));
-            }
-            
-            // Fix age calculation
-            if (animal.created) {
-              const daysSinceCreation = Math.floor((now - new Date(animal.created)) / (1000 * 60 * 60 * 24));
-              animal.age = daysSinceCreation;
-            } else {
-              // For legacy animals that might not have a created date
-              animal.created = now;
-              animal.age = 0;
-            }
-            
-            // Stage is still calculated (for internal logic) but not displayed
-            if (animal.age < 3) animal.stage = "Baby";
-            else if (animal.age < 10) animal.stage = "Young";
-            else if (animal.age < 30) animal.stage = "Adult";
-            else animal.stage = "Senior";
-          });
-        });
-        
-        // Update UI if farm management is open
-        const managementUI = document.getElementById('farm-management');
-        if (managementUI && getComputedStyle(managementUI).display !== 'none') {
-          const animalType = document.getElementById('farm-management-title')?.textContent.split(' ')[1]?.toLowerCase();
-          if (animalType) {
-            populateAnimalsList(animalType);
+  document.addEventListener('click', (event) => {
+      if (!reservesButton.contains(event.target) && !farmStoreDropdown.contains(event.target) && !paymentOptions.contains(event.target)) {
+          if (farmStoreDropdown.classList.contains('active')) {
+              farmStoreDropdown.classList.remove('active');
+              reservesButton.setAttribute('aria-expanded', 'false');
           }
-        }
+          if (paymentOptions.style.display === 'block') {
+              paymentOptions.style.display = 'none';
+              currentPaymentItem = null;
+          }
       }
+  });
+  
+  // Handle third party farms view button
+  const thirdPartyViewButton = document.querySelector('[data-action="show-third-party-farms"]');
+  if (thirdPartyViewButton) {
+    thirdPartyViewButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        thirdPartyFarmsSection.style.display = thirdPartyFarmsSection.style.display === 'block' ? 'none' : 'block';
+    });
+  }
 
-      function addPurchasedItemToWorld(itemType, itemId, count) {
-        // Special handling for land expansion and third-party farms (unchanged)
-        if (itemType === 'land' && itemId === 'expansion') {
-          return;
-        }
-        if (itemType === 'third-party') {
-          console.log(`Partnership established with ${itemId.replace(/-/g, ' ')}. No 3D model.`);
-          return;
-        }
 
-        let itemGroup;
-        if (itemType === 'animal') {
-          itemGroup = createAnimalFarmStructure(itemId, count);
-        } else if (itemType === 'plant') {
-          itemGroup = createPlantPlot(itemId, count);
+  farmStoreDropdown.querySelectorAll('.dropdown-item').forEach(item => {
+    const itemId = item.dataset.id;
+    const itemType = item.dataset.type;
+    const purchaseButton = item.querySelector('.dropdown-item-price');
+
+      if (purchaseButton) {
+          purchaseButton.addEventListener('click', (event) => {
+              event.stopPropagation();
+              
+              // Special cases for special actions
+              if (purchaseButton.dataset.action === 'show-third-party-farms') {
+                  return; // This is handled separately
+              }
+
+                // NEW CODE: Check if this is a Manage button
+                  if (purchaseButton.textContent === "Manage") {
+                farmStoreDropdown.classList.remove('active');
+                showFarmManagement(itemId);
+                return;
+                    
+                    // Update prices in the popup
+                    document.getElementById('buy-more-price').textContent = isLiveMode ? 
+                      `$${(cost / 100).toFixed(2)}` : 
+                      `${cost}`;
+                    document.getElementById('sell-price').textContent = isLiveMode ?
+                      `$${(cost / 200).toFixed(2)}` : // Half price for selling
+                      `${Math.floor(cost / 2)}`;
+                    
+                    // Store current item for management
+                    managementPopup.dataset.itemId = itemId;
+                    managementPopup.dataset.itemType = itemType;
+                    managementPopup.dataset.itemCost = cost;
+                    
+                    return; // Don't proceed with regular purchase flow
+                  }
+              
+              // Land expansion direct purchase (using Stars)
+              if (itemType === 'land' && itemId === 'expansion') {
+                  if (playerReserves >= cost) {
+                    if (expandLand()) { // expandLand now checks max and returns true on success
+                        playerReserves -= cost; // Deduct cost only if expansion was successful
+                        updateReservesDisplay();
+                    }
+                  } else {
+                      showGameMessage("Not enough stars for land expansion!", 'error');
+                  }
+                  return;
+              }
+              
+              // For regular items, purchase directly based on mode
+              
+              if (isLiveMode) {
+// Live mode - purchase with dollars
+liveInventory[itemId] = (liveInventory[itemId] || 0) + 1;
+
+// Store purchase information for value calculation
+farmValues.live[itemId] = farmValues.live[itemId] || [];
+farmValues.live[itemId].push({
+  cost: cost,
+  date: new Date()
+});
+
+updateReservesDisplay();
+addPurchasedItemToWorld(itemType, itemId, liveInventory[itemId]);
+showGameMessage(`${itemId.charAt(0).toUpperCase() + itemId.slice(1)} ${itemType === 'plant' ? 'seeds' : 'Farm'} partnership initiated (LIVE)!`, 'success');
+} else {
+// Demo mode - purchase with stars
+if (playerReserves >= cost) {
+  playerReserves -= cost;
+  demoInventory[itemId] = (demoInventory[itemId] || 0) + 1;
+  
+  // Store purchase information for demo mode too
+  farmValues.demo[itemId] = farmValues.demo[itemId] || [];
+  farmValues.demo[itemId].push({
+    cost: cost,
+    date: new Date()
+  });
+          
+updateReservesDisplay();
+addPurchasedItemToWorld(itemType, itemId, demoInventory[itemId]);
+showGameMessage(`${itemId.charAt(0).toUpperCase() + itemId.slice(1)} ${itemType === 'plant' ? 'seeds' : 'Farm'} purchased with Stars!`, 'success');
+} else {
+showGameMessage("Not enough stars!", 'error');
+}
+            }
+              // The old direct purchase logic with Stars is removed from here,
+              // as all "get-" actions now go through the payment options popup.
+              // Land expansion is handled above as a special case.
+        });
+    }
+});
+
+// Add handlers for buy/sell all buttons
+document.getElementById('buy-animals').addEventListener('click', function() {
+  const animalType = document.getElementById('farm-management-title').textContent.split(' ')[1].toLowerCase();
+  const buyPopup = document.getElementById('buy-animals-popup');
+  buyPopup.dataset.animalType = animalType;
+  buyPopup.classList.remove('hidden');
+  buyPopup.classList.add('flex');
+});
+
+document.getElementById('sell-all-animals').addEventListener('click', function() {
+  const animalType = document.getElementById('farm-management-title').textContent.split(' ')[1].toLowerCase();
+  // Calculate value of all animals
+  const animals = animalData[animalType];
+  let totalValue = 0;
+  
+  animals.forEach(animal => {
+    const baseValue = getItemCost(animalType) / 2;
+    const ageBonus = animal.age * 0.05 * baseValue;
+    totalValue += Math.floor(baseValue + ageBonus);
+  });
+  
+  // Confirm with user
+  if (confirm(`Sell all ${animals.length} animals for ${totalValue} stars?`)) {
+    playerReserves += totalValue;
+    animalData[animalType] = []; // Clear all animals
+    updateReservesDisplay();
+    populateAnimalsList(animalType);
+  }
+});
+
+// ---- Add this after your other button event listeners ----
+
+// Farm selector dropdown toggle
+const farmSelectorButton = document.getElementById('farm-selector-button');
+const farmSelectorDropdown = document.getElementById('farm-selector-dropdown');
+
+if (farmSelectorButton && farmSelectorDropdown) {
+  // Toggle dropdown when button is clicked
+  farmSelectorButton.addEventListener('click', function(e) {
+    e.stopPropagation();
+    
+    // First update the dropdown options
+    populateFarmSelector();
+    
+    // Then toggle visibility
+    farmSelectorDropdown.classList.toggle('hidden');
+  });
+  
+  // Close dropdown when clicking elsewhere
+  document.addEventListener('click', function(e) {
+    if (!farmSelectorButton.contains(e.target) && !farmSelectorDropdown.contains(e.target)) {
+      farmSelectorDropdown.classList.add('hidden');
+    }
+  });
+}
+
+// Exit button event listener
+const exitManagementBtn = document.getElementById('exit-management');
+if (exitManagementBtn) {
+  exitManagementBtn.addEventListener('click', function() {
+    const managementUI = document.getElementById('farm-management');
+    managementUI.style.display = 'none';
+    managementUI.classList.add('hidden');
+    
+    // Also hide the dropdown if it's open
+    const farmSelectorDropdown = document.getElementById('farm-selector-dropdown');
+    if (farmSelectorDropdown) {
+      farmSelectorDropdown.classList.add('hidden');
+    }
+  });
+}
+
+// Buy popup handlers
+document.getElementById('decrease-qty').addEventListener('click', function() {
+  const qtyInput = document.getElementById('animal-qty');
+  qtyInput.value = Math.max(1, parseInt(qtyInput.value) - 1);
+});
+
+document.getElementById('increase-qty').addEventListener('click', function() {
+  const qtyInput = document.getElementById('animal-qty');
+  qtyInput.value = parseInt(qtyInput.value) + 1;
+});
+
+document.getElementById('cancel-buy').addEventListener('click', function() {
+  document.getElementById('buy-animals-popup').classList.add('hidden');
+});
+
+document.getElementById('confirm-buy').addEventListener('click', function() {
+  const popup = document.getElementById('buy-animals-popup');
+  const animalType = popup.dataset.animalType;
+  const quantity = parseInt(document.getElementById('animal-qty').value);
+  const cost = getItemCost(animalType) * quantity;
+  
+  if (playerReserves >= cost) {
+    playerReserves -= cost;
+    
+    // Add new animals
+    for (let i = 0; i < quantity; i++) {
+      animalData[animalType].push(createAnimalData(animalType));
+    }
+    
+    updateReservesDisplay();
+    populateAnimalsList(animalType);
+    popup.classList.add('hidden');
+  } else {
+    alert("Not enough stars!");
+  }
+});
+
+// Exit management view
+document.getElementById('exit-management').addEventListener('click', function() {
+  document.getElementById('farm-management').classList.add('hidden');
+  
+  // Remove farm indicator
+  const indicator = document.querySelector('.farm-indicator');
+  if (indicator) indicator.remove();
+});
+// NEW CONSOLIDATED HANDLER - this will replace the old ones
+console.log("Setting up new consolidated dropdown item handlers");
+
+// Clear any existing click handlers from dropdown items
+farmStoreDropdown.querySelectorAll('.dropdown-item-price').forEach(button => {
+  // Clone the button to remove all event listeners
+  const newButton = button.cloneNode(true);
+  button.parentNode.replaceChild(newButton, button);
+});
+
+// Now add the new handlers
+farmStoreDropdown.querySelectorAll('.dropdown-item').forEach(item => {
+  const itemId = item.dataset.id;
+  const itemType = item.dataset.type;
+  const cost = parseInt(item.dataset.cost || '0');
+  const purchaseButton = item.querySelector('.dropdown-item-price');
+
+  if (purchaseButton) {
+    purchaseButton.addEventListener('click', (event) => {
+      event.stopPropagation();
+      console.log("Button clicked for", itemId, itemType);
+      
+      // Special cases for special actions
+      if (purchaseButton.dataset.action === 'show-third-party-farms') {
+        console.log("Third party farms button");
+        thirdPartyFarmsSection.style.display = thirdPartyFarmsSection.style.display === 'block' ? 'none' : 'block';
+        return;
+      }
+      
+      // Handle "Manage" button clicks
+      if (purchaseButton.textContent === "Manage") {
+        console.log("Manage button clicked for", itemId);
+        farmStoreDropdown.classList.remove('active');
+        if (typeof showFarmManagement === 'function') {
+          showFarmManagement(itemId);
         } else {
-          console.error("Unknown item type:", itemType);
-          return;
+          console.log("Farm management not implemented yet");
         }
-
-        if (itemType === 'animal') {
-          // Create initial animal
-          const animal = createAnimalData(itemId);
-          animalData[itemId].push(animal);
-        }
-
-        // Determine appropriate size for collision
-        const itemRadius = itemType === 'animal' ? 6 : 4; // Animal farms are larger
-        
-        // Try to find a valid position
-        let placed = false;
-        let posX, posZ;
-        
-        for (let attempt = 0; attempt < 20; attempt++) {
-          const angle = Math.random() * Math.PI * 2;
-          // Place within 80% of island radius to leave some margin at the edge
-          const distance = Math.random() * (worldSize/2 * 0.8);
-          
-          posX = Math.cos(angle) * distance;
-          posZ = Math.sin(angle) * distance;
-          
-          const position = new BABYLON.Vector3(posX, 0, posZ);
-          if (isPositionAvailable(position, itemRadius)) {
-            placed = true;
-            itemGroup.position = new BABYLON.Vector3(posX, 0, posZ);
-            markPositionOccupied(position, itemRadius);
-            break;
-          }
-        }
-        
-        // If we couldn't find a valid position, place at a fixed position at the center
-        if (!placed) {
-          console.warn("Couldn't find space for new item, placing near center");
-          // Place in spiral pattern around center
-          const spiralCount = worldObjects.filter(obj => 
-            obj.metadata && (obj.metadata.itemType === 'animal' || obj.metadata.itemType === 'plant')
-          ).length;
-          
-          const spiralAngle = spiralCount * 0.5; // Increment angle for each item
-          const spiralRadius = 5 + spiralCount * 0.5; // Increase radius for each item
-          
-          posX = Math.cos(spiralAngle) * spiralRadius;
-          posZ = Math.sin(spiralAngle) * spiralRadius;
-          
-          itemGroup.position = new BABYLON.Vector3(posX, 0, posZ);
-          markPositionOccupied(new BABYLON.Vector3(posX, 0, posZ), itemRadius);
-        }
-        
-        itemGroup.name = `${itemId}_${itemType}_${count}`;
-        itemGroup.metadata = { 
-          itemType: itemType, 
-          itemId: itemId, 
-          instanceCount: count,
-          collisionRadius: itemRadius // Store radius for collision detection
-        };
-        worldObjects.push(itemGroup);
+        return;
       }
+      
+      // Land expansion direct purchase (using Stars)
+      if (itemType === 'land' && itemId === 'expansion') {
+        console.log("Land expansion button");
+        if (playerReserves >= cost) {
+          if (expandLand()) {
+            playerReserves -= cost;
+            updateReservesDisplay();
+          }
+        } else {
+          showGameMessage("Not enough stars for land expansion!", 'error');
+        }
+        return;
+      }
+      
+      // REGULAR PURCHASE FLOW
+      console.log("Regular purchase for", itemId, "in mode", isLiveMode ? "LIVE" : "DEMO");
+      if (isLiveMode) {
+        // Live mode purchase
+        liveInventory[itemId] = (liveInventory[itemId] || 0) + 1;
+        
+        // Store purchase info
+        farmValues.live[itemId] = farmValues.live[itemId] || [];
+        farmValues.live[itemId].push({
+          cost: cost,
+          date: new Date()
+        });
+        
+        updateReservesDisplay();
+        addPurchasedItemToWorld(itemType, itemId, liveInventory[itemId]);
+        showGameMessage(`${itemId.charAt(0).toUpperCase() + itemId.slice(1)} ${itemType === 'plant' ? 'seeds' : 'Farm'} partnership initiated (LIVE)!`, 'success');
+      } else {
+        // Demo mode purchase
+        if (playerReserves >= cost) {
+          playerReserves -= cost;
+          demoInventory[itemId] = (demoInventory[itemId] || 0) + 1;
+          
+          // Store purchase info
+          farmValues.demo[itemId] = farmValues.demo[itemId] || [];
+          farmValues.demo[itemId].push({
+            cost: cost,
+            date: new Date()
+          });
+          
+          updateReservesDisplay();
+          addPurchasedItemToWorld(itemType, itemId, demoInventory[itemId]);
+          showGameMessage(`${itemId.charAt(0).toUpperCase() + itemId.slice(1)} ${itemType === 'plant' ? 'seeds' : 'Farm'} purchased with Stars!`, 'success');
+        } else {
+          showGameMessage("Not enough stars!", 'error');
+        }
+      }
+    });
+  }
+});
+
+      }
+      
+      // Library button with aerial view functionality
+      if (libraryButton) {
+        libraryButton.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (document.pointerLockElement === document.body) document.exitPointerLock();
+          
+          // Toggle aerial view
+          toggleAerialView();
+        });
+      }
+      
+      // Setup mode selection popup
+      // Setup mode selection popup
+      document.querySelectorAll('.mode-option').forEach(option => {
+    console.log("Attaching click listener to mode option:", option); // DEBUG LINE (optional, but good for testing)
+    option.addEventListener('click', () => {
+        console.log("Mode option clicked!", option); // DEBUG LINE (optional)
+        const mode = option.dataset.mode; 
+        
+        if (mode === 'demo') {
+            setAppMode(false); 
+        } else if (mode === 'live') {
+            setAppMode(true); 
+        } else {
+            console.warn("Mode not determined from button click:", option);
+            return; 
+        }
+        
+        // Make sure aerial view is properly closed
+isAerialView = false;
+if (gameContainer) gameContainer.style.display = 'block';
+if (aerialViewContainer) aerialViewContainer.style.display = 'none';
+
+// Hide all popups
+if (modeSelectionPopup) modeSelectionPopup.style.display = 'none';
+if (prastFarmsPopup) prastFarmsPopup.style.display = 'none';
+
+// Optionally update the store
+updateReservesDisplay();
+    });
+});
+      
+      // Setup Prast Farms popup buttons
+      const prastFarmsCloseButton = document.getElementById('prast-farms-close');
+      if (prastFarmsCloseButton) {
+        prastFarmsCloseButton.addEventListener('click', () => {
+            prastFarmsPopup.style.display = 'none';
+        });
+      }
+      
+      const prastFarmsContinueButton = document.getElementById('prast-farms-continue');
+      if (prastFarmsContinueButton) {
+        prastFarmsContinueButton.addEventListener('click', () => {
+            // This button might be redundant if items are purchased directly from the list.
+            // If its purpose is just to confirm switching to live mode:
+            if (!isLiveMode) {
+                setAppMode(true);
+                showGameMessage("Switched to LIVE mode! You can now partner with farms.", 'success');
+            }
+            prastFarmsPopup.style.display = 'none';
+        });
+      }
+      
+      function addPurchasedItemToWorld(itemType, itemId, count) {
+  // Special handling for land expansion and third-party farms (unchanged)
+  if (itemType === 'land' && itemId === 'expansion') {
+    return;
+  }
+  if (itemType === 'third-party') {
+    console.log(`Partnership established with ${itemId.replace(/-/g, ' ')}. No 3D model.`);
+    return;
+  }
+
+  let itemGroup;
+  if (itemType === 'animal') {
+    itemGroup = createAnimalFarmStructure(itemId, count);
+  } else if (itemType === 'plant') {
+    itemGroup = createPlantPlot(itemId, count);
+  } else {
+    console.error("Unknown item type:", itemType);
+    return;
+  }
+
+  if (itemType === 'animal') {
+    // Create initial animal
+    const animal = createAnimalData(itemId);
+    animalData[itemId].push(animal);
+  }
+
+  // Determine appropriate size for collision
+  const itemRadius = itemType === 'animal' ? 6 : 4; // Animal farms are larger
+  
+  // Try to find a valid position
+  let placed = false;
+  let posX, posZ;
+  
+  for (let attempt = 0; attempt < 20; attempt++) {
+    const angle = Math.random() * Math.PI * 2;
+    // Place within 80% of island radius to leave some margin at the edge
+    const distance = Math.random() * (worldSize/2 * 0.8);
+    
+    posX = Math.cos(angle) * distance;
+    posZ = Math.sin(angle) * distance;
+    
+    const position = new THREE.Vector3(posX, 0, posZ);
+    if (isPositionAvailable(position, itemRadius)) {
+      placed = true;
+      itemGroup.position.set(posX, 0, posZ);
+      markPositionOccupied(position, itemRadius);
+      break;
+    }
+  }
+  
+  // If we couldn't find a valid position, place at a fixed position at the center
+  // but warn the player
+  if (!placed) {
+    console.warn("Couldn't find space for new item, placing near center");
+    // Place in spiral pattern around center
+    const spiralCount = worldObjects.filter(obj => 
+      obj.userData && (obj.userData.itemType === 'animal' || obj.userData.itemType === 'plant')
+    ).length;
+    
+    const spiralAngle = spiralCount * 0.5; // Increment angle for each item
+    const spiralRadius = 5 + spiralCount * 0.5; // Increase radius for each item
+    
+    posX = Math.cos(spiralAngle) * spiralRadius;
+    posZ = Math.sin(spiralAngle) * spiralRadius;
+    
+    itemGroup.position.set(posX, 0, posZ);
+    markPositionOccupied(new THREE.Vector3(posX, 0, posZ), itemRadius);
+  }
+  
+  itemGroup.name = `${itemId}_${itemType}_${count}`;
+  itemGroup.userData = { 
+    itemType: itemType, 
+    itemId: itemId, 
+    instanceCount: count,
+    collisionRadius: itemRadius // Store radius for collision detection
+  };
+  scene.add(itemGroup);
+  worldObjects.push(itemGroup);
+}
 
       function createAnimalFarmStructure(animalId, count) {
-        const farmGroup = new BABYLON.TransformNode(`${animalId}Farm`, scene);
-        let baseColor, structureColor, animalColor;
+        const farmGroup = new THREE.Group();
+        let baseColor, structureColor, animalColor, animalGeometry;
         const fenceHeight = 1.2, fencePostRadius = 0.1, fencePlankHeight = 0.15;
         const farmSize = (animalId === 'cow' || animalId === 'goat') ? 10 : 8; // Larger for bigger animals
-        const structureSize = {x: animalId === 'cow' ? 5 : 4, y: 2.5, z: animalId === 'cow' ? 4 : 3};
+        const structureSize = new THREE.Vector3(animalId === 'cow' ? 5 : 4, 2.5, animalId === 'cow' ? 4 : 3);
 
         // Minecraft-style blocky animals
         switch(animalId) {
             case 'chicken':
-                baseColor = new BABYLON.Color3(0.824, 0.706, 0.549); structureColor = new BABYLON.Color3(0.545, 0.271, 0.075); animalColor = new BABYLON.Color3(1, 1, 0.878);
+                baseColor = 0xD2B48C; structureColor = 0x8B4513; animalColor = 0xFFFFE0;
+                animalGeometry = new THREE.BoxGeometry(0.4, 0.5, 0.3); // Body
                 break;
             case 'pig':
-                baseColor = new BABYLON.Color3(1, 0.753, 0.796); structureColor = new BABYLON.Color3(0.627, 0.322, 0.176); animalColor = new BABYLON.Color3(1, 0.627, 0.478);
+                baseColor = 0xFFC0CB; structureColor = 0xA0522D; animalColor = 0xFFA07A;
+                animalGeometry = new THREE.BoxGeometry(0.8, 0.5, 0.4); // Body
                 break;
             case 'cow':
-                baseColor = new BABYLON.Color3(0.737, 0.690, 0.631); structureColor = new BABYLON.Color3(0.478, 0.439, 0.380); animalColor = new BABYLON.Color3(1, 1, 1);
+                baseColor = 0xBCB0A1; structureColor = 0x7A7061; animalColor = 0xFFFFFF; // White with black spots (texture later)
+                animalGeometry = new THREE.BoxGeometry(1.5, 1.0, 0.7); // Body
                 break;
             case 'goat':
-                baseColor = new BABYLON.Color3(0.753, 0.753, 0.753); structureColor = new BABYLON.Color3(0.314, 0.314, 0.314); animalColor = new BABYLON.Color3(0.878, 0.878, 0.878);
+                baseColor = 0xC0C0C0; structureColor = 0x505050; animalColor = 0xE0E0E0;
+                animalGeometry = new THREE.BoxGeometry(1.0, 0.8, 0.5); // Body
                 break;
             case 'fish': // Fish pond, no land structure like others
                 return createFishPond(animalId, count); // Special handling
             default:
-                baseColor = new BABYLON.Color3(0.8, 0.8, 0.8); structureColor = new BABYLON.Color3(0.333, 0.333, 0.333); animalColor = new BABYLON.Color3(0.6, 0.6, 0.6);
+                baseColor = 0xCCCCCC; structureColor = 0x555555; animalColor = 0x999999;
+                animalGeometry = new THREE.BoxGeometry(0.5,0.5,0.5);
         }
 
-        const structureMaterial = new BABYLON.StandardMaterial(`${animalId}StructureMaterial`, scene);
-        structureMaterial.diffuseColor = baseColor;
-        
-        const mainStructureMesh = BABYLON.MeshBuilder.CreateBox(`${animalId}Structure`, structureSize, scene);
-        mainStructureMesh.material = structureMaterial;
-        mainStructureMesh.receiveShadows = true;
+        const structureMaterial = new THREE.MeshStandardMaterial({ color: baseColor });
+        const mainStructureMesh = new THREE.Mesh(new THREE.BoxGeometry(structureSize.x, structureSize.y, structureSize.z), structureMaterial);
+        mainStructureMesh.castShadow = true; mainStructureMesh.receiveShadow = true;
         mainStructureMesh.position.y = structureSize.y / 2;
-        mainStructureMesh.parent = farmGroup;
+        farmGroup.add(mainStructureMesh);
 
-        const roofMaterial = new BABYLON.StandardMaterial(`${animalId}RoofMaterial`, scene);
-        roofMaterial.diffuseColor = structureColor;
-        
-        const roofMesh = BABYLON.MeshBuilder.CreateBox(`${animalId}Roof`, {
-          width: structureSize.x * 1.1, 
-          height: 0.3, 
-          depth: structureSize.z * 1.1
-        }, scene);
-        roofMesh.material = roofMaterial;
+        const roofMaterial = new THREE.MeshStandardMaterial({ color: structureColor });
+        const roofMesh = new THREE.Mesh(new THREE.BoxGeometry(structureSize.x * 1.1, 0.3, structureSize.z * 1.1), roofMaterial);
         roofMesh.position.y = structureSize.y + 0.15;
-        roofMesh.parent = farmGroup;
+        farmGroup.add(roofMesh);
 
-        // Fence
-        const fenceMaterial = new BABYLON.StandardMaterial(`${animalId}FenceMaterial`, scene);
-        fenceMaterial.diffuseColor = new BABYLON.Color3(0.545, 0.271, 0.075); // Brown color for fence
+        // Fence (similar logic as before, adapted for farmSize)
+        const fenceMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 }); // Brown color for fence
+        const postGeo = new THREE.CylinderGeometry(fencePostRadius, fencePostRadius, fenceHeight, 8);
+        const plankGeoSide = new THREE.BoxGeometry(farmSize, fencePlankHeight, 0.1); // For front/back
+        const plankGeoEnd = new THREE.BoxGeometry(0.1, fencePlankHeight, farmSize);   // For left/right (width becomes depth)
+
 
         // Create posts at corners
         const postPositions = [
-            new BABYLON.Vector3(-farmSize / 2, fenceHeight / 2, -farmSize / 2),
-            new BABYLON.Vector3(farmSize / 2, fenceHeight / 2, -farmSize / 2),
-            new BABYLON.Vector3(-farmSize / 2, fenceHeight / 2, farmSize / 2),
-            new BABYLON.Vector3(farmSize / 2, fenceHeight / 2, farmSize / 2)
+            new THREE.Vector3(-farmSize / 2, fenceHeight / 2, -farmSize / 2),
+            new THREE.Vector3(farmSize / 2, fenceHeight / 2, -farmSize / 2),
+            new THREE.Vector3(-farmSize / 2, fenceHeight / 2, farmSize / 2),
+            new THREE.Vector3(farmSize / 2, fenceHeight / 2, farmSize / 2)
         ];
-        postPositions.forEach((pos, index) => {
-            const post = BABYLON.MeshBuilder.CreateCylinder(`${animalId}Post${index}`, {
-              height: fenceHeight, 
-              diameter: fencePostRadius * 2, 
-              tessellation: 8
-            }, scene);
-            post.material = fenceMaterial;
-            post.position.copyFrom(pos);
-            post.parent = farmGroup;
+        postPositions.forEach(pos => {
+            const post = new THREE.Mesh(postGeo, fenceMaterial);
+            post.position.copy(pos);
+            post.castShadow = true;
+            farmGroup.add(post);
         });
 
         // Create planks (2 levels)
-        [0.3 * fenceHeight, 0.7 * fenceHeight].forEach((plankLevelY, levelIndex) => {
-            // Front and back planks
-            const plankFront = BABYLON.MeshBuilder.CreateBox(`${animalId}PlankFront${levelIndex}`, {
-              width: farmSize, 
-              height: fencePlankHeight, 
-              depth: 0.1
-            }, scene);
-            plankFront.material = fenceMaterial;
-            plankFront.position = new BABYLON.Vector3(0, plankLevelY, farmSize / 2);
-            plankFront.parent = farmGroup;
+        [0.3 * fenceHeight, 0.7 * fenceHeight].forEach(plankLevelY => {
+            // Front plank
+            const plankFront = new THREE.Mesh(plankGeoSide, fenceMaterial);
+            plankFront.position.set(0, plankLevelY, farmSize / 2);
+            plankFront.castShadow = true;
+            farmGroup.add(plankFront);
 
-            const plankBack = BABYLON.MeshBuilder.CreateBox(`${animalId}PlankBack${levelIndex}`, {
-              width: farmSize, 
-              height: fencePlankHeight, 
-              depth: 0.1
-            }, scene);
-            plankBack.material = fenceMaterial;
-            plankBack.position = new BABYLON.Vector3(0, plankLevelY, -farmSize / 2);
-            plankBack.parent = farmGroup;
+            // Back plank
+            const plankBack = new THREE.Mesh(plankGeoSide, fenceMaterial);
+            plankBack.position.set(0, plankLevelY, -farmSize / 2);
+            plankBack.castShadow = true;
+            farmGroup.add(plankBack);
             
-            // Left and right planks
-            const plankLeft = BABYLON.MeshBuilder.CreateBox(`${animalId}PlankLeft${levelIndex}`, {
-              width: 0.1, 
-              height: fencePlankHeight, 
-              depth: farmSize
-            }, scene);
-            plankLeft.material = fenceMaterial;
-            plankLeft.position = new BABYLON.Vector3(-farmSize / 2, plankLevelY, 0);
-            plankLeft.parent = farmGroup;
+            // Left plank (rotated)
+            const plankLeft = new THREE.Mesh(plankGeoSide, fenceMaterial); // Use same geometry, just rotate
+            plankLeft.rotation.y = Math.PI / 2;
+            plankLeft.position.set(-farmSize / 2, plankLevelY, 0);
+            plankLeft.castShadow = true;
+            farmGroup.add(plankLeft);
 
-            const plankRight = BABYLON.MeshBuilder.CreateBox(`${animalId}PlankRight${levelIndex}`, {
-              width: 0.1, 
-              height: fencePlankHeight, 
-              depth: farmSize
-            }, scene);
-            plankRight.material = fenceMaterial;
-            plankRight.position = new BABYLON.Vector3(farmSize / 2, plankLevelY, 0);
-            plankRight.parent = farmGroup;
+            // Right plank (rotated)
+            const plankRight = new THREE.Mesh(plankGeoSide, fenceMaterial); // Use same geometry, just rotate
+            plankRight.rotation.y = Math.PI / 2;
+            plankRight.position.set(farmSize / 2, plankLevelY, 0);
+            plankRight.castShadow = true;
+            farmGroup.add(plankRight);
         });
 
+
         // Add blocky animals
-        const animalMaterial = new BABYLON.StandardMaterial(`${animalId}AnimalMaterial`, scene);
-        animalMaterial.diffuseColor = animalColor;
-        
+        const animalMaterial = new THREE.MeshStandardMaterial({ color: animalColor });
         const numAnimals = 1; // Just create one animal initially
-        const penCenterForAI = new BABYLON.Vector3(0,0,0); // Relative to farmGroup origin
+        const penCenterForAI = new THREE.Vector3(0,0,0); // Relative to farmGroup origin
         
         for (let i = 0; i < numAnimals; i++) {
-            const animal = new BABYLON.TransformNode(`${animalId}Animal${i}`, scene);
-            
-            let bodySize;
-            switch(animalId) {
-                case 'chicken': bodySize = {width: 0.4, height: 0.5, depth: 0.3}; break;
-                case 'pig': bodySize = {width: 0.8, height: 0.5, depth: 0.4}; break;
-                case 'cow': bodySize = {width: 1.5, height: 1.0, depth: 0.7}; break;
-                case 'goat': bodySize = {width: 1.0, height: 0.8, depth: 0.5}; break;
-                default: bodySize = {width: 0.5, height: 0.5, depth: 0.5};
-            }
-            
-            const body = BABYLON.MeshBuilder.CreateBox(`${animalId}Body${i}`, bodySize, scene);
-            body.material = animalMaterial;
-            body.parent = animal;
+            const animal = new THREE.Group(); // Group for body + legs if needed
+            const body = new THREE.Mesh(animalGeometry, animalMaterial);
+            body.castShadow = true;
+            animal.add(body);
 
             // Simple legs for larger animals
             if (animalId === 'pig' || animalId === 'cow' || animalId === 'goat') {
-                const legSize = {width: 0.2, height: 0.4, depth: 0.2};
+                const legGeo = new THREE.BoxGeometry(0.2, 0.4, 0.2); // Adjusted leg size slightly
+                const bodyParams = body.geometry.parameters;
                 const legPositions = [
-                    {x: bodySize.width/2 * 0.7, z: bodySize.depth/2 * 0.7},
-                    {x: -bodySize.width/2 * 0.7, z: bodySize.depth/2 * 0.7},
-                    {x: bodySize.width/2 * 0.7, z: -bodySize.depth/2 * 0.7},
-                    {x: -bodySize.width/2 * 0.7, z: -bodySize.depth/2 * 0.7},
+                    {x: bodyParams.width/2 * 0.7, z: bodyParams.depth/2 * 0.7},
+                    {x: -bodyParams.width/2 * 0.7, z: bodyParams.depth/2 * 0.7},
+                    {x: bodyParams.width/2 * 0.7, z: -bodyParams.depth/2 * 0.7},
+                    {x: -bodyParams.width/2 * 0.7, z: -bodyParams.depth/2 * 0.7},
                 ];
-                legPositions.forEach((pos, legIndex) => {
-                    const leg = BABYLON.MeshBuilder.CreateBox(`${animalId}Leg${i}${legIndex}`, legSize, scene);
-                    leg.material = animalMaterial;
+                legPositions.forEach(pos => {
+                    const leg = new THREE.Mesh(legGeo, animalMaterial);
                     // Position legs underneath the body
-                    leg.position = new BABYLON.Vector3(pos.x, -bodySize.height/2 - legSize.height/2 + 0.1, pos.z);
-                    leg.parent = animal;
+                    leg.position.set(pos.x, -bodyParams.height/2 - legGeo.parameters.height/2 + 0.1, pos.z);
+                    animal.add(leg);
                 });
-                body.position.y = legSize.height / 2 + 0.1; // Lift body to accommodate legs
+                body.position.y = legGeo.parameters.height / 2 + 0.1; // Lift body to accommodate legs
             } else { // Chickens
-                 body.position.y = bodySize.height / 2; // Chickens on ground
+                 body.position.y = animalGeometry.parameters.height / 2; // Chickens on ground
             }
 
-            animal.position = new BABYLON.Vector3(
+            animal.position.set(
                 (Math.random() - 0.5) * (farmSize - structureSize.x - 1), // Try to place outside structure
                 0, // Y will be set by body/leg logic, animal group itself is at ground level
                 (Math.random() - 0.5) * (farmSize - structureSize.z - 1)
@@ -2449,17 +2871,20 @@ document.querySelectorAll('#management-popup .payment-option').forEach(option =>
                 animal.position.z = pushDirectionZ * (structureSize.z/2 + clearance + Math.random()*0.5);
             }
             // Clamp animal position to be within the fence
-            const halfFarmSize = farmSize / 2 - (bodySize.width || 0.5); // Minus half animal width for buffer
+            const halfFarmSize = farmSize / 2 - (animalGeometry.parameters.width || 0.5); // Minus half animal width for buffer
             animal.position.x = Math.max(-halfFarmSize, Math.min(halfFarmSize, animal.position.x));
             animal.position.z = Math.max(-halfFarmSize, Math.min(halfFarmSize, animal.position.z));
 
-            animal.parent = farmGroup;
+            farmGroup.add(animal);
 
             if (animalId === 'chicken') { // Only chickens get AI for now
+                 // Make sure farmGroup.position is set before this point if penCenter needs absolute coords
+                 // For now, penCenter will be relative to the farmGroup's eventual position.
+                 // When addPurchasedItemToWorld positions farmGroup, chickenAIMeshes.penCenter must be updated.
                 chickenAIMeshes.push({
                     mesh: animal,
                     timer: Math.random() * 5,
-                    targetPosition: animal.position.clone(), // Start at current pos within farmGroup
+                    targetPosition: new THREE.Vector3().copy(animal.position), // Start at current pos within farmGroup
                     penSize: farmSize, // The size of the fenced area
                     penCenter: farmGroup.position.clone().add(penCenterForAI) // Initial pen center, will be updated once farmGroup is placed
                 });
@@ -2469,555 +2894,391 @@ document.querySelectorAll('#management-popup .payment-option').forEach(option =>
       }
 
       function createFishPond(itemId, count) {
-        const pondGroup = new BABYLON.TransformNode("fishPond", scene);
+        const pondGroup = new THREE.Group();
         const pondRadius = 4;
         const pondDepth = 1.5;
 
         // Water
-        const water = BABYLON.MeshBuilder.CreateCylinder("water", {
-          height: pondDepth, 
-          diameter: pondRadius * 2, 
-          tessellation: 16
-        }, scene);
-        const waterMat = new BABYLON.StandardMaterial("waterMaterial", scene);
-        waterMat.diffuseColor = new BABYLON.Color3(0.275, 0.510, 0.706);
-        waterMat.alpha = 0.6;
-        waterMat.roughness = 0.2;
-        water.material = waterMat;
+        const waterGeo = new THREE.CylinderGeometry(pondRadius, pondRadius, pondDepth, 16);
+        const waterMat = new THREE.MeshStandardMaterial({color: 0x4682B4, transparent: true, opacity: 0.6, roughness: 0.2, metalness: 0.1});
+        const water = new THREE.Mesh(waterGeo, waterMat);
         water.position.y = -pondDepth/2 + 0.1; // Slightly recessed so top is just below ground
-        water.receiveShadows = true; // Water can receive shadows
-        water.parent = pondGroup;
+        water.receiveShadow = true; // Water can receive shadows
+        pondGroup.add(water);
 
         // Border
-        const border = BABYLON.MeshBuilder.CreateTorus("border", {
-          diameter: pondRadius * 2, 
-          thickness: 0.3, 
-          tessellation: 24
-        }, scene);
-        const borderMat = new BABYLON.StandardMaterial("borderMaterial", scene);
-        borderMat.diffuseColor = new BABYLON.Color3(0.667, 0.667, 0.667);
-        borderMat.roughness = 0.7;
-        border.material = borderMat;
+        const borderGeo = new THREE.TorusGeometry(pondRadius, 0.3, 8, 24);
+        const borderMat = new THREE.MeshStandardMaterial({color: 0xAAAAAA, roughness:0.7});
+        const border = new THREE.Mesh(borderGeo, borderMat);
         border.rotation.x = Math.PI/2;
         border.position.y = 0.05; // Top of border slightly above ground
-        border.receiveShadows = true;
-        border.parent = pondGroup;
+        border.castShadow = true;
+        border.receiveShadow = true;
+        pondGroup.add(border);
 
         // Fish (simple blocky fish)
-        const fishMat = new BABYLON.StandardMaterial("fishMaterial", scene);
-        fishMat.diffuseColor = new BABYLON.Color3(1, 0.549, 0); // Orange
-        
+        const fishGeo = new THREE.BoxGeometry(0.5, 0.2, 0.15);
+        const fishMat = new THREE.MeshStandardMaterial({color: 0xFF8C00}); // Orange
         for(let i=0; i<5; i++) {
-            const fish = BABYLON.MeshBuilder.CreateBox(`fish${i}`, {width: 0.5, height: 0.2, depth: 0.15}, scene);
-            fish.material = fishMat;
-            fish.position = new BABYLON.Vector3(
+            const fish = new THREE.Mesh(fishGeo, fishMat);
+            fish.position.set(
                 (Math.random() - 0.5) * pondRadius * 1.5, // Spread within pond radius
                 water.position.y + (pondDepth/2) - (Math.random() * (pondDepth * 0.8)) - 0.1, // Within water depth, slightly below surface
                 (Math.random() - 0.5) * pondRadius * 1.5
             );
             fish.rotation.y = Math.random() * Math.PI * 2;
-            fish.parent = pondGroup;
+            fish.castShadow = true;
+            pondGroup.add(fish);
         }
         return pondGroup;
       }
 
       function createPlantPlot(plantId, count) {
-        const plotGroup = new BABYLON.TransformNode(`${plantId}Plot`, scene);
-        let plantColor1 = new BABYLON.Color3(0.133, 0.545, 0.133), plantColor2 = new BABYLON.Color3(0, 0.392, 0); // Default greens
+        const plotGroup = new THREE.Group();
+        let plantColor1 = 0x228B22, plantColor2 = 0x006400; // Default greens
+        let plantGeo1, plantGeo2;
         let scale = 1.0;
 
         switch(plantId) {
             case 'plantain': case 'banana':
-                plantColor1 = new BABYLON.Color3(0.561, 0.737, 0.561); plantColor2 = new BABYLON.Color3(0.235, 0.702, 0.443); scale = 1.2;
-                
-                const stalk = BABYLON.MeshBuilder.CreateCylinder(`${plantId}Stalk`, {
-                  height: 1.5, 
-                  diameterTop: 0.2, 
-                  diameterBottom: 0.4, 
-                  tessellation: 6
-                }, scene);
-                const stalkMat = new BABYLON.StandardMaterial(`${plantId}StalkMaterial`, scene);
-                stalkMat.diffuseColor = plantColor1;
-                stalk.material = stalkMat;
-                stalk.position.y = 0.75;
-                stalk.parent = plotGroup;
-                
-                const leafyTop = BABYLON.MeshBuilder.CreateSphere(`${plantId}Leaves`, {diameter: 1.2, segments: 5}, scene);
-                const leafMat = new BABYLON.StandardMaterial(`${plantId}LeafMaterial`, scene);
-                leafMat.diffuseColor = plantColor2;
-                leafyTop.material = leafMat;
-                leafyTop.position.y = 1.5;
-                leafyTop.parent = plotGroup;
+                plantGeo1 = new THREE.CylinderGeometry(0.1, 0.2, 1.5, 6); // Stalk
+                plantGeo2 = new THREE.SphereGeometry(0.6, 5, 4); // Leafy top
+                plantColor1 = 0x8FBC8F; plantColor2 = 0x3CB371; scale = 1.2;
                 break;
-                
             case 'orange': case 'coconut': case 'papaya':
-                plantColor1 = new BABYLON.Color3(0.545, 0.271, 0.075); plantColor2 = new BABYLON.Color3(0.180, 0.545, 0.341); scale = 1.1;
-                
-                const trunk = BABYLON.MeshBuilder.CreateCylinder(`${plantId}Trunk`, {
-                  height: 1.2, 
-                  diameterTop: 0.3, 
-                  diameterBottom: 0.5, 
-                  tessellation: 6
-                }, scene);
-                const trunkMat = new BABYLON.StandardMaterial(`${plantId}TrunkMaterial`, scene);
-                trunkMat.diffuseColor = plantColor1;
-                trunk.material = trunkMat;
-                trunk.position.y = 0.6;
-                trunk.parent = plotGroup;
-                
-                const foliage = BABYLON.MeshBuilder.CreateSphere(`${plantId}Foliage`, {diameter: 1.6, segments: 6}, scene);
-                const foliageMat = new BABYLON.StandardMaterial(`${plantId}FoliageMaterial`, scene);
-                foliageMat.diffuseColor = plantColor2;
-                foliage.material = foliageMat;
-                foliage.position.y = 1.5;
-                foliage.parent = plotGroup;
-                
+                plantGeo1 = new THREE.CylinderGeometry(0.15, 0.25, 1.2, 6); // Trunk
+                plantGeo2 = new THREE.SphereGeometry(0.8, 6, 5); // Foliage
+                plantColor1 = 0x8B4513; plantColor2 = 0x2E8B57; scale = 1.1;
                 // Add fruit
-                let fruitColor, fruitCount = 0;
+                let fruitGeo, fruitMat, fruitCount = 0;
                 if (plantId === 'orange') {
-                    fruitColor = new BABYLON.Color3(1, 0.549, 0); // Orange
+                    fruitGeo = new THREE.SphereGeometry(0.15, 5, 4);
+                    fruitMat = new THREE.MeshStandardMaterial({color: 0xFF8C00}); // Orange
                     fruitCount = 3;
                 } else if (plantId === 'coconut') {
-                    fruitColor = new BABYLON.Color3(0.545, 0.271, 0.075); // Brownish
+                    fruitGeo = new THREE.SphereGeometry(0.2, 5, 4);
+                    fruitMat = new THREE.MeshStandardMaterial({color: 0x8B4513}); // Brownish
                     fruitCount = 2;
                 } else if (plantId === 'papaya') {
-                    fruitColor = new BABYLON.Color3(1, 0.843, 0); // Yellow-Orange
+                    fruitGeo = new THREE.SphereGeometry(0.18, 5, 4); // More elliptical if possible, but sphere is fine
+                    fruitMat = new THREE.MeshStandardMaterial({color: 0xFFD700}); // Yellow-Orange
                     fruitCount = 2;
                 }
-                
                 if (fruitCount > 0) {
-                    const fruitMat = new BABYLON.StandardMaterial(`${plantId}FruitMaterial`, scene);
-                    fruitMat.diffuseColor = fruitColor;
-                    
                     for(let f=0; f<fruitCount; f++) {
-                        const fruit = BABYLON.MeshBuilder.CreateSphere(`${plantId}Fruit${f}`, {diameter: plantId === 'coconut' ? 0.4 : 0.36}, scene);
-                        fruit.material = fruitMat;
-                        // Position fruits within the foliage sphere
-                        fruit.position = new BABYLON.Vector3(
-                            (Math.random()-0.5) * 0.64, 
-                            1.5 + (Math.random()-0.5) * 0.4, 
-                            (Math.random()-0.5) * 0.64
+                        const fruit = new THREE.Mesh(fruitGeo, fruitMat);
+                        fruit.castShadow = true;
+                        // Position fruits within the foliage sphere (plantGeo2)
+                        fruit.position.set(
+                            (Math.random()-0.5) * (plantGeo2.parameters.radius * 0.8), 
+                            1.2 + (plantGeo2.parameters.radius * 0.5) + (Math.random()-0.5) * (plantGeo2.parameters.radius * 0.5), 
+                            (Math.random()-0.5) * (plantGeo2.parameters.radius * 0.8)
                         );
-                        fruit.parent = plotGroup;
+                        plotGroup.add(fruit);
                     }
                 }
                 break;
-                
             case 'sugarcane':
-                plantColor1 = new BABYLON.Color3(0.565, 0.933, 0.565); // Light green
+                // Sugarcane is just stalks, no separate plantGeo2
+                plantColor1 = 0x90EE90; // Light green
                 scale = 1.0;
                 for(let i=0; i<3; i++) { // Bundle of 3 stalks
                     const stalkHeight = 1.5 + Math.random() * 0.5;
-                    const stalk = BABYLON.MeshBuilder.CreateCylinder(`${plantId}Stalk${i}`, {
-                      height: stalkHeight, 
-                      diameter: 0.1, 
-                      tessellation: 6
-                    }, scene);
-                    const stalkMat = new BABYLON.StandardMaterial(`${plantId}StalkMaterial${i}`, scene);
-                    stalkMat.diffuseColor = plantColor1;
-                    stalk.material = stalkMat;
-                    stalk.position = new BABYLON.Vector3(
+                    const stalkGeo = new THREE.CylinderGeometry(0.05, 0.05, stalkHeight, 6);
+                    const stalkMat = new THREE.MeshStandardMaterial({color: plantColor1});
+                    const stalk = new THREE.Mesh(stalkGeo, stalkMat);
+                    stalk.castShadow = true;
+                    stalk.position.set(
                         (Math.random()-0.5)*0.3, 
                         stalkHeight/2, // Base on ground
                         (Math.random()-0.5)*0.3
                     );
-                    stalk.rotation = new BABYLON.Vector3( // Slight random tilt
+                    stalk.rotation.set( // Slight random tilt
                         (Math.random()-0.5)*0.1, 0, (Math.random()-0.5)*0.1
                     );
-                    stalk.parent = plotGroup;
+                    plotGroup.add(stalk);
                 }
-                break;
-                
+                // Skip the generic part1/part2 addition for sugarcane
+                plotGroup.scale.set(scale, scale, scale);
+                return plotGroup; 
             case 'carrot':
                 scale = 0.8;
                 // Create soil patch
-                const soil = BABYLON.MeshBuilder.CreateCylinder(`${plantId}Soil`, {
-                  height: 0.15, 
-                  diameter: 1.6, 
-                  tessellation: 8
-                }, scene);
-                const soilMat = new BABYLON.StandardMaterial(`${plantId}SoilMaterial`, scene);
-                soilMat.diffuseColor = new BABYLON.Color3(0.361, 0.251, 0.200); // Darker brown
-                soil.material = soilMat;
+                const soilGeo = new THREE.CylinderGeometry(0.8, 0.8, 0.15, 8); // Slightly thicker soil
+                const soilMat = new THREE.MeshStandardMaterial({color: 0x5C4033}); // Darker brown
+                const soil = new THREE.Mesh(soilGeo, soilMat);
                 soil.position.y = -0.075; // Center it on ground
-                soil.receiveShadows = true;
-                soil.parent = plotGroup;
+                soil.receiveShadow = true;
+                plotGroup.add(soil);
                 
                 // Add multiple small carrot tops
-                const leafClumpMat = new BABYLON.StandardMaterial(`${plantId}LeafMaterial`, scene);
-                leafClumpMat.diffuseColor = new BABYLON.Color3(0.196, 0.804, 0.196); // Bright green
-                
                 for(let i=0; i<5; i++) {
-                    const leafClump = BABYLON.MeshBuilder.CreateSphere(`${plantId}Leaves${i}`, {diameter: 0.3, segments: 4}, scene);
-                    leafClump.material = leafClumpMat;
+                    const leafClumpGeo = new THREE.SphereGeometry(0.15, 4, 3); // Small green leafy part
+                    const leafClumpMat = new THREE.MeshStandardMaterial({color: 0x32CD32}); // Bright green
+                    const leafClump = new THREE.Mesh(leafClumpGeo, leafClumpMat);
+                    leafClump.castShadow = true;
                     
                     // Position carrots randomly within the soil patch circle
                     const angle = Math.random() * Math.PI * 2;
                     const radius = Math.random() * (0.8 - 0.15); // Within soil radius, minus leaf radius
-                    leafClump.position = new BABYLON.Vector3(
+                    leafClump.position.set(
                         Math.cos(angle) * radius,
                         0.1, // Tops just above soil line
                         Math.sin(angle) * radius
                     );
-                    leafClump.parent = plotGroup;
+                    plotGroup.add(leafClump);
                     
                     // Add a small carrot cone sticking out (optional, mostly buried)
                     if (Math.random() > 0.5) { // Some carrots might show a bit
-                        const carrotTop = BABYLON.MeshBuilder.CreateCylinder(`${plantId}CarrotTop${i}`, {
-                          height: 0.1, 
-                          diameterTop: 0, 
-                          diameterBottom: 0.1, 
-                          tessellation: 4
-                        }, scene);
-                        const carrotTopMat = new BABYLON.StandardMaterial(`${plantId}CarrotTopMaterial${i}`, scene);
-                        carrotTopMat.diffuseColor = new BABYLON.Color3(1, 0.549, 0); // Orange
-                        carrotTop.material = carrotTopMat;
-                        carrotTop.position.copyFrom(leafClump.position);
+                        const carrotTopGeo = new THREE.ConeGeometry(0.05, 0.1, 4);
+                        const carrotTopMat = new THREE.MeshStandardMaterial({color: 0xFF8C00}); // Orange
+                        const carrotTop = new THREE.Mesh(carrotTopGeo, carrotTopMat);
+                        carrotTop.castShadow = true;
+                        carrotTop.position.copy(leafClump.position);
                         carrotTop.position.y = 0.02; // Tip slightly visible
-                        carrotTop.parent = plotGroup;
+                        // carrotTop.rotation.x = Math.PI; // Pointing down, already default for cone base
+                        plotGroup.add(carrotTop);
                     }
                 }
-                break;
-                
+                plotGroup.scale.set(scale, scale, scale);
+                return plotGroup; // Skip generic part1/part2 for carrot
             default:
-                const defaultPlant = BABYLON.MeshBuilder.CreateBox(`${plantId}Default`, {width: 0.3, height: 0.8, depth: 0.3}, scene);
-                const defaultMat = new BABYLON.StandardMaterial(`${plantId}DefaultMaterial`, scene);
-                defaultMat.diffuseColor = plantColor1;
-                defaultPlant.material = defaultMat;
-                defaultPlant.position.y = 0.4;
-                defaultPlant.parent = plotGroup;
+                plantGeo1 = new THREE.BoxGeometry(0.3, 0.8, 0.3); // Fallback generic plant
                 break;
         }
 
-        plotGroup.scaling = new BABYLON.Vector3(scale, scale, scale);
+        // For standard plant types that use the trunk/foliage pattern
+        if (plantGeo1) {
+            const mat1 = new THREE.MeshStandardMaterial({color: plantColor1});
+            const part1 = new THREE.Mesh(plantGeo1, mat1);
+            part1.castShadow = true;
+            part1.position.y = (plantGeo1.parameters.height || 0.8) / 2; // Base on ground
+            plotGroup.add(part1);
+
+            if (plantGeo2) {
+                const mat2 = new THREE.MeshStandardMaterial({color: plantColor2});
+                const part2 = new THREE.Mesh(plantGeo2, mat2);
+                part2.castShadow = true;
+                // Position foliage on top of the trunk
+                part2.position.y = (plantGeo1.parameters.height || 0.8) -0.1 + (plantGeo2.parameters.radius || 0.3) * 0.5; 
+                plotGroup.add(part2);
+            }
+        }
+
+        plotGroup.scale.set(scale, scale, scale);
         return plotGroup;
       }
-
-      // Event handlers and UI setup
-      if (reservesButton && farmStoreDropdown) {
-        reservesButton.addEventListener('click', (event) => {
-          event.stopPropagation();
-          if (document.pointerLockElement === document.body) document.exitPointerLock();
-          const isActive = farmStoreDropdown.classList.toggle('active');
-          reservesButton.setAttribute('aria-expanded', isActive);
-          if (isActive) {
-            updateReservesDisplay();
-          }
-        });
-        
-        reservesAmountSpan.addEventListener('click', function(event) {
-          event.stopPropagation();
-          reservesButton.click();
-        });
-
-        // Wrap pointer lock request in user gesture handler
-document.addEventListener('click', () => {
-  document.body.requestPointerLock().catch(err => {
-    console.log('Error requesting pointer lock:', err);
-  });
-});
-        
-        // Handle third party farms view button
-        const thirdPartyViewButton = document.querySelector('[data-action="show-third-party-farms"]');
-        if (thirdPartyViewButton) {
-          thirdPartyViewButton.addEventListener('click', (e) => {
-              e.stopPropagation();
-              thirdPartyFarmsSection.style.display = thirdPartyFarmsSection.style.display === 'block' ? 'none' : 'block';
-          });
+        // Add search functionality to the main store dropdown
+        const mainStoreSearchInput = farmStoreDropdown.querySelector('.search-input');
+        if (mainStoreSearchInput) {
+            mainStoreSearchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                
+                farmStoreDropdown.querySelectorAll('.dropdown-item').forEach(item => {
+                    // Ensure not to hide special sections like "THIRD PARTY FARMS" header or prompts unless they are part of item filtering
+                    if (item.classList.contains('third-party-prompt') || item.textContent.toUpperCase() === 'THIRD PARTY FARMS' || item.querySelector('.shop-header-notice') || item.matches('hr') || item.classList.contains('px-2')) {
+                        // Keep these structural elements visible unless explicitly part of search logic for them
+                        return;
+                    }
+                    const title = item.querySelector('.dropdown-item-title')?.textContent.toLowerCase() || '';
+                    const desc = item.querySelector('.dropdown-item-desc')?.textContent.toLowerCase() || '';
+                    item.style.display = (title.includes(searchTerm) || desc.includes(searchTerm)) ? 'flex' : 'none';
+                });
+            });
         }
 
-        // Main store dropdown handlers
-        farmStoreDropdown.querySelectorAll('.dropdown-item').forEach(item => {
-          const itemId = item.dataset.id;
-          const itemType = item.dataset.type;
-          const cost = parseInt(item.dataset.cost || '0');
-          const purchaseButton = item.querySelector('.dropdown-item-price');
-
-          if (purchaseButton) {
-              purchaseButton.addEventListener('click', (event) => {
-                  event.stopPropagation();
-                  
-                  // Special cases for special actions
-                  if (purchaseButton.dataset.action === 'show-third-party-farms') {
-                      thirdPartyFarmsSection.style.display = thirdPartyFarmsSection.style.display === 'block' ? 'none' : 'block';
-                      return;
-                  }
-
-                  // Handle "Manage" button clicks
-                  if (purchaseButton.textContent === "Manage") {
-                      farmStoreDropdown.classList.remove('active');
-                      showFarmManagement(itemId);
-                      return;
-                  }
-                  
-                  // Land expansion direct purchase (using Stars)
-                  if (itemType === 'land' && itemId === 'expansion') {
-                      if (playerReserves >= cost) {
-                        if (expandLand()) {
-                            playerReserves -= cost;
-                            updateReservesDisplay();
-                        }
-                      } else {
-                          showGameMessage("Not enough stars for land expansion!", 'error');
-                      }
-                      return;
-                  }
-                  
-                  // REGULAR PURCHASE FLOW
-                  if (isLiveMode) {
-                      // Live mode purchase
-                      liveInventory[itemId] = (liveInventory[itemId] || 0) + 1;
-                      
-                      // Store purchase info
-                      farmValues.live[itemId] = farmValues.live[itemId] || [];
-                      farmValues.live[itemId].push({
-                        cost: cost,
-                        date: new Date()
-                      });
-                      
-                      updateReservesDisplay();
-                      addPurchasedItemToWorld(itemType, itemId, liveInventory[itemId]);
-                      showGameMessage(`${itemId.charAt(0).toUpperCase() + itemId.slice(1)} ${itemType === 'plant' ? 'seeds' : 'Farm'} partnership initiated (LIVE)!`, 'success');
-                  } else {
-                      // Demo mode purchase
-                      if (playerReserves >= cost) {
-                        playerReserves -= cost;
-                        demoInventory[itemId] = (demoInventory[itemId] || 0) + 1;
-                        
-                        // Store purchase info
-                        farmValues.demo[itemId] = farmValues.demo[itemId] || [];
-                        farmValues.demo[itemId].push({
-                          cost: cost,
-                          date: new Date()
-                        });
-                        
-                        updateReservesDisplay();
-                        addPurchasedItemToWorld(itemType, itemId, demoInventory[itemId]);
-                        showGameMessage(`${itemId.charAt(0).toUpperCase() + itemId.slice(1)} ${itemType === 'plant' ? 'seeds' : 'Farm'} purchased with Stars!`, 'success');
-                      } else {
-                        showGameMessage("Not enough stars!", 'error');
-                      }
-                  }
+        // Add search functionality to the third-party farms section (if it's separate)
+        const thirdPartySearchInput = thirdPartyFarmsSection.querySelector('.search-input');
+        if (thirdPartySearchInput) {
+            thirdPartySearchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                thirdPartyFarmsSection.querySelectorAll('.dropdown-item').forEach(item => {
+                    const title = item.querySelector('.dropdown-item-title')?.textContent.toLowerCase() || '';
+                    const desc = item.querySelector('.dropdown-item-desc')?.textContent.toLowerCase() || '';
+                    item.style.display = (title.includes(searchTerm) || desc.includes(searchTerm)) ? 'flex' : 'none';
+                });
             });
-          }
-        });
-      }
-      
-      // Library button with aerial view functionality
-      if (libraryButton) {
-        libraryButton.addEventListener('click', (e) => {
-          e.preventDefault();
-          if (document.pointerLockElement === document.body) document.exitPointerLock();
-          
-          // Toggle aerial view
-          toggleAerialView();
-        });
-      }
-      
-      // Setup mode selection popup
-      document.querySelectorAll('.mode-option').forEach(option => {
-        option.addEventListener('click', () => {
-            const mode = option.dataset.mode; 
-            
-            if (mode === 'demo') {
-                setAppMode(false); 
-            } else if (mode === 'live') {
-                setAppMode(true); 
-            }
-            
-            // Make sure aerial view is properly closed
-            isAerialView = false;
-            if (gameContainer) gameContainer.style.display = 'block';
-            if (aerialViewContainer) aerialViewContainer.style.display = 'none';
-
-            // Hide all popups
-            if (modeSelectionPopup) modeSelectionPopup.style.display = 'none';
-            if (prastFarmsPopup) prastFarmsPopup.style.display = 'none';
-
-            updateReservesDisplay();
-        });
-      });
-      
-      // Setup Prast Farms popup buttons
-      const prastFarmsCloseButton = document.getElementById('prast-farms-close');
-      if (prastFarmsCloseButton) {
-        prastFarmsCloseButton.addEventListener('click', () => {
-            prastFarmsPopup.style.display = 'none';
-        });
-      }
-      
-      const prastFarmsContinueButton = document.getElementById('prast-farms-continue');
-      if (prastFarmsContinueButton) {
-        prastFarmsContinueButton.addEventListener('click', () => {
-            if (!isLiveMode) {
-                setAppMode(true);
-                showGameMessage("Switched to LIVE mode! You can now partner with farms.", 'success');
-            }
-            prastFarmsPopup.style.display = 'none';
-        });
-      }
-
-      // Add farm management event listeners
-      const buyAnimalsBtn = document.getElementById('buy-animals');
-      const sellAllAnimalsBtn = document.getElementById('sell-all-animals');
-      const exitManagementBtn = document.getElementById('exit-management');
-      
-      if (buyAnimalsBtn) {
-        buyAnimalsBtn.addEventListener('click', function() {
-          const animalType = document.getElementById('farm-management-title')?.textContent.split(' ')[1]?.toLowerCase();
-          if (animalType) {
-            const buyPopup = document.getElementById('buy-animals-popup');
-            if (buyPopup) {
-              buyPopup.dataset.animalType = animalType;
-              buyPopup.classList.remove('hidden');
-              buyPopup.classList.add('flex');
-            }
-          }
-        });
-      }
-
-      if (sellAllAnimalsBtn) {
-        sellAllAnimalsBtn.addEventListener('click', function() {
-          const animalType = document.getElementById('farm-management-title')?.textContent.split(' ')[1]?.toLowerCase();
-          if (animalType && animalData[animalType]) {
-            const animals = animalData[animalType];
-            let totalValue = 0;
-            
-            animals.forEach(animal => {
-              const baseValue = getItemCost(animalType) / 2;
-              const ageBonus = animal.age * 0.05 * baseValue;
-              totalValue += Math.floor(baseValue + ageBonus);
-            });
-            
-            if (animals.length > 0 && confirm(`Sell all ${animals.length} animals for ${totalValue} stars?`)) {
-              playerReserves += totalValue;
-              animalData[animalType] = [];
-              updateReservesDisplay();
-              populateAnimalsList(animalType);
-            }
-          }
-        });
-      }
-
-      if (exitManagementBtn) {
-        exitManagementBtn.addEventListener('click', function() {
-          const managementUI = document.getElementById('farm-management');
-          if (managementUI) {
-            managementUI.style.display = 'none';
-            managementUI.classList.add('hidden');
-          }
-        });
-      }
-
-      // Buy animals popup handlers
-      const decreaseQtyBtn = document.getElementById('decrease-qty');
-      const increaseQtyBtn = document.getElementById('increase-qty');
-      const cancelBuyBtn = document.getElementById('cancel-buy');
-      const confirmBuyBtn = document.getElementById('confirm-buy');
-      
-      if (decreaseQtyBtn) {
-        decreaseQtyBtn.addEventListener('click', function() {
-          const qtyInput = document.getElementById('animal-qty');
-          if (qtyInput) {
-            qtyInput.value = Math.max(1, parseInt(qtyInput.value) - 1);
-          }
-        });
-      }
-
-      if (increaseQtyBtn) {
-        increaseQtyBtn.addEventListener('click', function() {
-          const qtyInput = document.getElementById('animal-qty');
-          if (qtyInput) {
-            qtyInput.value = parseInt(qtyInput.value) + 1;
-          }
-        });
-      }
-
-      if (cancelBuyBtn) {
-        cancelBuyBtn.addEventListener('click', function() {
-          const buyPopup = document.getElementById('buy-animals-popup');
-          if (buyPopup) {
-            buyPopup.classList.add('hidden');
-          }
-        });
-      }
-
-      if (confirmBuyBtn) {
-        confirmBuyBtn.addEventListener('click', function() {
-          const popup = document.getElementById('buy-animals-popup');
-          const animalType = popup?.dataset.animalType;
-          const qtyInput = document.getElementById('animal-qty');
-          
-          if (animalType && qtyInput) {
-            const quantity = parseInt(qtyInput.value);
-            const cost = getItemCost(animalType) * quantity;
-            
-            if (playerReserves >= cost) {
-              playerReserves -= cost;
-              
-              for (let i = 0; i < quantity; i++) {
-                animalData[animalType].push(createAnimalData(animalType));
-              }
-              
-              updateReservesDisplay();
-              populateAnimalsList(animalType);
-              popup.classList.add('hidden');
-            } else {
-              alert("Not enough stars!");
-            }
-          }
-        });
-      }
-
-      // Add search functionality to the main store dropdown
-      const mainStoreSearchInput = farmStoreDropdown.querySelector('.search-input');
-      if (mainStoreSearchInput) {
-          mainStoreSearchInput.addEventListener('input', (e) => {
-              const searchTerm = e.target.value.toLowerCase();
-              
-              farmStoreDropdown.querySelectorAll('.dropdown-item').forEach(item => {
-                  if (item.classList.contains('third-party-prompt') || item.textContent.toUpperCase() === 'THIRD PARTY FARMS' || item.querySelector('.shop-header-notice') || item.matches('hr') || item.classList.contains('px-2')) {
-                      return;
-                  }
-                  const title = item.querySelector('.dropdown-item-title')?.textContent.toLowerCase() || '';
-                  const desc = item.querySelector('.dropdown-item-desc')?.textContent.toLowerCase() || '';
-                  item.style.display = (title.includes(searchTerm) || desc.includes(searchTerm)) ? 'flex' : 'none';
-              });
-          });
-      }
-
-      // Add search functionality to the third-party farms section
-      const thirdPartySearchInput = thirdPartyFarmsSection.querySelector('.search-input');
-      if (thirdPartySearchInput) {
-          thirdPartySearchInput.addEventListener('input', (e) => {
-              const searchTerm = e.target.value.toLowerCase();
-              thirdPartyFarmsSection.querySelectorAll('.dropdown-item').forEach(item => {
-                  const title = item.querySelector('.dropdown-item-title')?.textContent.toLowerCase() || '';
-                  const desc = item.querySelector('.dropdown-item-desc')?.textContent.toLowerCase() || '';
-                  item.style.display = (title.includes(searchTerm) || desc.includes(searchTerm)) ? 'flex' : 'none';
-              });
-          });
-      }
-
-      // Weather functions (simplified)
-      function toggleWeather() {
-        isRaining = !isRaining;
-        if (isRaining) {
-          // Simple rain effect could be added here
-          scene.fogColor = rainFogColor;
-        } else {
-          scene.fogColor = initialFogColor;
         }
-      }
-
-      function updateRain(deltaTime) {
-        // Rain update logic would go here
-      }
-
-      initBabylonJS();
+      initThreeJS();
       updateReservesDisplay();
+      // showGameMessage("Tap ENTER to begin.", "info"); // Message box is hidden
+
     });
   </script>
+
+
+
+<!-- Farm Management Panel - Fixed position at the bottom, hidden by default -->
+<div id="farm-management" class="fixed bottom-0 left-1/2 transform -translate-x-1/2 z-50 hidden flex-col w-[calc(100%-32px)] rounded-t-xl overflow-hidden shadow-2xl border border-gray-700 border-b-0">
+  <!-- Top control bar with Buy/Sell buttons -->
+  <div class="w-full bg-gray-800/90 backdrop-blur-xl p-3 flex justify-between items-center">
+    <h3 id="farm-management-title" class="text-lg font-semibold text-white">Managing Chicken Farm</h3>
+    <div class="flex items-center gap-3">
+      <button id="buy-animals" class="px-5 py-2 bg-green-700 hover:bg-green-600 rounded-md text-white text-sm md:text-lg transition-colors">Buy</button>
+      <button id="sell-all-animals" class="px-5 py-2 bg-red-700 hover:bg-red-600 rounded-md text-white text-sm md:text-lg transition-colors">Sell All</button>
+      <button id="exit-management" class="ml-2 w-8 h-8 flex items-center justify-center bg-gray-700 hover:bg-gray-600 rounded-full transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  </div>
+  
+  <!-- Animals Horizontal List Container - KEEPING HORIZONTAL LAYOUT -->
+  <div class="w-full bg-gray-900/80 backdrop-blur-xl p-3 overflow-x-auto">
+    <div id="animals-list" class="flex gap-3 pb-1">
+      <!-- Animal items will be added here dynamically -->
+    </div>
+  </div>
+</div>
+
+
+<!-- Buy Animals Popup -->
+<div id="buy-animals-popup" class="fixed inset-0 z-60 hidden items-center justify-center">
+  <div class="bg-gray-900 p-4 rounded-lg border border-gray-700 w-80">
+    <h3 class="text-center text-lg font-bold mb-3">Buy Animals</h3>
+    <div class="flex items-center justify-between mb-4">
+      <span>Quantity:</span>
+      <div class="flex items-center">
+        <button id="decrease-qty" class="px-2 py-1 bg-gray-700 rounded-l-md">-</button>
+        <input id="animal-qty" type="number" value="1" min="1" class="w-16 px-2 py-1 text-center bg-gray-800 border-0">
+        <button id="increase-qty" class="px-2 py-1 bg-gray-700 rounded-r-md">+</button>
+      </div>
+    </div>
+    <div class="flex justify-between">
+      <button id="cancel-buy" class="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded-md">Cancel</button>
+      <button id="confirm-buy" class="px-3 py-1 bg-green-700 hover:bg-green-600 rounded-md">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Updated Animal Item Styling to match the screenshot */
+
+/* Enhanced popup styles */
+  #farm-management {
+    width: calc(100% - 32px) !important; /* 16px gap on each side (approximately an inch) */
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    right: auto !important;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+  }
+  
+  /* Ensure transform is properly maintained when showing/hiding */
+  #farm-management.hidden {
+    transform: translateX(-50%) translateY(100%) !important;
+    display: none;
+  }
+  
+  /* Force the container to be properly centered */
+  @media (max-width: 640px) {
+    #farm-management {
+      width: calc(100% - 16px) !important; /* Smaller gap on mobile */
+    }
+  
+  }
+  
+  /* Improve animal item styling */
+  .animal-item {
+    background-color: rgba(31, 41, 55, 0.8);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    min-width: 220px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid rgba(75, 85, 99, 0.4);
+  }
+  
+  .animal-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+    border-color: rgba(75, 85, 99, 0.6);
+  }
+
+
+  .animal-item {
+    background-color: rgba(31, 41, 55, 0.8);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    min-width: 220px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  }
+  
+  .animal-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+  
+  .animal-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 0.375rem;
+    background-color: rgba(55, 65, 81, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.75rem;
+    font-size: 1.125rem;
+  }
+  
+  .animal-name {
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: white;
+    flex-grow: 1;
+    cursor: text;
+    padding: 2px 4px;
+    border-radius: 4px;
+  }
+  
+  .animal-name:hover {
+    background-color: rgba(75, 85, 99, 0.6);
+  }
+  
+  .animal-stat {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    color: #e5e7eb;
+  }
+  
+  .health-bar {
+    width: 100%;
+    height: 8px;
+    background-color: rgba(239, 68, 68, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+  
+  .health-bar-fill {
+    height: 100%;
+    background-color: rgb(34, 197, 94);
+    border-radius: 4px;
+  }
+  
+  .animal-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .animal-action-btn {
+    flex: 1;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-align: center;
+    color: white;
+  }
+</style>
 
 </body>
 </html>
