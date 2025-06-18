@@ -33,14 +33,46 @@
             padding: 80px;
             filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.2));
             animation: float 6s ease-in-out infinite;
-            transition: all 0.5s ease;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: visible;
+        }
+
+        .phone-container.music-bg {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 20%, #fd79a8 40%, #fdcb6e 60%, #6c5ce7 80%, #a29bfe 100%);
+            background-size: 300% 300%;
+            animation: float 6s ease-in-out infinite, musicBackgroundFlow 8s ease-in-out infinite;
+        }
+
+        @keyframes musicBackgroundFlow {
+            0%, 100% { background-position: 0% 50%; }
+            25% { background-position: 100% 0%; }
+            50% { background-position: 100% 100%; }
+            75% { background-position: 0% 100%; }
+        }
+
+        /* Stretched states for pill morphing */
+        .phone-container.settings-stretched {
+            height: 950px;
+            border-radius: 325px;
+            padding: 80px 80px 150px 80px;
+        }
+
+        .phone-container.buy-stretched {
+            height: 750px;
+            border-radius: 325px;
+            padding: 80px 80px 80px 80px;
         }
 
         .phone-container.purchase-effect {
             background: rgba(52, 199, 89, 0.3);
             border: 1px solid rgba(52, 199, 89, 0.5);
             box-shadow: 0 0 50px rgba(52, 199, 89, 0.4);
+        }
+
+        .phone-container.remove-effect {
+            background: rgba(255, 59, 48, 0.3);
+            border: 1px solid rgba(255, 59, 48, 0.5);
+            box-shadow: 0 0 50px rgba(255, 59, 48, 0.4);
         }
 
         .phone-container.gold-effect {
@@ -53,6 +85,24 @@
             background: rgba(0, 191, 255, 0.3);
             border: 1px solid rgba(0, 191, 255, 0.5);
             box-shadow: 0 0 50px rgba(0, 191, 255, 0.4);
+        }
+
+        .phone-container.purple-effect {
+            background: rgba(175, 82, 222, 0.3);
+            border: 1px solid rgba(175, 82, 222, 0.5);
+            box-shadow: 0 0 50px rgba(175, 82, 222, 0.4);
+        }
+
+        .phone-container.white-effect {
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.4);
+        }
+
+        .phone-container.black-effect {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 0, 0, 0.6);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
         }
 
         @keyframes float {
@@ -100,50 +150,93 @@
         }
 
         .apps-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 40px;
-            justify-items: center;
-            margin-top: 10px;
-            margin-bottom: 40px;
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 550px;
+            height: 180px;
             overflow: visible;
         }
 
         .app {
-            width: 100px;
-            height: 100px;
+            position: absolute;
+            width: 120px;
+            height: 120px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            position: relative;
             overflow: visible;
             background: none;
             border: none;
             outline: none;
         }
 
+/* Position apps to follow the circular curvature more closely */
+.fsPals {
+bottom: -10px;
+left: 0px;
+transform: rotate(0deg);
+}
+
+.fsClub {
+bottom: -80px;
+left: 69px;
+transform: rotate(0deg);
+}
+
+.fsMusic {
+bottom: -100px;
+left: 170px;
+transform: rotate(0deg);
+}
+
+.fsBrawl {
+bottom: -100px;
+right: 160px;
+transform: rotate(0deg);
+}
+
+.fsPanels {
+bottom: -80px;
+right: 69px;
+transform: rotate(0deg);
+}
+
+.fsBank {
+bottom: -10px;
+right: 0px;
+transform: rotate(0deg);
+}
         .app:hover {
-            transform: translateY(-5px) scale(1.05);
-            background: none;
-            border: none;
-            outline: none;
-            box-shadow: none;
+            /* Default hover - overridden by specific app hover styles */
         }
 
         .app:active {
-            transform: translateY(-2px) scale(0.98);
-            background: none;
-            border: none;
-            outline: none;
-            box-shadow: none;
+            /* Default active - overridden by specific app active styles */
         }
 
+        /* No rotation needed on hover since icons are upright */
+        .fsPals:hover { transform: translateY(-5px) scale(1.05); }
+        .fsClub:hover { transform: translateY(-5px) scale(1.05); }
+        .fsMusic:hover { transform: translateY(-5px) scale(1.05); }
+        .fsBrawl:hover { transform: translateY(-5px) scale(1.05); }
+        .fsPanels:hover { transform: translateY(-5px) scale(1.05); }
+        .fsBank:hover { transform: translateY(-5px) scale(1.05); }
+
+        .fsPals:active { transform: translateY(-2px) scale(0.98); }
+        .fsClub:active { transform: translateY(-2px) scale(0.98); }
+        .fsMusic:active { transform: translateY(-2px) scale(0.98); }
+        .fsBrawl:active { transform: translateY(-2px) scale(0.98); }
+        .fsPanels:active { transform: translateY(-2px) scale(0.98); }
+        .fsBank:active { transform: translateY(-2px) scale(0.98); }
+
         .app-icon {
-            width: 55px;
-            height: 55px;
+            width: 70px;
+            height: 70px;
             background-size: cover;
             background-position: center;
             border-radius: 50%;
@@ -154,26 +247,35 @@
         }
 
         .app-name {
-            font-size: 12px;
+            font-size: 11px;
             color: white;
             font-weight: 500;
             text-align: center;
             opacity: 0.95;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            transform: rotate(0deg); /* Counter-rotate the text to keep it horizontal */
         }
 
+        /* Keep app names straight since icons are no longer rotated */
+        .fsPals .app-name { transform: rotate(0deg); }
+        .fsClub .app-name { transform: rotate(0deg); }
+        .fsMusic .app-name { transform: rotate(0deg); }
+        .fsBrawl .app-name { transform: rotate(0deg); }
+        .fsPanels .app-name { transform: rotate(0deg); }
+        .fsBank .app-name { transform: rotate(0deg); }
+
         /* Individual app icons */
-        .fsPals .app-icon { background: linear-gradient(45deg, #ff6b6b, #ee5a24); }
-        .fsMusic .app-icon { background: linear-gradient(45deg, #ff9ff3, #f368e0); }
-        .fsBrawl .app-icon { background: linear-gradient(45deg, #54a0ff, #2e86de); }
-        .fsBank .app-icon { background: linear-gradient(45deg, #5f27cd, #341f97); }
-        .fsClub .app-icon { background: linear-gradient(45deg, #00d2d3, #01a3a4); }
-        .fsPanels .app-icon { background: linear-gradient(45deg, #feca57, #ff9ff3); }
+        .fsPals .app-icon { background-image: url('fsPals.png'); }
+        .fsMusic .app-icon { background-image: url('fsMusic.png'); }
+        .fsBrawl .app-icon { background-image: url('fsBrawl.png'); }
+        .fsBank .app-icon { background-image: url('fsBank.png'); }
+        .fsClub .app-icon { background-image: url('fsClub.png'); }
+        .fsPanels .app-icon { background-image: url('fsPanels.png'); }
 
         /* Ambient lighting effect */
         .media-player {
             position: absolute;
-            bottom: -10px; /* Dropped even lower */
+            top: 150px;
             left: 50%;
             transform: translateX(-50%);
             width: 300px;
@@ -206,6 +308,23 @@
             filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.3));
             position: relative;
             cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            border: 2px solid transparent;
+        }
+
+        .album-art:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4));
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .album-art:active {
+            transform: scale(0.95);
+        }
+
+        .album-art.active {
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
         }
 
         .track-info {
@@ -330,7 +449,7 @@
         }
 
         .favorites-btn {
-            display: flex;
+            display: none; /* Hidden by default */
             align-items: center;
             gap: 4px;
             font-size: 10px;
@@ -353,7 +472,7 @@
         }
 
         .buy-btn {
-            display: flex;
+            display: none; /* Hidden by default */
             align-items: center;
             gap: 4px;
             font-size: 10px;
@@ -368,6 +487,343 @@
 
         .buy-btn:hover {
             background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Volume slider - iPhone style curved */
+        .volume-slider {
+            position: absolute;
+            top: 60px;
+            left: -40px;
+            width: 50px;
+            height: 200px;
+            z-index: 100;
+            cursor: pointer;
+        }
+
+        .volume-slider svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(20deg);
+        }
+
+        .volume-track {
+            fill: none;
+            stroke: rgba(0, 0, 0, 0.2);
+            stroke-width: 12;
+            stroke-linecap: round;
+        }
+
+        .volume-fill {
+            fill: none;
+            stroke: white;
+            stroke-width: 12;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.3s ease;
+            filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
+        }
+
+        /* Modern Share button with SVG icon */
+        .share-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 99;
+            outline: none;
+        }
+
+        .share-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .share-btn:active {
+            transform: translateY(0px) scale(0.95);
+        }
+
+        .share-btn svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* Buy menu button (star shape) - SVG approach for proper outline */
+        .buy-menu-btn {
+            position: absolute;
+            bottom: 16px;
+            left: 16px;
+            width: 16px;
+            height: 16px;
+            border: none !important;
+            background: none !important;
+            background-color: transparent !important;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100;
+            outline: none !important;
+            box-shadow: none !important;
+            transform-origin: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            margin: 0;
+            opacity: 1;
+        }
+
+        .buy-menu-btn svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* Default state - hollow with white outline */
+        .buy-menu-btn .star-path {
+            fill: transparent;
+            stroke: rgba(255, 255, 255, 0.9);
+            stroke-width: 2;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+        }
+
+        /* Favorited state - gold */
+        .buy-menu-btn.favorited .star-path {
+            fill: rgba(255, 215, 0, 0.9);
+            stroke: #FFD700;
+            stroke-width: 2;
+            filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 8px rgba(255, 215, 0, 0.4));
+        }
+
+        /* Purchased state - black */
+        .buy-menu-btn.purchased .star-path {
+            fill: rgba(0, 0, 0, 0.8);
+            stroke: rgba(0, 0, 0, 0.9);
+            stroke-width: 2;
+            filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
+        }
+
+        /* Both purchased and favorited - white */
+        .buy-menu-btn.purchased-and-favorited .star-path {
+            fill: rgba(255, 255, 255, 0.9);
+            stroke: rgba(255, 255, 255, 1);
+            stroke-width: 2;
+            filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+        }
+
+        .buy-menu-btn.purchased {
+            cursor: default;
+        }
+
+        .buy-menu-btn.purchased-and-favorited {
+            cursor: default;
+        }
+
+        .buy-menu-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .buy-menu-btn:active {
+            transform: scale(0.95);
+        }
+
+        .buy-menu-btn.collapsed {
+            transform: scale(0);
+        }
+
+        .buy-menu-btn.expanded {
+            transform: scale(1.2);
+        }
+
+        /* Settings menu button (circle) - SVG approach for proper outline */
+        .settings-menu-btn {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            width: 12px;
+            height: 12px;
+            border: none !important;
+            background: none !important;
+            background-color: transparent !important;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100;
+            outline: none !important;
+            box-shadow: none !important;
+            transform-origin: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            margin: 0;
+            opacity: 1;
+        }
+
+        .settings-menu-btn svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .settings-menu-btn .circle-path {
+            fill: transparent;
+            stroke: rgba(255, 255, 255, 0.9);
+            stroke-width: 2;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+        }
+
+        .settings-menu-btn.active-glow .circle-path {
+            fill: rgba(255, 255, 255, 0.2);
+            stroke: rgba(255, 255, 255, 1);
+            stroke-width: 2;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2)) drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+        }
+
+        .settings-menu-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .settings-menu-btn:active {
+            transform: scale(0.95);
+        }
+
+        .settings-menu-btn.collapsed {
+            transform: scale(0);
+        }
+
+        .settings-menu-btn.expanded {
+            transform: scale(1.2);
+        }
+
+        @keyframes colorFlow {
+            0% { background-position: 0% 50%; }
+            25% { background-position: 100% 50%; }
+            50% { background-position: 100% 100%; }
+            75% { background-position: 0% 100%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Buy menu dropdown - positioned in stretched space */
+        .buy-menu-dropdown {
+            position: absolute;
+            bottom: 130px;
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            background: rgba(100, 150, 255, 0.15);
+            backdrop-filter: blur(25px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 16px;
+            min-width: 250px;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 101;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transform-origin: center bottom;
+        }
+
+        .buy-menu-dropdown.active {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateX(-50%) scale(1);
+        }
+
+        /* Settings menu dropdown - positioned in stretched space */
+        .settings-menu-dropdown {
+            position: absolute;
+            bottom: 85px;
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            background: rgba(100, 150, 255, 0.15);
+            backdrop-filter: blur(25px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 16px;
+            min-width: 280px;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 101;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transform-origin: center bottom;
+        }
+
+        .settings-menu-dropdown.active {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateX(-50%) scale(1);
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            color: white;
+            background: none;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 12px;
+            font-weight: 500;
+            width: 100%;
+            text-align: left;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(3px);
+        }
+
+        .menu-item:active {
+            transform: scale(0.98);
+        }
+
+        .menu-item .icon {
+            font-size: 14px;
+            width: 16px;
+            text-align: center;
+        }
+
+        .menu-item.active {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .menu-separator {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+            margin: 6px 0;
+        }
+
+        /* Horizontal layout for loop and randomize controls */
+        .control-row {
+            display: flex;
+            gap: 8px;
+            justify-content: space-between;
+        }
+
+        .control-row .menu-item {
+            flex: 1;
         }
 
         .screen::after {
@@ -402,8 +858,16 @@
 <body>
     <div class="phone-container">
         <div class="screen">
+            <!-- Volume slider - iPhone style curved -->
+            <div class="volume-slider">
+                <svg viewBox="0 0 50 200">
+                    <path class="volume-track" d="M 25 184 Q -10 100 25 16" stroke-dasharray="200" stroke-dashoffset="0"></path>
+                    <path class="volume-fill" d="M 25 184 Q -10 100 25 16" stroke-dasharray="200" stroke-dashoffset="40" id="volumeFill"></path>
+                </svg>
+            </div>
+
             <div class="status-bar">
-                <div class="curved-text">
+                <div class="curved-text" onclick="changeGreetingText()" style="cursor: pointer;" title="Click to change message">
                     <svg viewBox="0 0 450 80">
                         <defs>
                             <path id="curve1" d="M 50 25 Q 225 5 400 25" />
@@ -428,6 +892,10 @@
                     <div class="app-icon"></div>
                     <div class="app-name">fsPals</div>
                 </div>
+                <div class="app fsClub" onclick="launchApp('fsClub')">
+                    <div class="app-icon"></div>
+                    <div class="app-name">fsClub</div>
+                </div>
                 <div class="app fsMusic" onclick="launchApp('fsMusic')">
                     <div class="app-icon"></div>
                     <div class="app-name">fsMusic</div>
@@ -436,23 +904,44 @@
                     <div class="app-icon"></div>
                     <div class="app-name">fsBrawl</div>
                 </div>
-                <div class="app fsBank" onclick="launchApp('fsBank')">
-                    <div class="app-icon"></div>
-                    <div class="app-name">fsBank</div>
-                </div>
-                <div class="app fsClub" onclick="launchApp('fsClub')">
-                    <div class="app-icon"></div>
-                    <div class="app-name">fsClub</div>
-                </div>
                 <div class="app fsPanels" onclick="launchApp('fsPanels')">
                     <div class="app-icon"></div>
                     <div class="app-name">fsPanels</div>
                 </div>
+                <div class="app fsBank" onclick="launchApp('fsBank')">
+                    <div class="app-icon"></div>
+                    <div class="app-name">fsBank</div>
+                </div>
             </div>
 
             <div class="media-player">
+                <!-- Modern Share button with SVG -->
+                <button class="share-btn" onclick="shareMusic()" title="Share Music">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="18" cy="5" r="3"/>
+                        <circle cx="6" cy="12" r="3"/>
+                        <circle cx="18" cy="19" r="3"/>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                    </svg>
+                </button>
+
+                <!-- Buy menu button with SVG star for proper outline (SINGLE INSTANCE) -->
+                <button class="buy-menu-btn" onclick="toggleBuyMenu()">
+                    <svg viewBox="0 0 24 24">
+                        <path class="star-path" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                </button>
+
+                <!-- Settings menu button with SVG circle for proper outline -->
+                <button class="settings-menu-btn" onclick="toggleSettingsMenu()">
+                    <svg viewBox="0 0 24 24">
+                        <circle class="circle-path" cx="12" cy="12" r="10"/>
+                    </svg>
+                </button>
+                
                 <div class="track-header">
-                    <div class="album-art">♪</div>
+                    <div class="album-art" onclick="toggleMusicBackground()">♪</div>
                     <div class="track-info">
                         <div class="track-title">Chill Vibes</div>
                         <div class="track-artist">Lo-Fi Beats</div>
@@ -468,14 +957,62 @@
                 </div>
                 
                 <div class="media-controls">
-                    <button class="control-btn favorites-btn" onclick="addToFavorites()">
-                        ☆ <span class="currency">50</span>
-                    </button>
                     <button class="control-btn" onclick="previousTrack()">⏮</button>
                     <button class="control-btn play" onclick="togglePlay()">⏸</button>
                     <button class="control-btn" onclick="nextTrack()">⏭</button>
-                    <button class="control-btn buy-btn" onclick="buySong()">
-                        ⬇ $0.5
+                </div>
+            </div>
+
+            <!-- Buy menu dropdown in the extended space -->
+            <div class="buy-menu-dropdown" id="buyMenuDropdown">
+                <button class="menu-item" onclick="addToFavorites()">
+                    <span class="icon">☆</span>
+                    <span>50(save)</span>
+                </button>
+                <button class="menu-item" onclick="buySong()">
+                    <span class="icon">⬇</span>
+                    <span>$0.5(buy)</span>
+                </button>
+            </div>
+
+            <!-- Settings menu dropdown in the extended space -->
+            <div class="settings-menu-dropdown" id="settingsMenuDropdown">
+                <button class="menu-item" onclick="goToAlbum()">
+                    <span class="icon">💿</span>
+                    <span>Go to Album</span>
+                </button>
+                <button class="menu-item" onclick="goToArtist()">
+                    <span class="icon">👤</span>
+                    <span>Go to Artist</span>
+                </button>
+                <div class="menu-separator"></div>
+                <button class="menu-item" onclick="addToPlaylist()">
+                    <span class="icon">➕</span>
+                    <span>Add to Playlist</span>
+                </button>
+                <button class="menu-item" onclick="removeFromPlaylist()">
+                    <span class="icon">➖</span>
+                    <span>Remove from Playlist</span>
+                </button>
+                <div class="menu-separator"></div>
+                <div class="control-row">
+                    <button class="menu-item" onclick="toggleLoopPlaylist()" id="loopPlaylistBtn">
+                        <span class="icon">🔄</span>
+                        <span>Loop Playlist</span>
+                    </button>
+                    <button class="menu-item" onclick="toggleLoopSong()" id="loopSongBtn">
+                        <span class="icon">🔂</span>
+                        <span>Loop Song</span>
+                    </button>
+                </div>
+                <div class="control-row">
+                    <button class="menu-item" onclick="toggleRandomize()" id="randomizeBtn">
+                        <span class="icon">🔀</span>
+                        <span>Randomize</span>
+                    </button>
+                    <button class="menu-item" onclick="toggleLyrics()" id="lyricsBtn">
+                        <span class="icon">🎤</span>
+                        <span>Lyrics</span>
                     </button>
                 </div>
             </div>
@@ -529,10 +1066,23 @@
             }
         }
 
+        // Function to change greeting text when tapped
+        function changeGreetingText() {
+            setRandomMessage();
+            
+            // Add visual feedback
+            const phoneContainer = document.querySelector('.phone-container');
+            phoneContainer.classList.add('white-effect');
+            setTimeout(() => {
+                phoneContainer.classList.remove('white-effect');
+            }, 300);
+        }
+
         // Media player state
         let isPlaying = true;
         let userCoins = 150;
         let isDragging = false;
+        let isMusicBackground = false;
         const tracks = [
             { title: "Chill Vibes", artist: "fsMusic", price: 0.5, duration: 180 },
             { title: "Midnight Jazz", artist: "fsMusic", price: 0.5, duration: 225 },
@@ -543,6 +1093,14 @@
         let currentTrack = 0;
         let favorites = [];
         let purchased = [];
+        let isBuyMenuOpen = false;
+        let isSettingsMenuOpen = false;
+        let loopPlaylist = false;
+        let loopSong = false;
+        let randomize = false;
+        let showLyrics = false;
+        let volume = 80; // Volume from 0 to 100
+        let isDraggingVolume = false;
 
         function formatTime(seconds) {
             const mins = Math.floor(seconds / 60);
@@ -554,8 +1112,6 @@
             document.querySelector('.track-title').textContent = tracks[currentTrack].title;
             document.querySelector('.track-artist').textContent = tracks[currentTrack].artist;
             document.querySelector('.total-time').textContent = formatTime(tracks[currentTrack].duration);
-            updateBuyButtonVisibility();
-            updateFavoritesButtonVisibility();
         }
 
         function isSongPurchased(trackIndex) {
@@ -566,26 +1122,14 @@
             return favorites.some(song => song.title === tracks[trackIndex].title);
         }
 
-        function updateBuyButtonVisibility() {
-            const buyButton = document.querySelector('.buy-btn');
-            if (isSongPurchased(currentTrack)) {
-                buyButton.style.display = 'none';
-            } else {
-                buyButton.style.display = 'flex';
-                buyButton.style.opacity = '1';
-                buyButton.style.transform = 'scale(1)';
-            }
-        }
-
-        function updateFavoritesButtonVisibility() {
-            const favButton = document.querySelector('.favorites-btn');
-            if (isSongFavorited(currentTrack)) {
-                favButton.style.display = 'none';
-            } else {
-                favButton.style.display = 'flex';
-                favButton.style.opacity = '1';
-                favButton.style.transform = 'scale(1)';
-                favButton.innerHTML = `☆ <span class="currency">50</span>`;
+        function updateButtonState(buttonId, isActive) {
+            const button = document.getElementById(buttonId);
+            if (button) {
+                if (isActive) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
             }
         }
 
@@ -593,8 +1137,8 @@
             const playBtn = document.querySelector('.control-btn.play');
             const phoneContainer = document.querySelector('.phone-container');
             
-            // Add blue tint effect
-            phoneContainer.classList.add('blue-effect');
+            // Add white tint effect
+            phoneContainer.classList.add('white-effect');
             
             createButtonRipple(playBtn);
             playBtn.style.animation = 'buttonBounce 0.3s ease-out';
@@ -609,49 +1153,51 @@
             
             setTimeout(() => {
                 playBtn.style.animation = '';
-                phoneContainer.classList.remove('blue-effect');
+                phoneContainer.classList.remove('white-effect');
             }, 400);
         }
 
         function previousTrack() {
-            const btn = document.querySelector('.media-controls .control-btn:nth-child(2)');
+            const btn = document.querySelector('.media-controls .control-btn:nth-child(1)');
             const phoneContainer = document.querySelector('.phone-container');
             
-            // Add blue tint effect
-            phoneContainer.classList.add('blue-effect');
+            // Add black tint effect
+            phoneContainer.classList.add('black-effect');
             
             createButtonRipple(btn);
             btn.style.animation = 'buttonBounce 0.3s ease-out';
             
             currentTrack = (currentTrack - 1 + tracks.length) % tracks.length;
             updateTrackInfo();
+            updateButtonStates(); // Update button states for new track
             document.querySelector('.progress-fill').style.width = '5%';
             updateTimeDisplay(5);
             
             setTimeout(() => {
                 btn.style.animation = '';
-                phoneContainer.classList.remove('blue-effect');
+                phoneContainer.classList.remove('black-effect');
             }, 400);
         }
 
         function nextTrack() {
-            const btn = document.querySelector('.media-controls .control-btn:nth-child(4)');
+            const btn = document.querySelector('.media-controls .control-btn:nth-child(3)');
             const phoneContainer = document.querySelector('.phone-container');
             
-            // Add blue tint effect
-            phoneContainer.classList.add('blue-effect');
+            // Add black tint effect
+            phoneContainer.classList.add('black-effect');
             
             createButtonRipple(btn);
             btn.style.animation = 'buttonBounce 0.3s ease-out';
             
             currentTrack = (currentTrack + 1) % tracks.length;
             updateTrackInfo();
+            updateButtonStates(); // Update button states for new track
             document.querySelector('.progress-fill').style.width = '5%';
             updateTimeDisplay(5);
             
             setTimeout(() => {
                 btn.style.animation = '';
-                phoneContainer.classList.remove('blue-effect');
+                phoneContainer.classList.remove('black-effect');
             }, 400);
         }
 
@@ -681,41 +1227,23 @@
             }, 600);
         }
 
-        function updateCoinDisplay() {
-            const coinSpan = document.querySelector('.currency');
-            if (coinSpan) { // Check if element exists
-                if (userCoins >= 50) {
-                    coinSpan.textContent = '50';
-                    coinSpan.style.opacity = '1';
-                } else {
-                    coinSpan.textContent = `${userCoins}`;
-                    coinSpan.style.opacity = '0.5';
-                }
-            }
-        }
-
         function addToFavorites() {
+            toggleBuyMenu(); // Close menu first
+            
             if (userCoins >= 50) {
                 userCoins -= 50;
                 const currentSong = tracks[currentTrack];
                 favorites.push(currentSong);
                 
+                // Update button appearance
+                updateButtonStates();
+                
                 // Add gold tint effect
                 const phoneContainer = document.querySelector('.phone-container');
                 phoneContainer.classList.add('gold-effect');
                 
-                // Hide only the favorites button
-                const favBtn = document.querySelector('.favorites-btn');
-                favBtn.style.opacity = '0';
-                favBtn.style.transform = 'scale(0.8)';
-                
                 setTimeout(() => {
                     phoneContainer.classList.remove('gold-effect');
-                    
-                    setTimeout(() => {
-                        // Completely hide the favorites button for this song
-                        favBtn.style.display = 'none';
-                    }, 300);
                 }, 800);
                 
                 console.log(`Added "${currentSong.title}" to favorites! Coins remaining: ${userCoins}`);
@@ -725,29 +1253,493 @@
         }
 
         function buySong() {
+            toggleBuyMenu(); // Close menu first
+            
             const currentSong = tracks[currentTrack];
             purchased.push(currentSong);
+            
+            // Update button appearance
+            updateButtonStates();
             
             // Tint entire circle green
             const phoneContainer = document.querySelector('.phone-container');
             phoneContainer.classList.add('purchase-effect');
             
-            // Hide only the buy button
-            const buyButton = document.querySelector('.buy-btn');
-            buyButton.style.opacity = '0';
-            buyButton.style.transform = 'scale(0.8)';
-            
             setTimeout(() => {
                 // Remove green tint
                 phoneContainer.classList.remove('purchase-effect');
-                
-                setTimeout(() => {
-                    // Completely hide the buy button for this song
-                    buyButton.style.display = 'none';
-                }, 500);
             }, 2000);
             
             console.log(`Purchased "${currentSong.title}" for ${currentSong.price}! Song downloaded.`);
+        }
+
+        // Menu system functions with pill morphing and collapse/expand animations
+        function toggleBuyMenu() {
+            // If song is purchased, star button does nothing
+            if (isSongPurchased(currentTrack)) {
+                return;
+            }
+            
+            const dropdown = document.getElementById('buyMenuDropdown');
+            const button = document.querySelector('.buy-menu-btn');
+            const phoneContainer = document.querySelector('.phone-container');
+            
+            // Add blue glow when tapping favorites (star) button
+            phoneContainer.classList.add('blue-effect');
+            setTimeout(() => {
+                phoneContainer.classList.remove('blue-effect');
+            }, 400);
+            
+            // If settings menu is open, transition to buy menu
+            if (isSettingsMenuOpen) {
+                transitionToMenu('buy');
+                return;
+            }
+            
+            isBuyMenuOpen = !isBuyMenuOpen;
+            
+            if (isBuyMenuOpen) {
+                // Update menu options before showing
+                updateBuyMenuOptions();
+                
+                // Collapse animation then expand
+                button.classList.add('collapsed');
+                setTimeout(() => {
+                    button.classList.remove('collapsed');
+                    button.classList.add('expanded');
+                    phoneContainer.classList.add('buy-stretched');
+                    setTimeout(() => {
+                        dropdown.classList.add('active');
+                        button.classList.remove('expanded');
+                    }, 200);
+                }, 200);
+            } else {
+                // Hide dropdown first, then collapse
+                dropdown.classList.remove('active');
+                button.classList.add('collapsed');
+                setTimeout(() => {
+                    phoneContainer.classList.remove('buy-stretched');
+                    button.classList.remove('collapsed');
+                }, 200);
+            }
+        }
+
+        function toggleSettingsMenu() {
+            const dropdown = document.getElementById('settingsMenuDropdown');
+            const button = document.querySelector('.settings-menu-btn');
+            const phoneContainer = document.querySelector('.phone-container');
+            
+            // Add blue glow when tapping settings (round) button
+            phoneContainer.classList.add('blue-effect');
+            setTimeout(() => {
+                phoneContainer.classList.remove('blue-effect');
+            }, 400);
+            
+            // If buy menu is open, transition to settings menu
+            if (isBuyMenuOpen) {
+                transitionToMenu('settings');
+                return;
+            }
+            
+            isSettingsMenuOpen = !isSettingsMenuOpen;
+            
+            if (isSettingsMenuOpen) {
+                // Add glow effect to settings button
+                button.classList.add('active-glow');
+                
+                // Collapse animation then expand
+                button.classList.add('collapsed');
+                setTimeout(() => {
+                    button.classList.remove('collapsed');
+                    button.classList.add('expanded');
+                    phoneContainer.classList.add('settings-stretched');
+                    setTimeout(() => {
+                        dropdown.classList.add('active');
+                        button.classList.remove('expanded');
+                    }, 200);
+                }, 200);
+            } else {
+                // Remove glow effect from settings button
+                button.classList.remove('active-glow');
+                
+                // Hide dropdown first, then collapse
+                dropdown.classList.remove('active');
+                button.classList.add('collapsed');
+                setTimeout(() => {
+                    phoneContainer.classList.remove('settings-stretched');
+                    button.classList.remove('collapsed');
+                }, 200);
+            }
+        }
+
+        function transitionToMenu(targetMenu) {
+            const phoneContainer = document.querySelector('.phone-container');
+            const buyDropdown = document.getElementById('buyMenuDropdown');
+            const settingsDropdown = document.getElementById('settingsMenuDropdown');
+            const buyButton = document.querySelector('.buy-menu-btn');
+            const settingsButton = document.querySelector('.settings-menu-btn');
+            
+            if (targetMenu === 'buy' && isSettingsMenuOpen) {
+                // Close settings menu
+                settingsDropdown.classList.remove('active');
+                settingsButton.classList.add('collapsed');
+                settingsButton.classList.remove('active-glow'); // Remove glow
+                
+                setTimeout(() => {
+                    // Switch container stretch
+                    phoneContainer.classList.remove('settings-stretched');
+                    phoneContainer.classList.add('buy-stretched');
+                    
+                    // Update states
+                    isSettingsMenuOpen = false;
+                    isBuyMenuOpen = true;
+                    
+                    // Update buy menu options
+                    updateBuyMenuOptions();
+                    
+                    // Expand buy menu
+                    settingsButton.classList.remove('collapsed');
+                    buyButton.classList.add('expanded');
+                    setTimeout(() => {
+                        buyDropdown.classList.add('active');
+                        buyButton.classList.remove('expanded');
+                    }, 200);
+                }, 200);
+                
+            } else if (targetMenu === 'settings' && isBuyMenuOpen) {
+                // Close buy menu
+                buyDropdown.classList.remove('active');
+                buyButton.classList.add('collapsed');
+                
+                setTimeout(() => {
+                    // Switch container stretch
+                    phoneContainer.classList.remove('buy-stretched');
+                    phoneContainer.classList.add('settings-stretched');
+                    
+                    // Update states
+                    isBuyMenuOpen = false;
+                    isSettingsMenuOpen = true;
+                    
+                    // Add glow to settings button
+                    settingsButton.classList.add('active-glow');
+                    
+                    // Expand settings menu
+                    buyButton.classList.remove('collapsed');
+                    settingsButton.classList.add('expanded');
+                    setTimeout(() => {
+                        settingsDropdown.classList.add('active');
+                        settingsButton.classList.remove('expanded');
+                    }, 200);
+                }, 200);
+            }
+        }
+
+        function updateButtonStates() {
+            const buyButton = document.querySelector('.buy-menu-btn');
+            const currentSong = tracks[currentTrack];
+            
+            // Remove all state classes
+            buyButton.classList.remove('favorited', 'purchased', 'purchased-and-favorited');
+            
+            const isPurchased = isSongPurchased(currentTrack);
+            const isFavorited = isSongFavorited(currentTrack);
+            
+            // Apply appropriate class based on state
+            if (isPurchased && isFavorited) {
+                buyButton.classList.add('purchased-and-favorited');
+            } else if (isPurchased) {
+                buyButton.classList.add('purchased');
+            } else if (isFavorited) {
+                buyButton.classList.add('favorited');
+            }
+            // If neither, it stays hollow with white outline (default state)
+        }
+
+        function updateBuyMenuOptions() {
+            const buyDropdown = document.getElementById('buyMenuDropdown');
+            const currentSong = tracks[currentTrack];
+            
+            let menuHTML = '';
+            
+            // Only show favorite option if not already favorited
+            if (!isSongFavorited(currentTrack)) {
+                menuHTML += `
+                    <button class="menu-item" onclick="addToFavorites()">
+                        <span class="icon">☆</span>
+                        <span>save ⭐️50</span>
+                    </button>
+                `;
+            }
+            
+            // Only show buy option if not already purchased
+            if (!isSongPurchased(currentTrack)) {
+                menuHTML += `
+                    <button class="menu-item" onclick="buySong()">
+                        <span class="icon">⬇</span>
+                        <span>buy $${currentSong.price}</span>
+                    </button>
+                `;
+            }
+            
+            // If no options available, show a message
+            if (menuHTML === '') {
+                menuHTML = `
+                    <div style="padding: 12px; color: rgba(255,255,255,0.7); text-align: center; font-size: 11px;">
+                        Song already purchased and favorited
+                    </div>
+                `;
+            }
+            
+            buyDropdown.innerHTML = menuHTML;
+        }
+
+        function goToAlbum() {
+            toggleSettingsMenu();
+            const phoneContainer = document.querySelector('.phone-container');
+            phoneContainer.classList.add('blue-effect');
+            
+            setTimeout(() => {
+                phoneContainer.classList.remove('blue-effect');
+            }, 800);
+            
+            console.log(`Navigating to album for "${tracks[currentTrack].title}"`);
+        }
+
+        function goToArtist() {
+            toggleSettingsMenu();
+            const phoneContainer = document.querySelector('.phone-container');
+            phoneContainer.classList.add('blue-effect');
+            
+            setTimeout(() => {
+                phoneContainer.classList.remove('blue-effect');
+            }, 800);
+            
+            console.log(`Navigating to artist page for "${tracks[currentTrack].artist}"`);
+        }
+
+        function addToPlaylist() {
+            toggleSettingsMenu();
+            const phoneContainer = document.querySelector('.phone-container');
+            // Green glow for add to playlist
+            phoneContainer.classList.add('purchase-effect');
+            
+            setTimeout(() => {
+                phoneContainer.classList.remove('purchase-effect');
+            }, 800);
+            
+            console.log(`Added "${tracks[currentTrack].title}" to playlist`);
+        }
+
+        function removeFromPlaylist() {
+            toggleSettingsMenu();
+            const phoneContainer = document.querySelector('.phone-container');
+            phoneContainer.classList.add('remove-effect'); // Changed from purchase-effect to remove-effect (red)
+            
+            setTimeout(() => {
+                phoneContainer.classList.remove('remove-effect');
+            }, 800);
+            
+            console.log(`Removed "${tracks[currentTrack].title}" from playlist`);
+        }
+
+        function toggleLoopPlaylist() {
+            loopPlaylist = !loopPlaylist;
+            updateButtonState('loopPlaylistBtn', loopPlaylist);
+            
+            const phoneContainer = document.querySelector('.phone-container');
+            // Green when turning on, red when turning off
+            phoneContainer.classList.add(loopPlaylist ? 'purchase-effect' : 'remove-effect');
+            
+            setTimeout(() => {
+                phoneContainer.classList.remove(loopPlaylist ? 'purchase-effect' : 'remove-effect');
+            }, 800);
+            
+            console.log(`Playlist loop ${loopPlaylist ? 'enabled' : 'disabled'}`);
+        }
+
+        function toggleLoopSong() {
+            loopSong = !loopSong;
+            updateButtonState('loopSongBtn', loopSong);
+            
+            const phoneContainer = document.querySelector('.phone-container');
+            // Green when turning on, red when turning off
+            phoneContainer.classList.add(loopSong ? 'purchase-effect' : 'remove-effect');
+            
+            setTimeout(() => {
+                phoneContainer.classList.remove(loopSong ? 'purchase-effect' : 'remove-effect');
+            }, 800);
+            
+            console.log(`Song loop ${loopSong ? 'enabled' : 'disabled'}`);
+        }
+
+        function toggleRandomize() {
+            randomize = !randomize;
+            updateButtonState('randomizeBtn', randomize);
+            
+            const phoneContainer = document.querySelector('.phone-container');
+            // Green when turning on, red when turning off
+            phoneContainer.classList.add(randomize ? 'purchase-effect' : 'remove-effect');
+            
+            setTimeout(() => {
+                phoneContainer.classList.remove(randomize ? 'purchase-effect' : 'remove-effect');
+            }, 800);
+            
+            console.log(`Randomize ${randomize ? 'enabled' : 'disabled'}`);
+        }
+
+        function toggleLyrics() {
+            showLyrics = !showLyrics;
+            updateButtonState('lyricsBtn', showLyrics);
+            
+            const phoneContainer = document.querySelector('.phone-container');
+            // Always glow purple for lyrics
+            phoneContainer.classList.add('purple-effect');
+            
+            setTimeout(() => {
+                phoneContainer.classList.remove('purple-effect');
+            }, 800);
+            
+            console.log(`Lyrics ${showLyrics ? 'shown' : 'hidden'}`);
+        }
+
+        // Fixed Share music function - visual feedback happens regardless of clipboard success
+        function shareMusic() {
+            const currentSong = tracks[currentTrack];
+            const musicLink = `https://fsmusic.com/track/${currentSong.title.toLowerCase().replace(/\s+/g, '-')}`;
+            
+            // Visual feedback happens immediately, regardless of clipboard success
+            const phoneContainer = document.querySelector('.phone-container');
+            const shareBtn = document.querySelector('.share-btn');
+            
+            phoneContainer.classList.add('purchase-effect'); // Green glow
+            
+            // Change to "Copied" text with checkmark
+            shareBtn.innerHTML = `
+                <svg viewBox="0 0 24 24" style="width: 12px; height: 12px; margin-right: 4px;">
+                    <polyline points="20,6 9,17 4,12" stroke="currentColor" fill="none" stroke-width="2"/>
+                </svg>
+                <span style="font-size: 10px; font-weight: 600;">Copied</span>
+            `;
+            shareBtn.style.width = 'auto';
+            shareBtn.style.minWidth = '60px';
+            shareBtn.style.padding = '0 8px';
+            
+            // Try to copy to clipboard (but don't depend on it for visual feedback)
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(musicLink).then(() => {
+                    console.log(`Successfully copied music link to clipboard: ${musicLink}`);
+                }).catch(err => {
+                    console.log(`Clipboard not available, but showing visual feedback anyway. Link: ${musicLink}`);
+                });
+            } else {
+                console.log(`Clipboard API not available. Music link: ${musicLink}`);
+            }
+            
+            setTimeout(() => {
+                phoneContainer.classList.remove('purchase-effect');
+                // Reset to share icon
+                shareBtn.innerHTML = `
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="18" cy="5" r="3"/>
+                        <circle cx="6" cy="12" r="3"/>
+                        <circle cx="18" cy="19" r="3"/>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                    </svg>
+                `;
+                shareBtn.style.width = '32px';
+                shareBtn.style.minWidth = 'unset';
+                shareBtn.style.padding = '0';
+            }, 1500);
+        }
+
+        // Background toggle function
+        function toggleMusicBackground() {
+            const phoneContainer = document.querySelector('.phone-container');
+            const albumArt = document.querySelector('.album-art');
+            
+            isMusicBackground = !isMusicBackground;
+            
+            if (isMusicBackground) {
+                phoneContainer.classList.add('music-bg');
+                albumArt.classList.add('active');
+                console.log('Music background activated!');
+            } else {
+                phoneContainer.classList.remove('music-bg');
+                albumArt.classList.remove('active');
+                console.log('Background reset to default');
+            }
+        }
+
+        // Volume scroll function
+        function handleVolumeScroll(event) {
+            event.preventDefault();
+            
+            // Calculate volume change based on actual scroll distance
+            const scrollSensitivity = 0.2; // Adjust this to fine-tune sensitivity
+            const delta = event.deltaY * scrollSensitivity; // Positive = scroll down (louder), negative = scroll up (quieter)
+            const newVolume = Math.max(0, Math.min(100, volume + delta));
+            
+            if (newVolume !== volume) {
+                volume = Math.round(newVolume);
+                updateVolumeDisplay();
+                console.log(`Volume: ${volume}% (scroll delta: ${event.deltaY.toFixed(1)})`);
+                
+                // Add visual feedback
+                const phoneContainer = document.querySelector('.phone-container');
+                phoneContainer.classList.add('black-effect');
+                setTimeout(() => {
+                    phoneContainer.classList.remove('black-effect');
+                }, 150);
+            }
+        }
+
+        // Volume control functions
+        function updateVolumeDisplay() {
+            const volumeFill = document.getElementById('volumeFill');
+            const totalLength = 200; // Total path length
+            const offset = totalLength * (1 - volume / 100);
+            volumeFill.style.strokeDashoffset = offset;
+        }
+
+        function handleVolumeInteraction(event) {
+            const volumeSlider = document.querySelector('.volume-slider svg');
+            const rect = volumeSlider.getBoundingClientRect();
+            
+            const clientY = event.clientY || (event.touches && event.touches[0].clientY);
+            const clickY = clientY - rect.top;
+            const height = rect.height;
+            
+            // Invert the percentage since we want top to be 100% and bottom to be 0%
+            const percentage = Math.max(0, Math.min(100, 100 - (clickY / height) * 100));
+            
+            volume = Math.round(percentage);
+            updateVolumeDisplay();
+            console.log(`Volume: ${volume}%`);
+            
+            // Add visual feedback
+            const phoneContainer = document.querySelector('.phone-container');
+            phoneContainer.classList.add('black-effect');
+            setTimeout(() => {
+                phoneContainer.classList.remove('black-effect');
+            }, 200);
+        }
+
+        function startVolumeHanding(event) {
+            isDraggingVolume = true;
+            handleVolumeInteraction(event);
+            event.preventDefault();
+        }
+
+        function continueVolumeHanding(event) {
+            if (isDraggingVolume) {
+                handleVolumeInteraction(event);
+                event.preventDefault();
+            }
+        }
+
+        function stopVolumeHanding() {
+            isDraggingVolume = false;
         }
 
         function launchApp(appName) {
@@ -757,8 +1749,8 @@
             const ripple = document.createElement('div');
             ripple.style.cssText = `
                 position: absolute;
-                width: 140px;
-                height: 140px;
+                width: 150px;
+                height: 150px;
                 background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.1) 60%, transparent 100%);
                 border-radius: 50%;
                 top: 50%;
@@ -784,14 +1776,42 @@
         window.addEventListener('load', () => {
             setRandomMessage();
             updateTrackInfo();
-            updateCoinDisplay();
+            updateButtonStates(); // Initialize button states
             updateTimeDisplay(5);
+            updateVolumeDisplay();
             startProgressAnimation();
+            
+            // Close menus when clicking outside
+            document.addEventListener('click', (e) => {
+                const buyMenu = document.getElementById('buyMenuDropdown');
+                const buyButton = document.querySelector('.buy-menu-btn');
+                const settingsMenu = document.getElementById('settingsMenuDropdown');
+                const settingsButton = document.querySelector('.settings-menu-btn');
+                
+                if (isBuyMenuOpen && !buyMenu.contains(e.target) && !buyButton.contains(e.target)) {
+                    toggleBuyMenu();
+                }
+                
+                if (isSettingsMenuOpen && !settingsMenu.contains(e.target) && !settingsButton.contains(e.target)) {
+                    toggleSettingsMenu();
+                }
+            });
+            
+            // Volume control event listeners
+            const volumeSlider = document.querySelector('.volume-slider svg');
+            volumeSlider.addEventListener('mousedown', startVolumeHanding);
+            volumeSlider.addEventListener('touchstart', startVolumeHanding);
+            volumeSlider.addEventListener('wheel', handleVolumeScroll, { passive: false });
             
             document.addEventListener('mousemove', continueDrag);
             document.addEventListener('mouseup', stopDrag);
             document.addEventListener('touchmove', continueDrag);
             document.addEventListener('touchend', stopDrag);
+            
+            document.addEventListener('mousemove', continueVolumeHanding);
+            document.addEventListener('mouseup', stopVolumeHanding);
+            document.addEventListener('touchmove', continueVolumeHanding);
+            document.addEventListener('touchend', stopVolumeHanding);
         });
 
         let progressInterval;
@@ -886,6 +1906,9 @@
         `;
         document.head.appendChild(style);
 
+        // Mouse movement interaction disabled to prevent UI issues
+        // If you want to re-enable the 3D tilt effect, uncomment below:
+        /*
         document.addEventListener('mousemove', (e) => {
             const phone = document.querySelector('.phone-container');
             const rect = phone.getBoundingClientRect();
@@ -895,11 +1918,14 @@
             const deltaX = (e.clientX - centerX) / rect.width;
             const deltaY = (e.clientY - centerY) / rect.height;
             
+            const rotationX = Math.max(-2, Math.min(2, -deltaY * 2));
+            const rotationY = Math.max(-2, Math.min(2, deltaX * 2));
+            
             phone.style.transform = `
                 perspective(1000px) 
-                rotateY(${deltaX * 5}deg) 
-                rotateX(${-deltaY * 5}deg)
-                translateZ(20px)
+                rotateY(${rotationY}deg) 
+                rotateX(${rotationX}deg)
+                translateZ(10px)
             `;
         });
 
@@ -907,6 +1933,7 @@
             const phone = document.querySelector('.phone-container');
             phone.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg)';
         });
+        */
     </script>
 </body>
 </html>
