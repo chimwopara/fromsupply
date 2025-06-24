@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>fsLogic</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            background-image: url('logicdefault.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: #1e3a8a; /* Fallback color */
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: url('logo.jpg') center/contain;
+            background-repeat: no-repeat;
+            background-color: transparent;
+            border-radius: 8px;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 600;
+            color: white;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .star-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .star-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .star-icon {
+            width: 20px;
+            height: 20px;
+            fill: #fbbf24;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+        }
+
+        .star-count {
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .desktop {
+            padding: 80px 20px 20px;
+            height: 100vh;
+            position: relative;
+        }
+
+        .folder {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: move;
+            transition: transform 0.1s ease;
+            user-select: none;
+            width: 240px;
+            height: 280px;
+        }
+
+        .folder:hover {
+            transform: scale(1.05);
+        }
+
+        .folder.dragging {
+            z-index: 1000;
+            transform: scale(1.1);
+            transition: none;
+        }
+
+        .folder-icon {
+            width: 160px;
+            height: 160px;
+            background: url('blackfile.png') center/contain;
+            background-repeat: no-repeat;
+            background-color: transparent;
+            margin-bottom: 16px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        .folder-name {
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 6px 12px;
+            border-radius: 6px;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .close-button {
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            cursor: pointer;
+            margin-top: 16px;
+            font-weight: 500;
+        }
+
+        .close-button:hover {
+            background: #dc2626;
+        }
+
+        /* Phone Overlay Styles - TOP RIGHT POSITIONED */
+        .phone-overlay-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 3000;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-start;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            padding-top: 90px;
+            padding-right: 20px;
+        }
+
+        .phone-overlay-wrapper.show {
+            opacity: 1;
+        }
+
+        .phone-iframe {
+            width: 100vw;
+            height: 100vh;
+            border: 0;
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: auto;
+        }
+
+        .phone-overlay-wrapper.show .phone-iframe {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo-section">
+            <div class="logo"></div>
+            <div class="logo-text">Logic</div>
+        </div>
+        <div class="star-button" onclick="openActionsBlob()">
+            <svg class="star-icon" viewBox="0 0 24 24">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+            <span class="star-count" id="starCount">247</span>
+        </div>
+    </div>
+
+    <div class="desktop" id="desktop">
+        <div class="folder" data-folder="Code" style="left: 40px; top: 100px;">
+            <div class="folder-icon"></div>
+            <div class="folder-name">Code</div>
+        </div>
+        <div class="folder" data-folder="Science" style="left: 300px; top: 100px;">
+            <div class="folder-icon"></div>
+            <div class="folder-name">Science</div>
+        </div>
+        <div class="folder" data-folder="Language" style="left: 560px; top: 100px;">
+            <div class="folder-icon"></div>
+            <div class="folder-name">Language</div>
+        </div>
+        <div class="folder" data-folder="Maths" style="left: 40px; top: 400px;">
+            <div class="folder-icon"></div>
+            <div class="folder-name">Maths</div>
+        </div>
+        <div class="folder" data-folder="Business" style="left: 300px; top: 400px;">
+            <div class="folder-icon"></div>
+            <div class="folder-name">Business</div>
+        </div>
+        <div class="folder" data-folder="Cooking" style="left: 560px; top: 400px;">
+            <div class="folder-icon"></div>
+            <div class="folder-name">Cooking</div>
+        </div>
+    </div>
+
+    <!-- Modal for folder contents -->
+    <div class="modal" id="folderModal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Folder Contents</h3>
+            <p id="modalContent">This folder is ready for your content!</p>
+            <button class="close-button" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
+    <!-- Phone App Overlay - TOP RIGHT POSITIONED -->
+    <div id="phoneOverlay" class="phone-overlay-wrapper" style="display: none;" onclick="hidePhoneOverlay()">
+        <iframe src="ActionsBlob.html" class="phone-iframe" onclick="event.stopPropagation()"></iframe>
+    </div>
+
+    <script>
+        let isDragging = false;
+        let currentFolder = null;
+        let offset = { x: 0, y: 0 };
+
+        // Star counter functionality - now opens phone overlay
+        function openActionsBlob() {
+            showPhoneOverlay();
+        }
+
+        function showPhoneOverlay() {
+            const overlay = document.getElementById('phoneOverlay');
+            overlay.style.display = 'flex';
+            
+            // Small delay for smooth animation
+            setTimeout(() => {
+                overlay.classList.add('show');
+            }, 10);
+        }
+
+        function hidePhoneOverlay() {
+            const overlay = document.getElementById('phoneOverlay');
+            overlay.classList.remove('show');
+            
+            // Hide after animation completes
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 300);
+        }
+
+        // Folder functionality
+        function openFolder(folderName) {
+            const modal = document.getElementById('folderModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalContent = document.getElementById('modalContent');
+            
+            modalTitle.textContent = folderName + ' Folder';
+            modalContent.textContent = `Welcome to the ${folderName} folder! This is where you can organize your ${folderName.toLowerCase()} related files and projects.`;
+            
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('folderModal').style.display = 'none';
+        }
+
+        // Drag and Drop functionality
+        function initializeDragAndDrop() {
+            const folders = document.querySelectorAll('.folder');
+            
+            folders.forEach(folder => {
+                folder.addEventListener('mousedown', startDrag);
+                folder.addEventListener('dblclick', function() {
+                    const folderName = this.dataset.folder;
+                    openFolder(folderName);
+                });
+            });
+
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', endDrag);
+        }
+
+        function startDrag(e) {
+            e.preventDefault();
+            isDragging = true;
+            currentFolder = e.currentTarget;
+            currentFolder.classList.add('dragging');
+            
+            const rect = currentFolder.getBoundingClientRect();
+            offset.x = e.clientX - rect.left;
+            offset.y = e.clientY - rect.top;
+            
+            // Prevent text selection during drag
+            document.body.style.userSelect = 'none';
+        }
+
+        function drag(e) {
+            if (!isDragging || !currentFolder) return;
+            
+            e.preventDefault();
+            
+            const desktop = document.getElementById('desktop');
+            const desktopRect = desktop.getBoundingClientRect();
+            
+            let newX = e.clientX - desktopRect.left - offset.x;
+            let newY = e.clientY - desktopRect.top - offset.y;
+            
+            // Boundary checking
+            const maxX = desktop.clientWidth - currentFolder.offsetWidth;
+            const maxY = desktop.clientHeight - currentFolder.offsetHeight;
+            
+            newX = Math.max(0, Math.min(newX, maxX));
+            newY = Math.max(0, Math.min(newY, maxY));
+            
+            currentFolder.style.left = newX + 'px';
+            currentFolder.style.top = newY + 'px';
+        }
+
+        function endDrag() {
+            if (isDragging && currentFolder) {
+                currentFolder.classList.remove('dragging');
+                
+                // Save position
+                saveFolderPosition(currentFolder);
+            }
+            
+            isDragging = false;
+            currentFolder = null;
+            document.body.style.userSelect = '';
+        }
+
+        function saveFolderPosition(folder) {
+            const folderName = folder.dataset.folder;
+            const position = {
+                x: parseInt(folder.style.left),
+                y: parseInt(folder.style.top)
+            };
+            
+            // In a real app, you'd save to a database or localStorage
+            // For now, we'll just store in memory during the session
+            if (!window.folderPositions) {
+                window.folderPositions = {};
+            }
+            window.folderPositions[folderName] = position;
+        }
+
+        function loadFolderPositions() {
+            // Load saved positions if they exist
+            if (window.folderPositions) {
+                const folders = document.querySelectorAll('.folder');
+                folders.forEach(folder => {
+                    const folderName = folder.dataset.folder;
+                    const savedPosition = window.folderPositions[folderName];
+                    if (savedPosition) {
+                        folder.style.left = savedPosition.x + 'px';
+                        folder.style.top = savedPosition.y + 'px';
+                    }
+                });
+            }
+        }
+
+        // Enhanced overlay click handling with navigation stack
+        let navigationAttempted = false;
+        
+        document.getElementById('phoneOverlay').addEventListener('click', function(e) {
+            console.log('Overlay clicked, target:', e.target, 'this:', this);
+            
+            // Only handle clicks on the overlay wrapper itself, not the iframe
+            if (e.target === this) {
+                console.log('Valid overlay click detected');
+                const overlay = this;
+                const iframe = this.querySelector('.phone-iframe');
+                
+                // Reset navigation flag
+                navigationAttempted = false;
+                
+                if (iframe && iframe.contentWindow) {
+                    try {
+                        console.log('Sending goBack message to iframe');
+                        iframe.contentWindow.postMessage({ action: 'goBack' }, '*');
+                        navigationAttempted = true;
+                        
+                        // Fallback: if no response after 150ms, close directly
+                        setTimeout(() => {
+                            if (navigationAttempted && overlay.classList.contains('show')) {
+                                console.log('No response from iframe, closing overlay');
+                                hidePhoneOverlay();
+                            }
+                        }, 150);
+                    } catch (error) {
+                        console.log('PostMessage error:', error);
+                        hidePhoneOverlay();
+                    }
+                } else {
+                    console.log('Iframe not ready, closing directly');
+                    hidePhoneOverlay();
+                }
+            } else {
+                console.log('Click was not on overlay wrapper, ignoring');
+            }
+        });
+
+        // Listen for messages from the ActionBlob iframe
+        window.addEventListener('message', function(event) {
+            try {
+                console.log('Received message:', event.data);
+                if (event.data && event.data.action === 'dismissOverlay') {
+                    console.log('Dismiss overlay message received');
+                    navigationAttempted = false; // Prevent fallback
+                    hidePhoneOverlay();
+                }
+            } catch (error) {
+                console.log('Message handling error:', error);
+            }
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('folderModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+                hidePhoneOverlay(); // Close phone overlay too
+            }
+        });
+
+        // Initialize everything when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDragAndDrop();
+            loadFolderPositions();
+            
+            // Animate folders on load
+            const folders = document.querySelectorAll('.folder');
+            folders.forEach((folder, index) => {
+                folder.style.opacity = '0';
+                folder.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    folder.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                    folder.style.opacity = '1';
+                    folder.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

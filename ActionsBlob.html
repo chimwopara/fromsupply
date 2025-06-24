@@ -1,0 +1,2745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vision Phone</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        body {
+            min-height: 100vh;
+            background: transparent;
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-start;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden;
+            padding-top: 20px;
+            padding-right: 20px;
+        }
+
+        .phone-container {
+            position: relative;
+            width: 650px;
+            height: 650px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(25px);
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 80px;
+            filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.2));
+            animation: float 6s ease-in-out infinite;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: visible;
+        }
+
+        .phone-container.music-bg {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 20%, #fd79a8 40%, #fdcb6e 60%, #6c5ce7 80%, #a29bfe 100%);
+            background-size: 300% 300%;
+            animation: float 6s ease-in-out infinite, musicBackgroundFlow 8s ease-in-out infinite;
+        }
+
+        @keyframes musicBackgroundFlow {
+            0%, 100% { background-position: 0% 50%; }
+            25% { background-position: 100% 0%; }
+            50% { background-position: 100% 100%; }
+            75% { background-position: 0% 100%; }
+        }
+
+        .phone-container.settings-stretched {
+            height: 1000px;
+            border-radius: 475px;
+            padding: 80px 80px 80px 80px;
+        }
+
+        .phone-container.buy-stretched {
+            height: 1000px;
+            border-radius: 850px;
+            padding: 80px 80px 100px 80px;
+        }
+
+        .phone-container.purchase-effect {
+            background: rgba(52, 199, 89, 0.3);
+            border: 1px solid rgba(52, 199, 89, 0.5);
+            box-shadow: 0 0 50px rgba(52, 199, 89, 0.4);
+        }
+
+        .phone-container.remove-effect {
+            background: rgba(255, 59, 48, 0.3);
+            border: 1px solid rgba(255, 59, 48, 0.5);
+            box-shadow: 0 0 50px rgba(255, 59, 48, 0.4);
+        }
+
+        .phone-container.gold-effect {
+            background: rgba(255, 215, 0, 0.3);
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.4);
+        }
+
+        .phone-container.blue-effect {
+            background: rgba(0, 191, 255, 0.3);
+            border: 1px solid rgba(0, 191, 255, 0.5);
+            box-shadow: 0 0 50px rgba(0, 191, 255, 0.4);
+        }
+
+        .phone-container.purple-effect {
+            background: rgba(175, 82, 222, 0.3);
+            border: 1px solid rgba(175, 82, 222, 0.5);
+            box-shadow: 0 0 50px rgba(175, 82, 222, 0.4);
+        }
+
+        .phone-container.white-effect {
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.4);
+        }
+
+        .phone-container.black-effect {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 0, 0, 0.6);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotateX(0deg); }
+            50% { transform: translateY(-10px) rotateX(2deg); }
+        }
+
+        .screen {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        .status-bar {
+            position: relative;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            padding-top: 10px;
+        }
+
+        .curved-text {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 450px;
+            height: 80px;
+        }
+
+        .curved-text svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .curved-text text {
+            fill: white;
+            font-size: 15px;
+            font-weight: 500;
+            opacity: 0.9;
+            text-anchor: middle;
+        }
+
+        .apps-grid {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 550px;
+            height: 180px;
+            overflow: visible;
+        }
+
+        .app {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow: visible;
+            background: none;
+            border: none;
+            outline: none;
+        }
+
+        .fsPals {
+            bottom: -10px;
+            left: 0px;
+            transform: rotate(0deg);
+        }
+
+        .fsClub {
+            bottom: -80px;
+            left: 69px;
+            transform: rotate(0deg);
+        }
+
+        .fsMusic {
+            bottom: -100px;
+            left: 170px;
+            transform: rotate(0deg);
+        }
+
+        .fsBrawl {
+            bottom: -100px;
+            right: 160px;
+            transform: rotate(0deg);
+        }
+
+        .fsPanels {
+            bottom: -80px;
+            right: 69px;
+            transform: rotate(0deg);
+        }
+
+        .fsBank {
+            bottom: -10px;
+            right: 0px;
+            transform: rotate(0deg);
+        }
+
+        .fsPals:hover { transform: translateY(-5px) scale(1.05); }
+        .fsClub:hover { transform: translateY(-5px) scale(1.05); }
+        .fsMusic:hover { transform: translateY(-5px) scale(1.05); }
+        .fsBrawl:hover { transform: translateY(-5px) scale(1.05); }
+        .fsPanels:hover { transform: translateY(-5px) scale(1.05); }
+        .fsBank:hover { transform: translateY(-5px) scale(1.05); }
+
+        .fsPals:active { transform: translateY(-2px) scale(0.98); }
+        .fsClub:active { transform: translateY(-2px) scale(0.98); }
+        .fsMusic:active { transform: translateY(-2px) scale(0.98); }
+        .fsBrawl:active { transform: translateY(-2px) scale(0.98); }
+        .fsPanels:active { transform: translateY(-2px) scale(0.98); }
+        .fsBank:active { transform: translateY(-2px) scale(0.98); }
+
+        .app-icon {
+            width: 70px;
+            height: 70px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 50%;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+            border: none;
+            outline: none;
+        }
+
+        .app-name {
+    font-size: 11px;
+    color: white;
+    font-weight: 500;
+    text-align: center;
+    opacity: 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    transform: rotate(0deg);
+    transition: opacity 0.3s ease;
+}
+
+.app:hover .app-name {
+    opacity: 0.95;
+}
+
+        .fsPals .app-icon { background-image: url('fsPals.png'); }
+        .fsMusic .app-icon { background-image: url('fsMusic.png'); }
+        .fsBrawl .app-icon { background-image: url('fsBrawl.png'); }
+        .fsBank .app-icon { background-image: url('fsBank.png'); }
+        .fsClub .app-icon { background-image: url('fsClub.png'); }
+        .fsPanels .app-icon { background-image: url('fsPanels.png'); }
+
+        .media-player {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, rgba(106, 90, 205, 0.8), rgba(180, 160, 220, 0.6));
+            background-size: 105% 105%;
+            background-position: center;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 40px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.3));
+            position: relative;
+        }
+
+        /* New curved track title inside media player */
+        .track-title-curved {
+    display: none;
+}
+
+        .track-title-curved svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .track-title-curved text {
+            fill: white;
+            font-size: 14px;
+            font-weight: 600;
+            text-anchor: middle;
+            opacity: 0.9;
+        }
+
+
+
+        /* External media controls positioned on sides of the circle */
+        .external-media-controls {
+    display: none;
+}
+
+        .control-btn-external {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            font-size: 14px;
+            pointer-events: all;
+            outline: none;
+        }
+
+        .control-btn-external.prev {
+            left: 55px;
+        }
+
+        .control-btn-external.next {
+            right: 55px;
+        }
+
+        .control-btn-external:hover {
+            transform: translateY(-2px) scale(1.1);
+            color: white;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-btn-external:active {
+            transform: translateY(0px) scale(0.95);
+        }
+
+       .progress-slider {
+position: absolute;
+bottom: -40px;
+left: 50%;
+transform: translateX(-50%);
+width: 200px;
+height: 100px;
+z-index: 100;
+cursor: pointer;
+}
+
+        .progress-slider svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(0deg);
+        }
+
+        .progress-track {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.2);
+            stroke-width: 4;
+            stroke-linecap: round;
+        }
+
+        .progress-fill {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.4);
+            stroke-width: 4;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.3s ease;
+            filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2));
+        }
+
+        .volume-slider {
+            position: absolute;
+            top: 60px;
+            left: -40px;
+            width: 50px;
+            height: 200px;
+            z-index: 100;
+            cursor: pointer;
+        }
+
+        .volume-slider svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(20deg);
+        }
+
+        .volume-track {
+            fill: none;
+            stroke: rgba(0, 0, 0, 0.2);
+            stroke-width: 12;
+            stroke-linecap: round;
+        }
+
+        .volume-fill {
+            fill: none;
+            stroke: white;
+            stroke-width: 12;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.3s ease;
+            filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
+        }
+
+        .buy-menu-btn {
+            position: absolute;
+            bottom: 16px;
+            left: 16px;
+            width: 16px;
+            height: 16px;
+            border: none !important;
+            background: none !important;
+            background-color: transparent !important;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100;
+            outline: none !important;
+            box-shadow: none !important;
+            transform-origin: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            margin: 0;
+            opacity: 1;
+        }
+
+        .buy-menu-btn svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .buy-menu-btn .star-path {
+            fill: transparent;
+            stroke: rgba(255, 255, 255, 0.9);
+            stroke-width: 2;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+        }
+
+        .buy-menu-btn.favorited .star-path {
+            fill: rgba(255, 215, 0, 0.9);
+            stroke: #FFD700;
+            stroke-width: 2;
+            filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 8px rgba(255, 215, 0, 0.4));
+        }
+
+        .buy-menu-btn.purchased .star-path {
+            fill: rgba(52, 199, 89, 0.8);
+            stroke: rgba(52, 199, 89, 0.9);
+            stroke-width: 2;
+            filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 8px rgba(52, 199, 89, 0.3));
+        }
+
+        .buy-menu-btn.purchased-and-favorited .star-path {
+            fill: rgba(255, 215, 0, 0.9);
+            stroke: rgba(52, 199, 89, 0.9);
+            stroke-width: 2;
+            filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 8px rgba(255, 215, 0, 0.4)) drop-shadow(0 0 4px rgba(52, 199, 89, 0.3));
+        }
+
+        .buy-menu-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .buy-menu-btn:active {
+            transform: scale(0.95);
+        }
+
+        .buy-menu-btn.collapsed {
+            transform: scale(0);
+        }
+
+        .buy-menu-btn.expanded {
+            transform: scale(1.2);
+        }
+
+        .settings-menu-btn {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            width: 12px;
+            height: 12px;
+            border: none !important;
+            background: none !important;
+            background-color: transparent !important;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100;
+            outline: none !important;
+            box-shadow: none !important;
+            transform-origin: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            margin: 0;
+            opacity: 1;
+        }
+
+        .settings-menu-btn svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .settings-menu-btn .circle-path {
+            fill: transparent;
+            stroke: rgba(255, 255, 255, 0.9);
+            stroke-width: 2;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+        }
+
+        .settings-menu-btn.active-glow .circle-path {
+            fill: rgba(255, 255, 255, 0.2);
+            stroke: rgba(255, 255, 255, 1);
+            stroke-width: 2;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2)) drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+        }
+
+        .settings-menu-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .settings-menu-btn:active {
+            transform: scale(0.95);
+        }
+
+        .settings-menu-btn.collapsed {
+            transform: scale(0);
+        }
+
+        .settings-menu-btn.expanded {
+            transform: scale(1.2);
+        }
+
+        .search-btn {
+    position: absolute;
+    bottom: 285px;
+    right: 5px;
+    width: 40px;
+    height: 40px;
+    border: none !important;
+    background: none !important;
+    background-color: transparent !important;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 100;
+    outline: none !important;
+    box-shadow: none !important;
+    transform-origin: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    opacity: 1;
+}
+
+.search-btn svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.search-btn .search-path {
+    fill: transparent;
+    stroke: rgba(255, 255, 255, 0.9);
+    stroke-width: 2;
+    stroke-linecap: round;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+}
+
+.search-btn.active-glow .search-path {
+    fill: rgba(255, 255, 255, 0.2);
+    stroke: rgba(255, 255, 255, 1);
+    stroke-width: 2;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2)) drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+}
+
+.search-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.search-btn:active {
+    transform: scale(0.95);
+}
+
+.search-btn.collapsed {
+    transform: scale(0);
+}
+
+.search-btn.expanded {
+    transform: scale(1.2);
+}
+
+.phone-container.search-mode {
+    height: 1200px;
+    border-radius: 600px;
+    padding: 100px 80px;
+}
+
+.phone-container.search-mode .media-player {
+    display: none;
+}
+
+.phone-container.search-mode .curved-text {
+    display: none;
+}
+
+.search-container {
+    position: absolute;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 400px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.search-container.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.search-bar {
+    width: 100%;
+    padding: 20px 25px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50px;
+    color: white;
+    font-size: 16px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.search-bar::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.search-bar:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+.search-results {
+    margin-top: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+    display: none;
+}
+
+.search-result-item {
+    padding: 15px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    margin-bottom: 10px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.search-result-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.02);
+}
+
+.search-music-btn {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 80px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+    font-size: 14px;
+    opacity: 0;
+    pointer-events: none;
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.3));
+}
+
+.search-music-btn:hover {
+    transform: translateX(-50%) scale(1.1);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.search-music-btn:active {
+    transform: scale(0.95);
+}
+
+.floating-song-bubble {
+    position: absolute;
+    top: -10px;
+    left: 36%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 25px;
+    padding: 12px 20px;
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: bubbleFloat 5s ease-in-out infinite;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
+    white-space: nowrap;
+    cursor: pointer;
+    z-index: 150;
+}
+
+.floating-song-bubble.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.floating-song-bubble.hint-blink {
+    animation: greenPulse 0.8s ease-in-out;
+}
+
+@keyframes greenPulse {
+    0%, 100% { 
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    50% { 
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 0 30px rgba(52, 199, 89, 0.9);
+        border-color: rgba(52, 199, 89, 0.8);
+    }
+}
+
+.floating-song-bubble.hint-blink::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: inherit;
+    animation: greenBlink 0.8s ease-in-out;
+    pointer-events: none;
+}
+.floating-song-bubble:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.05);
+}
+
+.floating-song-bubble.resting {
+    animation: none !important;
+    transform: translateX(0%) translateY(-5px) !important;
+    transition: transform 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+
+.floating-song-bubble.hint-blink {
+    animation: greenPulse 0.8s ease-in-out;
+}
+
+@keyframes greenPulse {
+    0%, 100% { 
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    50% { 
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 0 30px rgba(52, 199, 89, 0.9);
+        border-color: rgba(52, 199, 89, 0.8);
+    }
+}
+
+@keyframes greenBlink {
+    0%, 100% { 
+        background: rgba(52, 199, 89, 0);
+        box-shadow: none;
+    }
+    25%, 75% { 
+        background: rgba(52, 199, 89, 0.4);
+        box-shadow: 0 0 20px rgba(52, 199, 89, 0.6);
+    }
+    50% { 
+        background: rgba(52, 199, 89, 0);
+        box-shadow: none;
+    }
+}
+
+@keyframes bubbleFloat {
+    0%, 100% { 
+        transform: translateY(-15px) translateX(-15px);
+    }
+    25% { 
+        transform: translateY(-8px) translateX(5px);
+    }
+    50% { 
+        transform: translateY(0px) translateX(-3px);
+    }
+    75% { 
+        transform: translateY(-5px) translateX(8px);
+    }
+}
+
+
+
+        .buy-menu-dropdown {
+            position: absolute;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            background: rgba(100, 150, 255, 0.15);
+            backdrop-filter: blur(25px);
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 40px;
+            width: 280px;
+            height: 280px;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 101;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transform-origin: center bottom;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 35px;
+        }
+
+        .buy-menu-dropdown.active {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateX(-50%) scale(1);
+        }
+
+        .settings-menu-dropdown {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            background: rgba(100, 150, 255, 0.15);
+            backdrop-filter: blur(25px);
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 35px;
+            width: 360px;
+            height: 360px;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 101;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transform-origin: center bottom;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .settings-menu-dropdown.active {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateX(-50%) scale(1);
+        }
+
+.menu-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 10px;
+    color: white;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+}
+
+.menu-label {
+    font-size: 8px;
+    opacity: 0;
+    font-weight: 500;
+    text-align: center;
+    display: block;
+    margin-top: 2px;
+}
+
+        .menu-item:hover {
+background: rgba(255, 255, 255, 0.2);
+transform: scale(1.05);
+border-color: rgba(255, 255, 255, 0.4);
+border-radius: 50%;
+}
+
+        .menu-item:active {
+            transform: scale(0.98);
+        }
+
+        .menu-item .icon {
+            font-size: 32px;
+            width: 40px;
+            text-align: center;
+        }
+
+        .menu-item .label {
+             display: none;
+        }
+
+        .menu-item .price {
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 6px 10px;
+            min-width: 60px;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.2s ease;
+        }
+
+        .menu-item:hover .price {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: scale(1.05);
+        }
+
+        .menu-item.active {
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+       .menu-separator {
+    display: none;
+}
+        .control-row {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        /* Special styling for buy menu items */
+        .buy-menu-dropdown .menu-item {
+            max-width: 220px;
+            padding: 22px 26px;
+            font-size: 15px;
+            gap: 18px;
+        }
+
+        .buy-menu-dropdown .menu-item .icon {
+            font-size: 20px;
+            width: 26px;
+        }
+
+        .buy-menu-dropdown .menu-item .price {
+            padding: 10px 16px;
+            font-size: 14px;
+            min-width: 80px;
+        }
+
+        .control-row .menu-item {
+            flex: 1;
+            max-width: 110px;
+        }
+
+        @keyframes launch {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.9); }
+            100% { transform: scale(1.1) rotateZ(5deg); }
+        }
+
+        .app.launching {
+            animation: launch 0.3s ease-out;
+        }
+
+        @keyframes ripple {
+            0% { 
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 1;
+            }
+            100% { 
+                transform: translate(-50%, -50%) scale(2);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes buttonRipple {
+            to {
+                transform: translate(-50%, -50%) scale(2);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes buttonBounce {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.9); }
+            100% { transform: scale(1.05); }
+        }
+
+.buy-menu-btn.playlist-active .star-path {
+    fill: white;
+    stroke: white;
+    stroke-width: 2;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
+}
+
+.menu-item.audio-selected {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+.menu-item.audio-selected .icon {
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
+}
+
+.audio-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: inherit;
+}
+
+.audio-modal-overlay.active {
+    opacity: 1;
+}
+
+.audio-modal {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(25px);
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 30px;
+    max-width: 350px;
+    width: 90%;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    transform: scale(0.8);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.audio-modal-overlay.active .audio-modal {
+    transform: scale(1);
+}
+
+.audio-modal-title {
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 20px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.audio-devices-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.audio-device-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    outline: none;
+}
+
+.audio-device-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: scale(1.02);
+}
+
+.audio-device-btn:active {
+    transform: scale(0.98);
+}
+
+.device-icon {
+    font-size: 16px;
+}
+
+.device-name {
+    flex: 1;
+    text-align: left;
+}
+
+.audio-modal-close {
+    width: 100%;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    outline: none;
+}
+
+.audio-modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .hint-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            z-index: 200;
+        }
+
+        .hint-overlay.show {
+            opacity: 1;
+        }
+
+        .hint-icon {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 24px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .hint-prev {
+            left: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .hint-next {
+            right: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .hint-play {
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .hint-menu {
+            left: 50%;
+            top: -25px;
+            transform: translateX(-50%);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <div class="screen">
+            <div class="volume-slider">
+                <svg viewBox="0 0 50 200">
+                    <path class="volume-track" d="M 25 184 Q -10 100 25 16" stroke-dasharray="200" stroke-dashoffset="0"></path>
+                    <path class="volume-fill" d="M 25 184 Q -10 100 25 16" stroke-dasharray="200" stroke-dashoffset="40" id="volumeFill"></path>
+                </svg>
+            </div>
+
+            <div class="status-bar">
+                <div class="curved-text" onclick="handleSongTitleClick()" style="cursor: pointer;" title="Click to change message">
+                    <svg viewBox="0 0 450 80">
+                        <defs>
+                            <path id="curve1" d="M 50 25 Q 225 5 400 25" />
+                            <path id="curve2" d="M 50 50 Q 225 30 400 50" />
+                        </defs>
+                        <text>
+                            <textPath href="#curve1" startOffset="50%" id="greeting-text-line1">
+                                Good vibes only! ✨
+                            </textPath>
+                        </text>
+                        <text>
+                            <textPath href="#curve2" startOffset="50%" id="greeting-text-line2">
+                                
+                            </textPath>
+                        </text>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="apps-grid">
+                <div class="app fsPals" onclick="launchApp('fsPals')">
+                    <div class="app-icon"></div>
+                    <div class="app-name">fsPals</div>
+                </div>
+                <div class="app fsClub" onclick="launchApp('fsClub')">
+                    <div class="app-icon"></div>
+                    <div class="app-name">fsClub</div>
+                </div>
+                <div class="app fsMusic" onclick="launchApp('fsMusic')">
+                    <div class="app-icon"></div>
+                    <div class="app-name">fsMusic</div>
+                </div>
+                <div class="app fsBrawl" onclick="launchApp('fsBrawl')">
+                    <div class="app-icon"></div>
+                    <div class="app-name">fsBrawl</div>
+                </div>
+                <div class="app fsPanels" onclick="launchApp('fsPanels')">
+                    <div class="app-icon"></div>
+                    <div class="app-name">fsPanels</div>
+                </div>
+                <div class="app fsBank" onclick="launchApp('fsBank')">
+                    <div class="app-icon"></div>
+                    <div class="app-name">fsBank</div>
+                </div>
+            </div>
+
+            <!-- External media controls positioned on the sides -->
+            <div class="external-media-controls">
+                <button class="control-btn-external prev" onclick="previousTrack()">⏮</button>
+                <button class="control-btn-external next" onclick="nextTrack()">⏭</button>
+            </div>
+
+            <div class="media-player" onclick="handleMediaPlayerClick(event)">
+                <button class="buy-menu-btn" onclick="toggleSettingsMenu(event)" style="display: none;">
+<svg viewBox="0 0 24 24">
+<path class="star-path" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+</svg>
+</button>
+
+                <!-- Hint overlays -->
+                <div class="hint-overlay" id="hintOverlay">
+                    <div class="hint-icon hint-prev">⏮</div>
+                    <div class="hint-icon hint-next">⏭</div>
+                    <div class="hint-icon hint-play">⏯</div>
+                    <div class="hint-icon hint-menu">⚙️</div>
+                </div>
+
+
+                <!-- Curved track title at the top of the inner circle -->
+                <div class="track-title-curved">
+                    <svg viewBox="0 0 250 60">
+                        <defs>
+                            <path id="track-curve" d="M 30 40 Q 125 15 220 40" />
+                        </defs>
+                        <text>
+                            <textPath href="#track-curve" startOffset="50%" id="track-title-text">
+                                Chill Vibes
+                            </textPath>
+                        </text>
+                    </svg>
+                </div>
+
+                <div class="progress-slider" onclick="handleProgressClick(event)" onmousedown="startProgressScrubbing(event)" ontouchstart="startProgressScrubbing(event)">
+                    <svg viewBox="0 0 200 100">
+                        <path class="progress-track" d="M 20 20 Q 100 80 180 20" stroke-dasharray="200" stroke-dashoffset="0"></path>
+                        <path class="progress-fill" d="M 20 20 Q 100 80 180 20" stroke-dasharray="200" stroke-dashoffset="190" id="progressFill"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="buy-menu-dropdown" id="buyMenuDropdown">
+                <button class="menu-item" onclick="addToFavorites()">
+                    <span class="icon">☆</span>
+                    <span class="label">Library</span>
+                    <span class="price">⭐ 100</span>
+                </button>
+                <button class="menu-item" onclick="buySong()">
+                    <span class="icon">⬇</span>
+                    <span class="label">Device</span>
+                    <span class="price">$ 0.5</span>
+                </button>
+            </div>
+
+            <div class="settings-menu-dropdown" id="settingsMenuDropdown">
+                <div class="control-row">
+<button class="menu-item" onclick="togglePlaylist()" id="playlistBtn">
+<span class="icon">➕</span>
+<span class="menu-label">Library</span>
+</button>
+<button class="menu-item" onclick="changeAudioOutput()" id="audioOutputBtn">
+<span class="icon">🎶</span>
+<span class="menu-label">Source</span>
+</button>
+</div>
+<div class="menu-separator"></div>
+<div class="control-row">
+<button class="menu-item" onclick="shareMusic()" id="shareBtn">
+<span class="icon">🚀</span>
+<span class="menu-label">Copy</span>
+</button>
+<button class="menu-item" onclick="toggleLyrics()" id="lyricsBtn">
+<span class="icon">🎤</span>
+<span class="menu-label">Lyrics</span>
+</button>
+</div>
+<div class="control-row">
+<button class="menu-item" onclick="toggleRandomize()" id="randomizeBtn">
+<span class="icon">🔀</span>
+<span class="menu-label">Shuffle</span>
+</button>
+<button class="menu-item" onclick="toggleLoopSong()" id="loopSongBtn">
+<span class="icon">🔂</span>
+<span class="menu-label">Repeat</span>
+</button>
+</div>
+            </div>
+
+            <!-- Search Button -->
+            <button class="search-btn" onclick="toggleSearchMode()" id="searchBtn">
+                <svg viewBox="0 0 24 24">
+                    <circle class="search-path" cx="11" cy="11" r="8"/>
+                    <path class="search-path" d="m21 21-4.35-4.35"/>
+                </svg>
+            </button>
+
+            <!-- Search Container -->
+            <div class="search-container" id="searchContainer">
+                <input type="text" class="search-bar" placeholder="Find what you're been searching for" id="searchInput" oninput="handleSearch()" />
+                <div class="search-results" id="searchResults"></div>
+            </div>
+
+            <!-- Search Music Button (Back) -->
+<button class="search-music-btn" onclick="exitSearchMode()" id="searchMusicBtn" title="Back to Music">
+</button>
+<!-- Floating Song Bubble -->
+<div class="floating-song-bubble" onclick="exitSearchMode()" id="floatingSongBubble">
+    🎵 Chill Vibes 🎵
+</div>
+        </div>
+    </div>
+
+    <script>
+        const messages = [
+            "Good vibes only! ✨",
+            "Did you know octopuses have three hearts? 🐙",
+            "Why don't scientists trust atoms? Because they make up everything! 😄",
+            "Have an amazing day! 🌟",
+            "Fun fact: Honey never spoils! 🍯",
+            "What do you call a sleeping bull? A bulldozer! 😴",
+            "Stay curious and keep exploring! 🚀",
+            "Bananas are berries, but strawberries aren't! 🍌",
+            "Why did the scarecrow win an award? He was outstanding in his field! 🌾",
+            "You're doing great! Keep it up! 💪",
+            "A group of flamingos is called a 'flamboyance'! 🦩",
+            "What's orange and sounds like a parrot? A carrot! 🥕",
+            "Dream big and make it happen! 💫",
+            "Butterflies taste with their feet! 🦋",
+            "Why don't eggs tell jokes? They'd crack each other up! 🥚",
+            "Sending you positive energy! ⚡",
+            "Wombat poop is cube-shaped! 📦",
+            "What do you call a bear with no teeth? A gummy bear! 🐻",
+            "The human brain contains approximately 86 billion neurons, each connected to thousands of others! 🧠",
+            "Why did the math book look so sad? Because it was full of problems! 📚",
+            "A single raindrop can contain up to a million bacteria, but don't worry - most are harmless! 🌧️"
+
+        ];
+
+        function setRandomMessage() {
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            const line1 = document.getElementById('greeting-text-line1');
+            const line2 = document.getElementById('greeting-text-line2');
+            
+            if (randomMessage.length > 40) {
+                const words = randomMessage.split(' ');
+                const midPoint = Math.ceil(words.length / 2);
+                const firstLine = words.slice(0, midPoint).join(' ');
+                const secondLine = words.slice(midPoint).join(' ');
+                
+                line1.textContent = firstLine;
+                line2.textContent = secondLine;
+            } else {
+                line1.textContent = randomMessage;
+                line2.textContent = '';
+            }
+        }
+
+        function changeGreetingText() {
+            setRandomMessage();
+            
+            const phoneContainer = document.querySelector('.phone-container');
+            phoneContainer.classList.add('white-effect');
+            setTimeout(() => {
+                phoneContainer.classList.remove('white-effect');
+            }, 300);
+        }
+
+        let isPlaying = true;
+        let userCoins = 150;
+        let addedToPlaylist = false;
+        let audioOutputSelected = false;
+let isSearchMode = false;
+
+        const tracks = [
+             { title: "Chill Vibes", price: 0.5, duration: 180, albumArt: "music1.png" },
+ { title: "Midnight Jazz", price: 0.5, duration: 225, albumArt: "music2.png" },
+ { title: "Ocean Waves", price: 0.5, duration: 300, albumArt: "music3.png" },
+ { title: "City Lights", price: 0.5, duration: 195, albumArt: "music4.png" },
+ { title: "Forest Walk", price: 0.5, duration: 240, albumArt: "music5.png" },
+ { title: "Neon Dreams", price: 0.5, duration: 210, albumArt: "music6.png" },
+ { title: "Sunset Glow", price: 0.5, duration: 265, albumArt: "music7.png" },
+ { title: "Cosmic Flow", price: 0.5, duration: 185, albumArt: "music8.png" },
+ { title: "Urban Pulse", price: 0.5, duration: 220, albumArt: "music9.png" },
+ { title: "Mountain Air", price: 0.5, duration: 275, albumArt: "music10.png" },
+ { title: "Digital Rain", price: 0.5, duration: 190, albumArt: "music11.png" },
+ { title: "Golden Hour", price: 0.5, duration: 250, albumArt: "music12.png" },
+ { title: "Electric Soul", price: 0.5, duration: 205, albumArt: "music13.png" },
+ { title: "Starlight", price: 0.5, duration: 230, albumArt: "music14.png" },
+ { title: "Deep Space", price: 0.5, duration: 280, albumArt: "music15.png" },
+ { title: "Morning Dew", price: 0.5, duration: 200, albumArt: "music16.png" },
+ { title: "Neon Nights", price: 0.5, duration: 215, albumArt: "music17.png" },
+ { title: "Crystal Clear", price: 0.5, duration: 260, albumArt: "music18.png" },
+ { title: "Infinite Sky", price: 0.5, duration: 245, albumArt: "music19.png" }
+        ];
+        let currentTrack = 0;
+        let favorites = [];
+        let purchased = [];
+        let isBuyMenuOpen = false;
+        let isSettingsMenuOpen = false;
+        let loopSong = false;
+        let randomize = false;
+        let showLyrics = false;
+        let volume = 80;
+        let isDraggingVolume = false;
+        let isDraggingProgress = false;
+        let progressInterval;
+        let currentProgress = 5;
+        let quoteRestoreTimer = null;
+        let showingSongTitle = false;
+
+        // **NEW: Back button support - Listen for goBack messages from parent window**
+        window.addEventListener('message', function(event) {
+            try {
+                console.log('Iframe received message:', event.data);
+                
+                if (event.data && event.data.action === 'goBack') {
+                    console.log('goBack message received - handling navigation');
+                    handleBackNavigation();
+                }
+            } catch (error) {
+                console.log('Message handling error in iframe:', error);
+            }
+        });
+
+        // **NEW: Direct click handling within iframe for outside clicks**
+        function handleBackNavigation() {
+            // Handle back navigation based on current state
+            let navigationHandled = false;
+            
+            // Priority 1: If in search mode, exit search mode
+            if (isSearchMode) {
+                console.log('Exiting search mode as back action');
+                exitSearchMode();
+                navigationHandled = true;
+            }
+            // Priority 2: If buy menu is open, close it
+            else if (isBuyMenuOpen) {
+                console.log('Closing buy menu as back action');
+                toggleBuyMenu();
+                navigationHandled = true;
+            }
+            // Priority 3: If settings menu is open, close it
+            else if (isSettingsMenuOpen) {
+                console.log('Closing settings menu as back action');
+                toggleSettingsMenu();
+                navigationHandled = true;
+            }
+            // Priority 4: If at main interface, dismiss the entire overlay
+            else {
+                console.log('At main interface - dismissing overlay');
+                navigationHandled = false; // Let parent handle dismissal
+            }
+            
+            // If we handled the navigation internally, tell parent not to dismiss
+            if (navigationHandled) {
+                // Don't send dismissOverlay - we handled it internally
+                console.log('Navigation handled internally');
+            } else {
+                // Send dismiss message to parent to close the overlay
+                console.log('Sending dismissOverlay message to parent');
+                window.parent.postMessage({ action: 'dismissOverlay' }, '*');
+            }
+        }
+
+        // **NEW: Handle clicks outside the phone container as back button**
+        document.addEventListener('click', function(event) {
+            const phoneContainer = document.querySelector('.phone-container');
+            
+            // Check if click is outside the phone container
+            if (phoneContainer && !phoneContainer.contains(event.target)) {
+                console.log('Click detected outside phone container - triggering back navigation');
+                event.preventDefault();
+                event.stopPropagation();
+                handleBackNavigation();
+            }
+        });
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function setSongTitle() {
+    const line1 = document.getElementById('greeting-text-line1');
+    const line2 = document.getElementById('greeting-text-line2');
+    const songTitle = `🎵 ${tracks[currentTrack].title} 🎵`;
+    
+    line1.textContent = songTitle;
+    line2.textContent = '';
+    showingSongTitle = true;
+    
+    if (quoteRestoreTimer) {
+        clearTimeout(quoteRestoreTimer);
+        quoteRestoreTimer = null;
+    }
+}
+
+function restoreQuotes() {
+    if (showingSongTitle) {
+        setRandomMessage();
+        showingSongTitle = false;
+    }
+}
+
+        function updateTrackInfo() {
+    const trackTitleElement = document.getElementById('track-title-text');
+    const mediaPlayer = document.querySelector('.media-player');
+    
+    if (trackTitleElement) {
+        trackTitleElement.textContent = tracks[currentTrack].title;
+    }
+    
+    if (mediaPlayer) {
+        const albumArt = tracks[currentTrack].albumArt;
+        mediaPlayer.style.backgroundImage = `url('${albumArt}')`;
+    }
+    
+    // Update song title at top if currently playing
+    if (isPlaying) {
+        setSongTitle();
+    }
+}
+
+        function isSongPurchased(trackIndex) {
+            return purchased.some(song => song.title === tracks[trackIndex].title);
+        }
+
+        function isSongFavorited(trackIndex) {
+            return favorites.some(song => song.title === tracks[trackIndex].title);
+        }
+
+        function updateButtonState(buttonId, isActive) {
+            const button = document.getElementById(buttonId);
+            if (button) {
+                if (isActive) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            }
+        }
+
+        function togglePlay() {
+    const phoneContainer = document.querySelector('.phone-container');
+    
+    // Show hints on first click
+    if (!hasClickedAlbum) {
+        hasClickedAlbum = true;
+        showHints();
+    }
+    
+    isPlaying = !isPlaying;
+    
+    if (isPlaying) {
+        setSongTitle();
+        // Green tint when playing/resuming
+        phoneContainer.classList.add('purchase-effect');
+        setTimeout(() => {
+            phoneContainer.classList.remove('purchase-effect');
+        }, 800);
+    } else {
+        // Red tint when pausing
+        phoneContainer.classList.add('remove-effect');
+        setTimeout(() => {
+            phoneContainer.classList.remove('remove-effect');
+        }, 800);
+        
+        // Start 5-second timer to restore quotes
+        if (quoteRestoreTimer) clearTimeout(quoteRestoreTimer);
+        quoteRestoreTimer = setTimeout(restoreQuotes, 5000);
+    }
+}
+
+function handleMediaPlayerClick(event) {
+    const mediaPlayer = event.currentTarget;
+    const rect = mediaPlayer.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const clickX = event.clientX;
+    const clickY = event.clientY;
+    
+    // Calculate relative position from center
+    const relativeY = clickY - centerY;
+    const relativeX = clickX - centerX;
+    const radius = rect.width / 2;
+    
+    // Check if click is in top quarter of the circle
+    if (relativeY < -radius * 0.3) {
+        // Clicked top area - open settings menu (the one with playlist controls)
+        event.stopPropagation();
+        console.log("Top area clicked - opening settings menu");
+        toggleSettingsMenu();
+        return;
+    }
+    
+    const edgeThreshold = rect.width * 0.25;
+    
+    if (relativeX < -edgeThreshold) {
+        // Clicked left edge - previous track
+        previousTrack();
+    } else if (relativeX > edgeThreshold) {
+        // Clicked right edge - next track  
+        nextTrack();
+    } else {
+        // Clicked center - toggle play
+        togglePlay();
+    }
+}
+
+        function createButtonRipple(button) {
+            const ripple = document.createElement('div');
+            const rect = button.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            
+            ripple.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%);
+                border-radius: 50%;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(0);
+                animation: buttonRipple 0.6s ease-out;
+                pointer-events: none;
+                z-index: 10;
+            `;
+            
+            button.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        }
+
+        function previousTrack() {
+            const btn = document.querySelector('.control-btn-external.prev');
+            const phoneContainer = document.querySelector('.phone-container');
+            
+            phoneContainer.classList.add('black-effect');
+            
+            createButtonRipple(btn);
+            btn.style.animation = 'buttonBounce 0.3s ease-out';
+            
+            currentTrack = (currentTrack - 1 + tracks.length) % tracks.length;
+            updateTrackInfo();
+            updateButtonStates();
+            currentProgress = 5;
+            updateProgressDisplay(5);
+            
+            setTimeout(() => {
+                btn.style.animation = '';
+                phoneContainer.classList.remove('black-effect');
+            }, 400);
+        }
+
+        function nextTrack() {
+            const btn = document.querySelector('.control-btn-external.next');
+            const phoneContainer = document.querySelector('.phone-container');
+            
+            phoneContainer.classList.add('white-effect');
+            
+            createButtonRipple(btn);
+            btn.style.animation = 'buttonBounce 0.3s ease-out';
+            
+            currentTrack = (currentTrack + 1) % tracks.length;
+            updateTrackInfo();
+            updateButtonStates();
+            currentProgress = 5;
+            updateProgressDisplay(5);
+            
+            setTimeout(() => {
+                btn.style.animation = '';
+                phoneContainer.classList.remove('white-effect');
+            }, 400);
+        }
+
+        // Progress scrubbing functionality
+        function handleProgressClick(event) {
+            if (isDraggingProgress) return;
+            
+            event.stopPropagation();
+            updateProgressFromEvent(event);
+        }
+
+        function startProgressScrubbing(event) {
+            event.stopPropagation();
+            isDraggingProgress = true;
+            updateProgressFromEvent(event);
+            
+            document.addEventListener('mousemove', continueProgressScrubbing);
+            document.addEventListener('mouseup', stopProgressScrubbing);
+            document.addEventListener('touchmove', continueProgressScrubbing);
+            document.addEventListener('touchend', stopProgressScrubbing);
+        }
+
+        function continueProgressScrubbing(event) {
+            if (isDraggingProgress) {
+                updateProgressFromEvent(event);
+                event.preventDefault();
+            }
+        }
+
+        function stopProgressScrubbing() {
+            isDraggingProgress = false;
+            document.removeEventListener('mousemove', continueProgressScrubbing);
+            document.removeEventListener('mouseup', stopProgressScrubbing);
+            document.removeEventListener('touchmove', continueProgressScrubbing);
+            document.removeEventListener('touchend', stopProgressScrubbing);
+        }
+
+      let progressEffectTimer = null;
+
+        function updateProgressFromEvent(event) {
+            const progressSlider = document.querySelector('.progress-slider svg');
+            if (!progressSlider) return;
+            
+            const rect = progressSlider.getBoundingClientRect();
+            const clientX = event.clientX || (event.touches && event.touches[0].clientX);
+            const clickX = clientX - rect.left;
+            const width = rect.width;
+            
+            // Convert click position to progress percentage (accounting for the curved path)
+            const percentage = Math.max(0, Math.min(100, (clickX / width) * 100));
+            
+            currentProgress = percentage;
+            updateProgressDisplay(percentage);
+            
+            const phoneContainer = document.querySelector('.phone-container');
+            phoneContainer.classList.add('black-effect');
+            
+            // Clear existing timer and set new one
+            if (progressEffectTimer) clearTimeout(progressEffectTimer);
+            progressEffectTimer = setTimeout(() => {
+                phoneContainer.classList.remove('black-effect');
+                progressEffectTimer = null;
+            }, 1000);
+            
+            console.log(`Scrubbed to ${percentage.toFixed(1)}%`);
+        }
+
+        // Progress scrubbing functionality
+        function handleProgressClick(event) {
+            if (isDraggingProgress) return;
+            
+            event.stopPropagation();
+            updateProgressFromEvent(event);
+        }
+
+        function startProgressScrubbing(event) {
+            event.stopPropagation();
+            isDraggingProgress = true;
+            updateProgressFromEvent(event);
+            
+            document.addEventListener('mousemove', continueProgressScrubbing);
+            document.addEventListener('mouseup', stopProgressScrubbing);
+            document.addEventListener('touchmove', continueProgressScrubbing);
+            document.addEventListener('touchend', stopProgressScrubbing);
+        }
+
+        function continueProgressScrubbing(event) {
+            if (isDraggingProgress) {
+                updateProgressFromEvent(event);
+                event.preventDefault();
+            }
+        }
+
+        function stopProgressScrubbing() {
+            isDraggingProgress = false;
+            document.removeEventListener('mousemove', continueProgressScrubbing);
+            document.removeEventListener('mouseup', stopProgressScrubbing);
+            document.removeEventListener('touchmove', continueProgressScrubbing);
+            document.removeEventListener('touchend', stopProgressScrubbing);
+        }
+
+
+        function addToFavorites() {
+            toggleBuyMenu();
+            
+            if (userCoins >= 100) {
+                userCoins -= 100;
+                const currentSong = tracks[currentTrack];
+                favorites.push(currentSong);
+                
+                updateButtonStates();
+                
+                const phoneContainer = document.querySelector('.phone-container');
+                phoneContainer.classList.add('gold-effect');
+                
+                setTimeout(() => {
+                    phoneContainer.classList.remove('gold-effect');
+                }, 800);
+                
+                console.log(`Added "${currentSong.title}" to favorites! Coins remaining: ${userCoins}`);
+            } else {
+                alert(`Not enough coins! You have ${userCoins} coins but need 100 to save to library.`);
+            }
+        }
+
+        function buySong() {
+            toggleBuyMenu();
+            
+            const currentSong = tracks[currentTrack];
+            purchased.push(currentSong);
+            
+            updateButtonStates();
+            
+            const phoneContainer = document.querySelector('.phone-container');
+            phoneContainer.classList.add('purchase-effect');
+            
+            setTimeout(() => {
+                phoneContainer.classList.remove('purchase-effect');
+            }, 2000);
+            
+            console.log(`Purchased "${currentSong.title}" for ${currentSong.price}! Song downloaded.`);
+        }
+
+        function toggleBuyMenu(event) {
+            if (event) event.stopPropagation();
+            
+            const dropdown = document.getElementById('buyMenuDropdown');
+            const button = document.querySelector('.buy-menu-btn');
+            const phoneContainer = document.querySelector('.phone-container');
+            
+            phoneContainer.classList.add('blue-effect');
+            setTimeout(() => {
+                phoneContainer.classList.remove('blue-effect');
+            }, 400);
+            
+            if (isSettingsMenuOpen) {
+                transitionToMenu('buy');
+                return;
+            }
+            
+            isBuyMenuOpen = !isBuyMenuOpen;
+            
+            if (isBuyMenuOpen) {
+                updateBuyMenuOptions();
+                
+                button.classList.add('collapsed');
+                setTimeout(() => {
+                    button.classList.remove('collapsed');
+                    button.classList.add('expanded');
+                    phoneContainer.classList.add('buy-stretched');
+                    setTimeout(() => {
+                        dropdown.classList.add('active');
+                        button.classList.remove('expanded');
+                    }, 200);
+                }, 200);
+            } else {
+                dropdown.classList.remove('active');
+                button.classList.add('collapsed');
+                setTimeout(() => {
+                    phoneContainer.classList.remove('buy-stretched');
+                    button.classList.remove('collapsed');
+                }, 200);
+            }
+        }
+
+function toggleSettingsMenu(event) {
+ if (event) event.stopPropagation();
+const dropdown = document.getElementById('settingsMenuDropdown');
+const phoneContainer = document.querySelector('.phone-container');
+phoneContainer.classList.add('blue-effect');
+setTimeout(() => {
+phoneContainer.classList.remove('blue-effect');
+ }, 400);
+if (isBuyMenuOpen) {
+// Close buy menu first
+const buyDropdown = document.getElementById('buyMenuDropdown');
+buyDropdown.classList.remove('active');
+phoneContainer.classList.remove('buy-stretched');
+isBuyMenuOpen = false;
+ }
+isSettingsMenuOpen = !isSettingsMenuOpen;
+if (isSettingsMenuOpen) {
+phoneContainer.classList.add('settings-stretched');
+setTimeout(() => {
+dropdown.classList.add('active');
+// Set timer to show menu hints after 5 seconds
+menuTimer2 = setTimeout(() => {
+    showMenuHints();
+}, 5000);
+ }, 200);
+ } else {
+dropdown.classList.remove('active');
+hideMenuHints(); // Hide menu hints when closing
+setTimeout(() => {
+phoneContainer.classList.remove('settings-stretched');
+ }, 200);
+ }
+}
+
+        function transitionToMenu(targetMenu) {
+            const phoneContainer = document.querySelector('.phone-container');
+            const buyDropdown = document.getElementById('buyMenuDropdown');
+            const settingsDropdown = document.getElementById('settingsMenuDropdown');
+            const buyButton = document.querySelector('.buy-menu-btn');
+            const settingsButton = document.querySelector('.settings-menu-btn');
+            
+            if (targetMenu === 'buy' && isSettingsMenuOpen) {
+                settingsDropdown.classList.remove('active');
+                settingsButton.classList.add('collapsed');
+                settingsButton.classList.remove('active-glow');
+                
+                setTimeout(() => {
+                    phoneContainer.classList.remove('settings-stretched');
+                    phoneContainer.classList.add('buy-stretched');
+                    
+                    isSettingsMenuOpen = false;
+                    isBuyMenuOpen = true;
+                    
+                    updateBuyMenuOptions();
+                    
+                    settingsButton.classList.remove('collapsed');
+                    buyButton.classList.add('expanded');
+                    setTimeout(() => {
+                        buyDropdown.classList.add('active');
+                        buyButton.classList.remove('expanded');
+                    }, 200);
+                }, 200);
+                
+            } else if (targetMenu === 'settings' && isBuyMenuOpen) {
+                buyDropdown.classList.remove('active');
+                buyButton.classList.add('collapsed');
+                
+                setTimeout(() => {
+                    phoneContainer.classList.remove('buy-stretched');
+                    phoneContainer.classList.add('settings-stretched');
+                    
+                    isBuyMenuOpen = false;
+                    isSettingsMenuOpen = true;
+                    
+                    settingsButton.classList.add('active-glow');
+                    
+                    buyButton.classList.remove('collapsed');
+                    settingsButton.classList.add('expanded');
+                    setTimeout(() => {
+                        settingsDropdown.classList.add('active');
+                        settingsButton.classList.remove('expanded');
+                    }, 200);
+                }, 200);
+            }
+        }
+
+        function updateButtonStates() {
+            const buyButton = document.querySelector('.buy-menu-btn');
+            const currentSong = tracks[currentTrack];
+            
+            buyButton.classList.remove('favorited', 'purchased', 'purchased-and-favorited');
+            
+            const isPurchased = isSongPurchased(currentTrack);
+            const isFavorited = isSongFavorited(currentTrack);
+            
+            if (isPurchased && isFavorited) {
+                buyButton.classList.add('purchased-and-favorited');
+            } else if (isPurchased) {
+                buyButton.classList.add('purchased');
+            } else if (isFavorited) {
+                buyButton.classList.add('favorited');
+            }
+        }
+
+        function updateBuyMenuOptions() {
+            const buyDropdown = document.getElementById('buyMenuDropdown');
+            const currentSong = tracks[currentTrack];
+            
+            let menuHTML = '';
+            
+            if (!isSongFavorited(currentTrack)) {
+                menuHTML += `
+                    <button class="menu-item" onclick="addToFavorites()">
+                        <span class="icon">☆</span>
+                        <span class="label">Library</span>
+                        <span class="price">⭐ 100</span>
+                    </button>
+                `;
+            }
+            
+            if (!isSongPurchased(currentTrack)) {
+                menuHTML += `
+                    <button class="menu-item" onclick="buySong()">
+                        <span class="icon">⬇</span>
+                        <span class="label">Device</span>
+                        <span class="price">$ ${currentSong.price}</span>
+                    </button>
+                `;
+            }
+            
+            if (menuHTML === '') {
+                menuHTML = `
+                    <div style="padding: 12px; color: rgba(255,255,255,0.7); text-align: center; font-size: 11px;">
+                        Song already saved to library and device
+                    </div>
+                `;
+            }
+            
+            buyDropdown.innerHTML = menuHTML;
+        }
+
+function togglePlaylist() {
+    const phoneContainer = document.querySelector('.phone-container');
+    
+    addedToPlaylist = !addedToPlaylist;
+    const playlistBtn = document.getElementById('playlistBtn');
+    const icon = playlistBtn.querySelector('.icon');
+    const label = playlistBtn.querySelector('span:last-child');
+    const starButton = document.querySelector('.buy-menu-btn');
+    
+    if (addedToPlaylist) {
+        icon.textContent = '➖';
+        label.textContent = 'Forget';
+        
+        starButton.classList.add('playlist-active');
+        
+        // Green tint when adding to playlist
+        phoneContainer.classList.add('purchase-effect');
+        setTimeout(() => {
+            phoneContainer.classList.remove('purchase-effect');
+        }, 800);
+    } else {
+        icon.textContent = '➕';
+        label.textContent = 'Remember';
+        
+        starButton.classList.remove('playlist-active');
+        
+        // Red tint when removing from playlist
+        phoneContainer.classList.add('remove-effect');
+        setTimeout(() => {
+            phoneContainer.classList.remove('remove-effect');
+        }, 800);
+    }
+    
+    console.log(`${addedToPlaylist ? 'Added to' : 'Removed from'} playlist: "${tracks[currentTrack].title}"`);
+}
+
+async function changeAudioOutput() {
+    console.log('Audio output button clicked');
+    
+    // Pause music during device selection
+    if (isPlaying) {
+        isPlaying = false;
+    }
+    
+    let micStream = null;
+    
+    try {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+            console.log('MediaDevices API not supported');
+            alert('Audio output selection not supported in this browser');
+            return;
+        }
+        
+        console.log('Getting temporary microphone access for device detection...');
+        
+        micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        
+        // Immediately stop the microphone stream
+        if (micStream) {
+            micStream.getTracks().forEach(track => {
+                track.stop();
+                console.log('Microphone track stopped');
+            });
+            micStream = null;
+        }
+        
+        const audioOutputs = devices.filter(device => device.kind === 'audiooutput');
+        
+        if (audioOutputs.length <= 1) {
+            console.log('Only one or no audio outputs available');
+            alert('No additional audio outputs found');
+            return;
+        }
+        
+        showAudioOutputModal(audioOutputs);
+        
+    } catch (error) {
+        console.error('Audio output selection failed:', error);
+        alert(`Error: ${error.message}`);
+        
+        const phoneContainer = document.querySelector('.phone-container');
+        phoneContainer.classList.add('blue-effect');
+        setTimeout(() => {
+            phoneContainer.classList.remove('blue-effect');
+        }, 400);
+    } finally {
+        // Clean up microphone stream if it still exists
+        if (micStream) {
+            micStream.getTracks().forEach(track => track.stop());
+        }
+    }
+}
+
+function getDeviceIcon(deviceLabel) {
+    const label = deviceLabel.toLowerCase();
+    
+    if (label.includes('headphone') || label.includes('airpods') || label.includes('beats') || label.includes('bose') || label.includes('sony') || label.includes('headset')) {
+        return '🎧';
+    } else if (label.includes('macbook') || label.includes('laptop') || label.includes('built-in') || label.includes('internal') || label.includes('computer')) {
+        return '💻';
+    } else if (label.includes('tv') || label.includes('display') || label.includes('monitor') || label.includes('lg') || label.includes('samsung') || label.includes('dell')) {
+        return '📺';
+    } else if (label.includes('phone') || label.includes('mobile') || label.includes('iphone') || label.includes('android')) {
+        return '📱';
+    } else if (label.includes('speaker') || label.includes('bluetooth') || label.includes('wireless')) {
+        return '🔊';
+    } else {
+        return '🎶'; // Default audio icon
+    }
+}
+
+function showAudioOutputModal(audioOutputs) {
+    // Apply highlighting to audio button if it was previously selected
+    const audioBtn = document.getElementById('audioOutputBtn');
+    if (audioOutputSelected && audioBtn) {
+        audioBtn.classList.add('audio-selected');
+    }
+    const modalHTML = `
+        <div class="audio-modal-overlay" onclick="closeAudioModal()">
+            <div class="audio-modal" onclick="event.stopPropagation()">
+                <div class="audio-modal-title">Choose Audio Output</div>
+                <div class="audio-devices-list">
+                    ${audioOutputs.map((device, index) => `
+                        <button class="audio-device-btn" onclick="selectAudioDevice('${device.deviceId}', '${device.label || `Speaker ${index + 1}`}')">
+                            <span class="device-icon">${getDeviceIcon(device.label || '')}</span>
+                            <span class="device-name">${device.label || `Speaker ${index + 1}`}</span>
+                        </button>
+                    `).join('')}
+                </div>
+                <button class="audio-modal-close" onclick="closeAudioModal()">Cancel</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    setTimeout(() => {
+        document.querySelector('.audio-modal-overlay').classList.add('active');
+    }, 10);
+}
+
+async function selectAudioDevice(deviceId, deviceName) {
+    try {
+        const audioElements = document.querySelectorAll('audio, video');
+        for (const element of audioElements) {
+            if (element.setSinkId) {
+                await element.setSinkId(deviceId);
+            }
+        }
+        
+        console.log(`Audio output changed to: ${deviceName}`);
+        
+        // Mark audio output as selected (assuming it's not default if user chose it)
+        audioOutputSelected = true;
+        updateAudioButtonState();
+        
+        const phoneContainer = document.querySelector('.phone-container');
+        phoneContainer.classList.add('purchase-effect');
+        setTimeout(() => {
+            phoneContainer.classList.remove('purchase-effect');
+        }, 800);
+        
+        closeAudioModal();
+        
+        // Resume music after selecting new audio output
+        isPlaying = true;
+        
+    } catch (error) {
+        console.log('Failed to set audio output:', error);
+        closeAudioModal();
+    }
+}
+function updateAudioButtonState() {
+    // We need to find the audio output button in the settings menu
+    // This will be applied when the menu is opened
+}
+function closeAudioModal() {
+    const modal = document.querySelector('.audio-modal-overlay');
+    if (modal) {
+        modal.classList.remove('active');
+        setTimeout(() => {
+            modal.remove();
+        }, 300);
+    }
+}
+
+        function toggleLoopSong() {
+            loopSong = !loopSong;
+            updateButtonState('loopSongBtn', loopSong);
+            
+            const phoneContainer = document.querySelector('.phone-container');
+            phoneContainer.classList.add(loopSong ? 'purchase-effect' : 'remove-effect');
+            
+            setTimeout(() => {
+                phoneContainer.classList.remove(loopSong ? 'purchase-effect' : 'remove-effect');
+            }, 800);
+            
+            console.log(`Song loop ${loopSong ? 'enabled' : 'disabled'}`);
+        }
+
+        function toggleRandomize() {
+            randomize = !randomize;
+            updateButtonState('randomizeBtn', randomize);
+            
+            const phoneContainer = document.querySelector('.phone-container');
+            phoneContainer.classList.add(randomize ? 'purchase-effect' : 'remove-effect');
+            
+            setTimeout(() => {
+                phoneContainer.classList.remove(randomize ? 'purchase-effect' : 'remove-effect');
+            }, 800);
+            
+            console.log(`Randomize ${randomize ? 'enabled' : 'disabled'}`);
+        }
+
+        function toggleLyrics() {
+            showLyrics = !showLyrics;
+            updateButtonState('lyricsBtn', showLyrics);
+            
+            const phoneContainer = document.querySelector('.phone-container');
+            phoneContainer.classList.add('purple-effect');
+            
+            setTimeout(() => {
+                phoneContainer.classList.remove('purple-effect');
+            }, 800);
+            
+            console.log(`Lyrics ${showLyrics ? 'shown' : 'hidden'}`);
+        }
+
+        function shareMusic() {
+            const currentSong = tracks[currentTrack];
+            const musicLink = `https://fsmusic.com/track/${currentSong.title.toLowerCase().replace(/\s+/g, '-')}`;
+            
+            const phoneContainer = document.querySelector('.phone-container');
+            const shareBtn = document.getElementById('shareBtn');
+            const icon = shareBtn.querySelector('.icon');
+            const spans = shareBtn.querySelectorAll('span');
+            const label = spans[spans.length - 1]; // Get the last span (the label)
+            
+            // Store original content
+            const originalIcon = icon.textContent;
+            const originalLabel = label.textContent;
+            
+            phoneContainer.classList.add('purchase-effect');
+            
+            // Change button to "Copied"
+            icon.textContent = '✍️';
+            label.textContent = 'Copied';
+            
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(musicLink).then(() => {
+                    console.log(`Successfully copied music link to clipboard: ${musicLink}`);
+                }).catch(err => {
+                    console.log(`Clipboard not available, but showing visual feedback anyway. Link: ${musicLink}`);
+                });
+            } else {
+                console.log(`Clipboard API not available. Music link: ${musicLink}`);
+            }
+            
+            // Wait 1.5 seconds, then restore button and close menu
+            setTimeout(() => {
+                phoneContainer.classList.remove('purchase-effect');
+                icon.textContent = originalIcon;
+                label.textContent = originalLabel;
+                toggleSettingsMenu();
+            }, 1500);
+        }
+
+        let volumeEffectTimer = null;
+
+        function handleVolumeScroll(event) {
+            event.preventDefault();
+            
+            const scrollSensitivity = 0.2;
+            const delta = event.deltaY * scrollSensitivity;
+            const newVolume = Math.max(0, Math.min(100, volume + delta));
+            
+            if (newVolume !== volume) {
+                volume = Math.round(newVolume);
+                updateVolumeDisplay();
+                console.log(`Volume: ${volume}% (scroll delta: ${event.deltaY.toFixed(1)})`);
+                
+                const phoneContainer = document.querySelector('.phone-container');
+                phoneContainer.classList.add('black-effect');
+                
+                // Clear existing timer and set new one
+                if (volumeEffectTimer) clearTimeout(volumeEffectTimer);
+                volumeEffectTimer = setTimeout(() => {
+                    phoneContainer.classList.remove('black-effect');
+                    volumeEffectTimer = null;
+                }, 1000);
+            }
+        }
+
+        function updateVolumeDisplay() {
+            const volumeFill = document.getElementById('volumeFill');
+            if (!volumeFill) return;
+            
+            const totalLength = 200;
+            const offset = totalLength * (1 - volume / 100);
+            volumeFill.style.strokeDashoffset = offset;
+        }
+
+        function handleVolumeInteraction(event) {
+            const volumeSlider = document.querySelector('.volume-slider svg');
+            if (!volumeSlider) return;
+            
+            const rect = volumeSlider.getBoundingClientRect();
+            
+            const clientY = event.clientY || (event.touches && event.touches[0].clientY);
+            const clickY = clientY - rect.top;
+            const height = rect.height;
+            
+            const percentage = Math.max(0, Math.min(100, 100 - (clickY / height) * 100));
+            
+            volume = Math.round(percentage);
+            updateVolumeDisplay();
+            console.log(`Volume: ${volume}%`);
+            
+            const phoneContainer = document.querySelector('.phone-container');
+            if (phoneContainer) {
+                phoneContainer.classList.add('black-effect');
+                
+                // Clear existing timer and set new one
+                if (volumeEffectTimer) clearTimeout(volumeEffectTimer);
+                volumeEffectTimer = setTimeout(() => {
+                    phoneContainer.classList.remove('black-effect');
+                    volumeEffectTimer = null;
+                }, 1000);
+            }
+        }
+
+        function startVolumeHanding(event) {
+            isDraggingVolume = true;
+            handleVolumeInteraction(event);
+            event.preventDefault();
+        }
+
+        function continueVolumeHanding(event) {
+            if (isDraggingVolume) {
+                handleVolumeInteraction(event);
+                event.preventDefault();
+            }
+        }
+
+        function stopVolumeHanding() {
+            isDraggingVolume = false;
+        }
+
+        function launchApp(appName) {
+            const app = document.querySelector(`.${appName}`);
+            app.classList.add('launching');
+            
+            const ripple = document.createElement('div');
+            ripple.style.cssText = `
+                position: absolute;
+                width: 150px;
+                height: 150px;
+                background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.1) 60%, transparent 100%);
+                border-radius: 50%;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(0);
+                animation: ripple 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                pointer-events: none;
+                z-index: 20;
+                border: none;
+                outline: none;
+                box-shadow: none;
+            `;
+            
+            app.appendChild(ripple);
+            
+            setTimeout(() => {
+                app.classList.remove('launching');
+                ripple.remove();
+                console.log(`Launching ${appName}...`);
+            }, 700);
+        }
+
+        function startProgressAnimation() {
+            if (progressInterval) clearInterval(progressInterval);
+            
+            progressInterval = setInterval(() => {
+                if (isPlaying && !isDraggingProgress) {
+                    if (currentProgress < 100) {
+                        currentProgress += 0.5;
+                        updateProgressDisplay(currentProgress);
+                    } else {
+                        currentProgress = 5;
+                        nextTrack();
+                    }
+                }
+            }, 200);
+        }
+
+        function updateProgressDisplay(progress) {
+            const progressFill = document.getElementById('progressFill');
+            if (!progressFill) return;
+            
+            const totalLength = 200;
+            const offset = totalLength * (1 - progress / 100);
+            progressFill.style.strokeDashoffset = offset;
+        }
+
+        window.addEventListener('load', () => {
+            setRandomMessage();
+            updateTrackInfo();
+            updateButtonStates();
+            updateProgressDisplay(5);
+            updateVolumeDisplay();
+            startProgressAnimation();
+            
+            document.addEventListener('click', (e) => {
+    const buyMenu = document.getElementById('buyMenuDropdown');
+    const buyButton = document.querySelector('.buy-menu-btn');
+    const settingsMenu = document.getElementById('settingsMenuDropdown');
+    const settingsButton = document.querySelector('.settings-menu-btn');
+    const searchButton = document.querySelector('.search-btn');
+    const searchContainer = document.getElementById('searchContainer');
+    const searchBackBtn = document.getElementById('searchMusicBtn');
+    
+    if (isBuyMenuOpen && !buyMenu.contains(e.target) && !buyButton.contains(e.target)) {
+        toggleBuyMenu();
+    }
+    
+    if (isSettingsMenuOpen && !settingsMenu.contains(e.target) && !settingsButton.contains(e.target)) {
+        toggleSettingsMenu();
+    }
+    
+    // Don't close search mode when clicking on search elements
+    if (isSearchMode && !searchContainer.contains(e.target) && !searchButton.contains(e.target) && !searchBackBtn.contains(e.target)) {
+        // Allow clicking on other elements while in search mode
+    }
+});
+            
+            const volumeSlider = document.querySelector('.volume-slider svg');
+            volumeSlider.addEventListener('mousedown', startVolumeHanding);
+            volumeSlider.addEventListener('touchstart', startVolumeHanding);
+            volumeSlider.addEventListener('wheel', handleVolumeScroll, { passive: false });
+            
+            document.addEventListener('mousemove', continueVolumeHanding);
+            document.addEventListener('mouseup', stopVolumeHanding);
+            document.addEventListener('touchmove', continueVolumeHanding);
+            document.addEventListener('touchend', stopVolumeHanding);
+            
+            
+        });
+        
+        let hintTimer = null;
+        let hasClickedAlbum = false;
+        let menuTimer1 = null;
+        let menuTimer2 = null;
+        
+        function showHints() {
+            const hintOverlay = document.getElementById('hintOverlay');
+            if (hintOverlay) {
+                hintOverlay.classList.add('show');
+                hintTimer = setTimeout(() => {
+                    hintOverlay.classList.remove('show');
+                }, 3000);
+            }
+        }
+        
+function showMenuHints() {
+    const menuItems = document.querySelectorAll('.menu-item');
+    
+    // Enable hover effects for labels after 5 seconds
+    menuItems.forEach(item => {
+        const label = item.querySelector('.menu-label');
+        if (label) {
+            // Add hover event listeners
+            item.addEventListener('mouseenter', () => {
+                label.style.opacity = '1';
+            });
+            
+            item.addEventListener('mouseleave', () => {
+                label.style.opacity = '0';
+            });
+        }
+    });
+}
+        
+        function hideMenuHints() {
+    // Clear all timers when menu closes
+    if (menuTimer1) {
+        clearTimeout(menuTimer1);
+        menuTimer1 = null;
+    }
+    if (menuTimer2) {
+        clearTimeout(menuTimer2);
+        menuTimer2 = null;
+    }
+    
+    // Remove hover event listeners and hide all labels
+    const menuItems = document.querySelectorAll('.menu-item');
+    menuItems.forEach(item => {
+        const label = item.querySelector('.menu-label');
+        if (label) {
+            label.style.opacity = '0';
+            // Remove event listeners by cloning the element
+            const newItem = item.cloneNode(true);
+            item.parentNode.replaceChild(newItem, item);
+        }
+    });
+}
+
+function toggleSearchMode() {
+    const phoneContainer = document.querySelector('.phone-container');
+    const searchContainer = document.getElementById('searchContainer');
+    const searchBackBtn = document.getElementById('searchMusicBtn');
+    const floatingBubble = document.getElementById('floatingSongBubble');
+    
+    searchBackBtn.style.backgroundImage = `url('${tracks[currentTrack].albumArt}')`;
+    const searchBtn = document.getElementById('searchBtn');
+    const searchInput = document.getElementById('searchInput');
+    
+    // Close any open menus first
+    if (isBuyMenuOpen) {
+        toggleBuyMenu();
+    }
+    if (isSettingsMenuOpen) {
+        toggleSettingsMenu();
+    }
+    
+    isSearchMode = true;
+    
+    // Add search mode styling
+    phoneContainer.classList.add('search-mode');
+    phoneContainer.classList.add('purple-effect');
+    
+    // Hide search button and show search container
+    searchBtn.classList.add('collapsed');
+    
+    setTimeout(() => {
+    searchContainer.classList.add('active');
+    searchBackBtn.classList.add('active');
+    searchBackBtn.style.backgroundImage = `url('${tracks[currentTrack].albumArt}')`;
+    floatingBubble.classList.add('active');
+    floatingBubble.textContent = `🎵 ${tracks[currentTrack].title} 🎵`;
+    
+    // Start the hint blinking every 5 seconds
+    // Start the hint blinking every minute
+// Start the hint blinking every minute
+// First blink after 30 seconds, then stop moving
+let hasBlinkHappened = false;
+const blinkTimeout = setTimeout(() => {
+    if (isSearchMode && !hasBlinkHappened) {
+        hasBlinkHappened = true;
+        
+        // Smoothly transition to rest position
+        floatingBubble.classList.add('resting');
+        
+        // Wait for smooth transition to complete, then blink
+        setTimeout(() => {
+            floatingBubble.classList.add('hint-blink');
+            
+            // Remove blink effect but keep resting
+            setTimeout(() => {
+                floatingBubble.classList.remove('hint-blink');
+                // floatingBubble keeps 'resting' class - stays still forever
+            }, 800);
+        }, 2000); // Wait for 2s transition to complete
+    }
+}, 30000); // 30 seconds
+
+// Store the timeout so we can clear it when exiting search mode
+window.searchBlinkTimeout = blinkTimeout;
+    
+    // Focus on search input
+    setTimeout(() => {
+        searchInput.focus();
+        searchInput.value = '';
+    }, 200);
+    
+    phoneContainer.classList.remove('purple-effect');
+}, 400);
+}
+
+function exitSearchMode() {
+    const phoneContainer = document.querySelector('.phone-container');
+    const searchContainer = document.getElementById('searchContainer');
+    const searchBackBtn = document.getElementById('searchMusicBtn');
+    const floatingBubble = document.getElementById('floatingSongBubble');
+    const searchBtn = document.getElementById('searchBtn');
+    const searchResults = document.getElementById('searchResults');
+    
+    isSearchMode = false;
+    
+    // Hide search elements
+searchContainer.classList.remove('active');
+searchBackBtn.classList.remove('active');
+floatingBubble.classList.remove('active');
+searchResults.style.display = 'none';
+    
+    // Add exit effect
+    phoneContainer.classList.add('blue-effect');
+    
+    setTimeout(() => {
+        phoneContainer.classList.remove('search-mode');
+        searchBtn.classList.remove('collapsed');
+        phoneContainer.classList.remove('blue-effect');
+    }, 400);
+
+    // Clear the blink timeout when exiting search mode
+if (window.searchBlinkTimeout) {
+    clearTimeout(window.searchBlinkTimeout);
+    window.searchBlinkTimeout = null;
+}
+}
+
+function handleSearch() {
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+    const query = searchInput.value.trim().toLowerCase();
+    
+    if (query.length === 0) {
+        searchResults.style.display = 'none';
+        return;
+    }
+    
+    // Mock search results for now
+    const mockResults = [
+        { title: "Track: Ocean Waves", type: "Music", description: "Relaxing ocean sounds for meditation" },
+        { title: "Playlist: Chill Vibes", type: "Playlist", description: "Perfect for relaxing moments" },
+        { title: "Artist: Cosmic Flow", type: "Artist", description: "Electronic ambient music producer" },
+        { title: "Album: Digital Rain", type: "Album", description: "Futuristic soundscapes collection" }
+    ].filter(item => 
+        item.title.toLowerCase().includes(query) ||
+        item.description.toLowerCase().includes(query)
+    );
+    
+    if (mockResults.length > 0) {
+        searchResults.innerHTML = mockResults.map(result => `
+            <div class="search-result-item" onclick="selectSearchResult('${result.title}', '${result.type}')">
+                <div style="font-weight: 600; margin-bottom: 5px;">${result.title}</div>
+                <div style="font-size: 12px; opacity: 0.8;">${result.description}</div>
+            </div>
+        `).join('');
+        searchResults.style.display = 'block';
+    } else {
+        searchResults.innerHTML = `
+            <div class="search-result-item">
+                <div style="text-align: center; opacity: 0.6;">No results found for "${query}"</div>
+            </div>
+        `;
+        searchResults.style.display = 'block';
+    }
+}
+
+function selectSearchResult(title, type) {
+    console.log(`Selected ${type}: ${title}`);
+    
+    const phoneContainer = document.querySelector('.phone-container');
+    phoneContainer.classList.add('purchase-effect');
+    
+    setTimeout(() => {
+        phoneContainer.classList.remove('purchase-effect');
+        exitSearchMode();
+    }, 800);
+}
+
+function handleSongTitleClick() {
+    if (isSearchMode) {
+        exitSearchMode();
+    } else {
+        changeGreetingText();
+    }
+}
+
+    </script>
+</body>
+</html>
