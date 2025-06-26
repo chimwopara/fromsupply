@@ -9,6 +9,10 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
 
         body {
@@ -38,10 +42,75 @@
             z-index: 1000;
         }
 
+        .directory-nav {
+            flex: 0 1 auto;
+            min-width: 100px;
+            max-width: 600px;
+            margin: 0 20px;
+            transition: all 0.3s ease;
+            opacity: 1;
+        }
+
+        .directory-nav.hidden {
+            opacity: 0;
+            width: 0;
+            min-width: 0;
+            margin: 0;
+            pointer-events: none;
+        }
+
+        .directory-path {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 8px 16px;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: fit-content;
+            min-width: 80px;
+        }
+
+        .directory-path:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .breadcrumb-segment {
+            display: inline;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .breadcrumb-segment:hover {
+            color: #fbbf24;
+            text-shadow: 0 0 8px rgba(251, 191, 36, 0.6);
+        }
+
+        .breadcrumb-separator {
+            color: rgba(255, 255, 255, 0.6);
+            margin: 0 4px;
+            pointer-events: none;
+        }
+
         .logo-section {
             display: flex;
             align-items: center;
             gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .logo-section:hover {
+            opacity: 0.8;
+            transform: translateY(-1px);
         }
 
         .logo {
@@ -79,11 +148,11 @@
         }
 
         .star-icon {
-            width: 20px;
-            height: 20px;
-            fill: #fbbf24;
-            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
-        }
+    width: 20px;
+    height: 20px;
+    fill: white;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
 
         .star-count {
             color: white;
@@ -142,43 +211,281 @@
             backdrop-filter: blur(5px);
         }
 
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
+        .window {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(25px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            min-width: 400px;
+            min-height: 300px;
+            max-width: 90vw;
+            max-height: none;
+            z-index: 500;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            will-change: transform, left, top;
+            backface-visibility: hidden;
+            perspective: 1000px;
+        }
+
+        .window.resizing {
+            transition: none !important;
+        }
+
+        .window.dragging {
+            transition: none;
+            z-index: 9999;
+            will-change: transform;
+            transform-origin: 0 0;
+        }
+
+        .window.snapped-left {
+            left: 0px !important;
+            top: 60px !important;
+            width: 50vw !important;
+            height: calc(100vh - 60px) !important;
+            max-width: none !important;
+            max-height: none !important;
+            border-radius: 0px;
+        }
+
+        .window.snapped-right {
+            left: 50vw !important;
+            top: 60px !important;
+            width: 50vw !important;
+            height: calc(100vh - 60px) !important;
+            max-width: none !important;
+            max-height: none !important;
+            border-radius: 0px;
+        }
+
+        .window.snapped-top {
+            left: 0px !important;
+            top: 60px !important;
+            width: 100vw !important;
+            height: calc(50vh - 30px) !important;
+            max-width: none !important;
+            max-height: none !important;
+            border-radius: 0px;
+        }
+
+        .window.snapped-bottom {
+            left: 0px !important;
+            top: 50vh !important;
+            width: 100vw !important;
+            height: 50vh !important;
+            max-width: none !important;
+            max-height: none !important;
+            border-radius: 0px;
+        }
+
+        .window.snapped-top-left {
+            left: 0px !important;
+            top: 60px !important;
+            width: 50vw !important;
+            height: calc(50vh - 30px) !important;
+            max-width: none !important;
+            max-height: none !important;
+            border-radius: 0px;
+        }
+
+        .window.snapped-top-right {
+            left: 50vw !important;
+            top: 60px !important;
+            width: 50vw !important;
+            height: calc(50vh - 30px) !important;
+            max-width: none !important;
+            max-height: none !important;
+            border-radius: 0px;
+        }
+
+        .window.snapped-bottom-left {
+            left: 0px !important;
+            top: 50vh !important;
+            width: 50vw !important;
+            height: 50vh !important;
+            max-width: none !important;
+            max-height: none !important;
+            border-radius: 0px;
+        }
+
+        .window.snapped-bottom-right {
+            left: 50vw !important;
+            top: 50vh !important;
+            width: 50vw !important;
+            height: 50vh !important;
+            max-width: none !important;
+            max-height: none !important;
+            border-radius: 0px;
+        }
+
+        .window.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .window.maximized {
+            top: 60px !important;
+            left: 0px !important;
+            width: 100vw !important;
+            height: calc(100vh - 60px) !important;
+            max-width: none !important;
+            max-height: none !important;
+            border-radius: 0px;
+        }
+
+        /* Make entire window draggable */
+        .window-content {
+            padding: 16px;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
-            z-index: 2000;
+            overflow-y: auto;
+            overflow-x: hidden;
+            will-change: scroll-position;
+            backface-visibility: hidden;
+            cursor: grab;
+            /* Hide scrollbars by default */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* Internet Explorer/Edge */
+        }
+
+        /* Hide scrollbars for WebKit browsers (Chrome, Safari, Edge) */
+        .window-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Show scrollbars briefly when window opens */
+        .window-content.show-scrollbar {
+            scrollbar-width: thin; /* Firefox */
+            -ms-overflow-style: auto; /* Internet Explorer/Edge */
+        }
+
+        .window-content.show-scrollbar::-webkit-scrollbar {
+            display: block;
+            width: 8px;
+        }
+
+        .window-content.show-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .window-content.show-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        .window-content.show-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Maintain pointer cursor for interactive elements */
+        .window-content .folder-item,
+        .window-content .language-level-item,
+        .window-content button,
+        .window-content input,
+        .window-content a {
+            cursor: pointer;
+        }
+
+        /* Optimize scrolling during drag */
+        .window.dragging .window-content {
+            pointer-events: none;
+            will-change: transform;
+        }
+
+        /* Disable cursor changes during drag */
+        .window.dragging,
+        .window.dragging * {
+            cursor: grabbing !important;
+        }
+
+        .window-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .window-content::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+
+        .window-content::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+        }
+
+        .window-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.5);
+        }
+
+        .window-content * {
+            color: inherit;
+        }
+
+        .folder-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 4px;
+        }
+
+        .folder-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .folder-item-icon {
+            font-size: 24px;
+            width: 32px;
+            height: 32px;
+            text-align: center;
+            display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .modal-content {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 12px;
-            padding: 24px;
-            text-align: center;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        .nested-folder-icon {
+            width: 28px;
+            height: 28px;
+            background: url('whitefile.png') center/contain;
+            background-repeat: no-repeat;
+            background-color: transparent;
         }
 
-        .close-button {
-            background: #ef4444;
-            color: white;
-            border: none;
-            border-radius: 6px;
+        .folder-item-name {
+            color: white !important;
+        }
+
+        .folder-item-subtitle {
+            color: rgba(255,255,255,0.8) !important;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             padding: 8px 16px;
-            cursor: pointer;
-            margin-top: 16px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            color: #3b82f6;
+            font-size: 14px;
             font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 16px;
         }
 
-        .close-button:hover {
-            background: #dc2626;
+        .back-button:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.5);
         }
 
         /* Phone Overlay Styles - TOP RIGHT POSITIONED */
@@ -222,9 +529,12 @@
 </head>
 <body>
     <div class="header">
-        <div class="logo-section">
+        <div class="logo-section" onclick="goToIndex()">
             <div class="logo"></div>
             <div class="logo-text">Logic</div>
+        </div>
+        <div class="directory-nav hidden" id="directoryNav">
+            <div class="directory-path" id="directoryPath">/Logic</div>
         </div>
         <div class="star-button" onclick="openActionsBlob()">
             <svg class="star-icon" viewBox="0 0 24 24">
@@ -243,30 +553,17 @@
             <div class="folder-icon"></div>
             <div class="folder-name">Science</div>
         </div>
-        <div class="folder" data-folder="Language" style="left: 560px; top: 100px;">
-            <div class="folder-icon"></div>
-            <div class="folder-name">Language</div>
-        </div>
-        <div class="folder" data-folder="Maths" style="left: 40px; top: 400px;">
+        <div class="folder" data-folder="Maths" style="left: 560px; top: 100px;">
             <div class="folder-icon"></div>
             <div class="folder-name">Maths</div>
         </div>
-        <div class="folder" data-folder="Business" style="left: 300px; top: 400px;">
+        <div class="folder" data-folder="Business" style="left: 40px; top: 400px;">
             <div class="folder-icon"></div>
             <div class="folder-name">Business</div>
         </div>
-        <div class="folder" data-folder="Cooking" style="left: 560px; top: 400px;">
+        <div class="folder" data-folder="Cooking" style="left: 300px; top: 400px;">
             <div class="folder-icon"></div>
             <div class="folder-name">Cooking</div>
-        </div>
-    </div>
-
-    <!-- Modal for folder contents -->
-    <div class="modal" id="folderModal">
-        <div class="modal-content">
-            <h3 id="modalTitle">Folder Contents</h3>
-            <p id="modalContent">This folder is ready for your content!</p>
-            <button class="close-button" onclick="closeModal()">Close</button>
         </div>
     </div>
 
@@ -279,6 +576,177 @@
         let isDragging = false;
         let currentFolder = null;
         let offset = { x: 0, y: 0 };
+        let openWindows = [];
+        let windowZIndex = 500;
+        let currentDirectory = ['Logic'];
+
+        // Updated folder structure - all subjects now use the same format with levels and cover images
+        const folderStructure = {
+            'Code': {
+                'Assembly': { levels: 100, cover: 'Assembly.png' },
+                'Bash': { levels: 100, cover: 'Bash.png' },
+                'C': { levels: 100, cover: 'C.png' },
+                'C#': { levels: 100, cover: 'C#.png' },
+                'C++': { levels: 100, cover: 'C++.png' },
+                'CSS': { levels: 100, cover: 'CSS.png' },
+                'Go': { levels: 100, cover: 'Go.png' },
+                'HTML': { levels: 100, cover: 'HTML.png' },
+                'Java': { levels: 100, cover: 'Java.png' },
+                'JavaScript': { levels: 100, cover: 'JavaScript.png' },
+                'Kotlin': { levels: 100, cover: 'Kotlin.png' },
+                'Python': { levels: 100, cover: 'Python.png' },
+                'R': { levels: 100, cover: 'R.png' },
+                'Rust': { levels: 100, cover: 'Rust.png' },
+                'Swift': { levels: 100, cover: 'Swift.png' },
+                'TypeScript': { levels: 100, cover: 'TypeScript.png' },
+                'Z': { levels: 100, cover: 'Z.png' }
+            },
+            'Science': {
+                'Physics': { levels: 50, cover: 'Physics.png' },
+                'Chemistry': { levels: 45, cover: 'Chemistry.png' },
+                'Biology': { levels: 40, cover: 'Biology.png' },
+                'Astronomy': { levels: 35, cover: 'Astronomy.png' },
+                'Geology': { levels: 30, cover: 'Geology.png' },
+                'Environmental Science': { levels: 25, cover: 'Environmental.png' }
+            },
+            'Maths': {
+                'Algebra': { levels: 50, cover: 'Algebra.png' },
+                'Calculus': { levels: 45, cover: 'Calculus.png' },
+                'Statistics': { levels: 40, cover: 'Statistics.png' },
+                'Geometry': { levels: 35, cover: 'Geometry.png' },
+                'Trigonometry': { levels: 30, cover: 'Trigonometry.png' },
+                'Number Theory': { levels: 25, cover: 'NumberTheory.png' }
+            },
+            'Business': {
+                'Management': { levels: 40, cover: 'Management.png' },
+                'Marketing': { levels: 35, cover: 'Marketing.png' },
+                'Finance': { levels: 45, cover: 'Finance.png' },
+                'Economics': { levels: 30, cover: 'Economics.png' },
+                'Accounting': { levels: 25, cover: 'Accounting.png' },
+                'Entrepreneurship': { levels: 20, cover: 'Entrepreneurship.png' }
+            },
+            'Cooking': {
+                'Basic Techniques': { levels: 30, cover: 'BasicTechniques.png' },
+                'Italian Cuisine': { levels: 25, cover: 'Italian.png' },
+                'Asian Cuisine': { levels: 28, cover: 'Asian.png' },
+                'French Cuisine': { levels: 35, cover: 'French.png' },
+                'Baking & Pastry': { levels: 40, cover: 'Baking.png' },
+                'Healthy Cooking': { levels: 20, cover: 'Healthy.png' }
+            }
+        };
+
+        // Update directory display
+        function updateDirectoryDisplay() {
+            const directoryNav = document.getElementById('directoryNav');
+            const directoryPath = document.getElementById('directoryPath');
+            
+            // Hide directory bar when no windows are open
+            if (openWindows.length === 0) {
+                directoryNav.classList.add('hidden');
+                return;
+            } else {
+                directoryNav.classList.remove('hidden');
+            }
+            
+            const path = '/' + currentDirectory.join('/');
+            
+            // Create clickable breadcrumbs
+            const segments = currentDirectory.map((segment, index) => {
+                return `<span class="breadcrumb-segment" onclick="navigateToLevel(${index})">${segment}</span>`;
+            });
+            
+            directoryPath.innerHTML = segments.join('<span class="breadcrumb-separator">/</span>');
+        }
+
+        // Navigate to specific directory level
+        function navigateToLevel(level) {
+            // If clicking "Logic" (level 0), close current window then switch to another
+            if (level === 0) {
+                // Find the currently focused window
+                const focusedWindow = openWindows.find(w => {
+                    const element = document.getElementById(w.id);
+                    return element && parseInt(element.style.zIndex) === windowZIndex;
+                });
+                
+                if (focusedWindow && openWindows.length > 1) {
+                    // First close the current window
+                    closeWindow(focusedWindow.id);
+                    // closeWindow will automatically focus the next window
+                    return;
+                } else if (focusedWindow) {
+                    // Only one window, just close it
+                    closeWindow(focusedWindow.id);
+                    return;
+                }
+            }
+            
+            // Find the currently focused window
+            const focusedWindow = openWindows.find(w => {
+                const element = document.getElementById(w.id);
+                return element && parseInt(element.style.zIndex) === windowZIndex;
+            });
+            
+            if (!focusedWindow) return;
+            
+            const windowPath = getWindowPath(focusedWindow.id);
+            const newPath = windowPath.slice(0, level + 1);
+            updateWindowPath(focusedWindow.id, newPath);
+            
+            // Update the window content based on the new path
+            if (newPath.length === 1) {
+                // Back to desktop - close window
+                closeWindow(focusedWindow.id);
+            } else if (newPath.length === 2) {
+                // Back to main folder content (e.g., Code folder showing all languages)
+                const folderName = newPath[1];
+                const content = generateFolderContent(folderName, focusedWindow.id);
+                const contentElement = document.getElementById(focusedWindow.id + '-content');
+                if (contentElement) {
+                    contentElement.style.padding = '16px'; // Reset padding
+                    contentElement.innerHTML = content;
+                    
+                    // Show scrollbar briefly for navigation feedback
+                    contentElement.classList.add('show-scrollbar');
+                    setTimeout(() => {
+                        contentElement.classList.remove('show-scrollbar');
+                    }, 300);
+                }
+            } else if (newPath.length === 3) {
+                // Back to language levels view (e.g., Assembly showing all levels)
+                const folderName = newPath[1];
+                const languageName = newPath[2];
+                const languageData = folderStructure[folderName][languageName];
+                
+                if (languageData && languageData.levels && languageData.cover) {
+                    const content = generateLanguageLevels(languageName, languageData.levels, languageData.cover, focusedWindow.id);
+                    const contentElement = document.getElementById(focusedWindow.id + '-content');
+                    if (contentElement) {
+                        contentElement.innerHTML = content;
+                    }
+                }
+            } else {
+                // Navigate to intermediate folder or other levels
+                updateWindowContent(focusedWindow.id);
+            }
+        }
+
+        function navigateBack(windowId) {
+            const windowPath = getWindowPath(windowId);
+            if (windowPath.length > 2) {
+                const newPath = windowPath.slice(0, -1);
+                updateWindowPath(windowId, newPath);
+                updateWindowContent(windowId);
+            } else if (windowPath.length === 2) {
+                // Back to main folder
+                const folderName = windowPath[1];
+                const content = generateFolderContent(folderName, windowId);
+                const contentElement = document.getElementById(windowId + '-content');
+                if (contentElement) {
+                    contentElement.style.padding = '16px'; // Reset padding
+                    contentElement.innerHTML = content;
+                }
+            }
+        }
 
         // Star counter functionality - now opens phone overlay
         function openActionsBlob() {
@@ -305,23 +773,910 @@
             }, 300);
         }
 
+        // Window management
+        function createWindow(title, content, width = 600, height = 400) {
+            const windowId = 'window-' + Date.now();
+            const windowElement = document.createElement('div');
+            windowElement.className = 'window';
+            windowElement.id = windowId;
+            
+            // Position new windows with slight offset
+            const offset = openWindows.length * 30;
+            windowElement.style.left = (100 + offset) + 'px';
+            windowElement.style.top = (120 + offset) + 'px';
+            windowElement.style.width = width + 'px';
+            windowElement.style.height = height + 'px';
+            windowElement.style.zIndex = ++windowZIndex;
+            
+            windowElement.innerHTML = `
+                <div class="window-content" id="${windowId}-content" onmousedown="startWindowDrag(event, '${windowId}')">
+                    ${content}
+                </div>
+            `;
+            
+            document.body.appendChild(windowElement);
+            
+            // Add resize handles
+            addResizeHandles(windowElement, windowId);
+            
+            // Enhanced click handling to focus window
+            windowElement.addEventListener('click', (e) => {
+                // Always focus the window when clicked anywhere
+                focusWindow(windowId);
+            });
+
+            windowElement.addEventListener('mousedown', (e) => {
+                // Don't interfere with dragging, but do focus
+                if (!e.target.closest('.resize-handle')) {
+                    focusWindow(windowId);
+                }
+            });
+            
+            // Add to open windows list with current path tracking
+            openWindows.push({ 
+                id: windowId, 
+                title: title, 
+                snapped: false,
+                currentPath: [...currentDirectory] // Track this window's current directory path
+            });
+            
+            // Update directory display
+            updateDirectoryDisplay();
+            
+            // Animate window appearance
+            setTimeout(() => {
+                windowElement.classList.add('active');
+            }, 10);
+            
+            // Focus window
+            focusWindow(windowId);
+            
+            return windowId;
+        }
+
+        function addResizeHandles(windowElement, windowId) {
+            const handles = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'];
+            
+            handles.forEach(handle => {
+                const resizeHandle = document.createElement('div');
+                resizeHandle.className = `resize-handle resize-${handle}`;
+                resizeHandle.style.cssText = `
+                    position: absolute;
+                    background: transparent;
+                    z-index: 10;
+                `;
+                
+                switch(handle) {
+                    case 'n':
+                        resizeHandle.style.cssText += 'top: 0; left: 10px; right: 10px; height: 5px; cursor: n-resize;';
+                        break;
+                    case 's':
+                        resizeHandle.style.cssText += 'bottom: 0; left: 10px; right: 10px; height: 5px; cursor: s-resize;';
+                        break;
+                    case 'e':
+                        resizeHandle.style.cssText += 'right: 0; top: 10px; bottom: 10px; width: 5px; cursor: e-resize;';
+                        break;
+                    case 'w':
+                        resizeHandle.style.cssText += 'left: 0; top: 10px; bottom: 10px; width: 5px; cursor: w-resize;';
+                        break;
+                    case 'ne':
+                        resizeHandle.style.cssText += 'top: 0; right: 0; width: 10px; height: 10px; cursor: ne-resize;';
+                        break;
+                    case 'nw':
+                        resizeHandle.style.cssText += 'top: 0; left: 0; width: 10px; height: 10px; cursor: nw-resize;';
+                        break;
+                    case 'se':
+                        resizeHandle.style.cssText += 'bottom: 0; right: 0; width: 10px; height: 10px; cursor: se-resize;';
+                        break;
+                    case 'sw':
+                        resizeHandle.style.cssText += 'bottom: 0; left: 0; width: 10px; height: 10px; cursor: sw-resize;';
+                        break;
+                }
+                
+                resizeHandle.addEventListener('mousedown', (e) => {
+                    startResize(e, windowId, handle);
+                });
+                
+                windowElement.appendChild(resizeHandle);
+            });
+        }
+
+        function closeWindow(windowId) {
+            const windowElement = document.getElementById(windowId);
+            if (windowElement) {
+                windowElement.remove();
+            }
+            
+            // Remove from open windows
+            openWindows = openWindows.filter(w => w.id !== windowId);
+            
+            // Remove from focus order
+            windowFocusOrder = windowFocusOrder.filter(id => id !== windowId);
+            
+            // Auto-switch directory to next most recent window
+            if (windowFocusOrder.length > 0) {
+                const nextWindowId = windowFocusOrder[0];
+                focusWindow(nextWindowId);
+            } else {
+                // No windows left - hide directory bar
+                const directoryNav = document.getElementById('directoryNav');
+                directoryNav.classList.add('hidden');
+            }
+        }
+
+        function updateActiveWindowPath() {
+            const activeWindow = openWindows[openWindows.length - 1];
+            if (activeWindow) {
+                activeWindow.currentPath = [...currentDirectory];
+            }
+        }
+
+        let windowFocusOrder = []; // Track order of window focus (most recent first)
+
+        function focusWindow(windowId) {
+            // Remove from current position and add to front
+            windowFocusOrder = windowFocusOrder.filter(id => id !== windowId);
+            windowFocusOrder.unshift(windowId);
+            
+            windowZIndex++;
+            const windowElement = document.getElementById(windowId);
+            if (windowElement) {
+                windowElement.style.zIndex = windowZIndex;
+            }
+            
+            // Update the directory bar to show this window's path
+            const window = openWindows.find(w => w.id === windowId);
+            if (window && window.currentPath) {
+                currentDirectory = [...window.currentPath];
+                updateDirectoryDisplay();
+            }
+        }
+
+        function updateWindowPath(windowId, newPath) {
+            const window = openWindows.find(w => w.id === windowId);
+            if (window) {
+                window.currentPath = [...newPath];
+                
+                // If this is the focused window, update the directory bar
+                const windowElement = document.getElementById(windowId);
+                if (windowElement && parseInt(windowElement.style.zIndex) === windowZIndex) {
+                    currentDirectory = [...newPath];
+                    updateDirectoryDisplay();
+                }
+            }
+        }
+
+        function getWindowPath(windowId) {
+            const window = openWindows.find(w => w.id === windowId);
+            return window ? [...window.currentPath] : ['Logic'];
+        }
+
+        // Window dragging and snapping
+        let isDraggingWindow = false;
+        let dragWindowId = null;
+        let dragOffset = { x: 0, y: 0 };
+        let isResizing = false;
+        let resizeData = null;
+        let animationId = null;
+        let lastMousePosition = { x: 0, y: 0 };
+        let dragElement = null;
+        let needsUpdate = false;
+        let dragStartPosition = { x: 0, y: 0 };
+        let potentialDrag = false;
+        let dragThreshold = 5; // pixels to move before starting drag
+
+        function startWindowDrag(event, windowId) {
+            // Start potential drag - we'll decide if it's a real drag based on mouse movement
+            potentialDrag = true;
+            dragWindowId = windowId;
+            dragElement = document.getElementById(windowId);
+            
+            if (!dragElement) return;
+            
+            const rect = dragElement.getBoundingClientRect();
+            
+            // Store initial positions
+            dragStartPosition.x = event.clientX;
+            dragStartPosition.y = event.clientY;
+            lastMousePosition.x = event.clientX;
+            lastMousePosition.y = event.clientY;
+            
+            // Calculate offset for when drag actually starts
+            dragOffset.x = event.clientX - rect.left;
+            dragOffset.y = event.clientY - rect.top;
+            
+            focusWindow(windowId);
+            
+            // Don't prevent default yet - let clicks work unless we start dragging
+        }
+
+        function startDragLoop() {
+            if (!isDraggingWindow) return;
+            
+            if (needsUpdate && dragElement) {
+                // Calculate new position based on mouse movement and drag offset
+                const newX = lastMousePosition.x - dragOffset.x;
+                const newY = Math.max(70, lastMousePosition.y - dragOffset.y);
+                
+                // Use left/top for consistent positioning (no transform conflicts)
+                dragElement.style.left = newX + 'px';
+                dragElement.style.top = newY + 'px';
+                
+                // Check for snapping zones with visual feedback
+                const threshold = 50;
+                const cornerThreshold = 100;
+                const clientWidth = document.documentElement.clientWidth;
+                const clientHeight = document.documentElement.clientHeight;
+                
+                let newBorderColor = 'rgba(255, 255, 255, 0.2)';
+                
+                // Corner snapping (higher priority)
+                if (lastMousePosition.x < cornerThreshold && lastMousePosition.y < 70 + cornerThreshold) {
+                    // Top-left corner
+                    newBorderColor = 'rgba(59, 130, 246, 0.8)';
+                } else if (lastMousePosition.x > clientWidth - cornerThreshold && lastMousePosition.y < 70 + cornerThreshold) {
+                    // Top-right corner
+                    newBorderColor = 'rgba(59, 130, 246, 0.8)';
+                } else if (lastMousePosition.x < cornerThreshold && lastMousePosition.y > clientHeight - cornerThreshold) {
+                    // Bottom-left corner
+                    newBorderColor = 'rgba(59, 130, 246, 0.8)';
+                } else if (lastMousePosition.x > clientWidth - cornerThreshold && lastMousePosition.y > clientHeight - cornerThreshold) {
+                    // Bottom-right corner
+                    newBorderColor = 'rgba(59, 130, 246, 0.8)';
+                } else if (lastMousePosition.y < 80) {
+                    // Top edge (maximize)
+                    newBorderColor = 'rgba(168, 85, 247, 0.8)';
+                } else if (lastMousePosition.y > clientHeight - threshold) {
+                    // Bottom edge
+                    newBorderColor = 'rgba(34, 197, 94, 0.8)';
+                } else if (lastMousePosition.x < threshold) {
+                    // Left edge
+                    newBorderColor = 'rgba(59, 130, 246, 0.8)';
+                } else if (lastMousePosition.x > clientWidth - threshold) {
+                    // Right edge
+                    newBorderColor = 'rgba(59, 130, 246, 0.8)';
+                }
+                
+                // Only update border color if it actually changed
+                if (dragElement.style.borderColor !== newBorderColor) {
+                    dragElement.style.borderColor = newBorderColor;
+                }
+                
+                needsUpdate = false;
+            }
+            
+            // Continue the loop at your display's native refresh rate (120Hz, 144Hz, 240Hz, etc.)
+            if (isDraggingWindow) {
+                animationId = requestAnimationFrame(startDragLoop);
+            }
+        }
+
+        function startResize(event, windowId, handle) {
+            isResizing = true;
+            const windowElement = document.getElementById(windowId);
+            const rect = windowElement.getBoundingClientRect();
+            
+            resizeData = {
+                windowId,
+                handle,
+                startX: event.clientX,
+                startY: event.clientY,
+                startWidth: rect.width,
+                startHeight: rect.height,
+                startLeft: rect.left,
+                startTop: rect.top
+            };
+            
+            focusWindow(windowId);
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        document.addEventListener('mousemove', (event) => {
+            if (potentialDrag && !isDraggingWindow && dragElement) {
+                // Check if we've moved beyond the threshold to start dragging
+                const deltaX = Math.abs(event.clientX - dragStartPosition.x);
+                const deltaY = Math.abs(event.clientY - dragStartPosition.y);
+                
+                if (deltaX > dragThreshold || deltaY > dragThreshold) {
+                    // Start actual dragging
+                    isDraggingWindow = true;
+                    potentialDrag = false;
+                    
+                    // Remove any snapping classes
+                    const snapClasses = ['snapped-left', 'snapped-right', 'snapped-top', 'snapped-bottom', 
+                                       'snapped-top-left', 'snapped-top-right', 'snapped-bottom-left', 
+                                       'snapped-bottom-right', 'maximized'];
+                    snapClasses.forEach(cls => dragElement.classList.remove(cls));
+                    const window = openWindows.find(w => w.id === dragWindowId);
+                    if (window) window.snapped = false;
+                    
+                    // Add dragging class for visual feedback
+                    dragElement.classList.add('dragging');
+                    
+                    // Change cursor immediately
+                    document.body.style.cursor = 'grabbing';
+                    document.body.style.userSelect = 'none';
+                    
+                    // Start the animation loop
+                    needsUpdate = true;
+                    startDragLoop();
+                }
+            }
+            
+            if (isDraggingWindow && dragElement) {
+                // Just update mouse position - the animation loop handles the rest
+                lastMousePosition.x = event.clientX;
+                lastMousePosition.y = event.clientY;
+                needsUpdate = true; // Flag that we need to update on next frame
+                
+            } else if (isResizing && resizeData) {
+                const { windowId, handle, startX, startY, startWidth, startHeight, startLeft, startTop } = resizeData;
+                const windowElement = document.getElementById(windowId);
+                
+                if (windowElement) {
+                    const deltaX = event.clientX - startX;
+                    const deltaY = event.clientY - startY;
+                    
+                    let newWidth = startWidth;
+                    let newHeight = startHeight;
+                    let newLeft = startLeft;
+                    let newTop = startTop;
+                    
+                    // Handle different resize directions
+                    if (handle.includes('e')) {
+                        newWidth = Math.max(400, startWidth + deltaX);
+                        
+                        // Check for edge maximize
+                        if (event.clientX > document.documentElement.clientWidth - 10) {
+                            const snapClasses = ['snapped-left', 'snapped-right', 'snapped-top', 'snapped-bottom', 
+                                               'snapped-top-left', 'snapped-top-right', 'snapped-bottom-left', 
+                                               'snapped-bottom-right'];
+                            snapClasses.forEach(cls => windowElement.classList.remove(cls));
+                            windowElement.classList.add('maximized');
+                            return;
+                        }
+                    }
+                    if (handle.includes('w')) {
+                        newWidth = Math.max(400, startWidth - deltaX);
+                        newLeft = startLeft + deltaX;
+                        if (newWidth === 400) newLeft = startLeft + startWidth - 400;
+                    }
+                    if (handle.includes('s')) {
+                        newHeight = Math.max(300, startHeight + deltaY);
+                        
+                        // Check for edge maximize
+                        if (event.clientY > document.documentElement.clientHeight - 10) {
+                            const snapClasses = ['snapped-left', 'snapped-right', 'snapped-top', 'snapped-bottom', 
+                                               'snapped-top-left', 'snapped-top-right', 'snapped-bottom-left', 
+                                               'snapped-bottom-right'];
+                            snapClasses.forEach(cls => windowElement.classList.remove(cls));
+                            windowElement.classList.add('maximized');
+                            return;
+                        }
+                    }
+                    if (handle.includes('n')) {
+                        newHeight = Math.max(300, startHeight - deltaY);
+                        newTop = Math.max(70, startTop + deltaY);
+                        if (newHeight === 300) newTop = startTop + startHeight - 300;
+                        
+                        // Check for edge maximize
+                        if (event.clientY < 70) {
+                            const snapClasses = ['snapped-left', 'snapped-right', 'snapped-top', 'snapped-bottom', 
+                                               'snapped-top-left', 'snapped-top-right', 'snapped-bottom-left', 
+                                               'snapped-bottom-right'];
+                            snapClasses.forEach(cls => windowElement.classList.remove(cls));
+                            windowElement.classList.add('maximized');
+                            return;
+                        }
+                    }
+                    
+                    windowElement.style.width = newWidth + 'px';
+                    windowElement.style.height = newHeight + 'px';
+                    windowElement.style.left = newLeft + 'px';
+                    windowElement.style.top = newTop + 'px';
+                    
+                    // Remove maximized class during resize
+                    const snapClasses = ['snapped-left', 'snapped-right', 'snapped-top', 'snapped-bottom', 
+                                       'snapped-top-left', 'snapped-top-right', 'snapped-bottom-left', 
+                                       'snapped-bottom-right', 'maximized'];
+                    snapClasses.forEach(cls => windowElement.classList.remove(cls));
+                }
+            }
+        });
+
+        document.addEventListener('mouseup', (event) => {
+            if (isDraggingWindow && dragElement) {
+                const window = openWindows.find(w => w.id === dragWindowId);
+                
+                // Stop the animation loop
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                    animationId = null;
+                }
+                
+                // Reset visual states
+                dragElement.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                dragElement.classList.remove('dragging');
+                
+                // Remove all existing snap classes
+                const snapClasses = ['snapped-left', 'snapped-right', 'snapped-top', 'snapped-bottom', 
+                                   'snapped-top-left', 'snapped-top-right', 'snapped-bottom-left', 
+                                   'snapped-bottom-right', 'maximized'];
+                snapClasses.forEach(cls => dragElement.classList.remove(cls));
+                
+                // Check for snapping based on mouse position
+                const threshold = 50;
+                const cornerThreshold = 100;
+                const clientWidth = document.documentElement.clientWidth;
+                const clientHeight = document.documentElement.clientHeight;
+                
+                if (event.clientX < cornerThreshold && event.clientY < 70 + cornerThreshold) {
+                    // Top-left corner
+                    dragElement.classList.add('snapped-top-left');
+                    if (window) window.snapped = 'top-left';
+                } else if (event.clientX > clientWidth - cornerThreshold && event.clientY < 70 + cornerThreshold) {
+                    // Top-right corner
+                    dragElement.classList.add('snapped-top-right');
+                    if (window) window.snapped = 'top-right';
+                } else if (event.clientX < cornerThreshold && event.clientY > clientHeight - cornerThreshold) {
+                    // Bottom-left corner
+                    dragElement.classList.add('snapped-bottom-left');
+                    if (window) window.snapped = 'bottom-left';
+                } else if (event.clientX > clientWidth - cornerThreshold && event.clientY > clientHeight - cornerThreshold) {
+                    // Bottom-right corner
+                    dragElement.classList.add('snapped-bottom-right');
+                    if (window) window.snapped = 'bottom-right';
+                } else if (event.clientY < 80) {
+                    // Top edge - maximize
+                    dragElement.classList.add('maximized');
+                    if (window) window.snapped = 'maximized';
+                } else if (event.clientY > clientHeight - threshold) {
+                    // Bottom edge
+                    dragElement.classList.add('snapped-bottom');
+                    if (window) window.snapped = 'bottom';
+                } else if (event.clientX < threshold) {
+                    // Left edge
+                    dragElement.classList.add('snapped-left');
+                    if (window) window.snapped = 'left';
+                } else if (event.clientX > clientWidth - threshold) {
+                    // Right edge
+                    dragElement.classList.add('snapped-right');
+                    if (window) window.snapped = 'right';
+                } else {
+                    // No snapping
+                    if (window) window.snapped = false;
+                }
+                
+                // Reset cursor and selection
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+                
+                // Clean up references
+                dragElement = null;
+                needsUpdate = false;
+            }
+            
+            // Clean up all drag states
+            isDraggingWindow = false;
+            potentialDrag = false;
+            dragWindowId = null;
+            isResizing = false;
+            resizeData = null;
+        });
+
+        // Generate folder content based on current directory
+        function generateFolderContent(folderName, windowId = null) {
+            // Only update path if windowId is provided and path isn't already set
+            if (windowId) {
+                const window = openWindows.find(w => w.id === windowId);
+                if (window && (!window.currentPath || window.currentPath.length < 2)) {
+                    const newPath = ['Logic', folderName];
+                    updateWindowPath(windowId, newPath);
+                }
+                
+                // Reset padding for folder content
+                const contentElement = document.getElementById(windowId + '-content');
+                if (contentElement) {
+                    contentElement.style.padding = '16px';
+                }
+            }
+            
+            const structure = folderStructure[folderName];
+            if (!structure) return '<p style="color: white;">No content available</p>';
+            
+            let content = '';
+            
+            // Generate folder items
+            for (const [key, value] of Object.entries(structure)) {
+                const isSubjectFile = value && typeof value === 'object' && value.levels && value.cover;
+                
+                // All items in the updated structure should be subject files with levels
+                const icon = '<div class="nested-folder-icon"></div>';
+                
+                content += `
+                    <div class="folder-item" onclick="navigateToItem('${key}', '${windowId || 'current'}')">
+                        <div class="folder-item-icon">${icon}</div>
+                        <div class="folder-item-name" style="color: white;">${key}</div>
+                        <div class="folder-item-subtitle" style="color: rgba(255,255,255,0.8);">${isSubjectFile ? `${value.levels} Levels` : 'Subject'}</div>
+                    </div>
+                `;
+            }
+            
+            // If we have a windowId, show scrollbar briefly after content loads
+            if (windowId) {
+                setTimeout(() => {
+                    const contentElement = document.getElementById(windowId + '-content');
+                    if (contentElement) {
+                        contentElement.classList.add('show-scrollbar');
+                        setTimeout(() => {
+                            contentElement.classList.remove('show-scrollbar');
+                        }, 300);
+                    }
+                }, 100);
+            }
+            
+            return content;
+        }
+
+        // Get subject descriptions
+        function getSubjectDescription(subjectName) {
+            const descriptions = {
+                // Code subjects
+                'Assembly': 'Low-level programming language that provides direct control over computer hardware and system resources.',
+                'Bash': 'Command-line shell and scripting language for automating tasks and system administration.',
+                'C': 'Foundational programming language known for efficiency and system-level programming capabilities.',
+                'C#': 'Modern, object-oriented programming language developed by Microsoft for building robust applications.',
+                'C++': 'Powerful extension of C with object-oriented features for high-performance software development.',
+                'CSS': 'Styling language that controls the visual presentation and layout of web pages and applications.',
+                'Go': 'Fast, compiled programming language designed for building scalable and concurrent systems.',
+                'HTML': 'Markup language that structures content and creates the foundation of web pages.',
+                'Java': 'Platform-independent, object-oriented language widely used for enterprise applications.',
+                'JavaScript': 'Dynamic programming language that powers interactive web experiences and modern applications.',
+                'Kotlin': 'Modern programming language that runs on the JVM and is fully interoperable with Java.',
+                'Python': 'Versatile, readable programming language perfect for beginners and powerful for advanced applications.',
+                'R': 'Statistical programming language designed for data analysis, visualization, and machine learning.',
+                'Rust': 'Systems programming language focused on safety, speed, and memory management without garbage collection.',
+                'Swift': 'Apple\'s programming language for iOS, macOS, and other Apple platform development.',
+                'TypeScript': 'Typed superset of JavaScript that compiles to plain JavaScript with enhanced development tools.',
+                'Z': 'Formal specification language used for describing and modeling computing systems.',
+                
+                // Science subjects
+                'Physics': 'Study of matter, energy, and their interactions to understand how the universe works at every scale.',
+                'Chemistry': 'Science of atoms, molecules, and chemical reactions that shape our material world.',
+                'Biology': 'Study of living organisms and life processes, from molecular mechanisms to ecosystems.',
+                'Astronomy': 'Exploration of celestial objects, space, and the physical universe beyond Earth.',
+                'Geology': 'Study of Earth\'s structure, processes, and history through rocks, minerals, and natural phenomena.',
+                'Environmental Science': 'Interdisciplinary study of environmental problems and solutions for a sustainable future.',
+                
+                // Maths subjects
+                'Algebra': 'Mathematical language using symbols and equations to solve problems and model relationships.',
+                'Calculus': 'Mathematics of change, studying rates of change and accumulation in functions.',
+                'Statistics': 'Science of collecting, analyzing, and interpreting data to make informed decisions.',
+                'Geometry': 'Study of shapes, sizes, positions, and properties of space and spatial relationships.',
+                'Trigonometry': 'Mathematics of triangles and periodic functions, essential for engineering and physics.',
+                'Number Theory': 'Pure mathematics studying properties and relationships of integers and prime numbers.',
+                
+                // Business subjects
+                'Management': 'Art and science of leading teams, organizations, and projects to achieve strategic goals.',
+                'Marketing': 'Creating value for customers and building strong brands through strategic communication.',
+                'Finance': 'Managing money, investments, and financial resources to optimize value and minimize risk.',
+                'Economics': 'Study of how societies allocate scarce resources and make decisions about production and consumption.',
+                'Accounting': 'Financial language of business, recording and communicating economic information.',
+                'Entrepreneurship': 'Creating and building new ventures, turning innovative ideas into successful businesses.',
+                
+                // Cooking subjects
+                'Basic Techniques': 'Fundamental cooking methods and skills that form the foundation of culinary expertise.',
+                'Italian Cuisine': 'Traditional and modern Italian cooking, emphasizing fresh ingredients and regional specialties.',
+                'Asian Cuisine': 'Diverse culinary traditions from across Asia, featuring unique flavors and cooking techniques.',
+                'French Cuisine': 'Classical cooking techniques and refined culinary arts that influence kitchens worldwide.',
+                'Baking & Pastry': 'Precision-based culinary art creating breads, desserts, and sweet confections.',
+                'Healthy Cooking': 'Nutritious meal preparation focusing on wellness without compromising on flavor.'
+            };
+            
+            return descriptions[subjectName] || 'Master the fundamentals and advanced concepts in this comprehensive course.';
+        }
+
+        function generateLanguageLevels(subjectName, totalLevels, coverImage, windowId) {
+            // Reset padding for language levels content
+            if (windowId) {
+                const contentElement = document.getElementById(windowId + '-content');
+                if (contentElement) {
+                    contentElement.style.padding = '16px';
+                }
+            }
+            
+            // Get description for the subject
+            const description = getSubjectDescription(subjectName);
+            
+            let content = `
+                <div style="display: flex; align-items: center; gap: 30px; margin-bottom: 30px; padding: 20px;">
+                    <div style="flex: 0 0 200px;">
+                        <div style="width: 200px; height: 200px; background: url('${coverImage}') center/cover; border-radius: 16px; border: 2px solid rgba(255,255,255,0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.3);"></div>
+                    </div>
+                    <div style="flex: 1;">
+                        <h2 style="color: white; margin: 0 0 12px 0; font-size: 28px; font-weight: 600;">${subjectName}</h2>
+                        <p style="color: rgba(255,255,255,0.9); font-size: 16px; line-height: 1.5; margin: 0 0 8px 0;">${description}</p>
+                        <p style="color: rgba(255,255,255,0.7); font-size: 14px; font-weight: 500;">${totalLevels} Levels Available</p>
+                    </div>
+                </div>
+            `;
+            
+            // Generate level grid with flexible height
+            content += '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; height: auto; min-height: 300px;">';
+            
+            for (let i = 1; i <= totalLevels; i++) {
+                content += `
+                    <div class="language-level-item" onclick="openLanguageLevel('${subjectName}', ${i}, '${coverImage}', '${windowId}')" 
+                         style="display: flex; flex-direction: column; align-items: center; padding: 12px; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; cursor: pointer; transition: all 0.2s ease; background: rgba(255,255,255,0.05);">
+                        <div style="width: 50px; height: 50px; background: url('${coverImage}') center/cover; border-radius: 8px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.2);"></div>
+                        <div style="font-size: 12px; font-weight: 600; text-align: center; color: white;">Level ${i}</div>
+                    </div>
+                `;
+            }
+            
+            content += '</div>';
+            
+            // Add CSS for hover effects
+            content += `
+                <style>
+                    .language-level-item:hover {
+                        background: rgba(59, 130, 246, 0.2) !important;
+                        border-color: rgba(59, 130, 246, 0.4) !important;
+                        transform: translateY(-2px);
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                    }
+                </style>
+            `;
+            
+            return content;
+        }
+
+        function openLanguageLevel(subjectName, levelNumber, coverImage, windowId) {
+            const windowPath = getWindowPath(windowId);
+            const newPath = [...windowPath, levelNumber.toString()];
+            updateWindowPath(windowId, newPath);
+            
+            // Get progress status for this level (for now, defaulting to "begin")
+            const progressStatus = getLevelProgress(subjectName, levelNumber);
+            const buttonConfig = getButtonConfig(progressStatus);
+            
+            const content = `
+                <div onclick="openSubjectLesson('${subjectName}')" style="
+                    position: relative;
+                    height: 100%;
+                    background: url('${coverImage}') center/cover;
+                    background-attachment: fixed;
+                    overflow: hidden;
+                    cursor: pointer;
+                ">
+                    <!-- Blur overlay -->
+                    <div style="
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: url('${coverImage}') center/cover;
+                        filter: blur(25px);
+                        transform: scale(1.1);
+                        z-index: 1;
+                    "></div>
+                    
+                    <!-- Dark overlay for readability -->
+                    <div style="
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: rgba(0, 0, 0, 0.4);
+                        z-index: 2;
+                    "></div>
+                    
+                    <!-- Content -->
+                    <div style="
+                        position: relative;
+                        z-index: 3;
+                        padding: 40px 20px;
+                        height: 100%;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        max-width: 600px;
+                        margin: 0 auto;
+                        text-align: center;
+                    ">
+                        <h1 style="margin-bottom: 40px;"><svg style="width: 42px; height: 42px; fill: #4ade80; filter: drop-shadow(0 0 10px rgba(74, 222, 128, 0.5)); margin-right: 8px; vertical-align: middle;" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> <span style="color: white; text-shadow: 0 1px 4px rgba(0,0,0,0.6);">25</span></h1>
+                        
+                        <ul style="margin: 0 0 60px 0; padding: 0; color: rgba(255,255,255,0.9); line-height: 1.8; font-size: 16px; list-style: none; text-align: center; text-shadow: 0 1px 4px rgba(0,0,0,0.6);">
+                            <li style="margin-bottom: 12px;">
+                                Master ${subjectName} concepts and best practices
+                            </li>
+                            <li style="margin-bottom: 12px;">
+                                Apply knowledge to real-world scenarios
+                            </li>
+                            <li style="margin-bottom: 12px;">
+                                Understand fundamental principles
+                            </li>
+                            <li style="margin-bottom: 12px;">
+                                Prepare for advanced level challenges
+                            </li>
+                        </ul>
+                        
+                        <div style="text-align: center;">
+                            ${buttonConfig.progressBar}
+                            <div style="
+                                 color: white;
+                                 font-size: 18px;
+                                 font-weight: 500;
+                                 text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+                                 opacity: 0.9;
+                                 border-bottom: 2px solid transparent;
+                                 display: inline-block;
+                                 padding: 4px 8px;
+                                 transition: all 0.2s ease;
+                             ">
+                                ${buttonConfig.text}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Update THIS window's content
+            const contentElement = document.getElementById(windowId + '-content');
+            if (contentElement) {
+                contentElement.innerHTML = content;
+                // Remove default padding since we're handling it in the content
+                contentElement.style.padding = '0';
+            }
+        }
+
+        // Get level progress status (placeholder for future implementation)
+        function getLevelProgress(subjectName, levelNumber) {
+            // For now, return 'begin' - later this can check actual progress
+            // Possible values: 'begin', 'continue', 'completed'
+            return 'begin';
+        }
+
+        // Get button configuration based on progress status
+        function getButtonConfig(status) {
+            switch(status) {
+                case 'continue':
+                    return {
+                        text: 'Click to Resume',
+                        progressBar: `
+                            <div style="margin-bottom: 20px;">
+                                <div style="background: rgba(255,255,255,0.2); border-radius: 20px; height: 6px; overflow: hidden; margin-bottom: 8px;">
+                                    <div style="background: linear-gradient(90deg, #22c55e, #10b981); height: 100%; width: 65%; border-radius: 20px; transition: width 0.3s ease;"></div>
+                                </div>
+                                <p style="color: rgba(255,255,255,0.8); font-size: 14px; margin: 0; text-shadow: 0 1px 4px rgba(0,0,0,0.6);">Progress: 65% Complete</p>
+                            </div>
+                        `
+                    };
+                case 'completed':
+                    return {
+                        text: 'Click to Re-attempt',
+                        progressBar: `
+                            <div style="margin-bottom: 20px;">
+                                <div style="background: rgba(255,255,255,0.2); border-radius: 20px; height: 6px; overflow: hidden; margin-bottom: 8px;">
+                                    <div style="background: linear-gradient(90deg, #a855f7, #9333ea); height: 100%; width: 100%; border-radius: 20px;"></div>
+                                </div>
+                                <p style="color: rgba(255,255,255,0.8); font-size: 14px; margin: 0; text-shadow: 0 1px 4px rgba(0,0,0,0.6);">✓ Completed</p>
+                            </div>
+                        `
+                    };
+                default: // 'begin'
+                    return {
+                        text: 'Click to Begin',
+                        progressBar: ''
+                    };
+            }
+        }
+
+        // Open subject lesson file
+        function openSubjectLesson(subjectName) {
+            const fileName = `${subjectName}.html`;
+            window.open(fileName, '_blank');
+        }
+
+        // Navigate to index page
+        function goToIndex() {
+            window.location.href = 'index.html';
+        }
+
+        function updateWindowContent(windowId) {
+            const contentElement = document.getElementById(windowId + '-content');
+            const windowPath = getWindowPath(windowId);
+            
+            if (!contentElement || windowPath.length < 2) return;
+            
+            // Reset padding for non-level content
+            contentElement.style.padding = '16px';
+            
+            const folderName = windowPath[1];
+            const content = generateFolderContent(folderName, windowId);
+            contentElement.innerHTML = content;
+        }
+
+        function navigateToItem(itemName, windowId) {
+            // If windowId is 'current', find the currently focused window
+            if (windowId === 'current') {
+                const focusedWindow = openWindows.find(w => {
+                    const element = document.getElementById(w.id);
+                    return element && parseInt(element.style.zIndex) === windowZIndex;
+                });
+                if (!focusedWindow) return;
+                windowId = focusedWindow.id;
+            }
+            
+            const windowPath = getWindowPath(windowId);
+            const folderName = windowPath[1];
+            const currentStructure = folderStructure[folderName];
+            const item = currentStructure[itemName];
+            const newPath = [...windowPath, itemName];
+            
+            // Check if it's a subject file with levels
+            if (item && item.levels && item.cover) {
+                // It's a subject file - show all levels in THIS window
+                updateWindowPath(windowId, newPath);
+                
+                const content = generateLanguageLevels(itemName, item.levels, item.cover, windowId);
+                const contentElement = document.getElementById(windowId + '-content');
+                if (contentElement) {
+                    contentElement.style.padding = '16px'; // Reset padding for levels grid
+                    contentElement.innerHTML = content;
+                }
+                
+                // Resize window to better fit level grid
+                const windowElement = document.getElementById(windowId);
+                if (windowElement && !windowElement.classList.contains('maximized') && 
+                    !windowElement.classList.contains('snapped-left') && 
+                    !windowElement.classList.contains('snapped-right') &&
+                    !windowElement.classList.contains('snapped-top') &&
+                    !windowElement.classList.contains('snapped-bottom') &&
+                    !windowElement.classList.contains('snapped-top-left') &&
+                    !windowElement.classList.contains('snapped-top-right') &&
+                    !windowElement.classList.contains('snapped-bottom-left') &&
+                    !windowElement.classList.contains('snapped-bottom-right')) {
+                    windowElement.style.width = '800px';
+                    windowElement.style.height = '600px';
+                }
+            }
+        }
+
+        function getOrdinalSuffix(num) {
+            const ones = num % 10;
+            const tens = Math.floor(num / 10) % 10;
+            if (tens === 1) return 'th';
+            if (ones === 1) return 'st';
+            if (ones === 2) return 'nd';
+            if (ones === 3) return 'rd';
+            return 'th';
+        }
+
         // Folder functionality
         function openFolder(folderName) {
-            const modal = document.getElementById('folderModal');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalContent = document.getElementById('modalContent');
+            const windowId = createWindow(`${folderName} - Logic`, '', 650, 500);
             
-            modalTitle.textContent = folderName + ' Folder';
-            modalContent.textContent = `Welcome to the ${folderName} folder! This is where you can organize your ${folderName.toLowerCase()} related files and projects.`;
+            // Set the initial path for this window
+            const newPath = ['Logic', folderName];
+            updateWindowPath(windowId, newPath);
             
-            modal.style.display = 'flex';
+            const content = generateFolderContent(folderName, windowId);
+            const contentElement = document.getElementById(windowId + '-content');
+            if (contentElement) {
+                contentElement.style.padding = '16px'; // Ensure proper padding
+                contentElement.innerHTML = content;
+            }
         }
 
         function closeModal() {
             document.getElementById('folderModal').style.display = 'none';
         }
 
-        // Drag and Drop functionality
+        // Drag and Drop functionality for desktop folders
         function initializeDragAndDrop() {
             const folders = document.querySelectorAll('.folder');
             
@@ -471,18 +1826,23 @@
             }
         });
 
-        // Close modal when clicking outside
-        document.getElementById('folderModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
-            }
-        });
-
         // Keyboard shortcuts
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                closeModal();
-                hidePhoneOverlay(); // Close phone overlay too
+                hidePhoneOverlay();
+                
+                // Close topmost window
+                if (openWindows.length > 0) {
+                    const topWindow = openWindows[openWindows.length - 1];
+                    closeWindow(topWindow.id);
+                }
+            }
+            
+            // Double ESC to close all windows
+            if (e.key === 'Escape' && e.detail === 2) {
+                while (openWindows.length > 0) {
+                    closeWindow(openWindows[0].id);
+                }
             }
         });
 
@@ -490,6 +1850,10 @@
         document.addEventListener('DOMContentLoaded', function() {
             initializeDragAndDrop();
             loadFolderPositions();
+            
+            // Hide directory bar initially since no windows are open
+            const directoryNav = document.getElementById('directoryNav');
+            directoryNav.classList.add('hidden');
             
             // Animate folders on load
             const folders = document.querySelectorAll('.folder');
@@ -501,6 +1865,20 @@
                     folder.style.opacity = '1';
                     folder.style.transform = 'translateY(0)';
                 }, index * 100);
+            });
+
+            // Click outside windows to unfocus
+            document.addEventListener('click', function(e) {
+                // Check if click is on desktop (not on any window)
+                if (e.target.id === 'desktop' || e.target.closest('.desktop')) {
+                    // Unfocus all windows by reducing their z-index slightly
+                    openWindows.forEach(window => {
+                        const windowElement = document.getElementById(window.id);
+                        if (windowElement) {
+                            windowElement.style.zIndex = Math.min(parseInt(windowElement.style.zIndex) || 500, 600);
+                        }
+                    });
+                }
             });
         });
     </script>
