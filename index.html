@@ -87,11 +87,18 @@
             display: inline;
             cursor: pointer;
             transition: all 0.2s ease;
+            padding: 2px 4px;
+            border-radius: 4px;
         }
 
         .breadcrumb-segment:hover {
             color: #fbbf24;
             text-shadow: 0 0 8px rgba(251, 191, 36, 0.6);
+            background: rgba(251, 191, 36, 0.1);
+        }
+
+        .breadcrumb-segment:active {
+            transform: scale(0.95);
         }
 
         .breadcrumb-separator {
@@ -1342,9 +1349,9 @@
             
             const path = '/' + currentDirectory.join('/');
             
-            // Create clickable breadcrumbs
+            // Create clickable breadcrumbs with better event handling
             const segments = currentDirectory.map((segment, index) => {
-                return `<span class="breadcrumb-segment" onclick="navigateToLevel(${index})">${segment}</span>`;
+                return `<span class="breadcrumb-segment" onclick="event.stopPropagation(); navigateToLevel(${index}); return false;">${segment}</span>`;
             });
             
             directoryPath.innerHTML = segments.join('<span class="breadcrumb-separator">/</span>');
@@ -1352,15 +1359,20 @@
 
         // Navigate to specific directory level
         function navigateToLevel(level) {
+            // Always focus the window first to ensure proper event handling
+            const focusedWindow = openWindows.find(w => {
+                const element = document.getElementById(w.id);
+                return element && parseInt(element.style.zIndex) === windowZIndex;
+            });
+            
+            if (!focusedWindow) return;
+            
+            // Ensure the window is focused
+            focusWindow(focusedWindow.id);
+            
             // If clicking "Fromsupply" (level 0), close current window then switch to another
             if (level === 0) {
-                // Find the currently focused window
-                const focusedWindow = openWindows.find(w => {
-                    const element = document.getElementById(w.id);
-                    return element && parseInt(element.style.zIndex) === windowZIndex;
-                });
-                
-                if (focusedWindow && openWindows.length > 1) {
+                if (openWindows.length > 1) {
                     // First close the current window
                     closeWindow(focusedWindow.id);
                     // closeWindow will automatically focus the next window
@@ -1371,14 +1383,6 @@
                     return;
                 }
             }
-            
-            // Find the currently focused window
-            const focusedWindow = openWindows.find(w => {
-                const element = document.getElementById(w.id);
-                return element && parseInt(element.style.zIndex) === windowZIndex;
-            });
-            
-            if (!focusedWindow) return;
             
             const windowPath = getWindowPath(focusedWindow.id);
             const newPath = windowPath.slice(0, level + 1);
@@ -1434,6 +1438,9 @@
         }
 
         function navigateBack(windowId) {
+            // Ensure window is focused first
+            focusWindow(windowId);
+            
             const windowPath = getWindowPath(windowId);
             if (windowPath.length > 2) {
                 const newPath = windowPath.slice(0, -1);
@@ -1489,7 +1496,10 @@
             windowElement.style.top = (120 + offset) + 'px';
             windowElement.style.width = width + 'px';
             windowElement.style.height = height + 'px';
-            windowElement.style.zIndex = ++windowZIndex;
+            
+            // Ensure new window is on top by setting highest z-index
+            windowZIndex += 2; // Increment by 2 to leave room for other elements
+            windowElement.style.zIndex = windowZIndex;
             
             // App windows with drag overlay
             windowElement.innerHTML = `
@@ -1528,13 +1538,13 @@
             // Update directory display
             updateDirectoryDisplay();
             
+            // Focus window immediately to ensure it's on top
+            focusWindow(windowId);
+            
             // Animate window appearance
             setTimeout(() => {
                 windowElement.classList.add('active');
             }, 10);
-            
-            // Focus window
-            focusWindow(windowId);
             
             return windowId;
         }
@@ -1672,7 +1682,8 @@
             windowFocusOrder = windowFocusOrder.filter(id => id !== windowId);
             windowFocusOrder.unshift(windowId);
             
-            windowZIndex++;
+            // Ensure this window has the highest z-index
+            windowZIndex += 2;
             const windowElement = document.getElementById(windowId);
             if (windowElement) {
                 windowElement.style.zIndex = windowZIndex;
@@ -1683,6 +1694,15 @@
             if (window && window.currentPath) {
                 currentDirectory = [...window.currentPath];
                 updateDirectoryDisplay();
+            }
+            
+            // Visual feedback - briefly highlight the focused window
+            if (windowElement) {
+                const originalBorder = windowElement.style.borderColor;
+                windowElement.style.borderColor = 'rgba(59, 130, 246, 0.6)';
+                setTimeout(() => {
+                    windowElement.style.borderColor = originalBorder;
+                }, 200);
             }
         }
 
@@ -3252,6 +3272,11 @@ ${corrections}
                 contentElement.style.padding = '16px'; // Ensure proper padding
                 contentElement.innerHTML = content;
             }
+            
+            // Ensure window is properly focused and visible
+            setTimeout(() => {
+                focusWindow(windowId);
+            }, 100);
         }
 
         // App functionality - opens HTML files in windows
@@ -3279,6 +3304,11 @@ ${corrections}
                 contentElement.removeAttribute('onmousedown');
                 contentElement.style.cursor = 'default'; // Normal cursor for iframe content
             }
+            
+            // Ensure window is properly focused and visible
+            setTimeout(() => {
+                focusWindow(windowId);
+            }, 100);
         }
 
         function closeModal() {
@@ -3290,10 +3320,35 @@ ${corrections}
             const folders = document.querySelectorAll('.folder');
             
             folders.forEach(folder => {
-                folder.addEventListener('mousedown', startDrag);
+                let dragStartTime = 0;
+                let dragStartPosition = { x: 0, y: 0 };
+                let hasActuallyDragged = false;
+                
+                folder.addEventListener('mousedown', function(e) {
+                    dragStartTime = Date.now();
+                    dragStartPosition.x = e.clientX;
+                    dragStartPosition.y = e.clientY;
+                    hasActuallyDragged = false;
+                    startDrag(e);
+                });
+                
+                folder.addEventListener('mousemove', function(e) {
+                    if (isDragging && currentFolder === this) {
+                        const deltaX = Math.abs(e.clientX - dragStartPosition.x);
+                        const deltaY = Math.abs(e.clientY - dragStartPosition.y);
+                        
+                        // If moved more than 5 pixels, consider it a drag
+                        if (deltaX > 5 || deltaY > 5) {
+                            hasActuallyDragged = true;
+                        }
+                    }
+                });
+                
                 folder.addEventListener('click', function(e) {
-                    // Only open if we're not dragging
-                    if (!isDragging) {
+                    const clickDuration = Date.now() - dragStartTime;
+                    
+                    // Only open if it was a quick click and not a drag
+                    if (!hasActuallyDragged && clickDuration < 300) {
                         const folderName = this.dataset.folder;
                         const isApp = this.dataset.app === 'true';
                         const fileName = this.dataset.file;
@@ -3357,9 +3412,15 @@ ${corrections}
                 saveFolderPosition(currentFolder);
             }
             
+            // Reset all drag states
             isDragging = false;
             currentFolder = null;
             document.body.style.userSelect = '';
+            
+            // Small delay to prevent immediate click events
+            setTimeout(() => {
+                // Additional cleanup if needed
+            }, 50);
         }
 
         function saveFolderPosition(folder) {
