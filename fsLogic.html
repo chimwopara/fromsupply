@@ -69,7 +69,7 @@
             font-weight: 500;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(10px);
-            cursor: pointer;
+            cursor: default;
             transition: all 0.2s ease;
             white-space: nowrap;
             overflow: hidden;
@@ -148,11 +148,11 @@
         }
 
         .star-icon {
-    width: 20px;
-    height: 20px;
-    fill: white;
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
-}
+            width: 20px;
+            height: 20px;
+            fill: white;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+        }
 
         .star-count {
             color: white;
@@ -172,7 +172,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            cursor: move;
+            cursor: default;
             transition: transform 0.1s ease;
             user-select: none;
             width: 240px;
@@ -181,6 +181,21 @@
 
         .folder:hover {
             transform: scale(1.05);
+        }
+
+        /* Special hover effect for apps */
+        .folder[data-app="true"]:hover {
+            transform: scale(1.08);
+        }
+
+        .folder[data-app="true"]:hover .folder-icon::after {
+            background: rgba(74, 222, 128, 0.9);
+            animation: pulse 0.5s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
 
         .folder.dragging {
@@ -197,6 +212,29 @@
             background-color: transparent;
             margin-bottom: 16px;
             filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        /* Special styling for app icons */
+        .folder[data-app="true"] .folder-icon {
+            background: url('blackfile.png') center/contain;
+            background-repeat: no-repeat;
+            position: relative;
+        }
+
+        .folder[data-app="true"] .folder-icon::after {
+            content: '⚡';
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 32px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
         .folder-name {
@@ -525,6 +563,156 @@
         .phone-overlay-wrapper.show .phone-iframe {
             opacity: 1;
         }
+
+        /* App Window Styles */
+        .app-window-header {
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            cursor: grab;
+            user-select: none;
+            backdrop-filter: blur(10px);
+            border-radius: 24px 24px 0 0;
+        }
+
+        .app-window-header:active {
+            cursor: grabbing;
+        }
+
+        .app-window-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .app-icon {
+            font-size: 16px;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+        }
+
+        .app-window-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .window-control-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .minimize-btn {
+            background: rgba(255, 189, 68, 0.8);
+            color: rgba(0, 0, 0, 0.8);
+        }
+
+        .minimize-btn:hover {
+            background: rgba(255, 189, 68, 1);
+            transform: scale(1.1);
+        }
+
+        .maximize-btn {
+            background: rgba(40, 205, 65, 0.8);
+            color: rgba(0, 0, 0, 0.8);
+        }
+
+        .maximize-btn:hover {
+            background: rgba(40, 205, 65, 1);
+            transform: scale(1.1);
+        }
+
+        .close-btn {
+            background: rgba(255, 69, 58, 0.8);
+            color: rgba(0, 0, 0, 0.8);
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 69, 58, 1);
+            transform: scale(1.1);
+        }
+
+        .app-iframe-container {
+            height: calc(100% - 40px);
+            width: 100%;
+            position: relative;
+            border-radius: 0 0 24px 24px;
+            overflow: hidden;
+        }
+
+        .app-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+/* App drag overlay for iframe windows */
+/* Enhanced App drag overlay for iframe windows */
+.app-drag-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    pointer-events: auto; /* Always capture events for iframe windows */
+    background: transparent;
+}
+
+/* Make overlay more responsive for iframe content */
+.window-content .app-drag-overlay {
+    pointer-events: auto;
+    background: rgba(0, 0, 0, 0.01); /* Nearly transparent but captures events */
+}
+
+/* Show stronger overlay when window is being dragged */
+.window.dragging .app-drag-overlay {
+    pointer-events: auto;
+    cursor: grabbing;
+    background: rgba(0, 0, 0, 0.1);
+    z-index: 9999;
+}
+
+/* Disable iframe interaction during drag */
+.window.dragging iframe {
+    pointer-events: none;
+}
+
+/* Allow interaction with iframe content when not dragging */
+.app-drag-overlay:not(.dragging) + iframe {
+    pointer-events: auto;
+}
+
+        /* Minimized window styles */
+        .window.minimized {
+            height: 40px !important;
+            overflow: hidden;
+        }
+
+        .window.minimized .app-iframe-container {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -540,14 +728,14 @@
             <svg class="star-icon" viewBox="0 0 24 24">
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
             </svg>
-            <span class="star-count" id="starCount">247</span>
+            <span class="star-count" id="starCount">0</span>
         </div>
     </div>
 
     <div class="desktop" id="desktop">
-        <div class="folder" data-folder="Code" style="left: 40px; top: 100px;">
+        <div class="folder" data-folder="Programming" style="left: 40px; top: 100px;">
             <div class="folder-icon"></div>
-            <div class="folder-name">Code</div>
+            <div class="folder-name">Programming</div>
         </div>
         <div class="folder" data-folder="Science" style="left: 300px; top: 100px;">
             <div class="folder-icon"></div>
@@ -565,6 +753,10 @@
             <div class="folder-icon"></div>
             <div class="folder-name">Cooking</div>
         </div>
+        <div class="folder" data-folder="Code" data-app="true" data-file="code.html" style="left: 560px; top: 400px;">
+            <div class="folder-icon"></div>
+            <div class="folder-name">Code</div>
+        </div>
     </div>
 
     <!-- Phone App Overlay - TOP RIGHT POSITIONED -->
@@ -580,9 +772,56 @@
         let windowZIndex = 500;
         let currentDirectory = ['Logic'];
 
+        // Score management system
+        let currentScore = 0;
+
+        function loadScore() {
+            const savedScore = localStorage.getItem('fsLogic_score');
+            if (savedScore !== null) {
+                currentScore = parseInt(savedScore, 10) || 0;
+            } else {
+                currentScore = 0;
+            }
+            updateScoreDisplay();
+        }
+
+        function saveScore() {
+            localStorage.setItem('fsLogic_score', currentScore.toString());
+        }
+
+        function updateScoreDisplay() {
+            const starCountElement = document.getElementById('starCount');
+            if (starCountElement) {
+                starCountElement.textContent = currentScore.toString();
+            }
+        }
+
+        function addToScore(points) {
+            currentScore += points;
+            updateScoreDisplay();
+            saveScore();
+            
+            // Add visual feedback for score increase
+            const starButton = document.querySelector('.star-button');
+            if (starButton && points > 0) {
+                starButton.style.transform = 'scale(1.1)';
+                starButton.style.background = 'rgba(34, 197, 94, 0.3)';
+                setTimeout(() => {
+                    starButton.style.transform = '';
+                    starButton.style.background = '';
+                }, 200);
+            }
+        }
+
+        function setScore(newScore) {
+            currentScore = Math.max(0, newScore); // Ensure score doesn't go negative
+            updateScoreDisplay();
+            saveScore();
+        }
+
         // Updated folder structure - all subjects now use the same format with levels and cover images
         const folderStructure = {
-            'Code': {
+            'Programming': {
                 'Assembly': { levels: 100, cover: 'Assembly.png' },
                 'Bash': { levels: 100, cover: 'Bash.png' },
                 'C': { levels: 100, cover: 'C.png' },
@@ -697,7 +936,7 @@
                 // Back to desktop - close window
                 closeWindow(focusedWindow.id);
             } else if (newPath.length === 2) {
-                // Back to main folder content (e.g., Code folder showing all languages)
+                // Back to main folder content (e.g., Programming folder showing all languages)
                 const folderName = newPath[1];
                 const content = generateFolderContent(folderName, focusedWindow.id);
                 const contentElement = document.getElementById(focusedWindow.id + '-content');
@@ -788,11 +1027,12 @@
             windowElement.style.height = height + 'px';
             windowElement.style.zIndex = ++windowZIndex;
             
-            windowElement.innerHTML = `
-                <div class="window-content" id="${windowId}-content" onmousedown="startWindowDrag(event, '${windowId}')">
-                    ${content}
-                </div>
-            `;
+// App windows with drag overlay
+windowElement.innerHTML = `
+    <div class="window-content" id="${windowId}-content" onmousedown="startWindowDrag(event, '${windowId}')" style="cursor: grab;">
+        ${content}
+    </div>
+`;
             
             document.body.appendChild(windowElement);
             
@@ -817,6 +1057,7 @@
                 id: windowId, 
                 title: title, 
                 snapped: false,
+                minimized: false,
                 currentPath: [...currentDirectory] // Track this window's current directory path
             });
             
@@ -832,6 +1073,47 @@
             focusWindow(windowId);
             
             return windowId;
+        }
+
+        // Window control functions
+        function minimizeWindow(windowId) {
+            const windowElement = document.getElementById(windowId);
+            const window = openWindows.find(w => w.id === windowId);
+            
+            if (windowElement && window) {
+                if (window.minimized) {
+                    // Restore window
+                    windowElement.classList.remove('minimized');
+                    window.minimized = false;
+                } else {
+                    // Minimize window
+                    windowElement.classList.add('minimized');
+                    window.minimized = true;
+                }
+            }
+        }
+
+        function toggleMaximize(windowId) {
+            const windowElement = document.getElementById(windowId);
+            const window = openWindows.find(w => w.id === windowId);
+            
+            if (windowElement && window) {
+                if (windowElement.classList.contains('maximized')) {
+                    // Restore window
+                    windowElement.classList.remove('maximized');
+                    window.snapped = false;
+                } else {
+                    // Maximize window
+                    // Remove other snap classes first
+                    const snapClasses = ['snapped-left', 'snapped-right', 'snapped-top', 'snapped-bottom', 
+                                       'snapped-top-left', 'snapped-top-right', 'snapped-bottom-left', 
+                                       'snapped-bottom-right'];
+                    snapClasses.forEach(cls => windowElement.classList.remove(cls));
+                    
+                    windowElement.classList.add('maximized');
+                    window.snapped = 'maximized';
+                }
+            }
         }
 
         function addResizeHandles(windowElement, windowId) {
@@ -904,6 +1186,12 @@
             }
         }
 
+        // Prevent event bubbling for window controls
+        function preventEventBubbling(event) {
+            event.stopPropagation();
+            event.preventDefault();
+        }
+
         function updateActiveWindowPath() {
             const activeWindow = openWindows[openWindows.length - 1];
             if (activeWindow) {
@@ -966,90 +1254,89 @@
         let dragThreshold = 5; // pixels to move before starting drag
 
         function startWindowDrag(event, windowId) {
-            // Start potential drag - we'll decide if it's a real drag based on mouse movement
-            potentialDrag = true;
-            dragWindowId = windowId;
-            dragElement = document.getElementById(windowId);
-            
-            if (!dragElement) return;
-            
-            const rect = dragElement.getBoundingClientRect();
-            
-            // Store initial positions
-            dragStartPosition.x = event.clientX;
-            dragStartPosition.y = event.clientY;
-            lastMousePosition.x = event.clientX;
-            lastMousePosition.y = event.clientY;
-            
-            // Calculate offset for when drag actually starts
-            dragOffset.x = event.clientX - rect.left;
-            dragOffset.y = event.clientY - rect.top;
-            
-            focusWindow(windowId);
-            
-            // Don't prevent default yet - let clicks work unless we start dragging
-        }
-
+    // Start potential drag - we'll decide if it's a real drag based on mouse movement
+    potentialDrag = true;
+    dragWindowId = windowId;
+    dragElement = document.getElementById(windowId);
+    
+    if (!dragElement) return;
+    
+    const rect = dragElement.getBoundingClientRect();
+    
+    // Store initial positions
+    dragStartPosition.x = event.clientX;
+    dragStartPosition.y = event.clientY;
+    lastMousePosition.x = event.clientX;
+    lastMousePosition.y = event.clientY;
+    
+    // Calculate offset for when drag actually starts
+    dragOffset.x = event.clientX - rect.left;
+    dragOffset.y = event.clientY - rect.top;
+    
+    focusWindow(windowId);
+    
+    // Don't prevent default yet - let clicks work unless we start dragging
+}
         function startDragLoop() {
-            if (!isDraggingWindow) return;
-            
-            if (needsUpdate && dragElement) {
-                // Calculate new position based on mouse movement and drag offset
-                const newX = lastMousePosition.x - dragOffset.x;
-                const newY = Math.max(70, lastMousePosition.y - dragOffset.y);
-                
-                // Use left/top for consistent positioning (no transform conflicts)
-                dragElement.style.left = newX + 'px';
-                dragElement.style.top = newY + 'px';
-                
-                // Check for snapping zones with visual feedback
-                const threshold = 50;
-                const cornerThreshold = 100;
-                const clientWidth = document.documentElement.clientWidth;
-                const clientHeight = document.documentElement.clientHeight;
-                
-                let newBorderColor = 'rgba(255, 255, 255, 0.2)';
-                
-                // Corner snapping (higher priority)
-                if (lastMousePosition.x < cornerThreshold && lastMousePosition.y < 70 + cornerThreshold) {
-                    // Top-left corner
-                    newBorderColor = 'rgba(59, 130, 246, 0.8)';
-                } else if (lastMousePosition.x > clientWidth - cornerThreshold && lastMousePosition.y < 70 + cornerThreshold) {
-                    // Top-right corner
-                    newBorderColor = 'rgba(59, 130, 246, 0.8)';
-                } else if (lastMousePosition.x < cornerThreshold && lastMousePosition.y > clientHeight - cornerThreshold) {
-                    // Bottom-left corner
-                    newBorderColor = 'rgba(59, 130, 246, 0.8)';
-                } else if (lastMousePosition.x > clientWidth - cornerThreshold && lastMousePosition.y > clientHeight - cornerThreshold) {
-                    // Bottom-right corner
-                    newBorderColor = 'rgba(59, 130, 246, 0.8)';
-                } else if (lastMousePosition.y < 80) {
-                    // Top edge (maximize)
-                    newBorderColor = 'rgba(168, 85, 247, 0.8)';
-                } else if (lastMousePosition.y > clientHeight - threshold) {
-                    // Bottom edge
-                    newBorderColor = 'rgba(34, 197, 94, 0.8)';
-                } else if (lastMousePosition.x < threshold) {
-                    // Left edge
-                    newBorderColor = 'rgba(59, 130, 246, 0.8)';
-                } else if (lastMousePosition.x > clientWidth - threshold) {
-                    // Right edge
-                    newBorderColor = 'rgba(59, 130, 246, 0.8)';
-                }
-                
-                // Only update border color if it actually changed
-                if (dragElement.style.borderColor !== newBorderColor) {
-                    dragElement.style.borderColor = newBorderColor;
-                }
-                
-                needsUpdate = false;
-            }
-            
-            // Continue the loop at your display's native refresh rate (120Hz, 144Hz, 240Hz, etc.)
-            if (isDraggingWindow) {
-                animationId = requestAnimationFrame(startDragLoop);
-            }
+    if (!isDraggingWindow) return;
+    
+    if (needsUpdate && dragElement) {
+        // Calculate new position based on mouse movement and drag offset
+        const newX = lastMousePosition.x - dragOffset.x;
+        const newY = Math.max(70, lastMousePosition.y - dragOffset.y);
+        
+        // Use left/top for consistent positioning (no transform conflicts)
+        dragElement.style.left = newX + 'px';
+        dragElement.style.top = newY + 'px';
+        
+        // Check for snapping zones with visual feedback
+        const threshold = 50;
+        const cornerThreshold = 100;
+        const clientWidth = document.documentElement.clientWidth;
+        const clientHeight = document.documentElement.clientHeight;
+        
+        let newBorderColor = 'rgba(255, 255, 255, 0.2)';
+        
+        // Corner snapping (higher priority)
+        if (lastMousePosition.x < cornerThreshold && lastMousePosition.y < 70 + cornerThreshold) {
+            // Top-left corner
+            newBorderColor = 'rgba(59, 130, 246, 0.8)';
+        } else if (lastMousePosition.x > clientWidth - cornerThreshold && lastMousePosition.y < 70 + cornerThreshold) {
+            // Top-right corner
+            newBorderColor = 'rgba(59, 130, 246, 0.8)';
+        } else if (lastMousePosition.x < cornerThreshold && lastMousePosition.y > clientHeight - cornerThreshold) {
+            // Bottom-left corner
+            newBorderColor = 'rgba(59, 130, 246, 0.8)';
+        } else if (lastMousePosition.x > clientWidth - cornerThreshold && lastMousePosition.y > clientHeight - cornerThreshold) {
+            // Bottom-right corner
+            newBorderColor = 'rgba(59, 130, 246, 0.8)';
+        } else if (lastMousePosition.y < 80) {
+            // Top edge (maximize)
+            newBorderColor = 'rgba(168, 85, 247, 0.8)';
+        } else if (lastMousePosition.y > clientHeight - threshold) {
+            // Bottom edge
+            newBorderColor = 'rgba(34, 197, 94, 0.8)';
+        } else if (lastMousePosition.x < threshold) {
+            // Left edge
+            newBorderColor = 'rgba(59, 130, 246, 0.8)';
+        } else if (lastMousePosition.x > clientWidth - threshold) {
+            // Right edge
+            newBorderColor = 'rgba(59, 130, 246, 0.8)';
         }
+        
+        // Only update border color if it actually changed
+        if (dragElement.style.borderColor !== newBorderColor) {
+            dragElement.style.borderColor = newBorderColor;
+        }
+        
+        needsUpdate = false;
+    }
+    
+    // Continue the loop at your display's native refresh rate (120Hz, 144Hz, 240Hz, etc.)
+    if (isDraggingWindow) {
+        animationId = requestAnimationFrame(startDragLoop);
+    }
+}
 
         function startResize(event, windowId, handle) {
             isResizing = true;
@@ -1073,42 +1360,42 @@
         }
 
         document.addEventListener('mousemove', (event) => {
-            if (potentialDrag && !isDraggingWindow && dragElement) {
-                // Check if we've moved beyond the threshold to start dragging
-                const deltaX = Math.abs(event.clientX - dragStartPosition.x);
-                const deltaY = Math.abs(event.clientY - dragStartPosition.y);
-                
-                if (deltaX > dragThreshold || deltaY > dragThreshold) {
-                    // Start actual dragging
-                    isDraggingWindow = true;
-                    potentialDrag = false;
-                    
-                    // Remove any snapping classes
-                    const snapClasses = ['snapped-left', 'snapped-right', 'snapped-top', 'snapped-bottom', 
-                                       'snapped-top-left', 'snapped-top-right', 'snapped-bottom-left', 
-                                       'snapped-bottom-right', 'maximized'];
-                    snapClasses.forEach(cls => dragElement.classList.remove(cls));
-                    const window = openWindows.find(w => w.id === dragWindowId);
-                    if (window) window.snapped = false;
-                    
-                    // Add dragging class for visual feedback
-                    dragElement.classList.add('dragging');
-                    
-                    // Change cursor immediately
-                    document.body.style.cursor = 'grabbing';
-                    document.body.style.userSelect = 'none';
-                    
-                    // Start the animation loop
-                    needsUpdate = true;
-                    startDragLoop();
-                }
-            }
+    if (potentialDrag && !isDraggingWindow && dragElement) {
+        // Check if we've moved beyond the threshold to start dragging
+        const deltaX = Math.abs(event.clientX - dragStartPosition.x);
+        const deltaY = Math.abs(event.clientY - dragStartPosition.y);
+        
+        if (deltaX > dragThreshold || deltaY > dragThreshold) {
+            // Start actual dragging
+            isDraggingWindow = true;
+            potentialDrag = false;
             
-            if (isDraggingWindow && dragElement) {
-                // Just update mouse position - the animation loop handles the rest
-                lastMousePosition.x = event.clientX;
-                lastMousePosition.y = event.clientY;
-                needsUpdate = true; // Flag that we need to update on next frame
+            // Remove any snapping classes
+            const snapClasses = ['snapped-left', 'snapped-right', 'snapped-top', 'snapped-bottom', 
+                               'snapped-top-left', 'snapped-top-right', 'snapped-bottom-left', 
+                               'snapped-bottom-right', 'maximized'];
+            snapClasses.forEach(cls => dragElement.classList.remove(cls));
+            const window = openWindows.find(w => w.id === dragWindowId);
+            if (window) window.snapped = false;
+            
+            // Add dragging class for visual feedback
+            dragElement.classList.add('dragging');
+            
+            // Change cursor immediately
+            document.body.style.cursor = 'grabbing';
+            document.body.style.userSelect = 'none';
+            
+            // Start the animation loop
+            needsUpdate = true;
+            startDragLoop();
+        }
+    }
+    
+    if (isDraggingWindow && dragElement) {
+        // Just update mouse position - the animation loop handles the rest
+        lastMousePosition.x = event.clientX;
+        lastMousePosition.y = event.clientY;
+        needsUpdate = true; // Flag that we need to update on next frame
                 
             } else if (isResizing && resizeData) {
                 const { windowId, handle, startX, startY, startWidth, startHeight, startLeft, startTop } = resizeData;
@@ -1258,11 +1545,13 @@
             }
             
             // Clean up all drag states
-            isDraggingWindow = false;
-            potentialDrag = false;
-            dragWindowId = null;
-            isResizing = false;
-            resizeData = null;
+isDraggingWindow = false;
+potentialDrag = false;
+dragWindowId = null;
+isResizing = false;
+resizeData = null;
+
+
         });
 
         // Generate folder content based on current directory
@@ -1322,7 +1611,7 @@
         // Get subject descriptions
         function getSubjectDescription(subjectName) {
             const descriptions = {
-                // Code subjects
+                // Programming subjects
                 'Assembly': 'Low-level programming language that provides direct control over computer hardware and system resources.',
                 'Bash': 'Command-line shell and scripting language for automating tasks and system administration.',
                 'C': 'Foundational programming language known for efficiency and system-level programming capabilities.',
@@ -1672,6 +1961,33 @@
             }
         }
 
+        // App functionality - opens HTML files in windows
+        function openApp(appName, fileName) {
+    // Create a larger window for the app
+    const windowId = createWindow(`${appName} - Logic`, '', 800, 600);
+    
+    // Set the initial path for this window
+    const newPath = ['Logic', appName];
+    updateWindowPath(windowId, newPath);
+    
+    const content = `
+        <iframe src="${fileName}" 
+                style="width: 100%; height: 100%; border: none; opacity: 0; transition: opacity 0.3s ease;"
+                onload="this.style.opacity = '1';">
+        </iframe>
+    `;
+    
+    const contentElement = document.getElementById(windowId + '-content');
+    if (contentElement) {
+        contentElement.style.padding = '0'; // Remove padding for app layout
+        contentElement.innerHTML = content;
+        
+        // Remove the default drag handler since iframe will handle it via messaging
+        contentElement.removeAttribute('onmousedown');
+        contentElement.style.cursor = 'default'; // Normal cursor for iframe content
+    }
+}
+
         function closeModal() {
             document.getElementById('folderModal').style.display = 'none';
         }
@@ -1682,9 +1998,21 @@
             
             folders.forEach(folder => {
                 folder.addEventListener('mousedown', startDrag);
-                folder.addEventListener('dblclick', function() {
-                    const folderName = this.dataset.folder;
-                    openFolder(folderName);
+                folder.addEventListener('click', function(e) {
+                    // Only open if we're not dragging
+                    if (!isDragging) {
+                        const folderName = this.dataset.folder;
+                        const isApp = this.dataset.app === 'true';
+                        const fileName = this.dataset.file;
+                        
+                        if (isApp && fileName) {
+                            // It's an app - open the HTML file
+                            openApp(folderName, fileName);
+                        } else {
+                            // It's a regular folder - open folder contents
+                            openFolder(folderName);
+                        }
+                    }
                 });
             });
 
@@ -1812,20 +2140,129 @@
             }
         });
 
-        // Listen for messages from the ActionBlob iframe
-        window.addEventListener('message', function(event) {
-            try {
-                console.log('Received message:', event.data);
-                if (event.data && event.data.action === 'dismissOverlay') {
+        // Listen for messages from apps and the ActionBlob iframe
+        // Listen for messages from apps and the ActionBlob iframe
+window.addEventListener('message', function(event) {
+    try {
+        console.log('Received message:', event.data);
+        
+        if (event.data && event.data.action) {
+            switch(event.data.action) {
+                case 'dismissOverlay':
                     console.log('Dismiss overlay message received');
                     navigationAttempted = false; // Prevent fallback
                     hidePhoneOverlay();
-                }
-            } catch (error) {
-                console.log('Message handling error:', error);
+                    break;
+                    
+                case 'updateScore':
+                    // Handle score updates from apps
+                    if (typeof event.data.points === 'number') {
+                        addToScore(event.data.points);
+                        console.log(`Score updated: +${event.data.points} points`);
+                    } else if (typeof event.data.newScore === 'number') {
+                        setScore(event.data.newScore);
+                        console.log(`Score set to: ${event.data.newScore}`);
+                    }
+                    break;
+                    
+                case 'getScore':
+                    // Send current score back to the requesting app
+                    if (event.source) {
+                        event.source.postMessage({
+                            action: 'scoreResponse',
+                            score: currentScore
+                        }, '*');
+                    }
+                    break;
+                    
+                // ADD THE NEW CASES HERE, BEFORE THE CLOSING BRACKET
+                case 'startDragFromIframe':
+                    // Simple iframe drag - don't interfere with existing system
+                    const iframeWindowStart = Array.from(document.querySelectorAll('iframe')).find(iframe => 
+                        iframe.contentWindow === event.source
+                    );
+                    if (iframeWindowStart) {
+                        const windowElement = iframeWindowStart.closest('.window');
+                        if (windowElement) {
+                            const windowId = windowElement.id;
+                            const rect = windowElement.getBoundingClientRect();
+                            
+                            // Store simple drag data without interfering with existing system
+                            window.iframeDragData = {
+                                windowElement: windowElement,
+                                windowId: windowId,
+                                startMouseX: event.data.mouseX + rect.left,
+                                startMouseY: event.data.mouseY + rect.top,
+                                startWindowX: rect.left,
+                                startWindowY: rect.top,
+                                offsetX: event.data.mouseX,
+                                offsetY: event.data.mouseY,
+                                isDragging: true
+                            };
+                            
+                            // Focus and visual feedback
+                            focusWindow(windowId);
+                            windowElement.classList.add('dragging');
+                            document.body.style.cursor = 'grabbing';
+                        }
+                    }
+                    break;
+                    
+                case 'updateDragFromIframe':
+                    // Simple position update
+                    if (window.iframeDragData && window.iframeDragData.isDragging) {
+                        const data = window.iframeDragData;
+                        const iframeWindow = Array.from(document.querySelectorAll('iframe')).find(iframe => 
+                            iframe.contentWindow === event.source
+                        );
+                        if (iframeWindow) {
+                            const rect = iframeWindow.closest('.window').getBoundingClientRect();
+                            const currentMouseX = event.data.mouseX + rect.left;
+                            const currentMouseY = event.data.mouseY + rect.top;
+                            
+                            // Calculate new position
+                            const deltaX = currentMouseX - data.startMouseX;
+                            const deltaY = currentMouseY - data.startMouseY;
+                            const newX = data.startWindowX + deltaX;
+                            const newY = Math.max(70, data.startWindowY + deltaY);
+                            
+                            // Apply position directly
+                            data.windowElement.style.left = newX + 'px';
+                            data.windowElement.style.top = newY + 'px';
+                        }
+                    }
+                    break;
+                    
+                case 'endDragFromIframe':
+                    // Clean up iframe drag
+                    if (window.iframeDragData && window.iframeDragData.isDragging) {
+                        const data = window.iframeDragData;
+                        data.windowElement.classList.remove('dragging');
+                        document.body.style.cursor = '';
+                        
+                        // Check for snapping at final position
+                        const iframeWindow = Array.from(document.querySelectorAll('iframe')).find(iframe => 
+                            iframe.contentWindow === event.source
+                        );
+                        if (iframeWindow) {
+                            const rect = iframeWindow.closest('.window').getBoundingClientRect();
+                            const finalMouseX = event.data.mouseX + rect.left;
+                            const finalMouseY = event.data.mouseY + rect.top;
+                            
+                            // Simple snapping logic
+                            checkWindowSnapping(data.windowElement, finalMouseX, finalMouseY);
+                        }
+                        
+                        // Reset drag data
+                        window.iframeDragData = null;
+                    }
+                    break;
             }
-        });
-
+        }
+    } catch (error) {
+        console.log('Message handling error:', error);
+    }
+});
         // Keyboard shortcuts
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
@@ -1844,10 +2281,41 @@
                     closeWindow(openWindows[0].id);
                 }
             }
+
+            // Window management shortcuts (Cmd/Ctrl + key)
+            if (e.metaKey || e.ctrlKey) {
+                const focusedWindow = openWindows.find(w => {
+                    const element = document.getElementById(w.id);
+                    return element && parseInt(element.style.zIndex) === windowZIndex;
+                });
+
+                if (focusedWindow) {
+                    switch(e.key) {
+                        case 'm':
+                        case 'M':
+                            e.preventDefault();
+                            minimizeWindow(focusedWindow.id);
+                            break;
+                        case 'f':
+                        case 'F':
+                            e.preventDefault();
+                            toggleMaximize(focusedWindow.id);
+                            break;
+                        case 'w':
+                        case 'W':
+                            e.preventDefault();
+                            closeWindow(focusedWindow.id);
+                            break;
+                    }
+                }
+            }
         });
 
         // Initialize everything when the page loads
         document.addEventListener('DOMContentLoaded', function() {
+            // Load saved score
+            loadScore();
+            
             initializeDragAndDrop();
             loadFolderPositions();
             
@@ -1881,6 +2349,8 @@
                 }
             });
         });
+
+        
     </script>
 </body>
 </html>
