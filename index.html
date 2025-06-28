@@ -1310,9 +1310,38 @@
                 'fs Mall Builder': { app: true, file: 'mall-builder.html' }
             },
             'Farm': {
-                'fs Farms': { app: true, file: 'farms.html' },
-                'fs Farms Builder': { app: true, file: 'farms-builder.html' }
-            },
+    'Crops': {
+        'Vegetables': {
+            'Tomatoes': { levels: 25, cover: 'Tomatoes.png' },
+            'Carrots': { levels: 20, cover: 'Carrots.png' },
+            'Lettuce': { levels: 15, cover: 'Lettuce.png' },
+            'Peppers': { levels: 18, cover: 'Peppers.png' }
+        },
+        'Fruits': {
+            'Apples': { levels: 30, cover: 'Apples.png' },
+            'Strawberries': { levels: 22, cover: 'Strawberries.png' },
+            'Grapes': { levels: 35, cover: 'Grapes.png' }
+        },
+        'Grains': {
+            'Wheat': { levels: 40, cover: 'Wheat.png' },
+            'Corn': { levels: 35, cover: 'Corn.png' },
+            'Rice': { levels: 45, cover: 'Rice.png' }
+        }
+    },
+    'Livestock': {
+        'Cattle': { levels: 30, cover: 'Cattle.png' },
+        'Chickens': { levels: 25, cover: 'Chickens.png' },
+        'Pigs': { levels: 28, cover: 'Pigs.png' },
+        'Sheep': { levels: 22, cover: 'Sheep.png' }
+    },
+    'Equipment': {
+        'Tractors': { levels: 20, cover: 'Tractors.png' },
+        'Harvesters': { levels: 25, cover: 'Harvesters.png' },
+        'Irrigation': { levels: 18, cover: 'Irrigation.png' }
+    },
+    'fs Farms': { app: true, file: 'farms.html' },
+    'fs Farms Builder': { app: true, file: 'farms-builder.html' }
+},
             'Prompts': {
                 'My Prompts': { description: 'Your personal prompt collection' },
                 'Saved Prompts': { description: 'Bookmarked and saved prompts' },
@@ -1484,18 +1513,35 @@
         }
 
         // Window management
-        function createWindow(title, content, width = 600, height = 400) {
-            const windowId = 'window-' + Date.now();
-            const windowElement = document.createElement('div');
-            windowElement.className = 'window';
-            windowElement.id = windowId;
-            
-            // Position new windows with slight offset
-            const offset = openWindows.length * 30;
-            windowElement.style.left = (100 + offset) + 'px';
-            windowElement.style.top = (120 + offset) + 'px';
-            windowElement.style.width = width + 'px';
-            windowElement.style.height = height + 'px';
+        function createWindow(title, content, width = 600, height = 400, x = null, y = null) {
+    const windowId = 'window-' + Date.now();
+    const windowElement = document.createElement('div');
+    windowElement.className = 'window';
+    windowElement.id = windowId;
+    
+    // Position new windows
+    let windowX, windowY;
+    if (x !== null && y !== null) {
+        // Use provided position
+        windowX = x;
+        windowY = y;
+    } else {
+        // Default positioning with offset
+        const offset = openWindows.length * 30;
+        windowX = 100 + offset;
+        windowY = 120 + offset;
+    }
+    
+    // Ensure window stays within bounds
+    const maxX = window.innerWidth - width - 20;
+    const maxY = window.innerHeight - height - 20;
+    windowX = Math.max(20, Math.min(windowX, maxX));
+    windowY = Math.max(80, Math.min(windowY, maxY));
+    
+    windowElement.style.left = windowX + 'px';
+    windowElement.style.top = windowY + 'px';
+    windowElement.style.width = width + 'px';
+    windowElement.style.height = height + 'px';
             
             // Ensure new window is on top by setting highest z-index
             windowZIndex += 2; // Increment by 2 to leave room for other elements
@@ -1526,14 +1572,15 @@
                 }
             });
             
-            // Add to open windows list with current path tracking
-            openWindows.push({ 
-                id: windowId, 
-                title: title, 
-                snapped: false,
-                minimized: false,
-                currentPath: [...currentDirectory] // Track this window's current directory path
-            });
+            // Add to open windows list with current path tracking and original position
+openWindows.push({ 
+    id: windowId, 
+    title: title, 
+    snapped: false,
+    minimized: false,
+    currentPath: [...currentDirectory], // Track this window's current directory path
+    originalPosition: { x: windowX, y: windowY, width: width, height: height } // Remember original position
+});
             
             // Update directory display
             updateDirectoryDisplay();
@@ -1568,27 +1615,43 @@
         }
 
         function toggleMaximize(windowId) {
-            const windowElement = document.getElementById(windowId);
-            const window = openWindows.find(w => w.id === windowId);
+    const windowElement = document.getElementById(windowId);
+    const window = openWindows.find(w => w.id === windowId);
+    
+    if (windowElement && window) {
+        if (windowElement.classList.contains('maximized')) {
+            // Restore window to original position
+            windowElement.classList.remove('maximized');
+            window.snapped = false;
             
-            if (windowElement && window) {
-                if (windowElement.classList.contains('maximized')) {
-                    // Restore window
-                    windowElement.classList.remove('maximized');
-                    window.snapped = false;
-                } else {
-                    // Maximize window
-                    // Remove other snap classes first
-                    const snapClasses = ['snapped-left', 'snapped-right', 'snapped-top', 'snapped-bottom', 
-                                       'snapped-top-left', 'snapped-top-right', 'snapped-bottom-left', 
-                                       'snapped-bottom-right'];
-                    snapClasses.forEach(cls => windowElement.classList.remove(cls));
-                    
-                    windowElement.classList.add('maximized');
-                    window.snapped = 'maximized';
-                }
+            // Restore to original size and position
+            if (window.originalPosition) {
+                windowElement.style.left = window.originalPosition.x + 'px';
+                windowElement.style.top = window.originalPosition.y + 'px';
+                windowElement.style.width = window.originalPosition.width + 'px';
+                windowElement.style.height = window.originalPosition.height + 'px';
             }
+        } else {
+            // Save current position before maximizing
+            const rect = windowElement.getBoundingClientRect();
+            window.originalPosition = {
+                x: rect.left,
+                y: rect.top,
+                width: rect.width,
+                height: rect.height
+            };
+            
+            // Remove other snap classes first
+            const snapClasses = ['snapped-left', 'snapped-right', 'snapped-top', 'snapped-bottom', 
+                               'snapped-top-left', 'snapped-top-right', 'snapped-bottom-left', 
+                               'snapped-bottom-right'];
+            snapClasses.forEach(cls => windowElement.classList.remove(cls));
+            
+            windowElement.classList.add('maximized');
+            window.snapped = 'maximized';
         }
+    }
+}
 
         function addResizeHandles(windowElement, windowId) {
             const handles = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'];
@@ -2126,63 +2189,81 @@
             return content;
         }
 
-        // Get subject descriptions
-        function getSubjectDescription(subjectName) {
-            const descriptions = {
-                // Programming subjects
-                'Assembly': 'Low-level programming language that provides direct control over computer hardware and system resources.',
-                'Bash': 'Command-line shell and scripting language for automating tasks and system administration.',
-                'C': 'Foundational programming language known for efficiency and system-level programming capabilities.',
-                'C#': 'Modern, object-oriented programming language developed by Microsoft for building robust applications.',
-                'C++': 'Powerful extension of C with object-oriented features for high-performance software development.',
-                'CSS': 'Styling language that controls the visual presentation and layout of web pages and applications.',
-                'Go': 'Fast, compiled programming language designed for building scalable and concurrent systems.',
-                'HTML': 'Markup language that structures content and creates the foundation of web pages.',
-                'Java': 'Platform-independent, object-oriented language widely used for enterprise applications.',
-                'JavaScript': 'Dynamic programming language that powers interactive web experiences and modern applications.',
-                'Kotlin': 'Modern programming language that runs on the JVM and is fully interoperable with Java.',
-                'Python': 'Versatile, readable programming language perfect for beginners and powerful for advanced applications.',
-                'R': 'Statistical programming language designed for data analysis, visualization, and machine learning.',
-                'Rust': 'Systems programming language focused on safety, speed, and memory management without garbage collection.',
-                'Swift': 'Apple\'s programming language for iOS, macOS, and other Apple platform development.',
-                'TypeScript': 'Typed superset of JavaScript that compiles to plain JavaScript with enhanced development tools.',
-                'Z': 'Formal specification language used for describing and modeling computing systems.',
-                
-                // Science subjects
-                'Physics': 'Study of matter, energy, and their interactions to understand how the universe works at every scale.',
-                'Chemistry': 'Science of atoms, molecules, and chemical reactions that shape our material world.',
-                'Biology': 'Study of living organisms and life processes, from molecular mechanisms to ecosystems.',
-                'Astronomy': 'Exploration of celestial objects, space, and the physical universe beyond Earth.',
-                'Geology': 'Study of Earth\'s structure, processes, and history through rocks, minerals, and natural phenomena.',
-                'Environmental Science': 'Interdisciplinary study of environmental problems and solutions for a sustainable future.',
-                
-                // Maths subjects
-                'Algebra': 'Mathematical language using symbols and equations to solve problems and model relationships.',
-                'Calculus': 'Mathematics of change, studying rates of change and accumulation in functions.',
-                'Statistics': 'Science of collecting, analyzing, and interpreting data to make informed decisions.',
-                'Geometry': 'Study of shapes, sizes, positions, and properties of space and spatial relationships.',
-                'Trigonometry': 'Mathematics of triangles and periodic functions, essential for engineering and physics.',
-                'Number Theory': 'Pure mathematics studying properties and relationships of integers and prime numbers.',
-                
-                // Business subjects
-                'Management': 'Art and science of leading teams, organizations, and projects to achieve strategic goals.',
-                'Marketing': 'Creating value for customers and building strong brands through strategic communication.',
-                'Finance': 'Managing money, investments, and financial resources to optimize value and minimize risk.',
-                'Economics': 'Study of how societies allocate scarce resources and make decisions about production and consumption.',
-                'Accounting': 'Financial language of business, recording and communicating economic information.',
-                'Entrepreneurship': 'Creating and building new ventures, turning innovative ideas into successful businesses.',
-                
-                // Cooking subjects
-                'Basic Techniques': 'Fundamental cooking methods and skills that form the foundation of culinary expertise.',
-                'Italian Cuisine': 'Traditional and modern Italian cooking, emphasizing fresh ingredients and regional specialties.',
-                'Asian Cuisine': 'Diverse culinary traditions from across Asia, featuring unique flavors and cooking techniques.',
-                'French Cuisine': 'Classical cooking techniques and refined culinary arts that influence kitchens worldwide.',
-                'Baking & Pastry': 'Precision-based culinary art creating breads, desserts, and sweet confections.',
-                'Healthy Cooking': 'Nutritious meal preparation focusing on wellness without compromising on flavor.'
-            };
-            
-            return descriptions[subjectName] || 'Master the fundamentals and advanced concepts in this comprehensive course.';
-        }
+       function getSubjectDescription(subjectName) {
+    const descriptions = {
+        // Programming subjects
+        'Assembly': 'Low-level programming language that provides direct control over computer hardware and system resources.',
+        'Bash': 'Command-line shell and scripting language for automating tasks and system administration.',
+        'C': 'Foundational programming language known for efficiency and system-level programming capabilities.',
+        'C#': 'Modern, object-oriented programming language developed by Microsoft for building robust applications.',
+        'C++': 'Powerful extension of C with object-oriented features for high-performance software development.',
+        'CSS': 'Styling language that controls the visual presentation and layout of web pages and applications.',
+        'Go': 'Fast, compiled programming language designed for building scalable and concurrent systems.',
+        'HTML': 'Markup language that structures content and creates the foundation of web pages.',
+        'Java': 'Platform-independent, object-oriented language widely used for enterprise applications.',
+        'JavaScript': 'Dynamic programming language that powers interactive web experiences and modern applications.',
+        'Kotlin': 'Modern programming language that runs on the JVM and is fully interoperable with Java.',
+        'Python': 'Versatile, readable programming language perfect for beginners and powerful for advanced applications.',
+        'R': 'Statistical programming language designed for data analysis, visualization, and machine learning.',
+        'Rust': 'Systems programming language focused on safety, speed, and memory management without garbage collection.',
+        'Swift': 'Apple\'s programming language for iOS, macOS, and other Apple platform development.',
+        'TypeScript': 'Typed superset of JavaScript that compiles to plain JavaScript with enhanced development tools.',
+        'Z': 'Formal specification language used for describing and modeling computing systems.',
+        
+        // Science subjects
+        'Physics': 'Study of matter, energy, and their interactions to understand how the universe works at every scale.',
+        'Chemistry': 'Science of atoms, molecules, and chemical reactions that shape our material world.',
+        'Biology': 'Study of living organisms and life processes, from molecular mechanisms to ecosystems.',
+        'Astronomy': 'Exploration of celestial objects, space, and the physical universe beyond Earth.',
+        'Geology': 'Study of Earth\'s structure, processes, and history through rocks, minerals, and natural phenomena.',
+        'Environmental Science': 'Interdisciplinary study of environmental problems and solutions for a sustainable future.',
+        
+        // Maths subjects
+        'Algebra': 'Mathematical language using symbols and equations to solve problems and model relationships.',
+        'Calculus': 'Mathematics of change, studying rates of change and accumulation in functions.',
+        'Statistics': 'Science of collecting, analyzing, and interpreting data to make informed decisions.',
+        'Geometry': 'Study of shapes, sizes, positions, and properties of space and spatial relationships.',
+        'Trigonometry': 'Mathematics of triangles and periodic functions, essential for engineering and physics.',
+        'Number Theory': 'Pure mathematics studying properties and relationships of integers and prime numbers.',
+        
+        // Business subjects
+        'Management': 'Art and science of leading teams, organizations, and projects to achieve strategic goals.',
+        'Marketing': 'Creating value for customers and building strong brands through strategic communication.',
+        'Finance': 'Managing money, investments, and financial resources to optimize value and minimize risk.',
+        'Economics': 'Study of how societies allocate scarce resources and make decisions about production and consumption.',
+        'Accounting': 'Financial language of business, recording and communicating economic information.',
+        'Entrepreneurship': 'Creating and building new ventures, turning innovative ideas into successful businesses.',
+        
+        // Cooking subjects
+        'Basic Techniques': 'Fundamental cooking methods and skills that form the foundation of culinary expertise.',
+        'Italian Cuisine': 'Traditional and modern Italian cooking, emphasizing fresh ingredients and regional specialties.',
+        'Asian Cuisine': 'Diverse culinary traditions from across Asia, featuring unique flavors and cooking techniques.',
+        'French Cuisine': 'Classical cooking techniques and refined culinary arts that influence kitchens worldwide.',
+        'Baking & Pastry': 'Precision-based culinary art creating breads, desserts, and sweet confections.',
+        'Healthy Cooking': 'Nutritious meal preparation focusing on wellness without compromising on flavor.',
+        
+        // Farming subjects
+        'Tomatoes': 'Learn to grow healthy, productive tomato plants from seed to harvest.',
+        'Carrots': 'Master carrot cultivation, from soil preparation to perfect root development.',
+        'Lettuce': 'Grow crisp, fresh lettuce with proper spacing and harvest timing.',
+        'Peppers': 'Cultivate various pepper varieties from sweet bells to hot chilies.',
+        'Apples': 'Orchard management and apple tree care for optimal fruit production.',
+        'Strawberries': 'Strawberry farming techniques for maximum yield and sweetness.',
+        'Grapes': 'Vineyard management and grape growing for table fruit or wine production.',
+        'Wheat': 'Large-scale wheat farming from planting to harvest and storage.',
+        'Corn': 'Corn cultivation techniques for both sweet corn and field corn production.',
+        'Rice': 'Rice farming methods including paddy management and water control.',
+        'Cattle': 'Cattle ranching, breeding, health management, and pasture rotation.',
+        'Chickens': 'Poultry farming including egg production and meat bird management.',
+        'Pigs': 'Swine husbandry, feeding programs, and sustainable pig farming practices.',
+        'Sheep': 'Sheep farming for wool production, meat, and pasture management.',
+        'Tractors': 'Tractor operation, maintenance, and selecting the right equipment.',
+        'Harvesters': 'Combine harvester operation and grain harvesting techniques.',
+        'Irrigation': 'Efficient water management and irrigation system design.'
+    };
+    
+    return descriptions[subjectName] || 'Master the fundamentals and advanced concepts in this comprehensive course.';
+}
 
         function generateLanguageLevels(subjectName, totalLevels, coverImage, windowId) {
             // Reset padding for language levels content
@@ -3185,12 +3266,13 @@ ${corrections}
             
             const newPath = [...windowPath, itemName];
             
-            // Check if it's an app
-            if (item.app && item.file) {
-                // It's an app - open the file in a new window
-                openApp(itemName, item.file);
-                return;
-            }
+           // Check if it's an app
+if (item.app && item.file) {
+    // It's an app - open the file in a new window with proper path context
+    const parentFolderName = windowPath[1]; // Get the parent folder from current path
+    openApp(itemName, item.file, parentFolderName);
+    return;
+}
             
             // Check if it's a subject file with levels
             if (item.levels && item.cover) {
@@ -3258,9 +3340,33 @@ ${corrections}
             return 'th';
         }
 
-        // Folder functionality
-        function openFolder(folderName) {
-            const windowId = createWindow(`${folderName} - Fromsupply`, '', 650, 500);
+        function openFolder(folderName, mouseX = null, mouseY = null) {
+    // Calculate smart window positioning based on mouse location
+    let windowX = 100;
+    let windowY = 120;
+    
+    if (mouseX !== null && mouseY !== null) {
+        // Calculate where the first item would be in the window
+        // Window header is ~60px, toolbar ~20px, first item starts ~100px from top
+        // First item is typically ~100px from left edge
+        const firstItemOffsetX = 100;
+        const firstItemOffsetY = 100;
+        
+        // Position window so first item is under mouse
+        windowX = mouseX - firstItemOffsetX;
+        windowY = mouseY - firstItemOffsetY;
+        
+        // Ensure window stays within bounds
+        const windowWidth = 650;
+        const windowHeight = 500;
+        const maxX = window.innerWidth - windowWidth - 20;
+        const maxY = window.innerHeight - windowHeight - 20;
+        
+        windowX = Math.max(20, Math.min(windowX, maxX));
+        windowY = Math.max(80, Math.min(windowY, maxY));
+    }
+    
+    const windowId = createWindow(`${folderName} - Fromsupply`, '', 650, 500, windowX, windowY);
             
             // Set the initial path for this window
             const newPath = ['Fromsupply', folderName];
@@ -3279,14 +3385,20 @@ ${corrections}
             }, 100);
         }
 
-        // App functionality - opens HTML files in windows
-        function openApp(appName, fileName) {
-            // Create a larger window for the app
-            const windowId = createWindow(`${appName} - Fromsupply`, '', 800, 600);
-            
-            // Set the initial path for this window
-            const newPath = ['Fromsupply', appName];
-            updateWindowPath(windowId, newPath);
+     
+
+        function openApp(appName, fileName, parentFolder = null) {
+    // Create a larger window for the app
+    const windowId = createWindow(`${appName} - Fromsupply`, '', 800, 600);
+    
+    // Set the initial path for this window with proper parent folder context
+    let newPath;
+    if (parentFolder) {
+        newPath = ['Fromsupply', parentFolder, appName];
+    } else {
+        newPath = ['Fromsupply', appName];
+    }
+    updateWindowPath(windowId, newPath);
             
             const content = `
                 <iframe src="${fileName}" 
@@ -3316,57 +3428,61 @@ ${corrections}
         }
 
         // Drag and Drop functionality for desktop folders
-        function initializeDragAndDrop() {
-            const folders = document.querySelectorAll('.folder');
+// Drag and Drop functionality for desktop folders
+function initializeDragAndDrop() {
+    const folders = document.querySelectorAll('.folder');
+    
+    folders.forEach(folder => {
+        let dragStartTime = 0;
+        let dragStartPosition = { x: 0, y: 0 };
+        let hasActuallyDragged = false;
+        let clickMousePosition = { x: 0, y: 0 };
+        
+        folder.addEventListener('mousedown', function(e) {
+            dragStartTime = Date.now();
+            dragStartPosition.x = e.clientX;
+            dragStartPosition.y = e.clientY;
+            clickMousePosition.x = e.clientX;
+            clickMousePosition.y = e.clientY;
+            hasActuallyDragged = false;
+            startDrag(e);
+        });
+        
+        folder.addEventListener('mousemove', function(e) {
+            if (isDragging && currentFolder === this) {
+                const deltaX = Math.abs(e.clientX - dragStartPosition.x);
+                const deltaY = Math.abs(e.clientY - dragStartPosition.y);
+                
+                // If moved more than 5 pixels, consider it a drag
+                if (deltaX > 5 || deltaY > 5) {
+                    hasActuallyDragged = true;
+                }
+            }
+        });
+        
+        folder.addEventListener('click', function(e) {
+            const clickDuration = Date.now() - dragStartTime;
             
-            folders.forEach(folder => {
-                let dragStartTime = 0;
-                let dragStartPosition = { x: 0, y: 0 };
-                let hasActuallyDragged = false;
+            // Only open if it was a quick click and not a drag
+            if (!hasActuallyDragged && clickDuration < 300) {
+                const folderName = this.dataset.folder;
+                const isApp = this.dataset.app === 'true';
+                const fileName = this.dataset.file;
                 
-                folder.addEventListener('mousedown', function(e) {
-                    dragStartTime = Date.now();
-                    dragStartPosition.x = e.clientX;
-                    dragStartPosition.y = e.clientY;
-                    hasActuallyDragged = false;
-                    startDrag(e);
-                });
-                
-                folder.addEventListener('mousemove', function(e) {
-                    if (isDragging && currentFolder === this) {
-                        const deltaX = Math.abs(e.clientX - dragStartPosition.x);
-                        const deltaY = Math.abs(e.clientY - dragStartPosition.y);
-                        
-                        // If moved more than 5 pixels, consider it a drag
-                        if (deltaX > 5 || deltaY > 5) {
-                            hasActuallyDragged = true;
-                        }
-                    }
-                });
-                
-                folder.addEventListener('click', function(e) {
-                    const clickDuration = Date.now() - dragStartTime;
-                    
-                    // Only open if it was a quick click and not a drag
-                    if (!hasActuallyDragged && clickDuration < 300) {
-                        const folderName = this.dataset.folder;
-                        const isApp = this.dataset.app === 'true';
-                        const fileName = this.dataset.file;
-                        
-                        if (isApp && fileName) {
-                            // It's an app - open the HTML file
-                            openApp(folderName, fileName);
-                        } else {
-                            // It's a regular folder - open folder contents
-                            openFolder(folderName);
-                        }
-                    }
-                });
-            });
+                if (isApp && fileName) {
+                    // It's an app - open the HTML file (apps don't need smart positioning)
+                    openApp(folderName, fileName);
+                } else {
+                    // It's a regular folder - open folder contents with smart positioning
+                    openFolder(folderName, clickMousePosition.x, clickMousePosition.y);
+                }
+            }
+        });
+    });
 
-            document.addEventListener('mousemove', drag);
-            document.addEventListener('mouseup', endDrag);
-        }
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('mouseup', endDrag);
+}
 
         function startDrag(e) {
             e.preventDefault();
@@ -3424,34 +3540,48 @@ ${corrections}
         }
 
         function saveFolderPosition(folder) {
-            const folderName = folder.dataset.folder;
-            const position = {
-                x: parseInt(folder.style.left),
-                y: parseInt(folder.style.top)
-            };
-            
-            // In a real app, you'd save to a database or localStorage
-            // For now, we'll just store in memory during the session
-            if (!window.folderPositions) {
-                window.folderPositions = {};
-            }
-            window.folderPositions[folderName] = position;
-        }
+    const folderName = folder.dataset.folder;
+    const position = {
+        x: parseInt(folder.style.left),
+        y: parseInt(folder.style.top)
+    };
+    
+    // Save to localStorage for persistence
+    try {
+        let folderPositions = JSON.parse(localStorage.getItem('fsLogic_folderPositions')) || {};
+        folderPositions[folderName] = position;
+        localStorage.setItem('fsLogic_folderPositions', JSON.stringify(folderPositions));
+    } catch (error) {
+        console.warn('Could not save folder position:', error);
+    }
+}
 
         function loadFolderPositions() {
-            // Load saved positions if they exist
-            if (window.folderPositions) {
-                const folders = document.querySelectorAll('.folder');
-                folders.forEach(folder => {
-                    const folderName = folder.dataset.folder;
-                    const savedPosition = window.folderPositions[folderName];
-                    if (savedPosition) {
-                        folder.style.left = savedPosition.x + 'px';
-                        folder.style.top = savedPosition.y + 'px';
-                    }
-                });
-            }
+    // Load saved positions from localStorage
+    try {
+        const folderPositions = JSON.parse(localStorage.getItem('fsLogic_folderPositions'));
+        if (folderPositions) {
+            const folders = document.querySelectorAll('.folder');
+            folders.forEach(folder => {
+                const folderName = folder.dataset.folder;
+                const savedPosition = folderPositions[folderName];
+                if (savedPosition) {
+                    // Validate position is still within bounds
+                    const maxX = window.innerWidth - folder.offsetWidth - 20;
+                    const maxY = window.innerHeight - folder.offsetHeight - 100; // Account for header
+                    
+                    const validX = Math.max(20, Math.min(savedPosition.x, maxX));
+                    const validY = Math.max(100, Math.min(savedPosition.y, maxY));
+                    
+                    folder.style.left = validX + 'px';
+                    folder.style.top = validY + 'px';
+                }
+            });
         }
+    } catch (error) {
+        console.warn('Could not load folder positions:', error);
+    }
+}
 
         // Enhanced overlay click handling with navigation stack
         let navigationAttempted = false;
