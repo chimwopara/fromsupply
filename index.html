@@ -1759,14 +1759,8 @@ openWindows.push({
                 updateDirectoryDisplay();
             }
             
-            // Visual feedback - briefly highlight the focused window
-            if (windowElement) {
-                const originalBorder = windowElement.style.borderColor;
-                windowElement.style.borderColor = 'rgba(59, 130, 246, 0.6)';
-                setTimeout(() => {
-                    windowElement.style.borderColor = originalBorder;
-                }, 200);
-            }
+            
+            // No visual feedback needed for window focus
         }
 
         function updateWindowPath(windowId, newPath) {
@@ -1848,31 +1842,31 @@ openWindows.push({
                 
                 let newBorderColor = 'rgba(255, 255, 255, 0.2)';
                 
-                // Corner snapping (higher priority)
+                                // Corner snapping (higher priority)
                 if (lastMousePosition.x < cornerThreshold && lastMousePosition.y < 70 + cornerThreshold) {
                     // Top-left corner
-                    newBorderColor = 'rgba(59, 130, 246, 0.8)';
+                    newBorderColor = 'rgba(255, 255, 255, 1.0)';
                 } else if (lastMousePosition.x > clientWidth - cornerThreshold && lastMousePosition.y < 70 + cornerThreshold) {
                     // Top-right corner
-                    newBorderColor = 'rgba(59, 130, 246, 0.8)';
+                    newBorderColor = 'rgba(255, 255, 255, 1.0)';
                 } else if (lastMousePosition.x < cornerThreshold && lastMousePosition.y > clientHeight - cornerThreshold) {
                     // Bottom-left corner
-                    newBorderColor = 'rgba(59, 130, 246, 0.8)';
+                    newBorderColor = 'rgba(255, 255, 255, 1.0)';
                 } else if (lastMousePosition.x > clientWidth - cornerThreshold && lastMousePosition.y > clientHeight - cornerThreshold) {
                     // Bottom-right corner
-                    newBorderColor = 'rgba(59, 130, 246, 0.8)';
+                    newBorderColor = 'rgba(255, 255, 255, 1.0)';
                 } else if (lastMousePosition.y < 80) {
                     // Top edge (maximize)
-                    newBorderColor = 'rgba(168, 85, 247, 0.8)';
+                    newBorderColor = 'rgba(255, 255, 255, 1.0)';
                 } else if (lastMousePosition.y > clientHeight - threshold) {
                     // Bottom edge
-                    newBorderColor = 'rgba(34, 197, 94, 0.8)';
+                    newBorderColor = 'rgba(255, 255, 255, 1.0)';
                 } else if (lastMousePosition.x < threshold) {
                     // Left edge
-                    newBorderColor = 'rgba(59, 130, 246, 0.8)';
+                    newBorderColor = 'rgba(255, 255, 255, 1.0)';
                 } else if (lastMousePosition.x > clientWidth - threshold) {
                     // Right edge
-                    newBorderColor = 'rgba(59, 130, 246, 0.8)';
+                    newBorderColor = 'rgba(255, 255, 255, 1.0)';
                 }
                 
                 // Only update border color if it actually changed
@@ -1917,29 +1911,84 @@ openWindows.push({
                 const deltaY = Math.abs(event.clientY - dragStartPosition.y);
                 
                 if (deltaX > dragThreshold || deltaY > dragThreshold) {
-                    // Start actual dragging
-                    isDraggingWindow = true;
-                    potentialDrag = false;
-                    
-                    // Remove any snapping classes
-                    const snapClasses = ['snapped-left', 'snapped-right', 'snapped-top', 'snapped-bottom', 
-                                       'snapped-top-left', 'snapped-top-right', 'snapped-bottom-left', 
-                                       'snapped-bottom-right', 'maximized'];
-                    snapClasses.forEach(cls => dragElement.classList.remove(cls));
-                    const window = openWindows.find(w => w.id === dragWindowId);
-                    if (window) window.snapped = false;
-                    
-                    // Add dragging class for visual feedback
-                    dragElement.classList.add('dragging');
-                    
-                    // Change cursor immediately
-                    document.body.style.cursor = 'grabbing';
-                    document.body.style.userSelect = 'none';
-                    
-                    // Start the animation loop
-                    needsUpdate = true;
-                    startDragLoop();
-                }
+    // Start actual dragging
+    isDraggingWindow = true;
+    potentialDrag = false;
+    
+    const window = openWindows.find(w => w.id === dragWindowId);
+    const wasMaximized = dragElement.classList.contains('maximized');
+    const wasSnapped = dragElement.classList.contains('snapped-left') || 
+                      dragElement.classList.contains('snapped-right') ||
+                      dragElement.classList.contains('snapped-top') ||
+                      dragElement.classList.contains('snapped-bottom') ||
+                      dragElement.classList.contains('snapped-top-left') ||
+                      dragElement.classList.contains('snapped-top-right') ||
+                      dragElement.classList.contains('snapped-bottom-left') ||
+                      dragElement.classList.contains('snapped-bottom-right');
+    
+    // If window was maximized or snapped, calculate relative click position
+    if ((wasMaximized || wasSnapped) && window && window.originalPosition) {
+        // Get current maximized window dimensions
+        const currentRect = dragElement.getBoundingClientRect();
+        
+        // Calculate where on the maximized window the user clicked (as percentages)
+        const relativeX = (dragStartPosition.x - currentRect.left) / currentRect.width;
+        const relativeY = (dragStartPosition.y - currentRect.top) / currentRect.height;
+        
+        // Remove snapping classes first
+        const snapClasses = ['snapped-left', 'snapped-right', 'snapped-top', 'snapped-bottom', 
+                           'snapped-top-left', 'snapped-top-right', 'snapped-bottom-left', 
+                           'snapped-bottom-right', 'maximized'];
+        snapClasses.forEach(cls => dragElement.classList.remove(cls));
+        if (window) window.snapped = false;
+        
+        // Calculate new position maintaining the relative click position
+        const newX = dragStartPosition.x - (relativeX * window.originalPosition.width);
+        const newY = dragStartPosition.y - (relativeY * window.originalPosition.height);
+        
+        // Ensure window stays within bounds
+        const maxX = window.innerWidth - window.originalPosition.width - 20;
+        const maxY = window.innerHeight - window.originalPosition.height - 20;
+        const boundedX = Math.max(20, Math.min(newX, maxX));
+        const boundedY = Math.max(80, Math.min(newY, maxY));
+        
+        // Update window position and size
+        dragElement.style.left = boundedX + 'px';
+        dragElement.style.top = boundedY + 'px';
+        dragElement.style.width = window.originalPosition.width + 'px';
+        dragElement.style.height = window.originalPosition.height + 'px';
+        
+        // Recalculate drag offset based on the new position and maintained relative position
+        dragOffset.x = relativeX * window.originalPosition.width;
+        dragOffset.y = relativeY * window.originalPosition.height;
+        
+        // Update original position to current position
+        window.originalPosition = {
+            x: boundedX,
+            y: boundedY,
+            width: window.originalPosition.width,
+            height: window.originalPosition.height
+        };
+    } else {
+        // Remove snapping classes for normal windows
+        const snapClasses = ['snapped-left', 'snapped-right', 'snapped-top', 'snapped-bottom', 
+                           'snapped-top-left', 'snapped-top-right', 'snapped-bottom-left', 
+                           'snapped-bottom-right', 'maximized'];
+        snapClasses.forEach(cls => dragElement.classList.remove(cls));
+        if (window) window.snapped = false;
+    }
+    
+    // Add dragging class for visual feedback
+    dragElement.classList.add('dragging');
+    
+    // Change cursor immediately
+    document.body.style.cursor = 'grabbing';
+    document.body.style.userSelect = 'none';
+    
+    // Start the animation loop
+    needsUpdate = true;
+    startDragLoop();
+}
             }
             
             if (isDraggingWindow && dragElement) {
@@ -2024,84 +2073,105 @@ openWindows.push({
         });
 
         document.addEventListener('mouseup', (event) => {
-            if (isDraggingWindow && dragElement) {
-                const window = openWindows.find(w => w.id === dragWindowId);
-                
-                // Stop the animation loop
-                if (animationId) {
-                    cancelAnimationFrame(animationId);
-                    animationId = null;
-                }
-                
-                // Reset visual states
-                dragElement.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                dragElement.classList.remove('dragging');
-                
-                // Remove all existing snap classes
-                const snapClasses = ['snapped-left', 'snapped-right', 'snapped-top', 'snapped-bottom', 
-                                   'snapped-top-left', 'snapped-top-right', 'snapped-bottom-left', 
-                                   'snapped-bottom-right', 'maximized'];
-                snapClasses.forEach(cls => dragElement.classList.remove(cls));
-                
-                // Check for snapping based on mouse position
-                const threshold = 50;
-                const cornerThreshold = 100;
-                const clientWidth = document.documentElement.clientWidth;
-                const clientHeight = document.documentElement.clientHeight;
-                
-                if (event.clientX < cornerThreshold && event.clientY < 70 + cornerThreshold) {
-                    // Top-left corner
-                    dragElement.classList.add('snapped-top-left');
-                    if (window) window.snapped = 'top-left';
-                } else if (event.clientX > clientWidth - cornerThreshold && event.clientY < 70 + cornerThreshold) {
-                    // Top-right corner
-                    dragElement.classList.add('snapped-top-right');
-                    if (window) window.snapped = 'top-right';
-                } else if (event.clientX < cornerThreshold && event.clientY > clientHeight - cornerThreshold) {
-                    // Bottom-left corner
-                    dragElement.classList.add('snapped-bottom-left');
-                    if (window) window.snapped = 'bottom-left';
-                } else if (event.clientX > clientWidth - cornerThreshold && event.clientY > clientHeight - cornerThreshold) {
-                    // Bottom-right corner
-                    dragElement.classList.add('snapped-bottom-right');
-                    if (window) window.snapped = 'bottom-right';
-                } else if (event.clientY < 80) {
-                    // Top edge - maximize
-                    dragElement.classList.add('maximized');
-                    if (window) window.snapped = 'maximized';
-                } else if (event.clientY > clientHeight - threshold) {
-                    // Bottom edge
-                    dragElement.classList.add('snapped-bottom');
-                    if (window) window.snapped = 'bottom';
-                } else if (event.clientX < threshold) {
-                    // Left edge
-                    dragElement.classList.add('snapped-left');
-                    if (window) window.snapped = 'left';
-                } else if (event.clientX > clientWidth - threshold) {
-                    // Right edge
-                    dragElement.classList.add('snapped-right');
-                    if (window) window.snapped = 'right';
-                } else {
-                    // No snapping
-                    if (window) window.snapped = false;
-                }
-                
-                // Reset cursor and selection
-                document.body.style.cursor = '';
-                document.body.style.userSelect = '';
-                
-                // Clean up references
-                dragElement = null;
-                needsUpdate = false;
+    if (isDraggingWindow && dragElement) {
+        const windowData = openWindows.find(w => w.id === dragWindowId);
+        
+        // Stop the animation loop
+        if (animationId) {
+            cancelAnimationFrame(animationId);
+            animationId = null;
+        }
+        
+        // Reset visual states
+        dragElement.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+        dragElement.classList.remove('dragging');
+        
+        // Remove all existing snap classes
+        const snapClasses = ['snapped-left', 'snapped-right', 'snapped-top', 'snapped-bottom', 
+                           'snapped-top-left', 'snapped-top-right', 'snapped-bottom-left', 
+                           'snapped-bottom-right', 'maximized'];
+        snapClasses.forEach(cls => dragElement.classList.remove(cls));
+        
+        // Check for snapping based on mouse position
+        const threshold = 50;
+        const cornerThreshold = 100;
+        const clientWidth = document.documentElement.clientWidth;
+        const clientHeight = document.documentElement.clientHeight;
+        
+        console.log('Mouse position:', event.clientX, event.clientY); // Debug log
+        console.log('Screen dimensions:', clientWidth, clientHeight); // Debug log
+        
+        if (event.clientX < cornerThreshold && event.clientY < 70 + cornerThreshold) {
+            // Top-left corner
+            console.log('Snapping to top-left');
+            dragElement.classList.add('snapped-top-left');
+            if (windowData) windowData.snapped = 'top-left';
+        } else if (event.clientX > clientWidth - cornerThreshold && event.clientY < 70 + cornerThreshold) {
+            // Top-right corner
+            console.log('Snapping to top-right');
+            dragElement.classList.add('snapped-top-right');
+            if (windowData) windowData.snapped = 'top-right';
+        } else if (event.clientX < cornerThreshold && event.clientY > clientHeight - cornerThreshold) {
+            // Bottom-left corner
+            console.log('Snapping to bottom-left');
+            dragElement.classList.add('snapped-bottom-left');
+            if (windowData) windowData.snapped = 'bottom-left';
+        } else if (event.clientX > clientWidth - cornerThreshold && event.clientY > clientHeight - cornerThreshold) {
+            // Bottom-right corner
+            console.log('Snapping to bottom-right');
+            dragElement.classList.add('snapped-bottom-right');
+            if (windowData) windowData.snapped = 'bottom-right';
+        } else if (event.clientY < 80) {
+            // Top edge - maximize
+            console.log('Maximizing window');
+            dragElement.classList.add('maximized');
+            if (windowData) windowData.snapped = 'maximized';
+        } else if (event.clientY > clientHeight - threshold) {
+            // Bottom edge
+            console.log('Snapping to bottom');
+            dragElement.classList.add('snapped-bottom');
+            if (windowData) windowData.snapped = 'bottom';
+        } else if (event.clientX < threshold) {
+            // Left edge
+            console.log('Snapping to left');
+            dragElement.classList.add('snapped-left');
+            if (windowData) windowData.snapped = 'left';
+        } else if (event.clientX > clientWidth - threshold) {
+            // Right edge
+            console.log('Snapping to right');
+            dragElement.classList.add('snapped-right');
+            if (windowData) windowData.snapped = 'right';
+        } else {
+            // No snapping
+            console.log('No snapping');
+            if (windowData) {
+                windowData.snapped = false;
+                const rect = dragElement.getBoundingClientRect();
+                windowData.originalPosition = {
+                    x: rect.left,
+                    y: rect.top,
+                    width: rect.width,
+                    height: rect.height
+                };
             }
-            
-            // Clean up all drag states
-            isDraggingWindow = false;
-            potentialDrag = false;
-            dragWindowId = null;
-            isResizing = false;
-            resizeData = null;
-        });
+        }
+        
+        // Reset cursor and selection
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+        
+        // Clean up references
+        dragElement = null;
+        needsUpdate = false;
+    }
+    
+    // Clean up all drag states
+    isDraggingWindow = false;
+    potentialDrag = false;
+    dragWindowId = null;
+    isResizing = false;
+    resizeData = null;
+});
 
         // Generate folder content based on current directory
         function generateFolderContent(folderName, windowId = null, parentFolder = null) {
