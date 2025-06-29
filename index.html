@@ -1836,6 +1836,12 @@
             const windowElement = document.createElement('div');
             windowElement.className = 'window';
             windowElement.id = windowId;
+
+            windowElement.innerHTML = `
+    <div class="window-content" id="${windowId}-content" onmousedown="DragManager.start('window', document.getElementById('${windowId}'), event, { windowId: '${windowId}' })" style="cursor: grab;">
+        ${content}
+    </div>
+`;
             
             let windowX, windowY;
             if (x !== null && y !== null) {
@@ -1860,12 +1866,6 @@
             windowZIndex += 2;
             windowElement.style.zIndex = windowZIndex;
             
-            windowElement.innerHTML = `
-                <div class="window-content" id="${windowId}-content" onmousedown="DragManager.start('window', document.getElementById('${windowId}'), event, { windowId: '${windowId}' })" style="cursor: grab;">
-                    ${content}
-                </div>
-            `;
-            
             document.body.appendChild(windowElement);
             addResizeHandles(windowElement, windowId);
             
@@ -1881,7 +1881,7 @@
 
             windowElement.addEventListener('dblclick', (e) => {
                 if (!e.target.closest('.resize-handle') && 
-                    !e.target.closest('iframe') && 
+                    
                     !e.target.closest('button') && 
                     !e.target.closest('input') && 
                     !e.target.closest('textarea')) {
@@ -2222,9 +2222,9 @@
                 if (window && (!window.currentPath || window.currentPath.length < 2)) {
                     let newPath;
                     if (parentFolder) {
-                        newPath = ['Fromsupply', parentFolder, folderName];
+                        newPath = ['Fromsupply', 'Desktop', parentFolder, folderName];
                     } else {
-                        newPath = ['Fromsupply', folderName];
+                        newPath = ['Fromsupply', 'Desktop', folderName];
                     }
                     PathManager.updatePath(windowId, newPath);
                 }
@@ -2236,13 +2236,43 @@
             }
             
             let structure;
-            if (parentFolder) {
-                structure = folderStructure[parentFolder] && folderStructure[parentFolder][folderName];
-            } else {
-                structure = folderStructure[folderName];
+if (parentFolder) {
+    structure = folderStructure[parentFolder] && folderStructure[parentFolder][folderName];
+} else {
+    structure = folderStructure[folderName];
+}
+
+// Special case: Desktop should show main folders
+if (folderName === 'Desktop') {
+    const desktopFolders = ['Logic', 'Mall', 'Farm', 'Prompts', 'Media', 'Browser'];
+    let content = '';
+    
+    desktopFolders.forEach(folder => {
+        content += `
+            <div class="folder-item" onclick="navigateToItem('${folder}', '${windowId || 'current'}', 'Desktop')">
+                <div class="folder-item-icon"><div class="nested-folder-icon"></div></div>
+                <div class="folder-item-name" style="color: white;">${folder}</div>
+                <div class="folder-item-subtitle" style="color: rgba(255,255,255,0.8);">Folder</div>
+            </div>
+        `;
+    });
+    
+    if (windowId) {
+        setTimeout(() => {
+            const contentElement = document.getElementById(windowId + '-content');
+            if (contentElement) {
+                contentElement.classList.add('show-scrollbar');
+                setTimeout(() => {
+                    contentElement.classList.remove('show-scrollbar');
+                }, 300);
             }
-            
-            if (!structure) return '<p style="color: white;">No content available</p>';
+        }, 100);
+    }
+    
+    return content;
+}
+
+if (!structure) return '<p style="color: white;">No content available</p>';
             
             let content = '';
             
@@ -2603,16 +2633,51 @@
             let currentStructure;
             let item;
             
-            if (windowPath.length === 2) {
-                const folderName = windowPath[1];
-                currentStructure = folderStructure[folderName];
-                item = currentStructure[itemName];
-            } else if (windowPath.length === 3) {
-                const folderName = windowPath[1];
-                const categoryName = windowPath[2];
-                currentStructure = folderStructure[folderName][categoryName];
-                item = currentStructure[itemName];
-            }
+if (windowPath.length === 2) {
+    const folderName = windowPath[1];
+    
+    // Special case: navigating from Desktop
+    if (folderName === 'Desktop') {
+        // Replace current window content with the folder content
+        const newPath = ['Fromsupply', 'Desktop', itemName];
+        PathManager.updatePath(windowId, newPath);
+        
+        const content = generateFolderContent(itemName, windowId);
+        const contentElement = document.getElementById(windowId + '-content');
+        if (contentElement) {
+            contentElement.style.padding = '16px';
+            contentElement.innerHTML = content;
+        }
+        return;
+    }
+    
+    currentStructure = folderStructure[folderName];
+    item = currentStructure[itemName];
+} else if (windowPath.length === 3) {
+    // Handle paths like ['Fromsupply', 'Desktop', 'Logic']
+    const level1 = windowPath[1]; // 'Desktop'
+    const level2 = windowPath[2]; // 'Logic'
+    
+    if (level1 === 'Desktop') {
+        // This is a main folder from desktop (Logic, Mall, etc.)
+        currentStructure = folderStructure[level2];
+        item = currentStructure[itemName];
+    } else {
+        // Legacy path handling
+        currentStructure = folderStructure[level1][level2];
+        item = currentStructure[itemName];
+    }
+} else if (windowPath.length === 4) {
+    // Handle paths like ['Fromsupply', 'Desktop', 'Logic', 'Programming']
+    const level1 = windowPath[1]; // 'Desktop'
+    const level2 = windowPath[2]; // 'Logic'
+    const level3 = windowPath[3]; // 'Programming'
+    
+    if (level1 === 'Desktop') {
+        currentStructure = folderStructure[level2][level3];
+        item = currentStructure[itemName];
+    }
+}
             
             if (!item) return;
             
@@ -2713,7 +2778,7 @@
             
             const windowId = createWindow(`${folderName} - Fromsupply`, '', 650, 500, windowX, windowY);
             
-            const newPath = ['Fromsupply', folderName];
+            const newPath = ['Fromsupply', 'Desktop', folderName];
             PathManager.updatePath(windowId, newPath);
             
             const content = generateFolderContent(folderName, windowId);
@@ -2763,12 +2828,11 @@
     `;
     
     // Replace the window's content with the app
-    const contentElement = document.getElementById(windowId + '-content');
+   const contentElement = document.getElementById(windowId + '-content');
     if (contentElement) {
         contentElement.style.padding = '0';
         contentElement.innerHTML = content;
-        contentElement.removeAttribute('onmousedown');
-        contentElement.style.cursor = 'default';
+        // Keep dragging enabled - don't remove onmousedown or change cursor
     }
     
     // Focus the window (which now contains the app)
@@ -3263,53 +3327,75 @@ ${corrections}
         }
 
         // CONSOLE SYSTEM
-        function openFsConsole(windowId = null) {
-            const console = document.getElementById('fsConsole');
-            const input = document.getElementById('fsConsoleInput');
-            const contextDisplay = document.getElementById('fsConsoleContext');
-            
-            if (!console) {
-                console.log('Console element not found');
-                return;
-            }
-            
-            window.fsConsoleContext = windowId;
-            window.fsConsoleVisible = true;
-            
-            let consoleX = 150;
-            let consoleY = 150;
+     function openFsConsole(windowId = null) {
+    // Create or reuse window for console
+    const focusedWindow = openWindows.find(w => {
+        const element = document.getElementById(w.id);
+        return element && parseInt(element.style.zIndex) === windowZIndex;
+    });
 
-            if (window.fsLastMousePosition) {
-                consoleX = window.fsLastMousePosition.x - 350;
-                consoleY = window.fsLastMousePosition.y - 225;
-                
-                const maxX = window.innerWidth - 720;
-                const maxY = window.innerHeight - 470;
-                consoleX = Math.max(20, Math.min(consoleX, maxX));
-                consoleY = Math.max(80, Math.min(consoleY, maxY));
-            }
-            
-            console.style.left = consoleX + 'px';
-            console.style.top = consoleY + 'px';
-            
-            if (contextDisplay) {
-                if (windowId) {
-                    const window = openWindows.find(w => w.id === windowId);
-                    const path = window ? window.currentPath.join('/') : '/Fromsupply';
-                    contextDisplay.textContent = `${path}`;
-                } else {
-                    contextDisplay.textContent = 'Desktop';
-                }
-            }
-            
-            console.style.display = 'flex';
-            setTimeout(() => {
-                console.classList.add('visible');
-                if (input) input.focus();
-            }, 10);
-            
-            logToConsole('Console ready. Type commands or press Esc to close.', 'success');
+    // ADD THIS CHECK HERE:
+    // Check if current window already has a shell
+    if (focusedWindow && focusedWindow.currentPath && focusedWindow.currentPath.includes('Shell')) {
+        // Shell already open, just focus the input
+        const input = document.getElementById(`shellInput-${focusedWindow.id}`);
+        if (input) {
+            input.focus();
         }
+        return;
+    }
+    // END OF NEW CHECK
+
+    let consoleWindowId;
+    if (focusedWindow) {
+        consoleWindowId = focusedWindow.id;
+    } else {
+        consoleWindowId = createWindow('Shell - Fromsupply', '', 700, 450);
+    }
+
+    // Update path to show Shell
+    const currentPath = focusedWindow ? [...focusedWindow.currentPath, 'Shell'] : ['Fromsupply', 'Desktop', 'Shell'];
+    PathManager.updatePath(consoleWindowId, currentPath);
+
+    // Create shell content WITHOUT header bar
+    const shellContent = `
+        <div style="height: 100%; display: flex; flex-direction: column; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;">
+            <!-- Output area -->
+            <div style="flex: 1; padding: 16px; overflow-y: auto; color: rgba(255,255,255,0.9); font-size: 13px; line-height: 1.6;" 
+                 id="shellOutput-${consoleWindowId}">
+                <div style="margin-bottom: 4px; color: #10b981;">Fromsupply Console v2.0 - Ready</div>
+                <div style="margin-bottom: 4px; color: rgba(255,255,255,0.9);">Type 'help' for commands or 'h' for shortcuts</div>
+            </div>
+            
+            <!-- Input area -->
+            <div style="padding: 16px; border-top: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05);">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="color: #60a5fa; font-weight: bold; font-size: 14px;">$</span>
+                    <input type="text" 
+                           id="shellInput-${consoleWindowId}" 
+                           style="flex: 1; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; padding: 8px 12px; font-family: inherit; font-size: 13px; outline: none; backdrop-filter: blur(10px);"
+                           onkeydown="handleShellInput(event, '${consoleWindowId}')"
+                           placeholder="Type command..."
+                    />
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Set shell content in window
+    const contentElement = document.getElementById(consoleWindowId + '-content');
+    if (contentElement) {
+        contentElement.style.padding = '0';
+        contentElement.innerHTML = shellContent;
+    }
+
+    // Focus window and input
+    focusWindow(consoleWindowId);
+    setTimeout(() => {
+        const input = document.getElementById(`shellInput-${consoleWindowId}`);
+        if (input) input.focus();
+    }, 100);
+}
 
         function closeFsConsole() {
             const console = document.getElementById('fsConsole');
@@ -3389,58 +3475,83 @@ ${corrections}
 
         // DRAG AND DROP INITIALIZATION
         function initializeDragAndDrop() {
-            const folders = document.querySelectorAll('.folder');
+    const folders = document.querySelectorAll('.folder');
+    
+    folders.forEach(folder => {
+        let dragStartTime = 0;
+        let dragStartPosition = { x: 0, y: 0 };
+        let hasActuallyDragged = false;
+        let clickMousePosition = { x: 0, y: 0 };
+        let justHadMouseDown = false;
+        
+        folder.addEventListener('mousedown', function(e) {
+            // Reset all states on new mousedown
+            dragStartTime = Date.now();
+            dragStartPosition.x = e.clientX;
+            dragStartPosition.y = e.clientY;
+            clickMousePosition.x = e.clientX;
+            clickMousePosition.y = e.clientY;
+            hasActuallyDragged = false;
+            justHadMouseDown = true;
             
-            folders.forEach(folder => {
-                let dragStartTime = 0;
-                let dragStartPosition = { x: 0, y: 0 };
-                let hasActuallyDragged = false;
-                let clickMousePosition = { x: 0, y: 0 };
-                let justHadMouseDown = false;
+            // Safety timeout to prevent stuck drags
+            setTimeout(() => {
+                justHadMouseDown = false;
+                hasActuallyDragged = false; // Reset this too
+            }, 500);
+        });
+        
+        folder.addEventListener('mousemove', function(e) {
+            if (!DragManager.active && justHadMouseDown && this === e.currentTarget) {
+                const deltaX = Math.abs(e.clientX - dragStartPosition.x);
+                const deltaY = Math.abs(e.clientY - dragStartPosition.y);
                 
-                folder.addEventListener('mousedown', function(e) {
-                    dragStartTime = Date.now();
-                    dragStartPosition.x = e.clientX;
-                    dragStartPosition.y = e.clientY;
-                    clickMousePosition.x = e.clientX;
-                    clickMousePosition.y = e.clientY;
+                if (deltaX > 5 || deltaY > 5) {
+                    hasActuallyDragged = true;
+                    justHadMouseDown = false; // Clear this immediately
+                    DragManager.start('folder', this, e);
+                }
+            }
+        });
+        
+        folder.addEventListener('mouseup', function(e) {
+            // Always reset states on mouseup
+            justHadMouseDown = false;
+            
+            // Small delay to ensure click handler gets correct state
+            setTimeout(() => {
+                hasActuallyDragged = false;
+            }, 50);
+        });
+        
+        folder.addEventListener('click', function(e) {
+            const clickDuration = Date.now() - dragStartTime;
+            
+            // Only trigger click if we didn't drag AND it was a quick click
+            if (!hasActuallyDragged && clickDuration < 300 && !DragManager.active) {
+                const folderName = this.dataset.folder;
+                const isApp = this.dataset.app === 'true';
+                const fileName = this.dataset.file;
+                
+                if (isApp && fileName) {
+                    openApp(folderName, fileName);
+                } else {
+                    openFolder(folderName, clickMousePosition.x, clickMousePosition.y);
+                }
+            }
+        });
+        
+        // Add mouseleave as safety to reset states
+        folder.addEventListener('mouseleave', function(e) {
+            if (!DragManager.active) {
+                justHadMouseDown = false;
+                setTimeout(() => {
                     hasActuallyDragged = false;
-                    justHadMouseDown = true;
-                    
-                    setTimeout(() => {
-                        justHadMouseDown = false;
-                    }, 500);
-                });
-                
-                folder.addEventListener('mousemove', function(e) {
-                    if (!DragManager.active && justHadMouseDown && this === e.currentTarget) {
-                        const deltaX = Math.abs(e.clientX - dragStartPosition.x);
-                        const deltaY = Math.abs(e.clientY - dragStartPosition.y);
-                        
-                        if (deltaX > 5 || deltaY > 5) {
-                            hasActuallyDragged = true;
-                            DragManager.start('folder', this, e);
-                        }
-                    }
-                });
-                
-                folder.addEventListener('click', function(e) {
-                    const clickDuration = Date.now() - dragStartTime;
-                    
-                    if (!hasActuallyDragged && clickDuration < 300) {
-                        const folderName = this.dataset.folder;
-                        const isApp = this.dataset.app === 'true';
-                        const fileName = this.dataset.file;
-                        
-                        if (isApp && fileName) {
-                            openApp(folderName, fileName);
-                        } else {
-                            openFolder(folderName, clickMousePosition.x, clickMousePosition.y);
-                        }
-                    }
-                });
-            });
-        }
+                }, 100);
+            }
+        });
+    });
+}
 
         function loadFolderPositions() {
             try {
