@@ -2729,35 +2729,51 @@
         }
 
         function openApp(appName, fileName, parentFolder = null) {
-            const windowId = createWindow(`${appName} - Fromsupply`, '', 800, 600);
-            
-            let newPath;
-            if (parentFolder) {
-                newPath = ['Fromsupply', parentFolder, appName];
-            } else {
-                newPath = ['Fromsupply', appName];
-            }
-            PathManager.updatePath(windowId, newPath);
-            
-            const content = `
-                <iframe src="${fileName}" 
-                        style="width: 100%; height: 100%; border: none; opacity: 0; transition: opacity 0.3s ease;"
-                        onload="this.style.opacity = '1';">
-                </iframe>
-            `;
-            
-            const contentElement = document.getElementById(windowId + '-content');
-            if (contentElement) {
-                contentElement.style.padding = '0';
-                contentElement.innerHTML = content;
-                contentElement.removeAttribute('onmousedown');
-                contentElement.style.cursor = 'default';
-            }
-            
-            setTimeout(() => {
-                focusWindow(windowId);
-            }, 100);
-        }
+    // Find the currently focused window
+    const focusedWindow = openWindows.find(w => {
+        const element = document.getElementById(w.id);
+        return element && parseInt(element.style.zIndex) === windowZIndex;
+    });
+    
+    let windowId;
+    
+    if (focusedWindow) {
+        // Use existing focused window - app will replace its content
+        windowId = focusedWindow.id;
+    } else {
+        // No window open, create a new one
+        windowId = createWindow(`${appName} - Fromsupply`, '', 800, 600);
+    }
+    
+    // Update path to show we're now in the app
+    let newPath;
+    if (parentFolder) {
+        newPath = ['Fromsupply', parentFolder, appName];
+    } else {
+        newPath = ['Fromsupply', appName];
+    }
+    PathManager.updatePath(windowId, newPath);
+    
+    // Create iframe content that will replace whatever was in the window
+    const content = `
+        <iframe src="${fileName}" 
+                style="width: 100%; height: 100%; border: none; opacity: 0; transition: opacity 0.3s ease;"
+                onload="this.style.opacity = '1';">
+        </iframe>
+    `;
+    
+    // Replace the window's content with the app
+    const contentElement = document.getElementById(windowId + '-content');
+    if (contentElement) {
+        contentElement.style.padding = '0';
+        contentElement.innerHTML = content;
+        contentElement.removeAttribute('onmousedown');
+        contentElement.style.cursor = 'default';
+    }
+    
+    // Focus the window (which now contains the app)
+    focusWindow(windowId);
+}
 
         function openHiddenSystemWindow() {
             let windowX = 100;
