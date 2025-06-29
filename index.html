@@ -1480,13 +1480,13 @@
                             toggleMaximize(focusedWindow.id);
                         }
                     },
-                    'l': () => {
+                    'ArrowLeft': () => {
                         if (focusedWindow) {
                             addToHistory('snap', { windowId: focusedWindow.id, previousState: getWindowState(focusedWindow.id) });
                             snapWindowLeft(focusedWindow.id);
                         }
                     },
-                    'r': () => {
+                    'ArrowRight': () => {
                         if (focusedWindow) {
                             addToHistory('snap', { windowId: focusedWindow.id, previousState: getWindowState(focusedWindow.id) });
                             snapWindowRight(focusedWindow.id);
@@ -2925,7 +2925,7 @@ if (windowPath.length === 2) {
                             <h3 style="color: #34d399; margin-bottom: 15px; font-size: 16px;">📐 Window Snapping</h3>
                             <div style="space-y: 8px;">
                                 <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">L</span> <span style="color: rgba(255,255,255,0.8);">Snap window left</span></div>
-                                <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">R</span> <span style="color: rgba(255,255,255,0.8);">Snap window right</span></div>
+<div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">R</span> <span style="color: rgba(255,255,255,0.8);">Snap window right</span></div>
                                 <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">Z</span> <span style="color: rgba(255,255,255,0.8);">Undo last action</span></div>
                             </div>
                         </div>
