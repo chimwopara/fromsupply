@@ -40,6 +40,7 @@
             /* Font Variable */
             --main-font-family: 'Roboto Mono', monospace; /* Default Font */
         }
+        
         /* Example Theme 1: Matrix */
         .theme-matrix {
             --bg-color: rgba(0, 0, 0, 0.8); --panel-bg-color: rgba(13, 2, 8, 0.9); --border-color: rgba(0, 59, 0, 0.8);
@@ -894,11 +895,8 @@ input, textarea {
     // Check if level was selected from index.html
     const selectedLevel = localStorage.getItem('selectedLevel');
     if (selectedLevel) {
-        currentLevelIndex = parseInt(selectedLevel) - 1; // Convert 1-based to 0-based index
+        currentLevelIndex = parseInt(selectedLevel) - 1;
         console.log('Starting selected level:', selectedLevel, 'Array index:', currentLevelIndex);
-        // Don't remove localStorage immediately in case of refresh
-        // localStorage.removeItem('selectedLevel');
-        // localStorage.removeItem('selectedSubject');
     } else {
         currentLevelIndex = levelIndex;
         console.log('Starting default level:', currentLevelIndex);
@@ -912,26 +910,17 @@ input, textarea {
         return;
     }
 
-    // Clear any existing wrong grade data (temporary fix)
-    const levelNumber = currentLevelIndex + 1;
-    const existingStars = parseInt(localStorage.getItem(`level_${levelNumber}_stars_earned`) || '0');
-    const totalAvailable = challengesData[currentLevelIndex].sequence.length * 3;
-    if (existingStars > totalAvailable) {
-        console.log(`Clearing invalid grade data for Level ${levelNumber}: ${existingStars} > ${totalAvailable}`);
-        localStorage.removeItem(`level_${levelNumber}_stars_earned`);
-        localStorage.removeItem(`level_${levelNumber}_total_available`);
-        localStorage.removeItem(`level_${levelNumber}_completed`);
-    }
-
     const currentChallenge = challengesData[currentLevelIndex];
     currentStep = 0;
 
     initialStarsForLevelAttempt = starCount;
-    // Only increment attempts counter if this is not the first time playing this level
-if (!levelAttempts[currentLevelIndex]) {
-    levelAttempts[currentLevelIndex] = 1; // First attempt
-} 
-// Attempts will be incremented only when re-attempt is triggered
+    
+    // ONLY set attempts to 1 if this level has never been attempted before
+    if (!levelAttempts[currentLevelIndex]) {
+        levelAttempts[currentLevelIndex] = 1; // First time ever playing this level
+    }
+    // Do NOT increment attempts here - only on explicit re-attempt button click
+    
     levelInProgress = true;
 
     // Reset level tracking
@@ -939,6 +928,7 @@ if (!levelAttempts[currentLevelIndex]) {
     starsLostThisLevel = 0;
 
     // Mark level as started for index.html progress tracking
+    const levelNumber = currentLevelIndex + 1;
     if (!localStorage.getItem(`level_${levelNumber}_completed`)) {
         localStorage.setItem(`level_${levelNumber}_progress`, 'true');
     }
@@ -950,7 +940,6 @@ if (!levelAttempts[currentLevelIndex]) {
 
     constructedCode = `// Goal: ${escapeHtml(currentChallenge.goal)}\n\n`;
     codeDisplayArea.innerHTML = constructedCode;
-    // Level display managed by fsLogic window
     attemptsCounter.textContent = `Attempts: ${levelAttempts[currentLevelIndex]}`;
     updateStarDisplay();
     hintContainer.style.display = 'flex';
@@ -1116,27 +1105,30 @@ function incrementAttempts() {
             sessionStorage.setItem('chimCodeLevelCompleted', JSON.stringify(levelCompletedThisSession));
             // Save individual level completion and star data for index.html
             // Save individual level completion and star data for index.html
-            const levelNumber = currentLevelIndex + 1; // Convert to 1-based
+            const levelNumber = currentLevelIndex + 1;
             const wasAlreadyCompleted = localStorage.getItem(`level_${levelNumber}_completed`) === 'true';
 
             localStorage.setItem(`level_${levelNumber}_completed`, 'true');
 
+            
             // Only save stars earned if this is the FIRST completion (for grading)
-            // Only save stars earned if this is the FIRST completion (for grading)
-            // Only save stars earned if this is the FIRST completion (for grading)
-            if (!wasAlreadyCompleted) {
-                const totalStarsAvailable = challengesData[currentLevelIndex].sequence.length * 3;
-                // The stars earned should be capped at the maximum possible for this level
-                const actualStarsEarned = Math.min(starsGainedThisLevel, totalStarsAvailable);
-                const netStarsEarned = actualStarsEarned - starsLostThisLevel;
-                const finalStarsForGrade = Math.max(0, Math.min(netStarsEarned, totalStarsAvailable));
-                
-                localStorage.setItem(`level_${levelNumber}_stars_earned`, finalStarsForGrade.toString());
-                localStorage.setItem(`level_${levelNumber}_total_available`, totalStarsAvailable.toString());
-                console.log(`First completion of Level ${levelNumber}: ${finalStarsForGrade}/${totalStarsAvailable} stars = ${Math.round((finalStarsForGrade/totalStarsAvailable)*100)}%`);
-            } else {
-                console.log(`Re-attempt of Level ${levelNumber}: grade remains from first attempt`);
-            }
+    if (!wasAlreadyCompleted) {
+        const totalStarsAvailable = challengesData[currentLevelIndex].sequence.length * 3;
+        const actualStarsEarned = Math.min(starsGainedThisLevel, totalStarsAvailable);
+        const netStarsEarned = actualStarsEarned - starsLostThisLevel;
+        const finalStarsForGrade = Math.max(0, Math.min(netStarsEarned, totalStarsAvailable));
+        
+        localStorage.setItem(`level_${levelNumber}_stars_earned`, finalStarsForGrade.toString());
+        localStorage.setItem(`level_${levelNumber}_total_available`, totalStarsAvailable.toString());
+        
+        // NEW: Track which attempt this completion happened on
+        const currentAttempt = levelAttempts[currentLevelIndex] || 1;
+        localStorage.setItem(`level_${levelNumber}_completion_attempt`, currentAttempt.toString());
+        
+        console.log(`First completion of Level ${levelNumber} on attempt ${currentAttempt}: ${finalStarsForGrade}/${totalStarsAvailable} stars = ${Math.round((finalStarsForGrade/totalStarsAvailable)*100)}%`);
+    } else {
+        console.log(`Re-attempt of Level ${levelNumber}: grade remains from first attempt`);
+    }
 
             // Remove progress flag since level is now completed
             localStorage.removeItem(`level_${levelNumber}_progress`);
@@ -1150,19 +1142,19 @@ function incrementAttempts() {
 
 // Calculate net stars gained this level (simple difference)
 const netStarsGained = starCount - initialStarsForLevelAttempt;
-const isReattempt = wasAlreadyCompleted;
+    const isReattempt = wasAlreadyCompleted;
 
-interactionArea.innerHTML = `
-    <div style="grid-column: 1 / -1; text-align: center; padding: 20px;">
-        <p style="font-weight: bold; font-size: 1.2em; margin-bottom: 10px; color: var(--success-color);">
-            Level ${currentLevelIndex + 1} Complete! ${isReattempt ? '(Re-attempt)' : ''}
-        </p>
-        <p style="font-size: 1em; margin-bottom: 20px; color: var(--text-color);">
-            ${isReattempt ? 
-                'Stars Gained: +0 (Re-attempt - no grade impact)' : 
-                `Stars Gained: <span style="color: var(--success-color);">+${Math.max(0, netStarsGained)}</span>`
-            }
-        </p>
+    interactionArea.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 20px;">
+            <p style="font-weight: bold; font-size: 1.2em; margin-bottom: 10px; color: var(--success-color);">
+                Level ${currentLevelIndex + 1} Complete! ${isReattempt ? '(Re-attempt)' : ''}
+            </p>
+            <p style="font-size: 1em; margin-bottom: 20px; color: var(--text-color);">
+                ${isReattempt ? 
+                    'Stars Gained: +0' : 
+                    `Stars Gained: <span style="color: var(--success-color);">+${Math.max(0, starsGainedThisLevel)}</span>`
+                }
+            </p>
         <div style="display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap;">
             ${currentLevelIndex > 0 ? `
                 <button id="previous-btn" class="glass-btn">
@@ -1333,12 +1325,12 @@ function goToLevelBegin(levelNumber) {
                 let savedInitialStars = parseInt(sessionStorage.getItem('chimCodeInitialStars') || '0', 10);
                 let savedLevelIndex = parseInt(sessionStorage.getItem('chimCodeSavedLevelIndex') || '0', 10);
                 // Get initial score from fsLogic
-starCount = 0; // Will be updated by fsLogic response
-if (typeof parent !== 'undefined' && parent !== window) {
-    parent.postMessage({
-        action: 'getScore'
-    }, '*');
-}
+                starCount = 0; // Will be updated by fsLogic response
+                if (typeof parent !== 'undefined' && parent !== window) {
+                    parent.postMessage({
+                        action: 'getScore'
+                    }, '*');
+                }
 
                 if (levelInProgress) {
                     console.warn("Level was in progress on refresh. Reverting star count.");
@@ -1352,6 +1344,7 @@ if (typeof parent !== 'undefined' && parent !== window) {
                 console.error("Error parsing saved state:", e);
                 starCount = 0;
                 currentLevelIndex = 0;
+                 levelAttempts = {}; // Reset attempts on error
             }
 
             return 0;
