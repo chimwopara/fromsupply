@@ -793,6 +793,8 @@ input, textarea {
         let levelAttempts = {};
         let levelInProgress = false;
         let levelCompletedThisSession = {};
+        let starsGainedThisLevel = 0;
+        let starsLostThisLevel = 0;
 
         // DOM Elements
         // Header elements removed - managed by fsLogic
@@ -888,7 +890,6 @@ input, textarea {
         function showModal(modalElement) { modalElement.classList.add('visible'); }
         function hideModal(modalElement) { modalElement.classList.remove('visible'); }
 
-        // Initialize the game
         function initializeGame(levelIndex = 0) {
     // Check if level was selected from index.html
     const selectedLevel = localStorage.getItem('selectedLevel');
@@ -903,31 +904,58 @@ input, textarea {
         console.log('Starting default level:', currentLevelIndex);
     }
 
-            const currentChallenge = challengesData[currentLevelIndex];
-            currentStep = 0;
+    if (typeof challengesData === 'undefined' || !challengesData || !challengesData[currentLevelIndex]) {
+        console.error("Invalid level index or challengesData not loaded:", currentLevelIndex);
+        interactionArea.innerHTML = `<p style="text-align: center; color: var(--error-color);">Error: Level data not found.</p>`;
+        hintText.textContent = '';
+        revealHintBtn.classList.add('hidden');
+        return;
+    }
 
-            initialStarsForLevelAttempt = starCount;
-            levelAttempts[currentLevelIndex] = (levelAttempts[currentLevelIndex] || 0) + 1;
-            levelInProgress = true;
-            // Mark level as started for index.html progress tracking
-const levelNumber = currentLevelIndex + 1; // Convert to 1-based
-if (!localStorage.getItem(`level_${levelNumber}_completed`)) {
-    localStorage.setItem(`level_${levelNumber}_progress`, 'true');
+    // Clear any existing wrong grade data (temporary fix)
+    const levelNumber = currentLevelIndex + 1;
+    const existingStars = parseInt(localStorage.getItem(`level_${levelNumber}_stars_earned`) || '0');
+    const totalAvailable = challengesData[currentLevelIndex].sequence.length * 3;
+    if (existingStars > totalAvailable) {
+        console.log(`Clearing invalid grade data for Level ${levelNumber}: ${existingStars} > ${totalAvailable}`);
+        localStorage.removeItem(`level_${levelNumber}_stars_earned`);
+        localStorage.removeItem(`level_${levelNumber}_total_available`);
+        localStorage.removeItem(`level_${levelNumber}_completed`);
+    }
+
+    const currentChallenge = challengesData[currentLevelIndex];
+    currentStep = 0;
+
+    initialStarsForLevelAttempt = starCount;
+    // Only increment attempts counter if this is not the first time playing this level
+if (!levelAttempts[currentLevelIndex]) {
+    levelAttempts[currentLevelIndex] = 1; // First attempt
+} 
+// Attempts will be incremented only when re-attempt is triggered
+    levelInProgress = true;
+
+    // Reset level tracking
+    starsGainedThisLevel = 0;
+    starsLostThisLevel = 0;
+
+    // Mark level as started for index.html progress tracking
+    if (!localStorage.getItem(`level_${levelNumber}_completed`)) {
+        localStorage.setItem(`level_${levelNumber}_progress`, 'true');
+    }
+
+    sessionStorage.setItem('chimCodeLevelInProgress', 'true');
+    sessionStorage.setItem('chimCodeInitialStars', initialStarsForLevelAttempt.toString());
+    sessionStorage.setItem('chimCodeSavedLevelIndex', currentLevelIndex.toString());
+    sessionStorage.setItem('chimCodeLevelAttempts', JSON.stringify(levelAttempts));
+
+    constructedCode = `// Goal: ${escapeHtml(currentChallenge.goal)}\n\n`;
+    codeDisplayArea.innerHTML = constructedCode;
+    // Level display managed by fsLogic window
+    attemptsCounter.textContent = `Attempts: ${levelAttempts[currentLevelIndex]}`;
+    updateStarDisplay();
+    hintContainer.style.display = 'flex';
+    displayStep();
 }
-
-            sessionStorage.setItem('chimCodeLevelInProgress', 'true');
-            sessionStorage.setItem('chimCodeInitialStars', initialStarsForLevelAttempt.toString());
-            sessionStorage.setItem('chimCodeSavedLevelIndex', currentLevelIndex.toString());
-            sessionStorage.setItem('chimCodeLevelAttempts', JSON.stringify(levelAttempts));
-
-            constructedCode = `// Goal: ${escapeHtml(currentChallenge.goal)}\n\n`;
-            codeDisplayArea.innerHTML = constructedCode;
-            // Level display managed by fsLogic window
-            attemptsCounter.textContent = `Attempts: ${levelAttempts[currentLevelIndex]}`;
-            updateStarDisplay();
-            hintContainer.style.display = 'flex';
-            displayStep();
-        }
 
         // Display current step
         function displayStep() {
@@ -988,7 +1016,11 @@ if (!localStorage.getItem(`level_${levelNumber}_completed`)) {
                 interactionArea.appendChild(wrapper);
             });
         }
-
+function incrementAttempts() {
+    levelAttempts[currentLevelIndex] = (levelAttempts[currentLevelIndex] || 0) + 1;
+    attemptsCounter.textContent = `Attempts: ${levelAttempts[currentLevelIndex]}`;
+    sessionStorage.setItem('chimCodeLevelAttempts', JSON.stringify(levelAttempts));
+}
         // Handle option click
         function handleOptionClick(event) {
             if (optionsLocked) return;
@@ -1011,10 +1043,11 @@ if (!localStorage.getItem(`level_${levelNumber}_completed`)) {
 
             if (isCorrect) {
                 if (!levelCompletedThisSession[currentLevelIndex]) {
-                    starCount += 3;
-                } else {
-                    console.log("Level already completed this session, no stars awarded.");
-                }
+                starCount += 3;
+                starsGainedThisLevel += 3;
+            } else {
+                console.log("Level already completed this session, no stars awarded.");
+            }
                 showFeedbackOverlay('correct');
                 updateStarDisplay(starCount > previousStarCountForAnimation, 'gain');
 
@@ -1036,7 +1069,9 @@ if (!localStorage.getItem(`level_${levelNumber}_completed`)) {
 
             } else {
                 if (!levelCompletedThisSession[currentLevelIndex]) {
+                    const starsToLose = Math.min(2, starCount); // Don't go below 0
                     starCount = Math.max(0, starCount - 2);
+                    starsLostThisLevel += starsToLose;
                 } else {
                     console.log("Level already completed this session, no stars deducted.");
                 }
@@ -1080,12 +1115,31 @@ if (!localStorage.getItem(`level_${levelNumber}_completed`)) {
             levelCompletedThisSession[currentLevelIndex] = true;
             sessionStorage.setItem('chimCodeLevelCompleted', JSON.stringify(levelCompletedThisSession));
             // Save individual level completion and star data for index.html
-const levelNumber = currentLevelIndex + 1; // Convert to 1-based
-localStorage.setItem(`level_${levelNumber}_completed`, 'true');
-localStorage.setItem(`level_${levelNumber}_stars_earned`, starCount.toString());
+            // Save individual level completion and star data for index.html
+            const levelNumber = currentLevelIndex + 1; // Convert to 1-based
+            const wasAlreadyCompleted = localStorage.getItem(`level_${levelNumber}_completed`) === 'true';
 
-// Remove progress flag since level is now completed
-localStorage.removeItem(`level_${levelNumber}_progress`);
+            localStorage.setItem(`level_${levelNumber}_completed`, 'true');
+
+            // Only save stars earned if this is the FIRST completion (for grading)
+            // Only save stars earned if this is the FIRST completion (for grading)
+            // Only save stars earned if this is the FIRST completion (for grading)
+            if (!wasAlreadyCompleted) {
+                const totalStarsAvailable = challengesData[currentLevelIndex].sequence.length * 3;
+                // The stars earned should be capped at the maximum possible for this level
+                const actualStarsEarned = Math.min(starsGainedThisLevel, totalStarsAvailable);
+                const netStarsEarned = actualStarsEarned - starsLostThisLevel;
+                const finalStarsForGrade = Math.max(0, Math.min(netStarsEarned, totalStarsAvailable));
+                
+                localStorage.setItem(`level_${levelNumber}_stars_earned`, finalStarsForGrade.toString());
+                localStorage.setItem(`level_${levelNumber}_total_available`, totalStarsAvailable.toString());
+                console.log(`First completion of Level ${levelNumber}: ${finalStarsForGrade}/${totalStarsAvailable} stars = ${Math.round((finalStarsForGrade/totalStarsAvailable)*100)}%`);
+            } else {
+                console.log(`Re-attempt of Level ${levelNumber}: grade remains from first attempt`);
+            }
+
+            // Remove progress flag since level is now completed
+            localStorage.removeItem(`level_${levelNumber}_progress`);
 
             levelInProgress = false;
             sessionStorage.setItem('chimCodeLevelInProgress', 'false');
@@ -1094,19 +1148,20 @@ localStorage.removeItem(`level_${levelNumber}_progress`);
 
             saveStarCount();
 
-            // Calculate actual stars earned this level
-const initialStars = initialStarsForLevelAttempt;
-const finalStars = starCount;
-const starsEarnedThisLevel = Math.max(0, finalStars - initialStars);
-const starsLostThisLevel = Math.max(0, initialStars - finalStars);
+// Calculate net stars gained this level (simple difference)
+const netStarsGained = starCount - initialStarsForLevelAttempt;
+const isReattempt = wasAlreadyCompleted;
 
 interactionArea.innerHTML = `
     <div style="grid-column: 1 / -1; text-align: center; padding: 20px;">
         <p style="font-weight: bold; font-size: 1.2em; margin-bottom: 10px; color: var(--success-color);">
-            Level ${currentLevelIndex + 1} Complete!
+            Level ${currentLevelIndex + 1} Complete! ${isReattempt ? '(Re-attempt)' : ''}
         </p>
         <p style="font-size: 1em; margin-bottom: 20px; color: var(--text-color);">
-            Stars Earned: +${starsEarnedThisLevel} | Stars Lost: -${starsLostThisLevel} | Final Score: <span style="color: var(--star-color);">★</span> ${starCount}
+            ${isReattempt ? 
+                'Stars Gained: +0 (Re-attempt - no grade impact)' : 
+                `Stars Gained: <span style="color: var(--success-color);">+${Math.max(0, netStarsGained)}</span>`
+            }
         </p>
         <div style="display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap;">
             ${currentLevelIndex > 0 ? `
@@ -1219,6 +1274,8 @@ interactionArea.innerHTML = `
 }
 
 function startReattempt() {
+    // Increment attempts counter only on re-attempts
+    incrementAttempts();
     // Don't reset star count for re-attempts
     initializeGame(currentLevelIndex);
 }
@@ -1246,10 +1303,11 @@ function goToLevelBegin(levelNumber) {
             if (starCount >= hintCost && !hintRevealed) {
                 let didLoseStar = false;
                 if (!levelCompletedThisSession[currentLevelIndex]) {
-                    previousStarCountForAnimation = starCount;
-                    starCount -= hintCost;
-                    didLoseStar = true;
-                }
+                previousStarCountForAnimation = starCount;
+                starCount -= hintCost;
+                starsLostThisLevel += hintCost;
+                didLoseStar = true;
+            }
                 updateStarDisplay(didLoseStar, 'loss');
                 hintText.classList.remove('blurred');
                 hintRevealed = true;

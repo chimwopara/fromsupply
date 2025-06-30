@@ -3396,8 +3396,12 @@ function getLevelProgress(levelNumber) {
 
 function getLevelGrade(levelNumber, totalStarsAvailable) {
     const starsEarnedKey = `level_${levelNumber}_stars_earned`;
+    const totalAvailableKey = `level_${levelNumber}_total_available`;
+    
     const starsEarned = parseInt(localStorage.getItem(starsEarnedKey) || '0');
-    return Math.round((starsEarned / totalStarsAvailable) * 100);
+    const savedTotalAvailable = parseInt(localStorage.getItem(totalAvailableKey) || totalStarsAvailable.toString());
+    
+    return Math.round((starsEarned / savedTotalAvailable) * 100);
 }
 
     function openSubjectLesson(subjectName, levelNumber = null) {
@@ -3727,47 +3731,62 @@ contentElement.onmousedown = function(e) {
         });
 
         window.addEventListener('message', function(event) {
-            try {
-                if (event.data && event.data.action) {
-                    switch(event.data.action) {
-                        case 'dismissOverlay':
-                            navigationAttempted = false;
-                            hidePhoneOverlay();
-                            break;
-                            
-                        case 'updateScore':
-                            if (typeof event.data.points === 'number') {
-                                addToScore(event.data.points);
-                            } else if (typeof event.data.newScore === 'number') {
-                                setScore(event.data.newScore);
-                            }
-                            break;
-                            
-                        case 'getScore':
-                            if (event.source) {
-                                event.source.postMessage({
-                                    action: 'scoreResponse',
-                                    score: currentScore
-                                }, '*');
-                            }
-                            break;
-
-                        case 'openCodeApp':
-    console.log('Opening code app from message');
-    openApp('C Coding Challenge', 'code.html');
-    break;
-
-                        case 'openApp':
-                        if (event.data.appName && event.data.fileName) {
-                            openApp(event.data.appName, event.data.fileName);
-                        }
-                            break;
+    try {
+        if (event.data && event.data.action) {
+            switch(event.data.action) {
+                case 'dismissOverlay':
+                    navigationAttempted = false;
+                    hidePhoneOverlay();
+                    break;
+                    
+                case 'updateScore':
+                    if (typeof event.data.points === 'number') {
+                        addToScore(event.data.points);
+                    } else if (typeof event.data.newScore === 'number') {
+                        setScore(event.data.newScore);
                     }
-                }
-            } catch (error) {
-                console.log('Message handling error:', error);
+                    break;
+                    
+                case 'getScore':
+                    if (event.source) {
+                        event.source.postMessage({
+                            action: 'scoreResponse',
+                            score: currentScore
+                        }, '*');
+                    }
+                    break;
+                    
+                case 'openApp':
+                    if (event.data.appName && event.data.fileName) {
+                        openApp(event.data.appName, event.data.fileName);
+                    }
+                    break;
+                    
+                case 'openCodeApp':
+                    console.log('Opening code app from message');
+                    openApp('C Coding Challenge', 'code.html');
+                    break;
+                    
+                case 'navigateToLevel':
+                    const targetLevel = event.data.level;
+                    if (targetLevel) {
+                        // Find focused window and navigate to level
+                        const focusedWindow = openWindows.find(w => {
+                            const element = document.getElementById(w.id);
+                            return element && parseInt(element.style.zIndex) === windowZIndex;
+                        });
+                        
+                        if (focusedWindow) {
+                            openLanguageLevel('C', targetLevel, 'C.png', focusedWindow.id);
+                        }
+                    }
+                    break;
             }
-        });
+        }
+    } catch (error) {
+        console.log('Message handling error:', error);
+    }
+});
 
         // CONSOLE INPUT HANDLING
         document.getElementById('fsConsoleInput').addEventListener('keydown', function(e) {
