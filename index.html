@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>fsFromsupply</title>
+    
+    <!-- Link to the level data for the 'C' language -->
+    <!-- Make sure this path is correct -->
+    <script src="c.js"></script>
+
     <style>
         * {
             margin: 0;
@@ -1095,7 +1100,7 @@
             handleWindowUnsnap() {
                 const wasMaximized = this.element.classList.contains('maximized');
                 const wasSnapped = this.element.classList.contains('snapped-left') || 
-                                  this.element.classList.contains('snapped-right');
+                                    this.element.classList.contains('snapped-right');
                 
                 if (wasMaximized || wasSnapped) {
                     const snapClasses = ['snapped-left', 'snapped-right', 'snapped-top', 'snapped-bottom', 
@@ -1753,48 +1758,71 @@
         }
 
         function navigateToLevel(level) {
-            const focusedWindow = openWindows.find(w => {
-                const element = document.getElementById(w.id);
-                return element && parseInt(element.style.zIndex) === windowZIndex;
-            });
-            
-            if (!focusedWindow) return;
-            
-            focusWindow(focusedWindow.id);
-            
-            if (level === 0) {
-                if (openWindows.length > 1) {
-                    closeWindow(focusedWindow.id);
-                    return;
-                } else if (focusedWindow) {
-                    closeWindow(focusedWindow.id);
-                    return;
-                }
-            }
-            
-            const windowPath = PathManager.getPath(focusedWindow.id);
-            const newPath = windowPath.slice(0, level + 1);
-            PathManager.updatePath(focusedWindow.id, newPath);
-            
-            if (newPath.length === 1) {
-                closeWindow(focusedWindow.id);
-            } else if (newPath.length === 2) {
-                const folderName = newPath[1];
-                const content = generateFolderContent(folderName, focusedWindow.id);
-                const contentElement = document.getElementById(focusedWindow.id + '-content');
-                if (contentElement) {
-                    contentElement.style.padding = '16px';
-                    contentElement.innerHTML = content;
-                    
-                    contentElement.classList.add('show-scrollbar');
-                    setTimeout(() => {
-                        contentElement.classList.remove('show-scrollbar');
-                    }, 300);
-                }
-            } else {
-                PathManager.updateContent(focusedWindow.id);
-            }
+    const focusedWindow = openWindows.find(w => {
+        const element = document.getElementById(w.id);
+        return element && parseInt(element.style.zIndex) === windowZIndex;
+    });
+    
+    if (!focusedWindow) return;
+    
+    focusWindow(focusedWindow.id);
+    
+    if (level === 0) {
+        if (openWindows.length > 1) {
+            closeWindow(focusedWindow.id);
+            return;
+        } else if (focusedWindow) {
+            closeWindow(focusedWindow.id);
+            return;
         }
+    }
+    
+    const windowPath = PathManager.getPath(focusedWindow.id);
+    const newPath = windowPath.slice(0, level + 1);
+    PathManager.updatePath(focusedWindow.id, newPath);
+    
+    const contentElement = document.getElementById(focusedWindow.id + '-content');
+    if (!contentElement) return;
+    
+    if (newPath.length === 1) {
+        closeWindow(focusedWindow.id);
+    } else if (newPath.length === 2) {
+        // Desktop level - show main folders
+        const content = generateFolderContent('Desktop', focusedWindow.id);
+        contentElement.style.padding = '16px';
+        contentElement.innerHTML = content;
+    } else if (newPath.length === 3) {
+        // Logic level - show Logic subfolders (Programming, Science, Maths, etc.)
+        const folderName = newPath[2]; // "Logic"
+        const content = generateFolderContent(folderName, focusedWindow.id);
+        contentElement.style.padding = '16px';
+        contentElement.innerHTML = content;
+    } else if (newPath.length === 4) {
+        // Programming level - show programming languages
+        const parentFolder = newPath[2]; // "Logic" 
+        const currentFolder = newPath[3]; // "Programming"
+        const content = generateFolderContent(currentFolder, focusedWindow.id, parentFolder);
+        contentElement.style.padding = '16px';
+        contentElement.innerHTML = content;
+    } else if (newPath.length === 5 && newPath[4] === 'C') {
+    // C language level - show C levels
+    const content = generateLanguageLevels('C', 100, 'C.png', focusedWindow.id);
+    contentElement.style.padding = '16px';
+    contentElement.innerHTML = content;
+} else if (newPath.length === 6 && newPath[4] === 'C' && newPath[5].startsWith('Level ')) {
+    // Individual C level page - show specific level
+    const levelNumber = parseInt(newPath[5].replace('Level ', ''));
+    openLanguageLevel('C', levelNumber, 'C.png', focusedWindow.id);
+    return; // openLanguageLevel handles the content update
+} else if (newPath[newPath.length - 1] === 'Shell') {
+    // Shell level - reopen shell interface
+    openFsConsole(focusedWindow.id);
+    return; // Don't continue with normal navigation
+} else {
+    // Fallback to generic content generation
+    PathManager.updateContent(focusedWindow.id);
+}
+}
 
         // PHONE OVERLAY
         function openActionsBlob() {
@@ -1880,15 +1908,24 @@
             });
 
             windowElement.addEventListener('dblclick', (e) => {
-                if (!e.target.closest('.resize-handle') && 
-                    
-                    !e.target.closest('button') && 
-                    !e.target.closest('input') && 
-                    !e.target.closest('textarea')) {
-                    e.stopPropagation();
-                    openFsConsole(windowId);
-                }
-            });
+    // Check if we're on a level detail page
+    const isLevelPage = e.target.closest('[data-subject]') || 
+                       contentElement.innerHTML.includes('Steps •') ||
+                       contentElement.innerHTML.includes('Begin Level');
+    
+    if (isLevelPage) {
+        // Do nothing on level pages
+        return;
+    }
+    
+    if (!e.target.closest('.resize-handle') && 
+        !e.target.closest('button') && 
+        !e.target.closest('input') && 
+        !e.target.closest('textarea')) {
+        e.stopPropagation();
+        openFsConsole(windowId);
+    }
+});
             
             openWindows.push({ 
                 id: windowId, 
@@ -2236,43 +2273,43 @@
             }
             
             let structure;
-if (parentFolder) {
-    structure = folderStructure[parentFolder] && folderStructure[parentFolder][folderName];
-} else {
-    structure = folderStructure[folderName];
-}
+			if (parentFolder) {
+			    structure = folderStructure[parentFolder] && folderStructure[parentFolder][folderName];
+			} else {
+			    structure = folderStructure[folderName];
+			}
 
-// Special case: Desktop should show main folders
-if (folderName === 'Desktop') {
-    const desktopFolders = ['Logic', 'Mall', 'Farm', 'Prompts', 'Media', 'Browser'];
-    let content = '';
-    
-    desktopFolders.forEach(folder => {
-        content += `
-            <div class="folder-item" onclick="navigateToItem('${folder}', '${windowId || 'current'}', 'Desktop')">
-                <div class="folder-item-icon"><div class="nested-folder-icon"></div></div>
-                <div class="folder-item-name" style="color: white;">${folder}</div>
-                <div class="folder-item-subtitle" style="color: rgba(255,255,255,0.8);">Folder</div>
-            </div>
-        `;
-    });
-    
-    if (windowId) {
-        setTimeout(() => {
-            const contentElement = document.getElementById(windowId + '-content');
-            if (contentElement) {
-                contentElement.classList.add('show-scrollbar');
-                setTimeout(() => {
-                    contentElement.classList.remove('show-scrollbar');
-                }, 300);
-            }
-        }, 100);
-    }
-    
-    return content;
-}
+			// Special case: Desktop should show main folders
+			if (folderName === 'Desktop') {
+			    const desktopFolders = ['Logic', 'Mall', 'Farm', 'Prompts', 'Media', 'Browser'];
+			    let content = '';
+			    
+			    desktopFolders.forEach(folder => {
+			        content += `
+			            <div class="folder-item" onclick="navigateToItem('${folder}', '${windowId || 'current'}', 'Desktop')">
+			                <div class="folder-item-icon"><div class="nested-folder-icon"></div></div>
+			                <div class="folder-item-name" style="color: white;">${folder}</div>
+			                <div class="folder-item-subtitle" style="color: rgba(255,255,255,0.8);">Folder</div>
+			            </div>
+			        `;
+			    });
+			    
+			    if (windowId) {
+			        setTimeout(() => {
+			            const contentElement = document.getElementById(windowId + '-content');
+			            if (contentElement) {
+			                contentElement.classList.add('show-scrollbar');
+			                setTimeout(() => {
+			                    contentElement.classList.remove('show-scrollbar');
+			                }, 300);
+			            }
+			        }, 100);
+			    }
+			    
+			    return content;
+			}
 
-if (!structure) return '<p style="color: white;">No content available</p>';
+			if (!structure) return '<p style="color: white;">No content available</p>';
             
             let content = '';
             
@@ -2401,7 +2438,11 @@ if (!structure) return '<p style="color: white;">No content available</p>';
             
             return descriptions[subjectName] || 'Master the fundamentals and advanced concepts in this comprehensive course.';
         }
-
+function handleLevelClick(event, subjectName, levelNumber) {
+    // Prevent dragging interference
+    event.stopPropagation();
+    openSubjectLesson(subjectName, levelNumber);
+}
         function generateLanguageLevels(subjectName, totalLevels, coverImage, windowId) {
             if (windowId) {
                 const contentElement = document.getElementById(windowId + '-content');
@@ -2411,18 +2452,15 @@ if (!structure) return '<p style="color: white;">No content available</p>';
                 }
             }
             
-            // Store current language info for notes
             window.currentLevelInfo = {
                 subject: subjectName,
                 level: 'overview',
                 path: `${subjectName} Overview`
             };
             
-            // Get description for the subject
             const description = getSubjectDescription(subjectName);
             
             let content = `
-                <!-- Notes icon inside window -->
                 <div class="notes-icon show" onclick="toggleNotesInterface()">
                     📝
                 </div>
@@ -2439,22 +2477,54 @@ if (!structure) return '<p style="color: white;">No content available</p>';
                 </div>
             `;
             
-            // Generate level grid with flexible height
-            content += '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; height: auto; min-height: 300px;">';
+            content += '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; height: auto; min-height: 300px;">';
             
-            for (let i = 1; i <= totalLevels; i++) {
-                content += `
-                    <div class="language-level-item" onclick="openLanguageLevel('${subjectName}', ${i}, '${coverImage}', '${windowId}')" 
-                         style="display: flex; flex-direction: column; align-items: center; padding: 12px; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; cursor: pointer; transition: all 0.2s ease; background: rgba(255,255,255,0.05);">
-                        <div style="width: 50px; height: 50px; background: url('${coverImage}') center/cover; border-radius: 8px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.2);"></div>
-                        <div style="font-size: 12px; font-weight: 600; text-align: center; color: white;">Level ${i}</div>
-                    </div>
-                `;
+            // *** MODIFICATION FOR C LANGUAGE ***
+if (subjectName === 'C' && typeof challengesData !== 'undefined') {
+    challengesData.forEach((levelData, index) => {
+        const levelNum = index + 1;
+        const starsCount = levelData.sequence.length * 3;
+        const conceptsArray = levelData.concepts.split(', ');
+        const conceptsHTML = conceptsArray.map(c => `<span style="background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; font-size: 11px; margin-right: 4px; margin-bottom: 4px;">${c.trim()}</span>`).join('');
+        
+        // Get progress and apply tinting
+        const progressStatus = getLevelProgress(levelNum);
+        let tintStyle = 'background: rgba(255,255,255,0.05);'; // default
+        let starText = `<span style="color: white;">★</span> ${starsCount} Stars Available`;
+        
+        if (progressStatus === 'continue') {
+            tintStyle = 'background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.4);'; // white tint
+        } else if (progressStatus === 'completed') {
+            tintStyle = 'background: rgba(34, 197, 94, 0.15); border-color: rgba(34, 197, 94, 0.4);'; // green tint
+            const grade = getLevelGrade(levelNum, starsCount);
+            starText = `Grade: ${grade}%`;
+        }
+        
+        content += `
+            <div class="language-level-item" onclick="openLanguageLevel('${subjectName}', ${levelNum}, '${coverImage}', '${windowId}')" 
+                 style="display: flex; flex-direction: column; padding: 16px; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; cursor: pointer; transition: all 0.2s ease; ${tintStyle}">
+                <div style="font-size: 14px; font-weight: 600; color: white; margin-bottom: 8px;">Level ${levelNum}</div>
+                <p style="font-size: 12px; color: rgba(255,255,255,0.8); margin-bottom: 8px; flex-grow: 1;">${levelData.goal}</p>
+                <div style="font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 12px;">${starText}</div>
+                <div style="display: flex; flex-wrap: wrap; justify-content: flex-start; align-items: center;">${conceptsHTML}</div>
+            </div>
+        `;
+    });
+            } else {
+                 // Fallback for other languages
+                for (let i = 1; i <= totalLevels; i++) {
+                    content += `
+                        <div class="language-level-item" onclick="openLanguageLevel('${subjectName}', ${i}, '${coverImage}', '${windowId}')" 
+                             style="display: flex; flex-direction: column; align-items: center; padding: 12px; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; cursor: pointer; transition: all 0.2s ease; background: rgba(255,255,255,0.05);">
+                            <div style="width: 50px; height: 50px; background: url('${coverImage}') center/cover; border-radius: 8px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.2);"></div>
+                            <div style="font-size: 12px; font-weight: 600; text-align: center; color: white;">Level ${i}</div>
+                        </div>
+                    `;
+                }
             }
             
             content += '</div>';
             
-            // Add CSS for hover effects
             content += `
                 <style>
                     .language-level-item:hover {
@@ -2471,110 +2541,105 @@ if (!structure) return '<p style="color: white;">No content available</p>';
 
         function openLanguageLevel(subjectName, levelNumber, coverImage, windowId) {
             const windowPath = PathManager.getPath(windowId);
-            const newPath = [...windowPath, levelNumber.toString()];
+            const newPath = [...windowPath, `Level ${levelNumber}`];
             PathManager.updatePath(windowId, newPath);
             
-            // Store current level info for notes
             window.currentLevelInfo = {
-                subject: subjectName,
-                level: levelNumber,
-                path: newPath.join('/')
-            };
-                        
-            // Get progress status for this level (for now, defaulting to "begin")
-            const progressStatus = getLevelProgress(subjectName, levelNumber);
-            const buttonConfig = getButtonConfig(progressStatus);
-            
-            const content = `
-                <div onclick="openSubjectLesson('${subjectName}')" style="
-                    position: relative;
-                    height: 100%;
-                    background: url('${coverImage}') center/cover;
-                    background-attachment: fixed;
-                    overflow: hidden;
-                    cursor: pointer;
-                ">
-                    <!-- Blur overlay -->
-                    <div style="
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        right: 0;
-                        bottom: 0;
-                        background: url('${coverImage}') center/cover;
-                        filter: blur(25px);
-                        transform: scale(1.1);
-                        z-index: 1;
-                    "></div>
-                    
-                    <!-- Dark overlay for readability -->
-                    <div style="
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        right: 0;
-                        bottom: 0;
-                        background: rgba(0, 0, 0, 0.4);
-                        z-index: 2;
-                    "></div>
-                    
-                    <!-- Content -->
-                    <div style="
-                        position: relative;
-                        z-index: 3;
-                        padding: 40px 20px;
-                        height: 100%;
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
-                        max-width: 600px;
-                        margin: 0 auto;
-                        text-align: center;
-                    ">
-                        <h1 style="margin-bottom: 40px;"><svg style="width: 42px; height: 42px; fill: #4ade80; filter: drop-shadow(0 0 10px rgba(74, 222, 128, 0.5)); margin-right: 8px; vertical-align: middle;" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> <span style="color: white; text-shadow: 0 1px 4px rgba(0,0,0,0.6);">25</span></h1>
-                        
-                        <ul style="margin: 0 0 60px 0; padding: 0; color: rgba(255,255,255,0.9); line-height: 1.8; font-size: 16px; list-style: none; text-align: center; text-shadow: 0 1px 4px rgba(0,0,0,0.6);">
-                            <li style="margin-bottom: 12px;">
-                                Master ${subjectName} concepts and best practices
-                            </li>
-                            <li style="margin-bottom: 12px;">
-                                Apply knowledge to real-world scenarios
-                            </li>
-                            <li style="margin-bottom: 12px;">
-                                Understand fundamental principles
-                            </li>
-                            <li style="margin-bottom: 12px;">
-                                Prepare for advanced level challenges
-                            </li>
-                        </ul>
-                        
-                        <div style="text-align: center;">
-                            ${buttonConfig.progressBar}
-                            <div style="
-                                 color: white;
-                                 font-size: 18px;
-                                 font-weight: 500;
-                                 text-shadow: 0 1px 4px rgba(0,0,0,0.6);
-                                 opacity: 0.9;
-                                 border-bottom: 2px solid transparent;
-                                 display: inline-block;
-                                 padding: 4px 8px;
-                                 transition: all 0.2s ease;
-                             ">
-                                ${buttonConfig.text}
+    subject: subjectName,
+    level: levelNumber,
+    path: newPath.join('/')
+};
+
+// Debug what's available
+console.log('Subject:', subjectName);
+console.log('Level:', levelNumber);
+console.log('challengesData available?', typeof challengesData !== 'undefined');
+if (typeof challengesData !== 'undefined') {
+    console.log('challengesData length:', challengesData.length);
+    console.log('Level data:', challengesData[levelNumber - 1]);
+}
+
+let content;
+
+// *** MODIFICATION FOR C LANGUAGE ***
+if (subjectName === 'C' && typeof challengesData !== 'undefined') {
+    console.log('Using C-specific logic');
+    const levelData = challengesData[levelNumber - 1]; // Convert to 0-based index
+    if (levelData) {
+        const correctsCount = levelData.sequence.length;
+const starCount = correctsCount * 3;
+const conceptsArray = levelData.concepts.split(', ');
+const conceptsHTML = conceptsArray.map(c => `<li style="margin-bottom: 12px;">${c.trim()}</li>`).join('');
+
+// Check progress and set appropriate button text
+const progressStatus = getLevelProgress(levelNumber);
+let buttonText = 'Click to Begin';
+if (progressStatus === 'continue') {
+    buttonText = 'Click to Continue';
+} else if (progressStatus === 'completed') {
+    buttonText = 'Click to Re-attempt';
+}
+
+    content = `
+    <div onclick="handleLevelClick(event, '${subjectName}', ${levelNumber})" style="position: relative; height: 100%; background: url('${coverImage}') center/cover; background-attachment: fixed; overflow: hidden; cursor: pointer;">
+        <!-- Blur overlay -->
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('${coverImage}') center/cover; filter: blur(25px); transform: scale(1.1); z-index: 1;"></div>
+        <!-- Dark overlay for readability -->
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 2;"></div>
+        <!-- Content -->
+        <div style="position: relative; z-index: 3; padding: 40px 20px; height: 100%; display: flex; flex-direction: column; justify-content: center; max-width: 600px; margin: 0 auto; text-align: center;">
+            <h1 style="margin-bottom: 40px; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.6); font-size: 28px;">${levelData.goal}</h1>
+            <p style="margin-bottom: 80px; color: rgba(255,255,255,0.7); font-size: 16px;">${correctsCount} Steps • <span style="color: white;">★</span> ${starCount} Stars</p>
+            <div style="text-align: center;">
+                <div style="color: white; font-size: 18px; font-weight: 500; text-shadow: 0 1px 4px rgba(0,0,0,0.6); opacity: 0.4;">
+                    ${buttonText}
+                </div>
+            </div>
+        </div>
+    </div>
+`;
+    } else {
+        console.log('Level data not found for level', levelNumber);
+        // Fall through to default
+    }
+} 
+
+if (!content) {
+    console.log('Using fallback logic');
+                 // Fallback for other languages
+                const progressStatus = getLevelProgress(subjectName, levelNumber);
+                const buttonConfig = getButtonConfig(progressStatus);
+                content = `
+                    <div onclick="openSubjectLesson('${subjectName}')" style="position: relative; height: 100%; background: url('${coverImage}') center/cover; background-attachment: fixed; overflow: hidden; cursor: pointer;">
+                        <!-- Blur overlay -->
+                        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('${coverImage}') center/cover; filter: blur(25px); transform: scale(1.1); z-index: 1;"></div>
+                        <!-- Dark overlay for readability -->
+                        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.4); z-index: 2;"></div>
+                        <!-- Content -->
+                        <div style="position: relative; z-index: 3; padding: 40px 20px; height: 100%; display: flex; flex-direction: column; justify-content: center; max-width: 600px; margin: 0 auto; text-align: center;">
+                            <h1 style="margin-bottom: 40px;"><svg style="width: 42px; height: 42px; fill: #4ade80; filter: drop-shadow(0 0 10px rgba(74, 222, 128, 0.5)); margin-right: 8px; vertical-align: middle;" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> <span style="color: white; text-shadow: 0 1px 4px rgba(0,0,0,0.6);">25</span></h1>
+                            <ul style="margin: 0 0 60px 0; padding: 0; color: rgba(255,255,255,0.9); line-height: 1.8; font-size: 16px; list-style: none; text-align: center; text-shadow: 0 1px 4px rgba(0,0,0,0.6);">
+                                <li style="margin-bottom: 12px;">Master ${subjectName} concepts and best practices</li>
+                                <li style="margin-bottom: 12px;">Apply knowledge to real-world scenarios</li>
+                                <li style="margin-bottom: 12px;">Understand fundamental principles</li>
+                                <li style="margin-bottom: 12px;">Prepare for advanced level challenges</li>
+                            </ul>
+                            <div style="text-align: center;">
+                                ${buttonConfig.progressBar}
+                                <div style="color: white; font-size: 18px; font-weight: 500; text-shadow: 0 1px 4px rgba(0,0,0,0.6); opacity: 0.9; border-bottom: 2px solid transparent; display: inline-block; padding: 4px 8px; transition: all 0.2s ease;">
+                                    ${buttonConfig.text}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            `;
-            
-            // Update THIS window's content
-            const contentElement = document.getElementById(windowId + '-content');
-            if (contentElement) {
-                contentElement.innerHTML = content;
-                // Remove default padding since we're handling it in the content
-                contentElement.style.padding = '0';
+                `;
             }
+            
+const contentElement = document.getElementById(windowId + '-content');
+if (contentElement) {
+    contentElement.innerHTML = content;
+    contentElement.style.padding = '0';
+}
         }
 
         // Get level progress status (placeholder for future implementation)
@@ -2633,51 +2698,51 @@ if (!structure) return '<p style="color: white;">No content available</p>';
             let currentStructure;
             let item;
             
-if (windowPath.length === 2) {
-    const folderName = windowPath[1];
-    
-    // Special case: navigating from Desktop
-    if (folderName === 'Desktop') {
-        // Replace current window content with the folder content
-        const newPath = ['Fromsupply', 'Desktop', itemName];
-        PathManager.updatePath(windowId, newPath);
-        
-        const content = generateFolderContent(itemName, windowId);
-        const contentElement = document.getElementById(windowId + '-content');
-        if (contentElement) {
-            contentElement.style.padding = '16px';
-            contentElement.innerHTML = content;
-        }
-        return;
-    }
-    
-    currentStructure = folderStructure[folderName];
-    item = currentStructure[itemName];
-} else if (windowPath.length === 3) {
-    // Handle paths like ['Fromsupply', 'Desktop', 'Logic']
-    const level1 = windowPath[1]; // 'Desktop'
-    const level2 = windowPath[2]; // 'Logic'
-    
-    if (level1 === 'Desktop') {
-        // This is a main folder from desktop (Logic, Mall, etc.)
-        currentStructure = folderStructure[level2];
-        item = currentStructure[itemName];
-    } else {
-        // Legacy path handling
-        currentStructure = folderStructure[level1][level2];
-        item = currentStructure[itemName];
-    }
-} else if (windowPath.length === 4) {
-    // Handle paths like ['Fromsupply', 'Desktop', 'Logic', 'Programming']
-    const level1 = windowPath[1]; // 'Desktop'
-    const level2 = windowPath[2]; // 'Logic'
-    const level3 = windowPath[3]; // 'Programming'
-    
-    if (level1 === 'Desktop') {
-        currentStructure = folderStructure[level2][level3];
-        item = currentStructure[itemName];
-    }
-}
+			if (windowPath.length === 2) {
+			    const folderName = windowPath[1];
+			    
+			    // Special case: navigating from Desktop
+			    if (folderName === 'Desktop') {
+			        // Replace current window content with the folder content
+			        const newPath = ['Fromsupply', 'Desktop', itemName];
+			        PathManager.updatePath(windowId, newPath);
+			        
+			        const content = generateFolderContent(itemName, windowId);
+			        const contentElement = document.getElementById(windowId + '-content');
+			        if (contentElement) {
+			            contentElement.style.padding = '16px';
+			            contentElement.innerHTML = content;
+			        }
+			        return;
+			    }
+			    
+			    currentStructure = folderStructure[folderName];
+			    item = currentStructure[itemName];
+			} else if (windowPath.length === 3) {
+			    // Handle paths like ['Fromsupply', 'Desktop', 'Logic']
+			    const level1 = windowPath[1]; // 'Desktop'
+			    const level2 = windowPath[2]; // 'Logic'
+			    
+			    if (level1 === 'Desktop') {
+			        // This is a main folder from desktop (Logic, Mall, etc.)
+			        currentStructure = folderStructure[level2];
+			        item = currentStructure[itemName];
+			    } else {
+			        // Legacy path handling
+			        currentStructure = folderStructure[level1][level2];
+			        item = currentStructure[itemName];
+			    }
+			} else if (windowPath.length === 4) {
+			    // Handle paths like ['Fromsupply', 'Desktop', 'Logic', 'Programming']
+			    const level1 = windowPath[1]; // 'Desktop'
+			    const level2 = windowPath[2]; // 'Logic'
+			    const level3 = windowPath[3]; // 'Programming'
+			    
+			    if (level1 === 'Desktop') {
+			        currentStructure = folderStructure[level2][level3];
+			        item = currentStructure[itemName];
+			    }
+			}
             
             if (!item) return;
             
@@ -2794,50 +2859,50 @@ if (windowPath.length === 2) {
         }
 
         function openApp(appName, fileName, parentFolder = null) {
-    // Find the currently focused window
-    const focusedWindow = openWindows.find(w => {
-        const element = document.getElementById(w.id);
-        return element && parseInt(element.style.zIndex) === windowZIndex;
-    });
-    
-    let windowId;
-    
-    if (focusedWindow) {
-        // Use existing focused window - app will replace its content
-        windowId = focusedWindow.id;
-    } else {
-        // No window open, create a new one
-        windowId = createWindow(`${appName} - Fromsupply`, '', 800, 600);
-    }
-    
-    // Update path to show we're now in the app
-    let newPath;
-    if (parentFolder) {
-        newPath = ['Fromsupply', parentFolder, appName];
-    } else {
-        newPath = ['Fromsupply', appName];
-    }
-    PathManager.updatePath(windowId, newPath);
-    
-    // Create iframe content that will replace whatever was in the window
-    const content = `
-        <iframe src="${fileName}" 
-                style="width: 100%; height: 100%; border: none; opacity: 0; transition: opacity 0.3s ease;"
-                onload="this.style.opacity = '1';">
-        </iframe>
-    `;
-    
-    // Replace the window's content with the app
-   const contentElement = document.getElementById(windowId + '-content');
-    if (contentElement) {
-        contentElement.style.padding = '0';
-        contentElement.innerHTML = content;
-        // Keep dragging enabled - don't remove onmousedown or change cursor
-    }
-    
-    // Focus the window (which now contains the app)
-    focusWindow(windowId);
-}
+			// Find the currently focused window
+			const focusedWindow = openWindows.find(w => {
+			    const element = document.getElementById(w.id);
+			    return element && parseInt(element.style.zIndex) === windowZIndex;
+			});
+			
+			let windowId;
+			
+			if (focusedWindow) {
+			    // Use existing focused window - app will replace its content
+			    windowId = focusedWindow.id;
+			} else {
+			    // No window open, create a new one
+			    windowId = createWindow(`${appName} - Fromsupply`, '', 800, 600);
+			}
+			
+			// Update path to show we're now in the app
+			let newPath;
+			if (parentFolder) {
+			    newPath = ['Fromsupply', parentFolder, appName];
+			} else {
+			    newPath = ['Fromsupply', appName];
+			}
+			PathManager.updatePath(windowId, newPath);
+			
+			// Create iframe content that will replace whatever was in the window
+			const content = `
+			    <iframe src="${fileName}" 
+			            style="width: 100%; height: 100%; border: none; opacity: 0; transition: opacity 0.3s ease;"
+			            onload="this.style.opacity = '1';">
+			    </iframe>
+			`;
+			
+			// Replace the window's content with the app
+		   const contentElement = document.getElementById(windowId + '-content');
+			if (contentElement) {
+			    contentElement.style.padding = '0';
+			    contentElement.innerHTML = content;
+			    // Keep dragging enabled - don't remove onmousedown or change cursor
+			}
+			
+			// Focus the window (which now contains the app)
+			focusWindow(windowId);
+		}
 
         function openHiddenSystemWindow() {
             let windowX = 100;
@@ -3316,86 +3381,140 @@ ${corrections}
                 console.warn('Could not load notes from storage:', error);
             }
         }
+function getLevelProgress(levelNumber) {
+    const progressKey = `level_${levelNumber}_progress`;
+    const completedKey = `level_${levelNumber}_completed`;
+    const starsEarnedKey = `level_${levelNumber}_stars_earned`;
+    
+    if (localStorage.getItem(completedKey) === 'true') {
+        return 'completed';
+    } else if (localStorage.getItem(progressKey) === 'true') {
+        return 'continue';
+    }
+    return 'begin';
+}
 
-        function openSubjectLesson(subjectName) {
-            const fileName = `${subjectName}.html`;
-            window.open(fileName, '_blank');
+function getLevelGrade(levelNumber, totalStarsAvailable) {
+    const starsEarnedKey = `level_${levelNumber}_stars_earned`;
+    const starsEarned = parseInt(localStorage.getItem(starsEarnedKey) || '0');
+    return Math.round((starsEarned / totalStarsAvailable) * 100);
+}
+
+    function openSubjectLesson(subjectName, levelNumber = null) {
+    console.log('Opening lesson:', subjectName, 'Level:', levelNumber);
+    
+    if (levelNumber) {
+        localStorage.setItem('selectedLevel', levelNumber.toString());
+        localStorage.setItem('selectedSubject', subjectName);
+        console.log('Stored level data');
+    }
+    
+    // Get the current window's content element and replace it directly
+    const currentWindow = openWindows.find(w => {
+        const element = document.getElementById(w.id);
+        return element && parseInt(element.style.zIndex) === windowZIndex;
+    });
+    
+    if (currentWindow) {
+        const contentElement = document.getElementById(currentWindow.id + '-content');
+        if (contentElement) {
+            console.log('Replacing content with code.html');
+            contentElement.style.padding = '0';
+            contentElement.innerHTML = `
+    <iframe src="code.html" 
+            style="width: 100%; height: 100%; border: none; pointer-events: auto;" 
+            onload="console.log('code.html loaded successfully');">
+    </iframe>
+`;
+// Restore dragging capability
+contentElement.onmousedown = function(e) {
+    // Only start drag if not clicking inside iframe
+    if (!e.target.closest('iframe')) {
+        DragManager.start('window', currentWindow.element, e, { windowId: currentWindow.id });
+    }
+};
+        } else {
+            console.error('Content element not found');
         }
+    } else {
+        console.error('Current window not found');
+    }
+}
 
         function goToIndex() {
             window.location.href = 'index.html';
         }
 
         // CONSOLE SYSTEM
-     function openFsConsole(windowId = null) {
-    // Create or reuse window for console
-    const focusedWindow = openWindows.find(w => {
-        const element = document.getElementById(w.id);
-        return element && parseInt(element.style.zIndex) === windowZIndex;
-    });
+	   function openFsConsole(windowId = null) {
+		    // Create or reuse window for console
+		    const focusedWindow = openWindows.find(w => {
+		        const element = document.getElementById(w.id);
+		        return element && parseInt(element.style.zIndex) === windowZIndex;
+		    });
 
-    // ADD THIS CHECK HERE:
-    // Check if current window already has a shell
-    if (focusedWindow && focusedWindow.currentPath && focusedWindow.currentPath.includes('Shell')) {
-        // Shell already open, just focus the input
-        const input = document.getElementById(`shellInput-${focusedWindow.id}`);
-        if (input) {
-            input.focus();
-        }
-        return;
-    }
-    // END OF NEW CHECK
+		    // ADD THIS CHECK HERE:
+		    // Check if current window already has a shell
+		    if (focusedWindow && focusedWindow.currentPath && focusedWindow.currentPath.includes('Shell')) {
+		        // Shell already open, just focus the input
+		        const input = document.getElementById(`shellInput-${focusedWindow.id}`);
+		        if (input) {
+		            input.focus();
+		        }
+		        return;
+		    }
+		    // END OF NEW CHECK
 
-    let consoleWindowId;
-    if (focusedWindow) {
-        consoleWindowId = focusedWindow.id;
-    } else {
-        consoleWindowId = createWindow('Shell - Fromsupply', '', 700, 450);
-    }
+		    let consoleWindowId;
+		    if (focusedWindow) {
+		        consoleWindowId = focusedWindow.id;
+		    } else {
+		        consoleWindowId = createWindow('Shell - Fromsupply', '', 700, 450);
+		    }
 
-    // Update path to show Shell
-    const currentPath = focusedWindow ? [...focusedWindow.currentPath, 'Shell'] : ['Fromsupply', 'Desktop', 'Shell'];
-    PathManager.updatePath(consoleWindowId, currentPath);
+		    // Update path to show Shell
+		    const currentPath = focusedWindow ? [...focusedWindow.currentPath, 'Shell'] : ['Fromsupply', 'Desktop', 'Shell'];
+		    PathManager.updatePath(consoleWindowId, currentPath);
 
-    // Create shell content WITHOUT header bar
-    const shellContent = `
-        <div style="height: 100%; display: flex; flex-direction: column; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;">
-            <!-- Output area -->
-            <div style="flex: 1; padding: 16px; overflow-y: auto; color: rgba(255,255,255,0.9); font-size: 13px; line-height: 1.6;" 
-                 id="shellOutput-${consoleWindowId}">
-                <div style="margin-bottom: 4px; color: #10b981;">Fromsupply Console v2.0 - Ready</div>
-                <div style="margin-bottom: 4px; color: rgba(255,255,255,0.9);">Type 'help' for commands or 'h' for shortcuts</div>
-            </div>
-            
-            <!-- Input area -->
-            <div style="padding: 16px; border-top: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05);">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <span style="color: #60a5fa; font-weight: bold; font-size: 14px;">$</span>
-                    <input type="text" 
-                           id="shellInput-${consoleWindowId}" 
-                           style="flex: 1; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; padding: 8px 12px; font-family: inherit; font-size: 13px; outline: none; backdrop-filter: blur(10px);"
-                           onkeydown="handleShellInput(event, '${consoleWindowId}')"
-                           placeholder="Type command..."
-                    />
-                </div>
-            </div>
-        </div>
-    `;
+		    // Create shell content WITHOUT header bar
+		    const shellContent = `
+		        <div style="height: 100%; display: flex; flex-direction: column; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;">
+		            <!-- Output area -->
+		            <div style="flex: 1; padding: 16px; overflow-y: auto; color: rgba(255,255,255,0.9); font-size: 13px; line-height: 1.6;" 
+		                 id="shellOutput-${consoleWindowId}">
+		                <div style="margin-bottom: 4px; color: #10b981;">Fromsupply Console v2.0 - Ready</div>
+		                <div style="margin-bottom: 4px; color: rgba(255,255,255,0.9);">Type 'help' for commands or 'h' for shortcuts</div>
+		            </div>
+		            
+		            <!-- Input area -->
+		            <div style="padding: 16px; border-top: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05);">
+		                <div style="display: flex; align-items: center; gap: 12px;">
+		                    <span style="color: #60a5fa; font-weight: bold; font-size: 14px;">$</span>
+		                    <input type="text" 
+		                           id="shellInput-${consoleWindowId}" 
+		                           style="flex: 1; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; padding: 8px 12px; font-family: inherit; font-size: 13px; outline: none; backdrop-filter: blur(10px);"
+		                           onkeydown="handleShellInput(event, '${consoleWindowId}')"
+		                           placeholder="Type command..."
+		                    />
+		                </div>
+		            </div>
+		        </div>
+		    `;
 
-    // Set shell content in window
-    const contentElement = document.getElementById(consoleWindowId + '-content');
-    if (contentElement) {
-        contentElement.style.padding = '0';
-        contentElement.innerHTML = shellContent;
-    }
+		    // Set shell content in window
+		    const contentElement = document.getElementById(consoleWindowId + '-content');
+		    if (contentElement) {
+		        contentElement.style.padding = '0';
+		        contentElement.innerHTML = shellContent;
+		    }
 
-    // Focus window and input
-    focusWindow(consoleWindowId);
-    setTimeout(() => {
-        const input = document.getElementById(`shellInput-${consoleWindowId}`);
-        if (input) input.focus();
-    }, 100);
-}
+		    // Focus window and input
+		    focusWindow(consoleWindowId);
+		    setTimeout(() => {
+		        const input = document.getElementById(`shellInput-${consoleWindowId}`);
+		        if (input) input.focus();
+		    }, 100);
+		}
 
         function closeFsConsole() {
             const console = document.getElementById('fsConsole');
@@ -3466,92 +3585,92 @@ ${corrections}
             logToConsole('=== FROMSUPPLY CONSOLE HELP ===', 'success');
             logToConsole('', 'output');
             logToConsole('AVAILABLE COMMANDS:', 'output');
-            logToConsole('help, h       - Show this help', 'output');
-            logToConsole('clear, cls    - Clear console output', 'output');
-            logToConsole('exit, quit, q - Exit console', 'output');
+            logToConsole('help, h         - Show this help', 'output');
+            logToConsole('clear, cls      - Clear console output', 'output');
+            logToConsole('exit, quit, q   - Exit console', 'output');
             logToConsole('', 'output');
             logToConsole('Type any command to execute. Press Esc to close.', 'output');
         }
 
         // DRAG AND DROP INITIALIZATION
         function initializeDragAndDrop() {
-    const folders = document.querySelectorAll('.folder');
-    
-    folders.forEach(folder => {
-        let dragStartTime = 0;
-        let dragStartPosition = { x: 0, y: 0 };
-        let hasActuallyDragged = false;
-        let clickMousePosition = { x: 0, y: 0 };
-        let justHadMouseDown = false;
-        
-        folder.addEventListener('mousedown', function(e) {
-            // Reset all states on new mousedown
-            dragStartTime = Date.now();
-            dragStartPosition.x = e.clientX;
-            dragStartPosition.y = e.clientY;
-            clickMousePosition.x = e.clientX;
-            clickMousePosition.y = e.clientY;
-            hasActuallyDragged = false;
-            justHadMouseDown = true;
-            
-            // Safety timeout to prevent stuck drags
-            setTimeout(() => {
-                justHadMouseDown = false;
-                hasActuallyDragged = false; // Reset this too
-            }, 500);
-        });
-        
-        folder.addEventListener('mousemove', function(e) {
-            if (!DragManager.active && justHadMouseDown && this === e.currentTarget) {
-                const deltaX = Math.abs(e.clientX - dragStartPosition.x);
-                const deltaY = Math.abs(e.clientY - dragStartPosition.y);
-                
-                if (deltaX > 5 || deltaY > 5) {
-                    hasActuallyDragged = true;
-                    justHadMouseDown = false; // Clear this immediately
-                    DragManager.start('folder', this, e);
-                }
-            }
-        });
-        
-        folder.addEventListener('mouseup', function(e) {
-            // Always reset states on mouseup
-            justHadMouseDown = false;
-            
-            // Small delay to ensure click handler gets correct state
-            setTimeout(() => {
-                hasActuallyDragged = false;
-            }, 50);
-        });
-        
-        folder.addEventListener('click', function(e) {
-            const clickDuration = Date.now() - dragStartTime;
-            
-            // Only trigger click if we didn't drag AND it was a quick click
-            if (!hasActuallyDragged && clickDuration < 300 && !DragManager.active) {
-                const folderName = this.dataset.folder;
-                const isApp = this.dataset.app === 'true';
-                const fileName = this.dataset.file;
-                
-                if (isApp && fileName) {
-                    openApp(folderName, fileName);
-                } else {
-                    openFolder(folderName, clickMousePosition.x, clickMousePosition.y);
-                }
-            }
-        });
-        
-        // Add mouseleave as safety to reset states
-        folder.addEventListener('mouseleave', function(e) {
-            if (!DragManager.active) {
-                justHadMouseDown = false;
-                setTimeout(() => {
-                    hasActuallyDragged = false;
-                }, 100);
-            }
-        });
-    });
-}
+			const folders = document.querySelectorAll('.folder');
+			
+			folders.forEach(folder => {
+			    let dragStartTime = 0;
+			    let dragStartPosition = { x: 0, y: 0 };
+			    let hasActuallyDragged = false;
+			    let clickMousePosition = { x: 0, y: 0 };
+			    let justHadMouseDown = false;
+			    
+			    folder.addEventListener('mousedown', function(e) {
+			        // Reset all states on new mousedown
+			        dragStartTime = Date.now();
+			        dragStartPosition.x = e.clientX;
+			        dragStartPosition.y = e.clientY;
+			        clickMousePosition.x = e.clientX;
+			        clickMousePosition.y = e.clientY;
+			        hasActuallyDragged = false;
+			        justHadMouseDown = true;
+			        
+			        // Safety timeout to prevent stuck drags
+			        setTimeout(() => {
+			            justHadMouseDown = false;
+			            hasActuallyDragged = false; // Reset this too
+			        }, 500);
+			    });
+			    
+			    folder.addEventListener('mousemove', function(e) {
+			        if (!DragManager.active && justHadMouseDown && this === e.currentTarget) {
+			            const deltaX = Math.abs(e.clientX - dragStartPosition.x);
+			            const deltaY = Math.abs(e.clientY - dragStartPosition.y);
+			            
+			            if (deltaX > 5 || deltaY > 5) {
+			                hasActuallyDragged = true;
+			                justHadMouseDown = false; // Clear this immediately
+			                DragManager.start('folder', this, e);
+			            }
+			        }
+			    });
+			    
+			    folder.addEventListener('mouseup', function(e) {
+			        // Always reset states on mouseup
+			        justHadMouseDown = false;
+			        
+			        // Small delay to ensure click handler gets correct state
+			        setTimeout(() => {
+			            hasActuallyDragged = false;
+			        }, 50);
+			    });
+			    
+			    folder.addEventListener('click', function(e) {
+			        const clickDuration = Date.now() - dragStartTime;
+			        
+			        // Only trigger click if we didn't drag AND it was a quick click
+			        if (!hasActuallyDragged && clickDuration < 300 && !DragManager.active) {
+			            const folderName = this.dataset.folder;
+			            const isApp = this.dataset.app === 'true';
+			            const fileName = this.dataset.file;
+			            
+			            if (isApp && fileName) {
+			                openApp(folderName, fileName);
+			            } else {
+			                openFolder(folderName, clickMousePosition.x, clickMousePosition.y);
+			            }
+			        }
+			    });
+			    
+			    // Add mouseleave as safety to reset states
+			    folder.addEventListener('mouseleave', function(e) {
+			        if (!DragManager.active) {
+			            justHadMouseDown = false;
+			            setTimeout(() => {
+			                hasActuallyDragged = false;
+			            }, 100);
+			        }
+			    });
+			});
+		}
 
         function loadFolderPositions() {
             try {
@@ -3631,6 +3750,17 @@ ${corrections}
                                     score: currentScore
                                 }, '*');
                             }
+                            break;
+
+                        case 'openCodeApp':
+    console.log('Opening code app from message');
+    openApp('C Coding Challenge', 'code.html');
+    break;
+
+                        case 'openApp':
+                        if (event.data.appName && event.data.fileName) {
+                            openApp(event.data.appName, event.data.fileName);
+                        }
                             break;
                     }
                 }

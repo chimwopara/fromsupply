@@ -80,7 +80,36 @@
     transition: color 0.3s ease, font-family 0.3s ease;
     cursor: default;
 }
+/* Glass Button Style matching index.html */
+.glass-btn {
+    background-color: rgba(31, 41, 55, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(55, 65, 81, 0.4);
+    border-radius: 20px;
+    padding: 8px 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 500;
+    font-size: 0.9em;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    text-shadow: none;
+    box-shadow: none;
+    min-width: 120px;
+}
 
+.glass-btn:hover {
+    background-color: rgba(156, 163, 175, 0.3);
+    border-color: rgba(156, 163, 175, 0.5);
+    transform: translateY(-1px);
+}
+
+.glass-btn:active {
+    transform: scale(0.98);
+}
 /* Prevent text selection globally */
 body {
     user-select: none;
@@ -861,14 +890,18 @@ input, textarea {
 
         // Initialize the game
         function initializeGame(levelIndex = 0) {
-            currentLevelIndex = levelIndex;
-            if (typeof challengesData === 'undefined' || !challengesData || !challengesData[currentLevelIndex]) {
-                console.error("Invalid level index or challengesData not loaded:", levelIndex);
-                interactionArea.innerHTML = `<p style="text-align: center; color: var(--error-color);">Error: Level data not found.</p>`;
-                hintText.textContent = '';
-                revealHintBtn.classList.add('hidden');
-                return;
-            }
+    // Check if level was selected from index.html
+    const selectedLevel = localStorage.getItem('selectedLevel');
+    if (selectedLevel) {
+        currentLevelIndex = parseInt(selectedLevel) - 1; // Convert 1-based to 0-based index
+        console.log('Starting selected level:', selectedLevel, 'Array index:', currentLevelIndex);
+        // Don't remove localStorage immediately in case of refresh
+        // localStorage.removeItem('selectedLevel');
+        // localStorage.removeItem('selectedSubject');
+    } else {
+        currentLevelIndex = levelIndex;
+        console.log('Starting default level:', currentLevelIndex);
+    }
 
             const currentChallenge = challengesData[currentLevelIndex];
             currentStep = 0;
@@ -876,6 +909,11 @@ input, textarea {
             initialStarsForLevelAttempt = starCount;
             levelAttempts[currentLevelIndex] = (levelAttempts[currentLevelIndex] || 0) + 1;
             levelInProgress = true;
+            // Mark level as started for index.html progress tracking
+const levelNumber = currentLevelIndex + 1; // Convert to 1-based
+if (!localStorage.getItem(`level_${levelNumber}_completed`)) {
+    localStorage.setItem(`level_${levelNumber}_progress`, 'true');
+}
 
             sessionStorage.setItem('chimCodeLevelInProgress', 'true');
             sessionStorage.setItem('chimCodeInitialStars', initialStarsForLevelAttempt.toString());
@@ -1041,6 +1079,13 @@ input, textarea {
 
             levelCompletedThisSession[currentLevelIndex] = true;
             sessionStorage.setItem('chimCodeLevelCompleted', JSON.stringify(levelCompletedThisSession));
+            // Save individual level completion and star data for index.html
+const levelNumber = currentLevelIndex + 1; // Convert to 1-based
+localStorage.setItem(`level_${levelNumber}_completed`, 'true');
+localStorage.setItem(`level_${levelNumber}_stars_earned`, starCount.toString());
+
+// Remove progress flag since level is now completed
+localStorage.removeItem(`level_${levelNumber}_progress`);
 
             levelInProgress = false;
             sessionStorage.setItem('chimCodeLevelInProgress', 'false');
@@ -1049,15 +1094,54 @@ input, textarea {
 
             saveStarCount();
 
-            interactionArea.innerHTML = `
-                <div style="grid-column: 1 / -1; text-align: center; padding: 20px;">
-                    <p style="font-weight: bold; font-size: 1.2em; margin-bottom: 20px; color: var(--success-color);">
-                        Level ${currentLevelIndex + 1} Complete! Final Score: <span class="star-icon">★</span> ${starCount}
-                    </p>
-                    <button id="restart-btn" class="endgame-btn">Restart Level</button>
-                    ${!isLastLevel ? '<button id="next-btn" class="endgame-btn">Next Level</button>' : '<p style="margin-top: 10px; color: var(--star-color);">All levels complete!</p>'}
-                </div>
-            `;
+            // Calculate actual stars earned this level
+const initialStars = initialStarsForLevelAttempt;
+const finalStars = starCount;
+const starsEarnedThisLevel = Math.max(0, finalStars - initialStars);
+const starsLostThisLevel = Math.max(0, initialStars - finalStars);
+
+interactionArea.innerHTML = `
+    <div style="grid-column: 1 / -1; text-align: center; padding: 20px;">
+        <p style="font-weight: bold; font-size: 1.2em; margin-bottom: 10px; color: var(--success-color);">
+            Level ${currentLevelIndex + 1} Complete!
+        </p>
+        <p style="font-size: 1em; margin-bottom: 20px; color: var(--text-color);">
+            Stars Earned: +${starsEarnedThisLevel} | Stars Lost: -${starsLostThisLevel} | Final Score: <span style="color: var(--star-color);">★</span> ${starCount}
+        </p>
+        <div style="display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap;">
+            ${currentLevelIndex > 0 ? `
+                <button id="previous-btn" class="glass-btn">
+                    <span style="margin-right: 6px;">←</span> Previous Level
+                </button>
+            ` : ''}
+            <button id="reattempt-btn" class="glass-btn">
+                <span style="margin-right: 6px;">↻</span> Re-attempt
+            </button>
+            ${!isLastLevel ? `
+                <button id="next-btn" class="glass-btn">
+                    <span style="margin-right: 6px;">→</span> Next Level
+                </button>
+            ` : '<p style="margin-top: 10px; color: var(--star-color);">All levels complete!</p>'}
+        </div>
+    </div>
+`;
+
+// Add event handlers for the new buttons
+            document.getElementById('reattempt-btn')?.addEventListener('click', () => {
+                showReattemptMessage();
+            });
+
+            if (!isLastLevel) {
+                document.getElementById('next-btn')?.addEventListener('click', () => {
+                    goToLevelBegin(currentLevelIndex + 2); // +2 because next level (1-based)
+                });
+            }
+
+            if (currentLevelIndex > 0) {
+                document.getElementById('previous-btn')?.addEventListener('click', () => {
+                    goToLevelBegin(currentLevelIndex); // current index is 0-based, so this gives previous level in 1-based
+                });
+            }
 
             document.getElementById('restart-btn')?.addEventListener('click', () => {
                 starCount = initialStarsForLevelAttempt;
@@ -1120,6 +1204,38 @@ input, textarea {
         function updateLibraryButtons() {
             // Simplified for demo
         }
+        function showReattemptMessage() {
+    interactionArea.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+            <h2 style="color: var(--accent-color); margin-bottom: 20px; font-size: 1.4em;">Re-attempt Level ${currentLevelIndex + 1}</h2>
+            <p style="color: var(--hint-color); font-style: italic; margin-bottom: 30px; font-size: 1.1em;">
+                No stars will be lost or gained during re-attempts
+            </p>
+            <button onclick="startReattempt()" class="glass-btn" style="font-size: 1.1em; padding: 12px 24px;">
+                <span style="margin-right: 8px;">▶</span> Begin Re-attempt
+            </button>
+        </div>
+    `;
+}
+
+function startReattempt() {
+    // Don't reset star count for re-attempts
+    initializeGame(currentLevelIndex);
+}
+
+function goToLevelBegin(levelNumber) {
+    // Store the target level and redirect back to index.html level view
+    localStorage.setItem('selectedLevel', levelNumber.toString());
+    localStorage.setItem('selectedSubject', 'C');
+    
+    // Send message to parent to navigate back to level selection
+    if (typeof parent !== 'undefined' && parent !== window) {
+        parent.postMessage({
+            action: 'navigateToLevel',
+            level: levelNumber
+        }, '*');
+    }
+}
 
         // Event listeners
         modalCloseBtn.addEventListener('click', () => hideModal(infoModal));
