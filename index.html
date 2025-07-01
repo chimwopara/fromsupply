@@ -2556,107 +2556,104 @@ if (subjectName === 'C' && typeof challengesData !== 'undefined') {
         }
 
         function openLanguageLevel(subjectName, levelNumber, coverImage, windowId) {
-            const windowPath = PathManager.getPath(windowId);
-            const newPath = [...windowPath, `Level ${levelNumber}`];
-            PathManager.updatePath(windowId, newPath);
+    const windowPath = PathManager.getPath(windowId);
+    const newPath = [...windowPath, `Level ${levelNumber}`];
+    PathManager.updatePath(windowId, newPath);
+    
+    window.currentLevelInfo = {
+        subject: subjectName,
+        level: levelNumber,
+        path: newPath.join('/')
+    };
+
+    let content;
+
+    // *** MODIFICATION FOR C LANGUAGE ***
+    if (subjectName === 'C' && typeof challengesData !== 'undefined') {
+        console.log('Using C-specific logic');
+        const levelData = challengesData[levelNumber - 1]; // Convert to 0-based index
+        if (levelData) {
+            const correctsCount = levelData.sequence.length;
+            const starCount = correctsCount * 3;
+            const conceptsArray = levelData.concepts.split(', ');
+            const conceptsHTML = conceptsArray.map(c => `<li style="margin-bottom: 12px;">${c.trim()}</li>`).join('');
+
+            // Check if this is a re-attempt (level already completed)
+            const progressStatus = getLevelProgress(levelNumber);
+            const isReattempt = progressStatus === 'completed';
             
-            window.currentLevelInfo = {
-    subject: subjectName,
-    level: levelNumber,
-    path: newPath.join('/')
-};
+            // Show 0 stars for re-attempts, actual stars for first attempts
+            const displayStars = isReattempt ? 0 : starCount;
+            
+            // Set appropriate button text
+            let buttonText = 'Click to Begin';
+            if (progressStatus === 'continue') {
+                buttonText = 'Click to Continue';
+            } else if (progressStatus === 'completed') {
+                buttonText = 'Click to Re-attempt';
+            }
 
-// Debug what's available
-console.log('Subject:', subjectName);
-console.log('Level:', levelNumber);
-console.log('challengesData available?', typeof challengesData !== 'undefined');
-if (typeof challengesData !== 'undefined') {
-    console.log('challengesData length:', challengesData.length);
-    console.log('Level data:', challengesData[levelNumber - 1]);
-}
-
-let content;
-
-// *** MODIFICATION FOR C LANGUAGE ***
-if (subjectName === 'C' && typeof challengesData !== 'undefined') {
-    console.log('Using C-specific logic');
-    const levelData = challengesData[levelNumber - 1]; // Convert to 0-based index
-    if (levelData) {
-        const correctsCount = levelData.sequence.length;
-const starCount = correctsCount * 3;
-const conceptsArray = levelData.concepts.split(', ');
-const conceptsHTML = conceptsArray.map(c => `<li style="margin-bottom: 12px;">${c.trim()}</li>`).join('');
-
-// Check progress and set appropriate button text
-const progressStatus = getLevelProgress(levelNumber);
-let buttonText = 'Click to Begin';
-if (progressStatus === 'continue') {
-    buttonText = 'Click to Continue';
-} else if (progressStatus === 'completed') {
-    buttonText = 'Click to Re-attempt';
-}
-
-    content = `
-    <div onclick="handleLevelClick(event, '${subjectName}', ${levelNumber})" style="position: relative; height: 100%; background: url('${coverImage}') center/cover; background-attachment: fixed; overflow: hidden; cursor: pointer;">
-        <!-- Blur overlay -->
-        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('${coverImage}') center/cover; filter: blur(25px); transform: scale(1.1); z-index: 1;"></div>
-        <!-- Dark overlay for readability -->
-        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 2;"></div>
-        <!-- Content -->
-        <div style="position: relative; z-index: 3; padding: 40px 20px; height: 100%; display: flex; flex-direction: column; justify-content: center; max-width: 600px; margin: 0 auto; text-align: center;">
-            <h1 style="margin-bottom: 40px; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.6); font-size: 28px;">${levelData.goal}</h1>
-            <p style="margin-bottom: 80px; color: rgba(255,255,255,0.7); font-size: 16px;">${correctsCount} Steps • <span style="color: white;">★</span> ${starCount} Stars</p>
-            <div style="text-align: center;">
-                <div style="color: white; font-size: 18px; font-weight: 500; text-shadow: 0 1px 4px rgba(0,0,0,0.6); opacity: 0.4;">
-                    ${buttonText}
-                </div>
-            </div>
-        </div>
-    </div>
-`;
-    } else {
-        console.log('Level data not found for level', levelNumber);
-        // Fall through to default
-    }
-} 
-
-if (!content) {
-    console.log('Using fallback logic');
-                 // Fallback for other languages
-                const progressStatus = getLevelProgress(subjectName, levelNumber);
-                const buttonConfig = getButtonConfig(progressStatus);
-                content = `
-                    <div onclick="openSubjectLesson('${subjectName}')" style="position: relative; height: 100%; background: url('${coverImage}') center/cover; background-attachment: fixed; overflow: hidden; cursor: pointer;">
-                        <!-- Blur overlay -->
-                        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('${coverImage}') center/cover; filter: blur(25px); transform: scale(1.1); z-index: 1;"></div>
-                        <!-- Dark overlay for readability -->
-                        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.4); z-index: 2;"></div>
-                        <!-- Content -->
-                        <div style="position: relative; z-index: 3; padding: 40px 20px; height: 100%; display: flex; flex-direction: column; justify-content: center; max-width: 600px; margin: 0 auto; text-align: center;">
-                            <h1 style="margin-bottom: 40px;"><svg style="width: 42px; height: 42px; fill: #4ade80; filter: drop-shadow(0 0 10px rgba(74, 222, 128, 0.5)); margin-right: 8px; vertical-align: middle;" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> <span style="color: white; text-shadow: 0 1px 4px rgba(0,0,0,0.6);">25</span></h1>
-                            <ul style="margin: 0 0 60px 0; padding: 0; color: rgba(255,255,255,0.9); line-height: 1.8; font-size: 16px; list-style: none; text-align: center; text-shadow: 0 1px 4px rgba(0,0,0,0.6);">
-                                <li style="margin-bottom: 12px;">Master ${subjectName} concepts and best practices</li>
-                                <li style="margin-bottom: 12px;">Apply knowledge to real-world scenarios</li>
-                                <li style="margin-bottom: 12px;">Understand fundamental principles</li>
-                                <li style="margin-bottom: 12px;">Prepare for advanced level challenges</li>
-                            </ul>
-                            <div style="text-align: center;">
-                                ${buttonConfig.progressBar}
-                                <div style="color: white; font-size: 18px; font-weight: 500; text-shadow: 0 1px 4px rgba(0,0,0,0.6); opacity: 0.9; border-bottom: 2px solid transparent; display: inline-block; padding: 4px 8px; transition: all 0.2s ease;">
-                                    ${buttonConfig.text}
-                                </div>
+            content = `
+                <div onclick="handleLevelClick(event, '${subjectName}', ${levelNumber})" style="position: relative; height: 100%; background: url('${coverImage}') center/cover; background-attachment: fixed; overflow: hidden; cursor: pointer;">
+                    <!-- Blur overlay -->
+                    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('${coverImage}') center/cover; filter: blur(25px); transform: scale(1.1); z-index: 1;"></div>
+                    <!-- Dark overlay for readability -->
+                    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 2;"></div>
+                    <!-- Content -->
+                    <div style="position: relative; z-index: 3; padding: 40px 20px; height: 100%; display: flex; flex-direction: column; justify-content: center; max-width: 600px; margin: 0 auto; text-align: center;">
+                        <h1 style="margin-bottom: 40px; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.6); font-size: 28px;">${levelData.goal}</h1>
+                        <p style="margin-bottom: 80px; color: rgba(255,255,255,0.7); font-size: 16px;">${correctsCount} Steps • <span style="color: white;">★</span> ${displayStars}${isReattempt ? '' : ' Stars'}</p>
+                        <div style="text-align: center;">
+                            <div style="color: white; font-size: 18px; font-weight: 500; text-shadow: 0 1px 4px rgba(0,0,0,0.6); opacity: 0.4;">
+                                ${buttonText}
                             </div>
                         </div>
                     </div>
-                `;
-            }
-            
-const contentElement = document.getElementById(windowId + '-content');
-if (contentElement) {
-    contentElement.innerHTML = content;
-    contentElement.style.padding = '0';
-}
+                </div>
+            `;
+        } else {
+            console.log('Level data not found for level', levelNumber);
+            // Fall through to default
         }
+    } 
+
+    if (!content) {
+        console.log('Using fallback logic');
+        // Fallback for other languages
+        const progressStatus = getLevelProgress(subjectName, levelNumber);
+        const buttonConfig = getButtonConfig(progressStatus);
+        content = `
+            <div onclick="openSubjectLesson('${subjectName}')" style="position: relative; height: 100%; background: url('${coverImage}') center/cover; background-attachment: fixed; overflow: hidden; cursor: pointer;">
+                <!-- Blur overlay -->
+                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('${coverImage}') center/cover; filter: blur(25px); transform: scale(1.1); z-index: 1;"></div>
+                <!-- Dark overlay for readability -->
+                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.4); z-index: 2;"></div>
+                <!-- Content -->
+                <div style="position: relative; z-index: 3; padding: 40px 20px; height: 100%; display: flex; flex-direction: column; justify-content: center; max-width: 600px; margin: 0 auto; text-align: center;">
+                    <h1 style="margin-bottom: 40px;"><svg style="width: 42px; height: 42px; fill: #4ade80; filter: drop-shadow(0 0 10px rgba(74, 222, 128, 0.5)); margin-right: 8px; vertical-align: middle;" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> <span style="color: white; text-shadow: 0 1px 4px rgba(0,0,0,0.6);">25</span></h1>
+                    <ul style="margin: 0 0 60px 0; padding: 0; color: rgba(255,255,255,0.9); line-height: 1.8; font-size: 16px; list-style: none; text-align: center; text-shadow: 0 1px 4px rgba(0,0,0,0.6);">
+                        <li style="margin-bottom: 12px;">Master ${subjectName} concepts and best practices</li>
+                        <li style="margin-bottom: 12px;">Apply knowledge to real-world scenarios</li>
+                        <li style="margin-bottom: 12px;">Understand fundamental principles</li>
+                        <li style="margin-bottom: 12px;">Prepare for advanced level challenges</li>
+                    </ul>
+                    <div style="text-align: center;">
+                        ${buttonConfig.progressBar}
+                        <div style="color: white; font-size: 18px; font-weight: 500; text-shadow: 0 1px 4px rgba(0,0,0,0.6); opacity: 0.9; border-bottom: 2px solid transparent; display: inline-block; padding: 4px 8px; transition: all 0.2s ease;">
+                            ${buttonConfig.text}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    const contentElement = document.getElementById(windowId + '-content');
+    if (contentElement) {
+        contentElement.innerHTML = content;
+        contentElement.style.padding = '0';
+    }
+}
 
         // Get level progress status (placeholder for future implementation)
         function getLevelProgress(subjectName, levelNumber) {
