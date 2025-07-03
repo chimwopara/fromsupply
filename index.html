@@ -3,11 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>fsFromsupply</title>
+    <title>Fromsupply</title>
     
-    <!-- Link to the level data for the 'C' language -->
-    <!-- Make sure this path is correct -->
-    <script src="c.js"></script>
+   <!-- Programming Languages -->
+<script src="c.js"></script>
+<script src="python.js"></script>
+<script src="java.js"></script>
+<script src="javascript.js"></script>
+<script src="csharp.js"></script>
+<script src="cpp.js"></script>
+<script src="css.js"></script>
+<script src="go.js"></script>
+<script src="html.js"></script>
+<script src="kotlin.js"></script>
+<script src="r.js"></script>
+<script src="rust.js"></script>
+<script src="swift.js"></script>
+<script src="typescript.js"></script>
+<script src="z.js"></script>
+<script src="assembly.js"></script>
+<script src="bash.js"></script>
+
+<!-- Science Subjects -->
+<script src="chemistry.js"></script>
+<script src="physics.js"></script>
+<script src="biology.js"></script>
+<script src="psychology.js"></script>
+
+<!-- Maths Subjects -->
+<script src="calculus.js"></script>
+<script src="statistics.js"></script>
+<script src="discretemaths.js"></script>
+
+<!-- Business Subjects -->
+<script src="marketing.js"></script>
+<script src="finance.js"></script>
+<script src="economics.js"></script>
+
+<!-- Cooking Subjects -->
+<script src="africanfood.js"></script>
+<script src="northamericanfood.js"></script>
+<script src="europeanfood.js"></script>
+<script src="asianfood.js"></script>
+<script src="australianfood.js"></script>
+<script src="southamericanfood.js"></script>
 
     <style>
         * {
@@ -1582,7 +1621,7 @@
         EventManager.init();
 
         // FOLDER STRUCTURE
-        const folderStructure = {
+         const folderStructure = {
             'System': {
                 'Tutorials': { description: 'Interactive tutorials and help guides' },
                 'Shortcuts': { description: 'Keyboard shortcuts and gestures reference' },
@@ -1611,36 +1650,29 @@
                     'Z': { levels: 100, cover: 'Z.png' }
                 },
                 'Science': {
-                    'Physics': { levels: 50, cover: 'Physics.png' },
-                    'Chemistry': { levels: 45, cover: 'Chemistry.png' },
-                    'Biology': { levels: 40, cover: 'Biology.png' },
-                    'Astronomy': { levels: 35, cover: 'Astronomy.png' },
-                    'Geology': { levels: 30, cover: 'Geology.png' },
-                    'Environmental Science': { levels: 25, cover: 'Environmental.png' }
+                    'Chemistry': { levels: 45, cover: 'chemistry.png' },
+                    'Physics': { levels: 50, cover: 'physics.png' },
+                    'Biology': { levels: 40, cover: 'biology.png' },
+                    'Psychology': { levels: 35, cover: 'psychology.png' }
                 },
                 'Maths': {
-                    'Algebra': { levels: 50, cover: 'Algebra.png' },
-                    'Calculus': { levels: 45, cover: 'Calculus.png' },
-                    'Statistics': { levels: 40, cover: 'Statistics.png' },
-                    'Geometry': { levels: 35, cover: 'Geometry.png' },
-                    'Trigonometry': { levels: 30, cover: 'Trigonometry.png' },
-                    'Number Theory': { levels: 25, cover: 'NumberTheory.png' }
+                    'Calculus': { levels: 45, cover: 'calculus.png' },
+                    'Statistics': { levels: 40, cover: 'statistics.png' },
+                    'Discrete Maths': { levels: 35, cover: 'discretemaths.png' }
                 },
                 'Business': {
-                    'Management': { levels: 40, cover: 'Management.png' },
-                    'Marketing': { levels: 35, cover: 'Marketing.png' },
-                    'Finance': { levels: 45, cover: 'Finance.png' },
-                    'Economics': { levels: 30, cover: 'Economics.png' },
-                    'Accounting': { levels: 25, cover: 'Accounting.png' },
-                    'Entrepreneurship': { levels: 20, cover: 'Entrepreneurship.png' }
+                    'Marketing': { levels: 35, cover: 'marketing.png' },
+                    'Finance': { levels: 45, cover: 'finance.png' },
+                    'Economics': { levels: 30, cover: 'economics.png' },
+                    'Practice': { app: true, file: 'business-practice.html' }
                 },
                 'Cooking': {
-                    'Basic Techniques': { levels: 30, cover: 'BasicTechniques.png' },
-                    'Italian Cuisine': { levels: 25, cover: 'Italian.png' },
-                    'Asian Cuisine': { levels: 28, cover: 'Asian.png' },
-                    'French Cuisine': { levels: 35, cover: 'French.png' },
-                    'Baking & Pastry': { levels: 40, cover: 'Baking.png' },
-                    'Healthy Cooking': { levels: 20, cover: 'Healthy.png' }
+                    'African Food': { levels: 30, cover: 'africanfood.png' },
+                    'North American Food': { levels: 35, cover: 'northamericanfood.png' },
+                    'European Food': { levels: 40, cover: 'europeanfood.png' },
+                    'Asian Food': { levels: 38, cover: 'asianfood.png' },
+                    'Australian Food': { levels: 25, cover: 'australianfood.png' },
+                    'South American Food': { levels: 32, cover: 'southamericanfood.png' }
                 },
                 ' Logic Builder': { app: true, file: 'logic-builder.html' }
             },
@@ -1703,13 +1735,13 @@
                 'fs Prompts Builder': { app: true, file: 'prompts.html' }
             },
             'Media': {
-                'TapStreams Builder': { app: true, file: 'club-belong.html' },
-                'TapMovies Builder': { app: true, file: 'fivetaps.html' },
+                'Stream Builder': { app: true, file: 'club-belong.html' },
+                'Movie Builder': { app: true, file: 'fivetaps.html' },
                 'fs Media': { app: true, file: 'media.html' }
             },
             'Browser': {
-                'Products': { app: true, file: 'products.html' },
-                'People': { app: true, file: 'people.html' }
+                'Browser': { app: true, file: 'browser.html' },
+                'Browser Builder': { app: true, file: 'browserbuilder.html' }
             }
         };
 
@@ -3495,12 +3527,12 @@ function getLevelTintAndDisplay(levelNumber, totalStarsAvailable) {
     if (currentWindow) {
         const contentElement = document.getElementById(currentWindow.id + '-content');
         if (contentElement) {
-            console.log('Replacing content with code.html');
+            console.log('Replacing content with logicbody.html');
             contentElement.style.padding = '0';
             contentElement.innerHTML = `
-    <iframe src="code.html" 
+    <iframe src="logicbody.html" 
             style="width: 100%; height: 100%; border: none; pointer-events: auto;" 
-            onload="console.log('code.html loaded successfully');">
+            onload="console.log('logicbody.html loaded successfully');">
     </iframe>
 `;
 // Restore dragging capability
@@ -3837,7 +3869,7 @@ contentElement.onmousedown = function(e) {
                     
                 case 'openCodeApp':
                     console.log('Opening code app from message');
-                    openApp('C Coding Challenge', 'code.html');
+                    openApp('C Coding Challenge', 'logicbody.html');
                     break;
                     
                 case 'navigateToLevel':
