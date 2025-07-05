@@ -624,16 +624,15 @@
         }
 
         .window-content {
-            padding: 16px;
-            height: 100%;
-            overflow-y: auto;
-            overflow-x: hidden;
-            will-change: scroll-position;
-            backface-visibility: hidden;
-            cursor: grab;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    will-change: scroll-position;
+    backface-visibility: hidden;
+    cursor: grab;
+    display: flex;
+    flex-direction: column;
+}
 
         .window-content::-webkit-scrollbar {
             display: none;
@@ -4101,18 +4100,22 @@ function getLevelTintAndDisplay(levelNumber, totalStarsAvailable) {
         if (contentElement) {
             console.log('Replacing content with logicbody.html');
             contentElement.style.padding = '0';
-            contentElement.innerHTML = `
-    <div style="position: relative; width: 100%; height: 100%;">
-        <iframe src="logicbody.html" 
-                style="width: 100%; height: 100%; border: none;" 
-                onload="console.log('logicbody.html loaded successfully');">
-        </iframe>
-        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 30px; z-index: 10; cursor: grab;"
-             onmousedown="DragManager.start('window', document.getElementById('${currentWindow.id}'), event, { windowId: '${currentWindow.id}' })">
-        </div>
-    </div>
+    contentElement.innerHTML = `
+    <iframe src="logicbody.html" 
+            style="width: 100%; height: 100%; border: none;" 
+            onload="console.log('logicbody.html loaded successfully');">
+    </iframe>
 `;
 contentElement.style.padding = '0';
+
+// Make the window bigger to accommodate content
+const windowElement = document.getElementById('${currentWindow.id}');
+if (windowElement) {
+    windowElement.style.minHeight = '700px';
+    windowElement.style.height = '700px';
+    windowElement.style.minWidth = '900px';
+    windowElement.style.width = '900px';
+}
         } else {
             console.error('Content element not found');
         }
@@ -4608,6 +4611,46 @@ function showConsoleHelp() {
                         }
                     }
                     break;
+
+     case 'startDragFromIframe':
+    const focusedWindow = openWindows.find(w => {
+        const element = document.getElementById(w.id);
+        return element && parseInt(element.style.zIndex) === windowZIndex;
+    });
+    if (focusedWindow) {
+        const windowElement = document.getElementById(focusedWindow.id);
+        if (windowElement) {
+            // Create a synthetic event that matches what DragManager expects
+            const rect = windowElement.getBoundingClientRect();
+            const syntheticEvent = {
+                clientX: rect.left + event.data.mouseX,
+                clientY: rect.top + event.data.mouseY,
+                preventDefault: () => {},
+                stopPropagation: () => {},
+                target: windowElement
+            };
+            DragManager.start('window', windowElement, syntheticEvent, { windowId: focusedWindow.id });
+        }
+    }
+    break;
+
+case 'updateDragFromIframe':
+    // Let DragManager handle the update with the actual mouse position
+    const syntheticMoveEvent = {
+        clientX: event.data.mouseX,
+        clientY: event.data.mouseY
+    };
+    DragManager.update(syntheticMoveEvent);
+    break;
+
+case 'endDragFromIframe':
+    // Let DragManager handle the end
+    const syntheticEndEvent = {
+        clientX: event.data.mouseX,
+        clientY: event.data.mouseY
+    };
+    DragManager.end(syntheticEndEvent);
+    break;
             }
         }
     } catch (error) {

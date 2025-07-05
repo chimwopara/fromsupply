@@ -522,6 +522,25 @@ input, textarea {
             flex-shrink: 0;
         }
 
+        /* Make main content areas draggable */
+.game-container,
+#code-display-container,
+#code-display-area {
+    cursor: grab;
+}
+
+.game-container:active,
+#code-display-container:active,
+#code-display-area:active {
+    cursor: grabbing;
+}
+
+/* Keep buttons and interactive elements with pointer cursor */
+button, input, select, textarea,
+.option-btn, .glass-btn, .appstore-purchase-btn {
+    cursor: pointer !important;
+}
+
         /* Responsive grid for larger windows */
         @media (min-width: 600px) {
             #interaction-area {
@@ -1372,14 +1391,14 @@ initializeGame(startLevelIndex);
 let mouseDownOnNonInteractive = false;
 
 document.addEventListener('mousedown', function(e) {
-    // Check if clicked on interactive element
-    const interactiveElements = ['BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'];
-    const isInteractive = interactiveElements.includes(e.target.tagName) || 
-                         e.target.closest('button, input, select, textarea, .modal-overlay');
+    // Only prevent dragging on actual clickable elements
+    const preventDragElements = ['BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'A'];
+    const isClickableElement = preventDragElements.includes(e.target.tagName) || 
+                              e.target.closest('button, input, select, textarea, a, .modal-overlay');
     
-    if (!isInteractive) {
+    if (!isClickableElement) {
         mouseDownOnNonInteractive = true;
-        // Forward to parent window for dragging
+        
         if (parent !== window) {
             parent.postMessage({
                 action: 'startDragFromIframe',
@@ -1394,8 +1413,8 @@ document.addEventListener('mousemove', function(e) {
     if (mouseDownOnNonInteractive && parent !== window) {
         parent.postMessage({
             action: 'updateDragFromIframe',
-            mouseX: e.clientX,
-            mouseY: e.clientY
+            mouseX: e.pageX,
+            mouseY: e.pageY
         }, '*');
     }
 }, true);
@@ -1404,8 +1423,8 @@ document.addEventListener('mouseup', function(e) {
     if (mouseDownOnNonInteractive && parent !== window) {
         parent.postMessage({
             action: 'endDragFromIframe',
-            mouseX: e.clientX,
-            mouseY: e.clientY
+            mouseX: e.pageX,
+            mouseY: e.pageY
         }, '*');
     }
     mouseDownOnNonInteractive = false;
