@@ -1168,7 +1168,7 @@
 
 <div id="favoritesOverlay" class="favorites-overlay-wrapper" style="display: none;" onclick="hideFavoritesOverlay()">
     <div class="favorites-grid" onclick="event.stopPropagation()">
-        <div class="favorites-header">⭐ Favorited Directories</div>
+        <div class="favorites-header">Favorites</div>
         <div class="favorites-content" id="favoritesContent">
             <!-- Favorites will be populated here -->
         </div>
@@ -2339,7 +2339,7 @@ function populateFavorites() {
     const content = document.getElementById('favoritesContent');
     
     if (window.fsTappedDirectories.length === 0) {
-        content.innerHTML = '<div class="favorites-empty">No favorited directories yet<br>Click on directories in the breadcrumb bar to favorite them</div>';
+        content.innerHTML = '<div class="favorites-empty">No Favorites yet<br>Click on directories in the directories bar to favorite them</div>';
         return;
     }
     
@@ -3661,7 +3661,7 @@ if (subjectName === 'C' && typeof challengesData !== 'undefined') {
                             <div style="space-y: 8px;">
                                 <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">Space</span> <span style="color: rgba(255,255,255,0.8);">Open search blob</span></div>
                                 <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">B</span> <span style="color: rgba(255,255,255,0.8);">Toggle actions blob</span></div>
-<div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">V</span> <span style="color: rgba(255,255,255,0.8);">Show favorited directories</span></div>
+<div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">V</span> <span style="color: rgba(255,255,255,0.8);">Show Favorites</span></div>
                                 <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">H</span> <span style="color: rgba(255,255,255,0.8);">Open system window</span></div>
                                 <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">Esc</span> <span style="color: rgba(255,255,255,0.8);">Close topmost window</span></div>
                             </div>
@@ -4455,7 +4455,7 @@ function showConsoleHelp() {
     logToConsole('SYSTEM ACCESS:', 'output');
     logToConsole('Spacebar        - Search in blob', 'output');
     logToConsole('B               - Toggle actions blob', 'output');
-    logToConsole('V               - Show favorited directories', 'output');
+    logToConsole('V               - Show Favorites', 'output');
     logToConsole('H               - Open system window', 'output');
     logToConsole('', 'output');
     logToConsole('OTHER:', 'output');
