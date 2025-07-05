@@ -626,41 +626,17 @@
         .window-content {
     padding: 0;
     height: 100%;
-    overflow: hidden;
+    overflow: auto;  /* ← Change to auto */
     will-change: scroll-position;
     backface-visibility: hidden;
-    cursor: grab;
+    cursor: default;  /* ← Change to default */
     display: flex;
     flex-direction: column;
 }
 
-        .window-content::-webkit-scrollbar {
-            display: none;
-        }
-
-        .window-content.show-scrollbar {
-            scrollbar-width: thin;
-            -ms-overflow-style: auto;
-        }
-
-        .window-content.show-scrollbar::-webkit-scrollbar {
-            display: block;
-            width: 8px;
-        }
-
-        .window-content.show-scrollbar::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-        }
-
-        .window-content.show-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 4px;
-        }
-
-        .window-content.show-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.5);
-        }
+       .window-content::-webkit-scrollbar {
+    display: none;  /* ← This hides scrollbars */
+}
 
         .window-content .folder-item,
         .window-content .language-level-item,
@@ -1312,22 +1288,31 @@
             },
             
             handleWindowUnsnap() {
-                const wasMaximized = this.element.classList.contains('maximized');
-                const wasSnapped = this.element.classList.contains('snapped-left') || 
-                                    this.element.classList.contains('snapped-right');
-                
-                if (wasMaximized || wasSnapped) {
-                    const snapClasses = ['snapped-left', 'snapped-right', 'snapped-top', 'snapped-bottom', 
-                                       'snapped-top-left', 'snapped-top-right', 'snapped-bottom-left', 
-                                       'snapped-bottom-right', 'maximized'];
-                    snapClasses.forEach(cls => this.element.classList.remove(cls));
-                    
-                    this.element.style.width = '800px';
-                    this.element.style.height = '600px';
-                    this.offset.x = 400;
-                    this.offset.y = 20;
-                }
-            },
+    const window = openWindows.find(w => w.id === this.element.id);
+    const wasMaximized = this.element.classList.contains('maximized');
+    const wasSnapped = this.element.classList.contains('snapped-left') || 
+                        this.element.classList.contains('snapped-right');
+    
+    if (wasMaximized || wasSnapped) {
+        const snapClasses = ['snapped-left', 'snapped-right', 'snapped-top', 'snapped-bottom', 
+                           'snapped-top-left', 'snapped-top-right', 'snapped-bottom-left', 
+                           'snapped-bottom-right', 'maximized'];
+        snapClasses.forEach(cls => this.element.classList.remove(cls));
+        
+        // Use saved original position if available, otherwise default size
+        if (window && window.originalPosition) {
+            this.element.style.width = window.originalPosition.width + 'px';
+            this.element.style.height = window.originalPosition.height + 'px';
+            this.offset.x = window.originalPosition.width / 2;
+            this.offset.y = 20;
+        } else {
+            this.element.style.width = '800px';
+            this.element.style.height = '600px';
+            this.offset.x = 400;
+            this.offset.y = 20;
+        }
+    }
+},
             
             updateFolder(event) {
                 const desktop = document.getElementById('desktop');
@@ -1426,25 +1411,25 @@
             },
             
             updateSnapFeedback(mouseX, mouseY) {
-                const threshold = 50;
-                const cornerThreshold = 100;
-                const clientWidth = document.documentElement.clientWidth;
-                const clientHeight = document.documentElement.clientHeight;
-                
-                let borderColor = 'rgba(255, 255, 255, 0.2)';
-                
-                if (mouseX < cornerThreshold && mouseY < 70 + cornerThreshold) {
-                    borderColor = 'rgba(255, 255, 255, 1.0)';
-                } else if (mouseX > clientWidth - cornerThreshold && mouseY < 70 + cornerThreshold) {
-                    borderColor = 'rgba(255, 255, 255, 1.0)';
-                } else if (mouseY < 80) {
-                    borderColor = 'rgba(255, 255, 255, 1.0)';
-                } else if (mouseX < threshold || mouseX > clientWidth - threshold) {
-                    borderColor = 'rgba(255, 255, 255, 1.0)';
-                }
-                
-                this.element.style.borderColor = borderColor;
-            },
+            const threshold = 50;
+            const cornerThreshold = 100;
+            const clientWidth = document.documentElement.clientWidth;
+            const clientHeight = document.documentElement.clientHeight;
+            
+            let borderColor = 'rgba(255, 255, 255, 0.2)';
+            
+            if (mouseX < cornerThreshold && mouseY < 70 + cornerThreshold) {
+                borderColor = 'rgba(255, 255, 255, 1.0)';
+            } else if (mouseX > clientWidth - cornerThreshold && mouseY < 70 + cornerThreshold) {
+                borderColor = 'rgba(255, 255, 255, 1.0)';
+            } else if (mouseY < 80) {  // THIS LINE
+                borderColor = 'rgba(255, 255, 255, 1.0)';
+            } else if (mouseX < threshold || mouseX > clientWidth - threshold) {
+                borderColor = 'rgba(255, 255, 255, 1.0)';
+            }
+            
+            this.element.style.borderColor = borderColor;
+        },
             
             end(event) {
                 if (this.active) {
@@ -1467,46 +1452,66 @@
                 this.reset();
             },
             
-            handleWindowSnapping(event) {
-                const window = openWindows.find(w => w.id === this.element.id);
-                if (!window) return;
-                
-                const threshold = 50;
-                const cornerThreshold = 100;
-                const clientWidth = document.documentElement.clientWidth;
-                const clientHeight = document.documentElement.clientHeight;
-                
-                const snapClasses = ['snapped-left', 'snapped-right', 'snapped-top', 'snapped-bottom', 
-                                   'snapped-top-left', 'snapped-top-right', 'snapped-bottom-left', 
-                                   'snapped-bottom-right', 'maximized'];
-                snapClasses.forEach(cls => this.element.classList.remove(cls));
-                
-                if (event.clientX < cornerThreshold && event.clientY < 70 + cornerThreshold) {
-                    this.element.classList.add('snapped-top-left');
-                    window.snapped = 'top-left';
-                } else if (event.clientX > clientWidth - cornerThreshold && event.clientY < 70 + cornerThreshold) {
-                    this.element.classList.add('snapped-top-right');
-                    window.snapped = 'top-right';
-                } else if (event.clientY < 80) {
-                    this.element.classList.add('maximized');
-                    window.snapped = 'maximized';
-                } else if (event.clientX < threshold) {
-                    this.element.classList.add('snapped-left');
-                    window.snapped = 'left';
-                } else if (event.clientX > clientWidth - threshold) {
-                    this.element.classList.add('snapped-right');
-                    window.snapped = 'right';
-                } else {
-                    window.snapped = false;
-                    const rect = this.element.getBoundingClientRect();
-                    window.originalPosition = {
-                        x: rect.left,
-                        y: rect.top,
-                        width: rect.width,
-                        height: rect.height
-                    };
-                }
-            },
+handleWindowSnapping(event) {
+    const window = openWindows.find(w => w.id === this.element.id);
+    if (!window) return;
+    
+    const threshold = 50;
+    const cornerThreshold = 100;
+    const clientWidth = document.documentElement.clientWidth;
+    const clientHeight = document.documentElement.clientHeight;
+    
+    const snapClasses = ['snapped-left', 'snapped-right', 'snapped-top', 'snapped-bottom', 
+                       'snapped-top-left', 'snapped-top-right', 'snapped-bottom-left', 
+                       'snapped-bottom-right', 'maximized'];
+    snapClasses.forEach(cls => this.element.classList.remove(cls));
+    
+    // Save original position BEFORE any snapping
+    const rect = this.element.getBoundingClientRect();
+    window.originalPosition = {
+        x: rect.left,
+        y: rect.top,
+        width: rect.width,
+        height: rect.height
+    };
+    
+    // Check if window was previously maximized/snapped and user dragged significantly
+    const dragDistance = Math.sqrt(
+        Math.pow(event.clientX - this.startPos.x, 2) + 
+        Math.pow(event.clientY - this.startPos.y, 2)
+    );
+    
+    // Only snap if drag distance is small (indicating intentional snap gesture)
+    // OR if drag started from a non-maximized window
+    const wasMaximizedBeforeDrag = window.snapped === 'maximized' || 
+                                   window.snapped === 'left' || 
+                                   window.snapped === 'right';
+    
+    if (dragDistance < 30 || !wasMaximizedBeforeDrag) {
+        // Original snapping logic
+        if (event.clientX < cornerThreshold && event.clientY < 70 + cornerThreshold) {
+            this.element.classList.add('snapped-top-left');
+            window.snapped = 'top-left';
+        } else if (event.clientX > clientWidth - cornerThreshold && event.clientY < 70 + cornerThreshold) {
+            this.element.classList.add('snapped-top-right');
+            window.snapped = 'top-right';
+        } else if (event.clientY < 60) {
+            this.element.classList.add('maximized');
+            window.snapped = 'maximized';
+        } else if (event.clientX < threshold) {
+            this.element.classList.add('snapped-left');
+            window.snapped = 'left';
+        } else if (event.clientX > clientWidth - threshold) {
+            this.element.classList.add('snapped-right');
+            window.snapped = 'right';
+        } else {
+            window.snapped = false;
+        }
+    } else {
+        // Large drag from maximized window - don't snap
+        window.snapped = false;
+    }
+},
             
             saveFolderPosition() {
                 const folderName = this.element.dataset.folder;
@@ -2426,11 +2431,11 @@ function navigateToFavorite(directoryPath) {
             windowElement.id = windowId;
 
             windowElement.innerHTML = `
-    <div class="window-content" id="${windowId}-content" onmousedown="DragManager.start('window', document.getElementById('${windowId}'), event, { windowId: '${windowId}' })" style="cursor: grab;">
+    <div class="window-content" id="${windowId}-content">
+        <div class="window-drag-handle" onmousedown="DragManager.start('window', document.getElementById('${windowId}'), event, { windowId: '${windowId}' })" style="position: absolute; top: 0; left: 0; right: 0; height: 40px; z-index: 10; cursor: grab;"></div>
         ${content}
     </div>
-`;
-            
+`;        
             let windowX, windowY;
             if (x !== null && y !== null) {
                 windowX = x;
@@ -2457,9 +2462,9 @@ function navigateToFavorite(directoryPath) {
             document.body.appendChild(windowElement);
             addResizeHandles(windowElement, windowId);
             
-            windowElement.addEventListener('click', (e) => {
-                focusWindow(windowId);
-            });
+       windowElement.addEventListener('click', (e) => {
+    focusWindow(windowId);
+});
 
             windowElement.addEventListener('mousedown', (e) => {
                 if (!e.target.closest('.resize-handle')) {
@@ -2569,6 +2574,25 @@ function navigateToFavorite(directoryPath) {
                 updateDirectoryDisplay();
             }
         }
+
+        function focusWindow(windowId) {
+    windowFocusOrder = windowFocusOrder.filter(id => id !== windowId);
+    windowFocusOrder.unshift(windowId);
+    
+    windowZIndex += 2;
+    const windowElement = document.getElementById(windowId);
+    if (windowElement) {
+        windowElement.style.zIndex = windowZIndex;
+        // Add this line:
+        windowElement.focus();
+    }
+    
+    const window = openWindows.find(w => w.id === windowId);
+    if (window && window.currentPath) {
+        currentDirectory = [...window.currentPath];
+        updateDirectoryDisplay();
+    }
+}
 
         function closeWindow(windowId) {
             const windowElement = document.getElementById(windowId);
@@ -4109,12 +4133,22 @@ function getLevelTintAndDisplay(levelNumber, totalStarsAvailable) {
 contentElement.style.padding = '0';
 
 // Make the window bigger to accommodate content
-const windowElement = document.getElementById('${currentWindow.id}');
+// Make the window bigger to accommodate content
+const windowElement = document.getElementById(currentWindow.id); // FIXED: removed ${}
 if (windowElement) {
     windowElement.style.minHeight = '700px';
     windowElement.style.height = '700px';
     windowElement.style.minWidth = '900px';
     windowElement.style.width = '900px';
+    
+    // UPDATE: Save the new dimensions as the "original" position
+    const rect = windowElement.getBoundingClientRect();
+    currentWindow.originalPosition = {
+        x: rect.left,
+        y: rect.top,
+        width: 900,  // New width
+        height: 700  // New height
+    };
 }
         } else {
             console.error('Content element not found');
@@ -4620,36 +4654,62 @@ function showConsoleHelp() {
     if (focusedWindow) {
         const windowElement = document.getElementById(focusedWindow.id);
         if (windowElement) {
-            // Create a synthetic event that matches what DragManager expects
-            const rect = windowElement.getBoundingClientRect();
-            const syntheticEvent = {
-                clientX: rect.left + event.data.mouseX,
-                clientY: rect.top + event.data.mouseY,
-                preventDefault: () => {},
-                stopPropagation: () => {},
-                target: windowElement
-            };
-            DragManager.start('window', windowElement, syntheticEvent, { windowId: focusedWindow.id });
+            // Get the iframe position for coordinate conversion
+            const iframe = windowElement.querySelector('iframe');
+            if (iframe) {
+                const iframeRect = iframe.getBoundingClientRect();
+                const absoluteX = iframeRect.left + event.data.mouseX;
+                const absoluteY = iframeRect.top + event.data.mouseY;
+                
+                // Create a proper event object and start drag normally
+                const syntheticEvent = {
+                    clientX: absoluteX,
+                    clientY: absoluteY,
+                    preventDefault: () => {},
+                    stopPropagation: () => {}
+                };
+                
+                DragManager.start('window', windowElement, syntheticEvent, { windowId: focusedWindow.id });
+                
+                // IMMEDIATELY activate drag for iframe-initiated drags
+                if (DragManager.potential && !DragManager.active) {
+                    DragManager.activateDrag();
+                }
+            }
         }
     }
     break;
 
 case 'updateDragFromIframe':
-    // Let DragManager handle the update with the actual mouse position
-    const syntheticMoveEvent = {
-        clientX: event.data.mouseX,
-        clientY: event.data.mouseY
-    };
-    DragManager.update(syntheticMoveEvent);
+    if (DragManager.active && DragManager.type === 'window') {
+        const windowElement = DragManager.element;
+        if (windowElement) {
+            const iframe = windowElement.querySelector('iframe');
+            if (iframe) {
+                const iframeRect = iframe.getBoundingClientRect();
+                const absoluteX = iframeRect.left + event.data.mouseX;
+                const absoluteY = iframeRect.top + event.data.mouseY;
+                
+                // Directly call the update method
+                const syntheticEvent = {
+                    clientX: absoluteX,
+                    clientY: absoluteY
+                };
+                
+                DragManager.update(syntheticEvent);
+            }
+        }
+    }
     break;
 
 case 'endDragFromIframe':
-    // Let DragManager handle the end
-    const syntheticEndEvent = {
-        clientX: event.data.mouseX,
-        clientY: event.data.mouseY
-    };
-    DragManager.end(syntheticEndEvent);
+    if (DragManager.active && DragManager.type === 'window') {
+        const syntheticEvent = {
+            clientX: event.data.mouseX,
+            clientY: event.data.mouseY
+        };
+        DragManager.end(syntheticEvent);
+    }
     break;
             }
         }
