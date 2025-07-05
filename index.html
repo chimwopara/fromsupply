@@ -176,11 +176,11 @@
         }
 
         .fs-console-prompt {
-            color: #60a5fa;
+            color: #000000;
         }
 
         .fs-console-command {
-            color: #3b82f6;
+            color: #09244f;
         }
 
         .fs-console-output-text {
@@ -782,8 +782,112 @@
         }
 
         .phone-overlay-wrapper.show .phone-iframe {
-            opacity: 1;
-        }
+    opacity: 1;
+}
+
+/* Favorites Overlay Styles */
+.favorites-overlay-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 4000;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    padding-top: 90px;
+    padding-right: 20px;
+}
+
+.favorites-overlay-wrapper.show {
+    opacity: 1;
+}
+
+.favorites-grid {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 24px;
+    padding: 24px;
+    width: 400px;
+    max-height: 500px;
+    overflow-y: auto;
+    transform: scale(0.8);
+    transition: transform 0.3s ease;
+}
+
+.favorites-overlay-wrapper.show .favorites-grid {
+    transform: scale(1);
+}
+
+.favorites-header {
+    color: white;
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 24px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.favorites-content {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.favorite-item {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.favorite-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+.favorite-item-icon {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 8px;
+}
+
+.favorite-item-name {
+    color: white;
+    font-size: 12px;
+    font-weight: 500;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    word-break: break-word;
+}
+
+.favorite-item-path {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 10px;
+    word-break: break-word;
+}
+
+.favorites-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+    font-style: italic;
+    padding: 40px 20px;
+}
 
         .window::before {
             content: '';
@@ -1043,7 +1147,7 @@
         <div class="directory-nav hidden" id="directoryNav">
             <div class="directory-path" id="directoryPath">/Fromsupply</div>
         </div>
-        <div class="star-button" onclick="openActionsBlob()">
+        <div class="star-button" onclick="handleStarClick()" onmousedown="startStarLongPress()" onmouseup="endStarLongPress()" onmouseleave="endStarLongPress()">
             <svg class="star-icon" viewBox="0 0 24 24">
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
             </svg>
@@ -1084,8 +1188,17 @@
     </div>
 
     <div id="phoneOverlay" class="phone-overlay-wrapper" style="display: none;" onclick="hidePhoneOverlay()">
-        <iframe src="ActionsBlob.html" class="phone-iframe" onclick="event.stopPropagation()"></iframe>
+    <iframe src="ActionsBlob.html" class="phone-iframe" onclick="event.stopPropagation()"></iframe>
+</div>
+
+<div id="favoritesOverlay" class="favorites-overlay-wrapper" style="display: none;" onclick="hideFavoritesOverlay()">
+    <div class="favorites-grid" onclick="event.stopPropagation()">
+        <div class="favorites-header">⭐ Favorited Directories</div>
+        <div class="favorites-content" id="favoritesContent">
+            <!-- Favorites will be populated here -->
+        </div>
     </div>
+</div>
 
     <div id="notesIcon" class="notes-icon" onclick="toggleNotesInterface()">
 </div>
@@ -1438,16 +1551,20 @@
 
         // UNIFIED PATH MANAGER
         const PathManager = {
-            updatePath(windowId, newPath) {
-                const window = openWindows.find(w => w.id === windowId);
-                if (window) {
-                    window.currentPath = [...newPath];
-                    if (this.isActiveWindow(windowId)) {
-                        currentDirectory = [...newPath];
-                        updateDirectoryDisplay();
-                    }
-                }
-            },
+    updatePath(windowId, newPath) {
+        console.log('PathManager.updatePath:', windowId, newPath);
+        const window = openWindows.find(w => w.id === windowId);
+        if (window) {
+            window.currentPath = [...newPath];
+            console.log('Updated window path for', windowId, 'to:', window.currentPath);
+            if (this.isActiveWindow(windowId)) {
+                currentDirectory = [...newPath];
+                updateDirectoryDisplay();
+            }
+        } else {
+            console.error('Window not found for path update:', windowId);
+        }
+    },
             
             getPath(windowId) {
                 const window = openWindows.find(w => w.id === windowId);
@@ -1460,23 +1577,29 @@
             },
             
             navigateBack(windowId) {
-                focusWindow(windowId);
-                
-                const path = this.getPath(windowId);
-                if (path.length > 2) {
-                    const newPath = path.slice(0, -1);
-                    this.updatePath(windowId, newPath);
-                    this.updateContent(windowId);
-                } else if (path.length === 2) {
-                    const folderName = path[1];
-                    const content = generateFolderContent(folderName, windowId);
-                    const contentElement = document.getElementById(windowId + '-content');
-                    if (contentElement) {
-                        contentElement.style.padding = '16px';
-                        contentElement.innerHTML = content;
-                    }
-                }
-            },
+    focusWindow(windowId);
+    
+    const path = this.getPath(windowId);
+    if (path.length > 2) {
+        const newPath = path.slice(0, -1);
+        this.updatePath(windowId, newPath);
+        this.updateContent(windowId);
+    } else if (path.length === 2) {
+        const folderName = path[1];
+        const content = generateFolderContent(folderName, windowId);
+        const contentElement = document.getElementById(windowId + '-content');
+        if (contentElement) {
+            contentElement.style.padding = '16px';
+            contentElement.innerHTML = content;
+        }
+    }
+},
+
+navigateForward(windowId) {
+    // For now, this could be implemented with a forward history
+    // Currently just a placeholder - could track navigation history
+    console.log('Navigate forward not yet implemented');
+},
             
             updateContent(windowId) {
                 const contentElement = document.getElementById(windowId + '-content');
@@ -1508,6 +1631,11 @@ function initializeGlobals() {
             startY: 0,
             level: -1,
             threshold: 30
+        },
+        starLongPress: {
+            isPressed: false,
+            startTime: 0,
+            threshold: 500
         }
     };
             
@@ -1573,46 +1701,63 @@ function initializeGlobals() {
                 });
 
                 const shortcuts = {
-                    'Escape': () => {
-                        hidePhoneOverlay();
-                        if (openWindows.length > 0) {
-                            const topWindow = openWindows[openWindows.length - 1];
-                            closeWindow(topWindow.id);
-                        }
-                    },
-                    'q': () => {
-                        if (focusedWindow) {
-                            addToHistory('close', { windowId: focusedWindow.id, windowData: { ...focusedWindow } });
-                            closeWindow(focusedWindow.id);
-                        }
-                    },
-                    ' ': (e) => { e.preventDefault(); showPhoneOverlay(); },
-                    'd': () => focusedWindow && duplicateWindow(focusedWindow.id),
-                    'c': () => focusedWindow && closeOtherWindows(focusedWindow.id),
-                    'b': () => togglePhoneOverlay(),
-                    'f': () => {
-                        if (focusedWindow) {
-                            addToHistory('snap', { windowId: focusedWindow.id, previousState: getWindowState(focusedWindow.id) });
-                            toggleMaximize(focusedWindow.id);
-                        }
-                    },
-                    'ArrowLeft': () => {
-                        if (focusedWindow) {
-                            addToHistory('snap', { windowId: focusedWindow.id, previousState: getWindowState(focusedWindow.id) });
-                            snapWindowLeft(focusedWindow.id);
-                        }
-                    },
-                    'ArrowRight': () => {
-                        if (focusedWindow) {
-                            addToHistory('snap', { windowId: focusedWindow.id, previousState: getWindowState(focusedWindow.id) });
-                            snapWindowRight(focusedWindow.id);
-                        }
-                    },
-                    'j': () => toggleFolderArrangement(),
-                    'z': () => undoLastAction(),
-                    ',': () => focusedWindow && PathManager.navigateBack(focusedWindow.id),
-                    'h': () => openHiddenSystemWindow()
-                };
+    'Escape': () => {
+        hidePhoneOverlay();
+        hideFavoritesOverlay();
+        if (openWindows.length > 0) {
+            const topWindow = openWindows[openWindows.length - 1];
+            closeWindow(topWindow.id);
+        }
+    },
+    'q': () => {
+        if (focusedWindow) {
+            addToHistory('close', { windowId: focusedWindow.id, windowData: { ...focusedWindow } });
+            closeWindow(focusedWindow.id);
+        }
+    },
+    ' ': (e) => { e.preventDefault(); showPhoneOverlay(); },
+    'd': () => focusedWindow && duplicateWindow(focusedWindow.id),
+    'c': () => focusedWindow && closeOtherWindows(focusedWindow.id),
+    'b': () => togglePhoneOverlay(),
+    'v': () => showFavoritesOverlay(),
+    'f': () => {
+        if (focusedWindow) {
+            addToHistory('snap', { windowId: focusedWindow.id, previousState: getWindowState(focusedWindow.id) });
+            toggleMaximize(focusedWindow.id);
+        }
+    },
+    'ArrowLeft': () => {
+        if (focusedWindow) {
+            addToHistory('snap', { windowId: focusedWindow.id, previousState: getWindowState(focusedWindow.id) });
+            snapWindowLeft(focusedWindow.id);
+        }
+    },
+    'ArrowRight': () => {
+        if (focusedWindow) {
+            addToHistory('snap', { windowId: focusedWindow.id, previousState: getWindowState(focusedWindow.id) });
+            snapWindowRight(focusedWindow.id);
+        }
+    },
+    'ArrowUp': () => {
+        if (focusedWindow) {
+            addToHistory('snap', { windowId: focusedWindow.id, previousState: getWindowState(focusedWindow.id) });
+            snapWindowTop(focusedWindow.id);
+        }
+    },
+    'ArrowDown': () => {
+        if (focusedWindow) {
+            addToHistory('snap', { windowId: focusedWindow.id, previousState: getWindowState(focusedWindow.id) });
+            snapWindowBottom(focusedWindow.id);
+        }
+    },
+    'j': () => toggleFolderArrangement(),
+    'z': () => undoLastAction(),
+    '<': () => focusedWindow && PathManager.navigateBack(focusedWindow.id),
+    '>': () => focusedWindow && PathManager.navigateForward(focusedWindow.id),
+    ',': () => focusedWindow && PathManager.navigateBack(focusedWindow.id),
+    '.': () => focusedWindow && PathManager.navigateForward(focusedWindow.id),
+    'h': () => openHiddenSystemWindow()
+};
                 
                 const action = shortcuts[e.key];
                 if (action) action(e);
@@ -2131,9 +2276,119 @@ function handleDirectoryClick(level) {
 }
 
         // PHONE OVERLAY
-        function openActionsBlob() {
-            showPhoneOverlay();
+function openActionsBlob() {
+    showPhoneOverlay();
+}
+
+// STAR BUTTON LONG PRESS
+function handleStarClick() {
+    if (!window.starLongPress.isPressed) {
+        openActionsBlob();
+    }
+}
+
+function startStarLongPress() {
+    window.starLongPress.isPressed = true;
+    window.starLongPress.startTime = Date.now();
+    
+    setTimeout(() => {
+        if (window.starLongPress.isPressed) {
+            const elapsed = Date.now() - window.starLongPress.startTime;
+            if (elapsed >= window.starLongPress.threshold) {
+                showFavoritesOverlay();
+            }
         }
+    }, window.starLongPress.threshold);
+}
+
+function endStarLongPress() {
+    window.starLongPress.isPressed = false;
+}
+
+// FAVORITES OVERLAY
+function showFavoritesOverlay() {
+    populateFavorites();
+    const overlay = document.getElementById('favoritesOverlay');
+    overlay.style.display = 'flex';
+    
+    setTimeout(() => {
+        overlay.classList.add('show');
+    }, 10);
+}
+
+function hideFavoritesOverlay() {
+    const overlay = document.getElementById('favoritesOverlay');
+    overlay.classList.remove('show');
+    
+    setTimeout(() => {
+        overlay.style.display = 'none';
+    }, 300);
+}
+
+function populateFavorites() {
+    const content = document.getElementById('favoritesContent');
+    
+    if (window.fsTappedDirectories.length === 0) {
+        content.innerHTML = '<div class="favorites-empty">No favorited directories yet<br>Click on directories in the breadcrumb bar to favorite them</div>';
+        return;
+    }
+    
+    let favoritesHTML = '';
+    
+    window.fsTappedDirectories.forEach(directoryPath => {
+        const pathParts = directoryPath.split('/');
+        const lastPart = pathParts[pathParts.length - 1];
+        const icon = getFolderIcon(lastPart);
+        
+        favoritesHTML += `
+            <div class="favorite-item" onclick="navigateToFavorite('${directoryPath}')">
+                <img src="${icon}" class="favorite-item-icon" alt="">
+                <div class="favorite-item-name">${lastPart}</div>
+                <div class="favorite-item-path">${directoryPath}</div>
+            </div>
+        `;
+    });
+    
+    content.innerHTML = favoritesHTML;
+}
+
+function navigateToFavorite(directoryPath) {
+    hideFavoritesOverlay();
+    
+    // Find or create a window to navigate to this directory
+    const focusedWindow = openWindows.find(w => {
+        const element = document.getElementById(w.id);
+        return element && parseInt(element.style.zIndex) === windowZIndex;
+    });
+    
+    if (focusedWindow) {
+        // Navigate existing window
+        const pathParts = directoryPath.split('/');
+        PathManager.updatePath(focusedWindow.id, pathParts);
+        
+        // Generate content for the target directory
+        const folderName = pathParts[pathParts.length - 1];
+        const parentFolder = pathParts.length > 2 ? pathParts[pathParts.length - 2] : null;
+        
+        let content;
+        if (folderName === 'Desktop') {
+            content = generateFolderContent('Desktop', focusedWindow.id);
+        } else {
+            content = generateFolderContent(folderName, focusedWindow.id, parentFolder);
+        }
+        
+        const contentElement = document.getElementById(focusedWindow.id + '-content');
+        if (contentElement && content) {
+            contentElement.style.padding = '16px';
+            contentElement.innerHTML = content;
+        }
+    } else {
+        // Create new window for this directory
+        const pathParts = directoryPath.split('/');
+        const folderName = pathParts[pathParts.length - 1];
+        openFolder(folderName);
+    }
+}
 
         function showPhoneOverlay() {
             const overlay = document.getElementById('phoneOverlay');
@@ -2503,19 +2758,49 @@ function handleDirectoryClick(level) {
         }
 
         function snapWindowRight(windowId) {
-            const windowElement = document.getElementById(windowId);
-            const window = openWindows.find(w => w.id === windowId);
-            
-            if (windowElement && window) {
-                const snapClasses = ['snapped-left', 'snapped-top', 'snapped-bottom', 
-                                   'snapped-top-left', 'snapped-top-right', 'snapped-bottom-left', 
-                                   'snapped-bottom-right', 'maximized'];
-                snapClasses.forEach(cls => windowElement.classList.remove(cls));
-                
-                windowElement.classList.add('snapped-right');
-                window.snapped = 'right';
-            }
-        }
+    const windowElement = document.getElementById(windowId);
+    const window = openWindows.find(w => w.id === windowId);
+    
+    if (windowElement && window) {
+        const snapClasses = ['snapped-left', 'snapped-top', 'snapped-bottom', 
+                           'snapped-top-left', 'snapped-top-right', 'snapped-bottom-left', 
+                           'snapped-bottom-right', 'maximized'];
+        snapClasses.forEach(cls => windowElement.classList.remove(cls));
+        
+        windowElement.classList.add('snapped-right');
+        window.snapped = 'right';
+    }
+}
+
+function snapWindowTop(windowId) {
+    const windowElement = document.getElementById(windowId);
+    const window = openWindows.find(w => w.id === windowId);
+    
+    if (windowElement && window) {
+        const snapClasses = ['snapped-left', 'snapped-right', 'snapped-bottom', 
+                           'snapped-top-left', 'snapped-top-right', 'snapped-bottom-left', 
+                           'snapped-bottom-right', 'maximized'];
+        snapClasses.forEach(cls => windowElement.classList.remove(cls));
+        
+        windowElement.classList.add('snapped-top');
+        window.snapped = 'top';
+    }
+}
+
+function snapWindowBottom(windowId) {
+    const windowElement = document.getElementById(windowId);
+    const window = openWindows.find(w => w.id === windowId);
+    
+    if (windowElement && window) {
+        const snapClasses = ['snapped-left', 'snapped-right', 'snapped-top', 
+                           'snapped-top-left', 'snapped-top-right', 'snapped-bottom-left', 
+                           'snapped-bottom-right', 'maximized'];
+        snapClasses.forEach(cls => windowElement.classList.remove(cls));
+        
+        windowElement.classList.add('snapped-bottom');
+        window.snapped = 'bottom';
+    }
+}
 
         // FOLDER ARRANGEMENT
         function toggleFolderArrangement() {
@@ -2557,33 +2842,60 @@ function handleDirectoryClick(level) {
                 window.fsFoldersAlphabetized = false;
             }
         }
-
+function validatePath(pathArray) {
+    console.log('Validating path:', pathArray);
+    
+    if (pathArray.length <= 1) return true; // Root is always valid
+    if (pathArray.length === 2 && pathArray[1] === 'Desktop') return true; // Desktop is valid
+    
+    let structure = folderStructure;
+    
+    // Start from the main folder (index 2, after Fromsupply/Desktop)
+    for (let i = 2; i < pathArray.length; i++) {
+        const segment = pathArray[i];
+        console.log('Checking segment:', segment, 'in structure:', Object.keys(structure || {}));
+        
+        if (!structure || !structure[segment]) {
+            console.log('Path validation failed at segment:', segment);
+            return false;
+        }
+        
+        structure = structure[segment];
+    }
+    
+    console.log('Path validation successful');
+    return true;
+}
         // CONTENT GENERATION
         function generateFolderContent(folderName, windowId = null, parentFolder = null) {
-            if (windowId) {
-                const window = openWindows.find(w => w.id === windowId);
-                if (window && (!window.currentPath || window.currentPath.length < 2)) {
-                    let newPath;
-                    if (parentFolder) {
-                        newPath = ['Fromsupply', 'Desktop', parentFolder, folderName];
-                    } else {
-                        newPath = ['Fromsupply', 'Desktop', folderName];
-                    }
-                    PathManager.updatePath(windowId, newPath);
-                }
-                
-                const contentElement = document.getElementById(windowId + '-content');
-                if (contentElement) {
-                    contentElement.style.padding = '16px';
-                }
+    console.log('generateFolderContent called:', folderName, 'parent:', parentFolder, 'windowId:', windowId);
+    
+    if (windowId) {
+        const window = openWindows.find(w => w.id === windowId);
+        if (window && (!window.currentPath || window.currentPath.length < 2)) {
+            let newPath;
+            if (parentFolder) {
+                newPath = ['Fromsupply', 'Desktop', parentFolder, folderName];
+            } else {
+                newPath = ['Fromsupply', 'Desktop', folderName];
             }
-            
-            let structure;
-			if (parentFolder) {
-			    structure = folderStructure[parentFolder] && folderStructure[parentFolder][folderName];
-			} else {
-			    structure = folderStructure[folderName];
-			}
+            PathManager.updatePath(windowId, newPath);
+        }
+        
+        const contentElement = document.getElementById(windowId + '-content');
+        if (contentElement) {
+            contentElement.style.padding = '16px';
+        }
+    }
+    
+    let structure;
+    if (parentFolder) {
+        structure = folderStructure[parentFolder] && folderStructure[parentFolder][folderName];
+        console.log('Looking for structure:', parentFolder, '->', folderName, 'found:', !!structure);
+    } else {
+        structure = folderStructure[folderName];
+        console.log('Looking for structure:', folderName, 'found:', !!structure);
+    }
 
 			// Special case: Desktop should show main folders
 if (folderName === 'Desktop') {
@@ -2841,7 +3153,17 @@ if (subjectName === 'C' && typeof challengesData !== 'undefined') {
 
         function openLanguageLevel(subjectName, levelNumber, coverImage, windowId) {
     const windowPath = PathManager.getPath(windowId);
-    const newPath = [...windowPath, `Level ${levelNumber}`];
+    
+    // Check if we're already in a level and replace it, or append if not
+    let newPath;
+    if (windowPath.length > 0 && windowPath[windowPath.length - 1].startsWith('Level ')) {
+        // Replace the current level with the new level
+        newPath = [...windowPath.slice(0, -1), `Level ${levelNumber}`];
+    } else {
+        // Append the new level
+        newPath = [...windowPath, `Level ${levelNumber}`];
+    }
+    
     PathManager.updatePath(windowId, newPath);
     
     window.currentLevelInfo = {
@@ -3286,8 +3608,10 @@ if (subjectName === 'C' && typeof challengesData !== 'undefined') {
                         <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
                             <h3 style="color: #34d399; margin-bottom: 15px; font-size: 16px;">📐 Window Snapping</h3>
                             <div style="space-y: 8px;">
-                                <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">L</span> <span style="color: rgba(255,255,255,0.8);">Snap window left</span></div>
-<div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">R</span> <span style="color: rgba(255,255,255,0.8);">Snap window right</span></div>
+                                <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">←</span> <span style="color: rgba(255,255,255,0.8);">Snap window left</span></div>
+<div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">→</span> <span style="color: rgba(255,255,255,0.8);">Snap window right</span></div>
+<div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">↑</span> <span style="color: rgba(255,255,255,0.8);">Snap window top</span></div>
+<div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">↓</span> <span style="color: rgba(255,255,255,0.8);">Snap window bottom</span></div>
                                 <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">Z</span> <span style="color: rgba(255,255,255,0.8);">Undo last action</span></div>
                             </div>
                         </div>
@@ -3295,7 +3619,8 @@ if (subjectName === 'C' && typeof challengesData !== 'undefined') {
                         <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
                             <h3 style="color: #f59e0b; margin-bottom: 15px; font-size: 16px;">🧭 Navigation</h3>
                             <div style="space-y: 8px;">
-                                <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">,</span> <span style="color: rgba(255,255,255,0.8);">Go back in directory</span></div>
+                                <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;"><</span> <span style="color: rgba(255,255,255,0.8);">Go back in directory</span></div>
+<div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">></span> <span style="color: rgba(255,255,255,0.8);">Go forward in directory</span></div>
                                 <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">J</span> <span style="color: rgba(255,255,255,0.8);">Toggle alphabetical sorting</span></div>
                             </div>
                         </div>
@@ -3305,6 +3630,7 @@ if (subjectName === 'C' && typeof challengesData !== 'undefined') {
                             <div style="space-y: 8px;">
                                 <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">Space</span> <span style="color: rgba(255,255,255,0.8);">Open search blob</span></div>
                                 <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">B</span> <span style="color: rgba(255,255,255,0.8);">Toggle actions blob</span></div>
+<div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">V</span> <span style="color: rgba(255,255,255,0.8);">Show favorited directories</span></div>
                                 <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">H</span> <span style="color: rgba(255,255,255,0.8);">Open system window</span></div>
                                 <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">Esc</span> <span style="color: rgba(255,255,255,0.8);">Close topmost window</span></div>
                             </div>
@@ -3776,18 +4102,17 @@ function getLevelTintAndDisplay(levelNumber, totalStarsAvailable) {
             console.log('Replacing content with logicbody.html');
             contentElement.style.padding = '0';
             contentElement.innerHTML = `
-    <iframe src="logicbody.html" 
-            style="width: 100%; height: 100%; border: none; pointer-events: auto;" 
-            onload="console.log('logicbody.html loaded successfully');">
-    </iframe>
+    <div style="position: relative; width: 100%; height: 100%;">
+        <iframe src="logicbody.html" 
+                style="width: 100%; height: 100%; border: none;" 
+                onload="console.log('logicbody.html loaded successfully');">
+        </iframe>
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 30px; z-index: 10; cursor: grab;"
+             onmousedown="DragManager.start('window', document.getElementById('${currentWindow.id}'), event, { windowId: '${currentWindow.id}' })">
+        </div>
+    </div>
 `;
-// Restore dragging capability
-contentElement.onmousedown = function(e) {
-    // Only start drag if not clicking inside iframe
-    if (!e.target.closest('iframe')) {
-        DragManager.start('window', currentWindow.element, e, { windowId: currentWindow.id });
-    }
-};
+contentElement.style.padding = '0';
         } else {
             console.error('Content element not found');
         }
@@ -3802,30 +4127,42 @@ contentElement.onmousedown = function(e) {
 
         // CONSOLE SYSTEM
 	   function openFsConsole(windowId = null) {
-		    // Create or reuse window for console
-		    const focusedWindow = openWindows.find(w => {
-		        const element = document.getElementById(w.id);
-		        return element && parseInt(element.style.zIndex) === windowZIndex;
-		    });
+    // Create or reuse window for console
+    const focusedWindow = openWindows.find(w => {
+        const element = document.getElementById(w.id);
+        return element && parseInt(element.style.zIndex) === windowZIndex;
+    });
 
-		    // ADD THIS CHECK HERE:
-		    // Check if current window already has a shell
-		    if (focusedWindow && focusedWindow.currentPath && focusedWindow.currentPath.includes('Shell')) {
-		        // Shell already open, just focus the input
-		        const input = document.getElementById(`shellInput-${focusedWindow.id}`);
-		        if (input) {
-		            input.focus();
-		        }
-		        return;
-		    }
-		    // END OF NEW CHECK
+    // Check if current window already has a shell
+    if (focusedWindow && focusedWindow.currentPath && focusedWindow.currentPath.includes('Shell')) {
+        // Shell already open, just focus the input
+        const input = document.getElementById(`shellInput-${focusedWindow.id}`);
+        if (input) {
+            input.focus();
+        }
+        return;
+    }
 
-		    let consoleWindowId;
-		    if (focusedWindow) {
-		        consoleWindowId = focusedWindow.id;
-		    } else {
-		        consoleWindowId = createWindow('Shell - Fromsupply', '', 700, 450);
-		    }
+    let consoleWindowId;
+    if (focusedWindow) {
+        consoleWindowId = focusedWindow.id;
+    } else {
+        // Calculate position near mouse
+        const mouseX = window.fsLastMousePosition ? window.fsLastMousePosition.x : 200;
+        const mouseY = window.fsLastMousePosition ? window.fsLastMousePosition.y : 200;
+        
+        // Offset so window doesn't spawn exactly on mouse
+        const windowX = Math.max(20, mouseX - 350); // Center window horizontally on mouse
+        const windowY = Math.max(80, mouseY - 100); // Spawn slightly below mouse
+        
+        // Constrain to screen bounds
+        const maxX = window.innerWidth - 720; // 700 width + padding
+        const maxY = window.innerHeight - 470; // 450 height + padding
+        const constrainedX = Math.max(20, Math.min(windowX, maxX));
+        const constrainedY = Math.max(80, Math.min(windowY, maxY));
+        
+        consoleWindowId = createWindow('Shell - Fromsupply', '', 700, 450, constrainedX, constrainedY);
+    }
 
 		    // Update path to show Shell
 		    const currentPath = focusedWindow ? [...focusedWindow.currentPath, 'Shell'] : ['Fromsupply', 'Desktop', 'Shell'];
@@ -3844,13 +4181,14 @@ contentElement.onmousedown = function(e) {
 		            <!-- Input area -->
 		            <div style="padding: 16px; border-top: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05);">
 		                <div style="display: flex; align-items: center; gap: 12px;">
-		                    <span style="color: #60a5fa; font-weight: bold; font-size: 14px;">$</span>
+                    <span style="color: #000000; font-weight: bold; font-size: 14px;">$</span>
 		                    <input type="text" 
-		                           id="shellInput-${consoleWindowId}" 
-		                           style="flex: 1; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; padding: 8px 12px; font-family: inherit; font-size: 13px; outline: none; backdrop-filter: blur(10px);"
-		                           onkeydown="handleShellInput(event, '${consoleWindowId}')"
-		                           placeholder="Type command..."
-		                    />
+                           id="shellInput-${consoleWindowId}" 
+                           style="flex: 1; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; padding: 8px 12px; font-family: inherit; font-size: 13px; outline: none; backdrop-filter: blur(10px); pointer-events: auto; z-index: 10001;"
+                           onkeydown="handleShellInput(event, '${consoleWindowId}')"
+                           onclick="this.focus()"
+                           placeholder="Type command..."
+                    />
 		                </div>
 		            </div>
 		        </div>
@@ -3863,13 +4201,43 @@ contentElement.onmousedown = function(e) {
 		        contentElement.innerHTML = shellContent;
 		    }
 
-		    // Focus window and input
-		    focusWindow(consoleWindowId);
-		    setTimeout(() => {
-		        const input = document.getElementById(`shellInput-${consoleWindowId}`);
-		        if (input) input.focus();
-		    }, 100);
-		}
+		    // Apply saved fullscreen state ONLY if this is a new window
+    if (!focusedWindow) {
+        try {
+            const savedFullscreen = localStorage.getItem('fsShell_fullscreen');
+            if (savedFullscreen === 'true') {
+                setTimeout(() => {
+                    toggleShellFullscreen(consoleWindowId);
+                }, 50);
+            }
+        } catch (error) {
+            console.warn('Could not load shell fullscreen preference:', error);
+        }
+    }
+
+    // Focus window and input
+    focusWindow(consoleWindowId);
+    
+    // Add click handler to window to restore input focus
+    const windowElement = document.getElementById(consoleWindowId);
+    if (windowElement) {
+        windowElement.addEventListener('click', (e) => {
+            if (!e.target.closest('.resize-handle')) {
+                const input = document.getElementById(`shellInput-${consoleWindowId}`);
+                if (input) {
+                    setTimeout(() => {
+                        input.focus();
+                    }, 10);
+                }
+            }
+        });
+    }
+    
+    setTimeout(() => {
+        const input = document.getElementById(`shellInput-${consoleWindowId}`);
+        if (input) input.focus();
+    }, 100);
+}
 
         function closeFsConsole() {
             const console = document.getElementById('fsConsole');
@@ -3897,38 +4265,45 @@ contentElement.onmousedown = function(e) {
         }
 
         function executeConsoleCommand(command) {
-            if (!command.trim()) return;
-            
-            window.fsConsoleHistory.push(command);
-            if (window.fsConsoleHistory.length > 50) {
-                window.fsConsoleHistory.shift();
-            }
-            window.fsConsoleHistoryIndex = -1;
-            
-            logToConsole(`> ${command}`, 'command');
-            
-            const parts = command.trim().split(' ');
-            const cmd = parts[0].toLowerCase();
-            const args = parts.slice(1);
-            
-            switch(cmd) {
-                case 'help':
-                case 'h':
-                    showConsoleHelp();
-                    break;
-                case 'clear':
-                case 'cls':
-                    clearConsole();
-                    break;
-                case 'exit':
-                case 'quit':
-                case 'q':
-                    closeFsConsole();
-                    break;
-                default:
-                    logToConsole(`Command not found: ${cmd}. Type 'help' for available commands.`, 'error');
-            }
-        }
+    if (!command.trim()) return;
+    
+    window.fsConsoleHistory.push(command);
+    if (window.fsConsoleHistory.length > 50) {
+        window.fsConsoleHistory.shift();
+    }
+    window.fsConsoleHistoryIndex = -1;
+    
+    logToConsole(`> ${command}`, 'command');
+    
+    const parts = command.trim().split(' ');
+    const cmd = parts[0].toLowerCase();
+    const args = parts.slice(1);
+    
+    switch(cmd) {
+        case 'help':
+        case 'h':
+            showConsoleHelp();
+            break;
+        case 'clear':
+        case 'cls':
+            clearConsole();
+            break;
+        case 'exit':
+        case 'quit':
+        case 'q':
+            closeFsConsole();
+            break;
+        case 'ls':
+        case 'dir':
+            showConsoleDirectoryListing();
+            break;
+        case 'pwd':
+            showConsoleCurrentPath();
+            break;
+        default:
+            logToConsole(`Command not found: ${cmd}. Type 'help' for available commands.`, 'error');
+    }
+}
 
         function clearConsole() {
             const output = document.getElementById('fsConsoleOutput');
@@ -3936,16 +4311,117 @@ contentElement.onmousedown = function(e) {
             logToConsole('Console cleared', 'success');
         }
 
-        function showConsoleHelp() {
-            logToConsole('=== FROMSUPPLY CONSOLE HELP ===', 'success');
-            logToConsole('', 'output');
-            logToConsole('AVAILABLE COMMANDS:', 'output');
-            logToConsole('help, h         - Show this help', 'output');
-            logToConsole('clear, cls      - Clear console output', 'output');
-            logToConsole('exit, quit, q   - Exit console', 'output');
-            logToConsole('', 'output');
-            logToConsole('Type any command to execute. Press Esc to close.', 'output');
+        function showConsoleDirectoryListing() {
+    // Get the current focused window's path, or default to desktop
+    const focusedWindow = openWindows.find(w => {
+        const element = document.getElementById(w.id);
+        return element && parseInt(element.style.zIndex) === windowZIndex;
+    });
+    
+    let currentPath = ['Fromsupply', 'Desktop'];
+    if (focusedWindow && focusedWindow.currentPath) {
+        currentPath = focusedWindow.currentPath;
+    }
+    
+    // Get current directory structure
+    let currentStructure = folderStructure;
+    let items = [];
+    
+    if (currentPath.length === 1) {
+        // Root level - show main folders
+        items = ['Logic', 'Mall', 'Farm', 'Prompts', 'Media', 'Browser'];
+    } else if (currentPath.length === 2 && currentPath[1] === 'Desktop') {
+        // Desktop level
+        items = ['Logic', 'Mall', 'Farm', 'Prompts', 'Media', 'Browser'];
+    } else {
+        // Navigate to current directory in structure
+        try {
+            for (let i = 2; i < currentPath.length; i++) {
+                if (currentStructure[currentPath[i]]) {
+                    currentStructure = currentStructure[currentPath[i]];
+                }
+            }
+            
+            if (typeof currentStructure === 'object') {
+                items = Object.keys(currentStructure).filter(key => key !== 'app' && key !== 'file');
+            }
+        } catch (error) {
+            items = ['No items found'];
         }
+    }
+    
+    // Display items
+    if (items.length === 0) {
+        logToConsole('Directory is empty', 'output');
+    } else {
+        logToConsole('Directory contents:', 'success');
+        items.forEach(item => {
+            // Add icon indicators
+            let prefix = '📁 ';
+            if (currentStructure[item]) {
+                if (currentStructure[item].app) {
+                    prefix = '⚡ ';
+                } else if (currentStructure[item].levels) {
+                    prefix = '📝 ';
+                }
+            }
+            logToConsole(`${prefix}${item}`, 'output');
+        });
+    }
+}
+
+function showConsoleCurrentPath() {
+    // Get the current focused window's path, or default to desktop
+    const focusedWindow = openWindows.find(w => {
+        const element = document.getElementById(w.id);
+        return element && parseInt(element.style.zIndex) === windowZIndex;
+    });
+    
+    let currentPath = ['Fromsupply', 'Desktop'];
+    if (focusedWindow && focusedWindow.currentPath) {
+        currentPath = focusedWindow.currentPath;
+    }
+    
+    logToConsole('/' + currentPath.join('/'), 'success');
+}
+
+function showConsoleHelp() {
+    logToConsole('=== FROMSUPPLY KEYBOARD SHORTCUTS ===', 'success');
+    logToConsole('', 'output');
+    logToConsole('WINDOW MANAGEMENT:', 'output');
+    logToConsole('Q               - Close current window', 'output');
+    logToConsole('D               - Duplicate current window', 'output');
+    logToConsole('C               - Close other windows', 'output');
+    logToConsole('F               - Toggle fullscreen', 'output');
+    logToConsole('', 'output');
+    logToConsole('WINDOW SNAPPING:', 'output');
+    logToConsole('← (Left Arrow)  - Snap window left', 'output');
+    logToConsole('→ (Right Arrow) - Snap window right', 'output');
+    logToConsole('↑ (Up Arrow)    - Snap window top', 'output');
+    logToConsole('↓ (Down Arrow)  - Snap window bottom', 'output');
+    logToConsole('', 'output');
+    logToConsole('NAVIGATION:', 'output');
+    logToConsole('< (or ,)        - Go back one directory', 'output');
+    logToConsole('> (or .)        - Go forward one directory', 'output');
+    logToConsole('', 'output');
+    logToConsole('SYSTEM ACCESS:', 'output');
+    logToConsole('Spacebar        - Search in blob', 'output');
+    logToConsole('B               - Toggle actions blob', 'output');
+    logToConsole('V               - Show favorited directories', 'output');
+    logToConsole('H               - Open system window', 'output');
+    logToConsole('', 'output');
+    logToConsole('OTHER:', 'output');
+    logToConsole('J               - Toggle alphabetical arrangement', 'output');
+    logToConsole('Z               - Undo last action', 'output');
+    logToConsole('Esc             - Close topmost window/overlay', 'output');
+    logToConsole('', 'output');
+    logToConsole('CONSOLE COMMANDS:', 'output');
+    logToConsole('help, h         - Show this help', 'output');
+    logToConsole('ls, dir         - List current directory', 'output');
+    logToConsole('pwd             - Show current path', 'output');
+    logToConsole('clear, cls      - Clear console output', 'output');
+    logToConsole('exit, quit, q   - Exit console', 'output');
+}
 
         // DRAG AND DROP INITIALIZATION
         function initializeDragAndDrop() {
@@ -4139,18 +4615,637 @@ contentElement.onmousedown = function(e) {
     }
 });
 
-        // CONSOLE INPUT HANDLING
-        document.getElementById('fsConsoleInput').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                const command = this.value.trim();
-                if (command) {
-                    executeConsoleCommand(command);
-                    this.value = '';
-                }
-            } else if (e.key === 'Escape') {
-                closeFsConsole();
+        // SHELL INPUT HANDLING
+function handleShellInput(event, windowId) {
+    if (event.key === 'Enter') {
+        const input = event.target;
+        const command = input.value.trim();
+        if (command) {
+            // Add to command history
+            if (!window.shellCommandHistory) window.shellCommandHistory = [];
+            window.shellCommandHistory.push(command);
+            if (window.shellCommandHistory.length > 50) {
+                window.shellCommandHistory.shift();
             }
+            window.shellHistoryIndex = -1;
+            
+            executeShellCommand(command, windowId);
+            input.value = '';
+        }
+    } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        if (!window.shellCommandHistory) window.shellCommandHistory = [];
+        if (!window.shellHistoryIndex) window.shellHistoryIndex = -1;
+        
+        if (window.shellCommandHistory.length > 0) {
+            if (window.shellHistoryIndex === -1) {
+                window.shellHistoryIndex = window.shellCommandHistory.length - 1;
+            } else if (window.shellHistoryIndex > 0) {
+                window.shellHistoryIndex--;
+            }
+            event.target.value = window.shellCommandHistory[window.shellHistoryIndex];
+        }
+    } else if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        if (!window.shellCommandHistory) window.shellCommandHistory = [];
+        if (!window.shellHistoryIndex) window.shellHistoryIndex = -1;
+        
+        if (window.shellHistoryIndex !== -1) {
+            if (window.shellHistoryIndex < window.shellCommandHistory.length - 1) {
+                window.shellHistoryIndex++;
+                event.target.value = window.shellCommandHistory[window.shellHistoryIndex];
+            } else {
+                window.shellHistoryIndex = -1;
+                event.target.value = '';
+            }
+        }
+    } else if (event.key === 'Escape') {
+        // Just go back from shell
+        PathManager.navigateBack(windowId);
+    }
+}
+
+function executeShellCommand(command, windowId) {
+    const outputElement = document.getElementById(`shellOutput-${windowId}`);
+    
+    // Add command to output
+    const commandLine = document.createElement('div');
+    commandLine.style.marginBottom = '4px';
+    commandLine.style.color = '#000000';
+    commandLine.textContent = `$ ${command}`;
+    outputElement.appendChild(commandLine);
+    
+    // Process command
+    const parts = command.trim().split(' ');
+    const cmd = parts[0].toLowerCase();
+    const args = parts.slice(1);
+    
+    let response = '';
+    let responseType = 'output';
+    
+   switch(cmd) {
+        case 'help':
+        case 'h':
+            showShellHelp(windowId);
+            break;
+        case 'clear':
+        case 'cls':
+            outputElement.innerHTML = `
+                <div style="margin-bottom: 4px; color: #10b981;">Fromsupply Console v2.0 - Ready</div>
+                <div style="margin-bottom: 4px; color: rgba(255,255,255,0.9);">Type 'help' for commands or 'h' for shortcuts</div>
+            `;
+            break;
+       case 'exit':
+case 'quit':
+case 'q':
+    // Find the currently focused window to ensure we close the right one
+    const focusedWindow = openWindows.find(w => {
+        const element = document.getElementById(w.id);
+        return element && parseInt(element.style.zIndex) === windowZIndex;
+    });
+    
+    if (focusedWindow) {
+        closeWindow(focusedWindow.id);
+        response = 'Window closed';
+        responseType = 'success';
+    } else {
+        // Fallback to the windowId parameter
+        closeWindow(windowId);
+        response = 'Window closed';
+        responseType = 'success';
+    }
+    break;
+        case 'ls':
+        case 'dir':
+            showDirectoryListing(windowId);
+            break;
+        case 'pwd':
+            showCurrentPath(windowId);
+            break;
+        case 'cd':
+            if (args.length > 0) {
+                changeDirectory(args[0], windowId);
+            } else {
+                response = 'Usage: cd <directory>';
+                responseType = 'error';
+            }
+            break;
+        case 'd':
+            duplicateWindow(windowId);
+            response = 'Window duplicated';
+            responseType = 'success';
+            break;
+        case 'c':
+            closeOtherWindows(windowId);
+            response = 'Other windows closed';
+            responseType = 'success';
+            break;
+        case 'b':
+            showPhoneOverlay();
+            response = 'Actions blob opened';
+            responseType = 'success';
+            // Restore focus after overlay might close
+            setTimeout(() => {
+                const input = document.getElementById(`shellInput-${windowId}`);
+                if (input) input.focus();
+            }, 100);
+            break;
+        case 'f':
+            toggleShellFullscreen(windowId);
+            response = 'Fullscreen toggled';
+            responseType = 'success';
+            // Restore focus after fullscreen toggle
+            setTimeout(() => {
+                const input = document.getElementById(`shellInput-${windowId}`);
+                if (input) input.focus();
+            }, 100);
+            break;
+        case 'j':
+            toggleFolderArrangement();
+            response = 'Folder arrangement toggled';
+            responseType = 'success';
+            break;
+        case 'z':
+            undoLastAction();
+            response = 'Last action undone';
+            responseType = 'success';
+            break;
+        case 'v':
+            showFavoritesOverlay();
+            response = 'Favorites overlay opened';
+            responseType = 'success';
+            // Restore focus after overlay might close
+            setTimeout(() => {
+                const input = document.getElementById(`shellInput-${windowId}`);
+                if (input) input.focus();
+            }, 100);
+            break;
+        case 'open':
+            openCurrentDirectoryAsWindow(windowId);
+            response = 'Current directory opened in new window';
+            responseType = 'success';
+            break;
+        default:
+            response = `Command not found: ${cmd}. Type 'help' for available commands.`;
+            responseType = 'error';
+    }
+    
+    if (response) {
+        const responseLine = document.createElement('div');
+        responseLine.style.marginBottom = '4px';
+        responseLine.style.color = responseType === 'error' ? '#ef4444' : 'rgba(255,255,255,0.9)';
+        responseLine.textContent = response;
+        outputElement.appendChild(responseLine);
+    }
+    
+    // Scroll to bottom
+    // Scroll to bottom
+    outputElement.scrollTop = outputElement.scrollHeight;
+    
+    // Always ensure input stays focused and clickable
+    setTimeout(() => {
+        const input = document.getElementById(`shellInput-${windowId}`);
+        if (input) {
+            input.focus();
+            // Ensure input is clickable by removing any potential blocking
+            input.style.pointerEvents = 'auto';
+            input.style.zIndex = '10001';
+        }
+    }, 50);
+}
+function showDirectoryListing(windowId) {
+    const outputElement = document.getElementById(`shellOutput-${windowId}`);
+    const currentPath = PathManager.getPath(windowId);
+    
+    // Get current directory structure
+    let currentStructure = folderStructure;
+    let items = [];
+    
+    if (currentPath.length === 1) {
+        // Root level - show main folders + System
+        items = ['System', 'Logic', 'Mall', 'Farm', 'Prompts', 'Media', 'Browser'];
+    } else if (currentPath.length === 2 && currentPath[1] === 'Desktop') {
+        // Desktop level - show main folders + System
+        items = ['System', 'Logic', 'Mall', 'Farm', 'Prompts', 'Media', 'Browser'];
+    } else {
+        // Navigate to current directory in structure
+        try {
+            for (let i = 2; i < currentPath.length; i++) {
+                if (currentStructure[currentPath[i]]) {
+                    currentStructure = currentStructure[currentPath[i]];
+                }
+            }
+            
+            if (typeof currentStructure === 'object') {
+                items = Object.keys(currentStructure).filter(key => key !== 'app' && key !== 'file');
+            }
+        } catch (error) {
+            items = ['No items found'];
+        }
+    }
+    
+    // Display items
+    if (items.length === 0) {
+        const emptyLine = document.createElement('div');
+        emptyLine.style.marginBottom = '4px';
+        emptyLine.style.color = 'rgba(255,255,255,0.7)';
+        emptyLine.textContent = 'Directory is empty';
+        outputElement.appendChild(emptyLine);
+    } else {
+        items.forEach(item => {
+            const itemLine = document.createElement('div');
+            itemLine.style.marginBottom = '2px';
+            itemLine.style.color = 'rgba(255,255,255,0.9)';
+            itemLine.style.fontFamily = 'inherit';
+            
+            
+            // Determine item type and icon using the same logic as generateFolderContent
+            let iconFileName = 'whitefile.png'; // default
+            
+            if (currentStructure[item]) {
+                const value = currentStructure[item];
+                const isSubjectFile = value && typeof value === 'object' && value.levels && value.cover;
+                const isAppFile = value && typeof value === 'object' && value.app && value.file;
+                const isSubfolder = value && typeof value === 'object' && !value.levels && !value.cover && !value.app && !value.description;
+                
+                if (isSubjectFile) {
+                    // Subjects with levels - use whitefile.png
+                    iconFileName = 'whitefile.png';
+                } else if (isAppFile) {
+                    // Applications - use openapp.png
+                    iconFileName = 'openapp.png';
+                } else if (isSubfolder) {
+                    // Folders that contain other folders - use blackfile.png
+                    iconFileName = 'blackfile.png';
+                } else if (value && value.description) {
+                    // Items with descriptions - use whitefile.png
+                    iconFileName = 'whitefile.png';
+                } else {
+                    // Default - use whitefile.png
+                    iconFileName = 'whitefile.png';
+                }
+            } else {
+                // Use getFolderIcon for main directories
+                iconFileName = getFolderIcon(item);
+            }
+            
+            itemLine.innerHTML = `<img src="${iconFileName}" style="width: 16px; height: 16px; margin-right: 8px; vertical-align: middle;"> ${item}`;
+            outputElement.appendChild(itemLine);
         });
+    }
+    
+    outputElement.scrollTop = outputElement.scrollHeight;
+}
+
+function showCurrentPath(windowId) {
+    const outputElement = document.getElementById(`shellOutput-${windowId}`);
+    const currentPath = PathManager.getPath(windowId);
+    
+    const pathLine = document.createElement('div');
+    pathLine.style.marginBottom = '4px';
+    pathLine.style.color = '#000000';
+    pathLine.style.fontWeight = 'bold';
+    pathLine.textContent = '/' + currentPath.join('/');
+    outputElement.appendChild(pathLine);
+    
+    outputElement.scrollTop = outputElement.scrollHeight;
+}
+
+function changeDirectory(targetDir, windowId) {
+    const outputElement = document.getElementById(`shellOutput-${windowId}`);
+    const currentPath = PathManager.getPath(windowId);
+    let navigationSuccess = false;
+    
+    if (targetDir === '..') {
+        // Go back one directory
+        if (currentPath.length > 2) {
+            const newPath = currentPath.slice(0, -1);
+            PathManager.updatePath(windowId, newPath);
+            
+            const successLine = document.createElement('div');
+            successLine.style.marginBottom = '4px';
+            successLine.style.color = '#000000';
+            successLine.textContent = `Changed to: /${newPath.join('/')}`;
+            outputElement.appendChild(successLine);
+            navigationSuccess = true;
+        } else {
+            const errorLine = document.createElement('div');
+            errorLine.style.marginBottom = '4px';
+            errorLine.style.color = '#ef4444';
+            errorLine.textContent = 'Already at root directory';
+            outputElement.appendChild(errorLine);
+        }
+    } else if (targetDir === '/' || targetDir === '~') {
+        // Go to root
+        const newPath = ['Fromsupply', 'Desktop'];
+        PathManager.updatePath(windowId, newPath);
+        
+        const successLine = document.createElement('div');
+        successLine.style.marginBottom = '4px';
+        successLine.style.color = '#10b981';
+        successLine.textContent = `Changed to: /${newPath.join('/')}`;
+        outputElement.appendChild(successLine);
+        navigationSuccess = true;
+    } else {
+        // Handle multi-level paths (e.g., logic/code/c)
+        const pathParts = targetDir.split('/').filter(part => part.trim() !== '');
+        let currentStructure = folderStructure;
+        let tempPath = [...currentPath];
+        let pathValid = true;
+        
+        // Navigate to current location first
+        try {
+            for (let i = 2; i < currentPath.length; i++) {
+                if (currentStructure[currentPath[i]]) {
+                    currentStructure = currentStructure[currentPath[i]];
+                }
+            }
+        } catch (error) {
+            pathValid = false;
+        }
+        
+        // Navigate through each part of the path
+        if (pathValid) {
+            for (let i = 0; i < pathParts.length; i++) {
+                const targetPart = pathParts[i];
+                const targetPartLower = targetPart.toLowerCase();
+                let found = false;
+                
+                // If we're at the root level, check main directories
+                if (tempPath.length <= 2) {
+                    const mainDirs = ['System', 'Logic', 'Mall', 'Farm', 'Prompts', 'Media', 'Browser'];
+                    const matchedDir = mainDirs.find(dir => dir.toLowerCase() === targetPartLower);
+                    
+                    if (matchedDir) {
+                        tempPath.push(matchedDir);
+                        if (folderStructure[matchedDir]) {
+                            currentStructure = folderStructure[matchedDir];
+                        }
+                        found = true;
+                    }
+                } else {
+                    // Check in current structure
+                    if (typeof currentStructure === 'object') {
+                        const availableItems = Object.keys(currentStructure).filter(key => key !== 'app' && key !== 'file');
+                        const matchedItem = availableItems.find(item => item.toLowerCase() === targetPartLower);
+                        
+                        if (matchedItem && typeof currentStructure[matchedItem] === 'object') {
+                            tempPath.push(matchedItem);
+                            currentStructure = currentStructure[matchedItem];
+                            found = true;
+                        }
+                    }
+                }
+                
+                if (!found) {
+                    pathValid = false;
+                    const errorLine = document.createElement('div');
+                    errorLine.style.marginBottom = '4px';
+                    errorLine.style.color = '#ef4444';
+                    errorLine.textContent = `Directory not found: ${targetPart} (in path ${targetDir})`;
+                    outputElement.appendChild(errorLine);
+                    break;
+                }
+            }
+        }
+        
+        // If path is valid, update the window path
+        if (pathValid) {
+            PathManager.updatePath(windowId, tempPath);
+            
+            const successLine = document.createElement('div');
+            successLine.style.marginBottom = '4px';
+            successLine.style.color = '#000000';
+            successLine.textContent = `Changed to: /${tempPath.join('/')}`;
+            outputElement.appendChild(successLine);
+            navigationSuccess = true;
+        }
+    }
+    
+    // Auto-list directory contents after successful navigation
+    if (navigationSuccess) {
+        const spacerLine = document.createElement('div');
+        spacerLine.style.marginBottom = '4px';
+        spacerLine.textContent = '';
+        outputElement.appendChild(spacerLine);
+        
+        showDirectoryListing(windowId);
+    }
+    
+    outputElement.scrollTop = outputElement.scrollHeight;
+}
+
+function toggleShellFullscreen(windowId) {
+    const windowElement = document.getElementById(windowId);
+    const window = openWindows.find(w => w.id === windowId);
+    
+    if (windowElement && window) {
+        addToHistory('snap', { windowId: windowId, previousState: getWindowState(windowId) });
+        
+        if (windowElement.classList.contains('maximized')) {
+            // Exit fullscreen
+            windowElement.classList.remove('maximized');
+            window.snapped = false;
+            
+            if (window.originalPosition) {
+                windowElement.style.left = window.originalPosition.x + 'px';
+                windowElement.style.top = window.originalPosition.y + 'px';
+                windowElement.style.width = window.originalPosition.width + 'px';
+                windowElement.style.height = window.originalPosition.height + 'px';
+            }
+            
+            // Save fullscreen preference
+            try {
+                localStorage.setItem('fsShell_fullscreen', 'false');
+            } catch (error) {
+                console.warn('Could not save shell fullscreen preference:', error);
+            }
+        } else {
+            // Enter fullscreen
+            const rect = windowElement.getBoundingClientRect();
+            window.originalPosition = {
+                x: rect.left,
+                y: rect.top,
+                width: rect.width,
+                height: rect.height
+            };
+            
+            const snapClasses = ['snapped-left', 'snapped-right', 'snapped-top', 'snapped-bottom', 
+                               'snapped-top-left', 'snapped-top-right', 'snapped-bottom-left', 
+                               'snapped-bottom-right'];
+            snapClasses.forEach(cls => windowElement.classList.remove(cls));
+            
+            windowElement.classList.add('maximized');
+            window.snapped = 'maximized';
+            
+            // Save fullscreen preference
+            try {
+                localStorage.setItem('fsShell_fullscreen', 'true');
+            } catch (error) {
+                console.warn('Could not save shell fullscreen preference:', error);
+            }
+        }
+    }
+}
+
+function openCurrentDirectoryAsWindow(windowId) {
+    const currentPath = PathManager.getPath(windowId);
+    
+    // Remove Shell from path if present
+    let directoryPath = [...currentPath];
+    if (directoryPath[directoryPath.length - 1] === 'Shell') {
+        directoryPath = directoryPath.slice(0, -1);
+    }
+    
+    // Calculate position near mouse
+    const mouseX = window.fsLastMousePosition ? window.fsLastMousePosition.x : 200;
+    const mouseY = window.fsLastMousePosition ? window.fsLastMousePosition.y : 200;
+    const windowX = Math.max(20, mouseX - 300);
+    const windowY = Math.max(80, mouseY + 50); // Below current position
+    
+    // Create new window
+    const folderName = directoryPath[directoryPath.length - 1] || 'Desktop';
+    const newWindowId = createWindow(`${folderName} - Fromsupply`, '', 650, 500, windowX, windowY);
+    
+    // Set path for new window
+    PathManager.updatePath(newWindowId, directoryPath);
+    
+    // Generate content
+    let content;
+    if (directoryPath.length === 2 && directoryPath[1] === 'Desktop') {
+        content = generateFolderContent('Desktop', newWindowId);
+    } else if (folderName) {
+        const parentFolder = directoryPath.length > 2 ? directoryPath[directoryPath.length - 2] : null;
+        content = generateFolderContent(folderName, newWindowId, parentFolder);
+    }
+    
+    // Set content in new window
+    const contentElement = document.getElementById(newWindowId + '-content');
+    if (contentElement && content) {
+        contentElement.style.padding = '16px';
+        contentElement.innerHTML = content;
+    }
+    
+    focusWindow(newWindowId);
+}
+
+function closeShellAndOpenDirectory(windowId) {
+    const currentPath = PathManager.getPath(windowId);
+    
+    // Go back to previous content if Shell is in path
+    if (currentPath[currentPath.length - 1] === 'Shell') {
+        const directoryPath = currentPath.slice(0, -1);
+        PathManager.updatePath(windowId, directoryPath);
+        
+        // Generate content for the current directory
+        const folderName = directoryPath[directoryPath.length - 1];
+        let content;
+        
+        if (directoryPath.length === 2 && directoryPath[1] === 'Desktop') {
+            content = generateFolderContent('Desktop', windowId);
+        } else if (folderName) {
+            const parentFolder = directoryPath.length > 2 ? directoryPath[directoryPath.length - 2] : null;
+            content = generateFolderContent(folderName, windowId, parentFolder);
+        }
+        
+        const contentElement = document.getElementById(windowId + '-content');
+        if (contentElement && content) {
+            contentElement.style.padding = '16px';
+            contentElement.innerHTML = content;
+        }
+    }
+}
+
+function handleShellShortcuts(event, windowId) {
+    switch(event.key.toLowerCase()) {
+        case 'd':
+            event.preventDefault();
+            duplicateWindow(windowId);
+            break;
+        case 'c':
+            event.preventDefault();
+            closeOtherWindows(windowId);
+            break;
+        case 'b':
+            event.preventDefault();
+            showPhoneOverlay();
+            break;
+        case 'f':
+            event.preventDefault();
+            toggleShellFullscreen(windowId);
+            break;
+        case 'j':
+            event.preventDefault();
+            toggleFolderArrangement();
+            break;
+        case 'z':
+            event.preventDefault();
+            undoLastAction();
+            break;
+        case 'v':
+            event.preventDefault();
+            showFavoritesOverlay();
+            break;
+        case 'h':
+            event.preventDefault();
+            openHiddenSystemWindow();
+            break;
+    }
+}
+
+function showShellHelp(windowId) {
+    const outputElement = document.getElementById(`shellOutput-${windowId}`);
+    
+    const helpLines = [
+        { text: '=== FROMSUPPLY SHELL HELP ===', color: '#10b981' },
+        { text: '', color: 'rgba(255,255,255,0.9)' },
+        { text: 'AVAILABLE COMMANDS:', color: 'rgba(255,255,255,0.9)' },
+        { text: 'help, h         - Show this help', color: 'rgba(255,255,255,0.9)' },
+        { text: 'clear, cls      - Clear shell output', color: 'rgba(255,255,255,0.9)' },
+        { text: 'exit, quit, q   - Exit shell', color: 'rgba(255,255,255,0.9)' },
+        { text: 'ls, dir         - List current directory', color: 'rgba(255,255,255,0.9)' },
+        { text: 'pwd             - Show current path', color: 'rgba(255,255,255,0.9)' },
+        { text: 'cd <dir>        - Change directory (supports paths like a/b/c)', color: 'rgba(255,255,255,0.9)' },
+        { text: 'cd ..           - Go back one directory', color: 'rgba(255,255,255,0.9)' },
+        { text: 'cd /            - Go to root directory', color: 'rgba(255,255,255,0.9)' },
+        { text: 'open            - Open current directory in new window', color: 'rgba(255,255,255,0.9)' },
+        { text: '', color: 'rgba(255,255,255,0.9)' },
+        { text: 'KEYBOARD SHORTCUTS:', color: 'rgba(255,255,255,0.9)' },
+        { text: 'Esc             - Exit shell', color: 'rgba(255,255,255,0.9)' },
+        { text: '↑/↓ Arrow Keys  - Navigate command history', color: 'rgba(255,255,255,0.9)' },
+        { text: 'D               - Duplicate current window', color: 'rgba(255,255,255,0.9)' },
+        { text: 'C               - Close other windows', color: 'rgba(255,255,255,0.9)' },
+        { text: 'B               - Open actions blob', color: 'rgba(255,255,255,0.9)' },
+        { text: 'F               - Toggle fullscreen', color: 'rgba(255,255,255,0.9)' },
+        { text: 'J               - Toggle alphabetical arrangement', color: 'rgba(255,255,255,0.9)' },
+        { text: 'Z               - Undo last action', color: 'rgba(255,255,255,0.9)' },
+        { text: 'V               - Show favorites', color: 'rgba(255,255,255,0.9)' },
+        { text: 'H               - Open system window', color: 'rgba(255,255,255,0.9)' }
+    ];
+    
+    helpLines.forEach(line => {
+        const helpLine = document.createElement('div');
+        helpLine.style.marginBottom = '4px';
+        helpLine.style.color = line.color;
+        helpLine.textContent = line.text;
+        outputElement.appendChild(helpLine);
+    });
+    
+    outputElement.scrollTop = outputElement.scrollHeight;
+}
+
+// CONSOLE INPUT HANDLING (Legacy - for old console if still used)
+document.getElementById('fsConsoleInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        const command = this.value.trim();
+        if (command) {
+            executeConsoleCommand(command);
+            this.value = '';
+        }
+    } else if (e.key === 'Escape') {
+        closeFsConsole();
+    }
+});
 
         // INITIALIZATION
         document.addEventListener('DOMContentLoaded', function() {
