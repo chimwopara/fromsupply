@@ -412,16 +412,16 @@
         }
 
         .folder {
-            position: absolute;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: default;
-            transition: transform 0.1s ease;
-            user-select: none;
-            width: 240px;
-            height: 280px;
-        }
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: default;
+    transition: transform 0.1s ease;
+    user-select: none;
+    width: 160px;   /* ← Match icon width */
+    height: 200px;  /* ← Reduce height */
+}
 
         .folder:hover {
             transform: scale(1.05);
@@ -448,14 +448,14 @@
         }
 
         .folder-icon {
-            width: 160px;
-            height: 160px;
-            background: url('blackfile.png') center/contain;
-            background-repeat: no-repeat;
-            background-color: transparent;
-            margin-bottom: 16px;
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
-        }
+    width: 160px;
+    height: 160px;
+    background: url('blackfile.png') center/contain;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    margin-bottom: 8px;  /* ← Reduce spacing */
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
 
         .folder[data-app="true"] .folder-icon {
             background: url('blackfile.png') center/contain;
@@ -1432,25 +1432,28 @@
         },
             
             end(event) {
-                if (this.active) {
-                    this.element.classList.remove('dragging');
-                    this.element.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                    
-                    if (this.type === 'window') {
-                        this.handleWindowSnapping(event);
-                    }
-                    
-                    if (this.type === 'folder') {
-                        this.saveFolderPosition();
-                    } else if (this.type === 'console') {
-                        this.saveConsolePosition();
-                    }
-                }
-                
-                document.body.style.cursor = '';
-                document.body.style.userSelect = '';
-                this.reset();
-            },
+    if (this.active) {
+        this.element.classList.remove('dragging');
+        this.element.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+        
+        if (this.type === 'window') {
+            this.handleWindowSnapping(event);
+            // Refocus window after snapping/unsnapping
+            const windowId = this.element.id;
+            setTimeout(() => focusWindow(windowId), 100);
+        }
+        
+        if (this.type === 'folder') {
+            this.saveFolderPosition();
+        } else if (this.type === 'console') {
+            this.saveConsolePosition();
+        }
+    }
+    
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+    this.reset();
+},
             
 handleWindowSnapping(event) {
     const window = openWindows.find(w => w.id === this.element.id);
@@ -1697,7 +1700,10 @@ function initializeGlobals() {
             },
             
             handleKeyboard(e) {
-                if (e.target.matches('input, textarea, [contenteditable]')) return;
+    if (e.target.matches('input, textarea, [contenteditable]')) return;
+    
+    // Always handle shortcuts even when iframe has focus
+    e.preventDefault();
                 
                 const focusedWindow = openWindows.find(w => {
                     const element = document.getElementById(w.id);
@@ -2431,11 +2437,11 @@ function navigateToFavorite(directoryPath) {
             windowElement.id = windowId;
 
             windowElement.innerHTML = `
-    <div class="window-content" id="${windowId}-content">
-        <div class="window-drag-handle" onmousedown="DragManager.start('window', document.getElementById('${windowId}'), event, { windowId: '${windowId}' })" style="position: absolute; top: 0; left: 0; right: 0; height: 40px; z-index: 10; cursor: grab;"></div>
+    <div class="window-content" id="${windowId}-content" onmousedown="DragManager.start('window', document.getElementById('${windowId}'), event, { windowId: '${windowId}' })" style="cursor: grab;">
         ${content}
     </div>
-`;        
+`;
+            
             let windowX, windowY;
             if (x !== null && y !== null) {
                 windowX = x;
@@ -2559,23 +2565,6 @@ function navigateToFavorite(directoryPath) {
         }
 
         function focusWindow(windowId) {
-            windowFocusOrder = windowFocusOrder.filter(id => id !== windowId);
-            windowFocusOrder.unshift(windowId);
-            
-            windowZIndex += 2;
-            const windowElement = document.getElementById(windowId);
-            if (windowElement) {
-                windowElement.style.zIndex = windowZIndex;
-            }
-            
-            const window = openWindows.find(w => w.id === windowId);
-            if (window && window.currentPath) {
-                currentDirectory = [...window.currentPath];
-                updateDirectoryDisplay();
-            }
-        }
-
-        function focusWindow(windowId) {
     windowFocusOrder = windowFocusOrder.filter(id => id !== windowId);
     windowFocusOrder.unshift(windowId);
     
@@ -2645,23 +2634,24 @@ function navigateToFavorite(directoryPath) {
                         windowElement.style.height = window.originalPosition.height + 'px';
                     }
                 } else {
-                    const rect = windowElement.getBoundingClientRect();
-                    window.originalPosition = {
-                        x: rect.left,
-                        y: rect.top,
-                        width: rect.width,
-                        height: rect.height
-                    };
-                    
-                    const snapClasses = ['snapped-left', 'snapped-right', 'snapped-top', 'snapped-bottom', 
-                                       'snapped-top-left', 'snapped-top-right', 'snapped-bottom-left', 
-                                       'snapped-bottom-right'];
-                    snapClasses.forEach(cls => windowElement.classList.remove(cls));
-                    
-                    windowElement.classList.add('maximized');
-                    window.snapped = 'maximized';
-                }
+    const rect = windowElement.getBoundingClientRect();
+    window.originalPosition = {
+        x: rect.left,
+        y: rect.top,
+        width: rect.width,
+        height: rect.height
+    };
+    
+    const snapClasses = ['snapped-left', 'snapped-right', 'snapped-top', 'snapped-bottom', 
+                       'snapped-top-left', 'snapped-top-right', 'snapped-bottom-left', 
+                       'snapped-bottom-right'];
+    snapClasses.forEach(cls => windowElement.classList.remove(cls));
+    
+    windowElement.classList.add('maximized');
+    window.snapped = 'maximized';
+}
             }
+             setTimeout(() => focusWindow(windowId), 50);
         }
 
         // WINDOW HISTORY AND UNDO
@@ -2827,44 +2817,60 @@ function snapWindowBottom(windowId) {
 
         // FOLDER ARRANGEMENT
         function toggleFolderArrangement() {
-            const folders = document.querySelectorAll('.folder');
+    const folders = document.querySelectorAll('.folder');
+    
+    if (!window.fsFoldersAlphabetized) {
+        // Save original positions
+        folders.forEach(folder => {
+            const folderName = folder.dataset.folder;
+            window.fsOriginalFolderPositions[folderName] = {
+                x: parseInt(folder.style.left),
+                y: parseInt(folder.style.top)
+            };
+        });
+        
+        // Sort folders alphabetically
+        const folderArray = Array.from(folders);
+        folderArray.sort((a, b) => a.dataset.folder.localeCompare(b.dataset.folder));
+        
+        // Arrange vertically on the left side with column wrapping
+        const folderHeight = 200; // Match the folder height
+        const folderWidth = 160;  // Match the folder width
+        const verticalSpacing = 10; // Reduced spacing between folders
+        const columnSpacing = 20;   // Space between columns
+        const startX = 20;          // Reduced left margin
+        const startY = 80;          // Start right below header (60px header + 20px margin)
+        
+        // Calculate how many folders can fit vertically
+        const availableHeight = window.innerHeight - startY - 40; // Leave some bottom margin
+        const foldersPerColumn = Math.floor(availableHeight / (folderHeight + verticalSpacing));
+        
+        folderArray.forEach((folder, index) => {
+            const columnIndex = Math.floor(index / foldersPerColumn);
+            const rowIndex = index % foldersPerColumn;
             
-            if (!window.fsFoldersAlphabetized) {
-                folders.forEach(folder => {
-                    const folderName = folder.dataset.folder;
-                    window.fsOriginalFolderPositions[folderName] = {
-                        x: parseInt(folder.style.left),
-                        y: parseInt(folder.style.top)
-                    };
-                });
-                
-                const folderArray = Array.from(folders);
-                folderArray.sort((a, b) => a.dataset.folder.localeCompare(b.dataset.folder));
-                
-                folderArray.forEach((folder, index) => {
-                    const col = index % 3;
-                    const row = Math.floor(index / 3);
-                    const x = 40 + (col * 260);
-                    const y = 100 + (row * 300);
-                    
-                    folder.style.left = x + 'px';
-                    folder.style.top = y + 'px';
-                });
-                
-                window.fsFoldersAlphabetized = true;
-            } else {
-                folders.forEach(folder => {
-                    const folderName = folder.dataset.folder;
-                    const originalPos = window.fsOriginalFolderPositions[folderName];
-                    if (originalPos) {
-                        folder.style.left = originalPos.x + 'px';
-                        folder.style.top = originalPos.y + 'px';
-                    }
-                });
-                
-                window.fsFoldersAlphabetized = false;
+            const x = startX + (columnIndex * (folderWidth + columnSpacing));
+            const y = startY + (rowIndex * (folderHeight + verticalSpacing));
+            
+            folder.style.left = x + 'px';
+            folder.style.top = y + 'px';
+        });
+        
+        window.fsFoldersAlphabetized = true;
+    } else {
+        // Restore original positions
+        folders.forEach(folder => {
+            const folderName = folder.dataset.folder;
+            const originalPos = window.fsOriginalFolderPositions[folderName];
+            if (originalPos) {
+                folder.style.left = originalPos.x + 'px';
+                folder.style.top = originalPos.y + 'px';
             }
-        }
+        });
+        
+        window.fsFoldersAlphabetized = false;
+    }
+}
 function validatePath(pathArray) {
     console.log('Validating path:', pathArray);
     
@@ -3087,6 +3093,7 @@ if (isSubjectFile) {
 function handleLevelClick(event, subjectName, levelNumber) {
     // Prevent dragging interference
     event.stopPropagation();
+    console.log('handleLevelClick called with:', subjectName, levelNumber);
     openSubjectLesson(subjectName, levelNumber);
 }
         function generateLanguageLevels(subjectName, totalLevels, coverImage, windowId) {
@@ -3200,6 +3207,7 @@ if (subjectName === 'C' && typeof challengesData !== 'undefined') {
     // *** MODIFICATION FOR C LANGUAGE ***
     if (subjectName === 'C' && typeof challengesData !== 'undefined') {
         console.log('Using C-specific logic');
+        console.log('challengesData loaded:', challengesData ? challengesData.length : 'undefined', 'levels available');
         const levelData = challengesData[levelNumber - 1]; // Convert to 0-based index
         if (levelData) {
             const correctsCount = levelData.sequence.length;
@@ -3252,7 +3260,7 @@ if (subjectName === 'C' && typeof challengesData !== 'undefined') {
         const progressStatus = getLevelProgress(subjectName, levelNumber);
         const buttonConfig = getButtonConfig(progressStatus);
         content = `
-            <div onclick="openSubjectLesson('${subjectName}')" style="position: relative; height: 100%; background: url('${coverImage}') center/cover; background-attachment: fixed; overflow: hidden; cursor: pointer;">
+            <div onclick="openSubjectLesson('${subjectName}', ${levelNumber})" style="position: relative; height: 100%; background: url('${coverImage}') center/cover; background-attachment: fixed; overflow: hidden; cursor: pointer;">
                 <!-- Blur overlay -->
                 <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('${coverImage}') center/cover; filter: blur(25px); transform: scale(1.1); z-index: 1;"></div>
                 <!-- Dark overlay for readability -->
@@ -4108,10 +4116,13 @@ function getLevelTintAndDisplay(levelNumber, totalStarsAvailable) {
     console.log('Opening lesson:', subjectName, 'Level:', levelNumber);
     
     if (levelNumber) {
-        localStorage.setItem('selectedLevel', levelNumber.toString());
-        localStorage.setItem('selectedSubject', subjectName);
-        console.log('Stored level data');
-    }
+    console.log('Storing level data:', levelNumber, subjectName);
+    localStorage.setItem('selectedLevel', levelNumber.toString());
+    localStorage.setItem('selectedSubject', subjectName);
+    console.log('Successfully stored - Level:', localStorage.getItem('selectedLevel'));
+} else {
+    console.log('No level number provided to openSubjectLesson');
+}
     
     // Get the current window's content element and replace it directly
     const currentWindow = openWindows.find(w => {
@@ -4632,19 +4643,29 @@ function showConsoleHelp() {
                     break;
                     
                 case 'navigateToLevel':
-                    const targetLevel = event.data.level;
-                    if (targetLevel) {
-                        // Find focused window and navigate to level
-                        const focusedWindow = openWindows.find(w => {
-                            const element = document.getElementById(w.id);
-                            return element && parseInt(element.style.zIndex) === windowZIndex;
-                        });
-                        
-                        if (focusedWindow) {
-                            openLanguageLevel('C', targetLevel, 'C.png', focusedWindow.id);
-                        }
-                    }
-                    break;
+    const targetLevel = event.data.level;
+    if (targetLevel) {
+        // Find focused window and navigate back to C language level selection
+        const focusedWindow = openWindows.find(w => {
+            const element = document.getElementById(w.id);
+            return element && parseInt(element.style.zIndex) === windowZIndex;
+        });
+        
+        if (focusedWindow) {
+            // Navigate back to C language levels view first
+            const newPath = ['Fromsupply', 'Desktop', 'Logic', 'Code', 'C'];
+            PathManager.updatePath(focusedWindow.id, newPath);
+            
+            // Generate the C language levels content
+            const content = generateLanguageLevels('C', 100, 'C.png', focusedWindow.id);
+            const contentElement = document.getElementById(focusedWindow.id + '-content');
+            if (contentElement) {
+                contentElement.style.padding = '16px';
+                contentElement.innerHTML = content;
+            }
+        }
+    }
+    break;
 
      case 'startDragFromIframe':
     const focusedWindow = openWindows.find(w => {

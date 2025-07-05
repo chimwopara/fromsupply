@@ -170,25 +170,26 @@ input, textarea {
             min-height: 0;
             background-color: var(--panel-bg-color);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: 16px;
             box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
             display: flex;
             transition: background-color 0.3s ease, border-color 0.3s ease;
         }
         #code-display-area {
-            font-family: var(--main-font-family);
-            font-size: 0.9rem; line-height: 1.6; color: var(--text-color);
-            white-space: pre; overflow-y: auto;
-            width: 100%;
-            height: 100%;
-            padding: 12px;
-            box-sizing: border-box;
-            background-color: transparent;
-            border: none;
-            box-shadow: none;
-            border-radius: 0;
-            transition: color 0.3s ease, font-family 0.3s ease;
-        }
+    font-family: var(--main-font-family);
+    font-size: 0.9rem; line-height: 1.6; color: var(--text-color);
+    white-space: pre-wrap; overflow-y: auto; overflow-x: hidden;
+    width: 100%;
+    height: 100%;
+    padding: 12px;
+    box-sizing: border-box;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+    transition: color 0.3s ease, font-family 0.3s ease;
+    word-wrap: break-word;
+}
         .explanation-comment { color: var(--hint-color); font-style: italic; }
         #attempts-counter {
             position: absolute;
@@ -200,15 +201,27 @@ input, textarea {
             z-index: 10;
             transition: color 0.3s ease;
         }
+        .wrong-comment { 
+    color: var(--error-color); 
+    font-style: italic; 
+    opacity: 0.8;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.6;
+}
 
         /* Hint Area */
         #hint-container {
-            display: flex; align-items: center; gap: 10px;
-            background-color: var(--panel-bg-color);
-            border: 1px dashed var(--border-color); border-radius: 6px; padding: 8px 12px;
-            min-height: 3em;
-            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-        }
+    display: flex; align-items: center; gap: 10px;
+    background-color: var(--panel-bg-color);
+    border-radius: 16px; padding: 8px 12px;
+    min-height: 3em;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+     cursor: pointer;
+}
+        #hint-container:hover {
+    background-color: color-mix(in srgb, var(--panel-bg-color), var(--border-color) 20%);
+}
         #hint-text {
             flex-grow: 1; color: var(--hint-color); font-style: italic; font-size: 0.85rem;
             line-height: 1.5; white-space: pre-wrap; transition: filter 0.3s ease, color 0.3s ease;
@@ -217,12 +230,15 @@ input, textarea {
 
         /* Hint Button Style */
         #reveal-hint-btn {
-            background-color: var(--appstore-blue); color: white; border: none;
-            border-radius: 999px; padding: 5px 15px; font-size: 0.9em; font-weight: 600;
-            cursor: pointer; transition: background-color 0.2s ease, transform 0.1s ease, color 0.3s ease;
-            line-height: 1.4; display: inline-flex; align-items: center; justify-content: center;
-            flex-shrink: 0; min-width: 90px;
-        }
+    background: none;
+    color: white;
+    border: none;
+    padding: 0;
+    font-size: 0.85rem;
+    font-weight: normal;
+    cursor: default;
+    pointer-events: none;
+}
         #reveal-hint-btn:hover:not(:disabled) { background-color: var(--appstore-blue-hover); }
         #reveal-hint-btn:active:not(:disabled) { transform: scale(0.96); }
         #reveal-hint-btn:disabled {
@@ -230,6 +246,7 @@ input, textarea {
             color: color-mix(in srgb, white, var(--panel-bg-color) 40%);
             cursor: not-allowed; opacity: 0.7;
         }
+        
         #reveal-hint-btn .star-icon {
             color: var(--star-color); font-size: 1.2em; margin-right: 3px; line-height: 1; transition: color 0.3s ease;
         }
@@ -239,13 +256,18 @@ input, textarea {
         .option-btn-wrapper { position: relative; }
         .option-btn {
             font-family: var(--main-font-family);
-            background-color: var(--border-color); border: 1px solid var(--text-muted-color);
-            color: var(--text-color); padding: 12px 10px; padding-right: 30px; border-radius: 6px;
+            background-color: var(--panel-bg-color); border: 1px solid var(--text-muted-color);
+            color: var(--text-color); padding: 12px 10px; padding-right: 30px; border-radius: 16px;
             font-weight: 500; transition: all 0.2s ease; text-align: left; font-size: 0.85rem;
             line-height: 1.4; width: 100%; white-space: pre;
             cursor: pointer; overflow: hidden; text-overflow: ellipsis;
         }
-        .option-btn:hover:not(:disabled) { background-color: var(--text-muted-color); border-color: var(--accent-color); transform: translateY(-1px); }
+        .option-btn:hover:not(:disabled) { 
+    background-color: var(--text-muted-color); 
+    border-color: black; 
+    color: black;
+    transform: translateY(-1px); 
+}
         .option-btn:active:not(:disabled) { transform: translateY(0px); }
         .option-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
@@ -512,15 +534,17 @@ input, textarea {
             margin-top: 5px; text-align: center;
         }
 
-        /* Interaction Area Grid */
         #interaction-area {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            padding-top: 12px;
-            border-top: 1px solid var(--border-color);
-            flex-shrink: 0;
-        }
+    display: flex;
+    gap: 12px;
+    
+    
+    flex-shrink: 0;
+}
+
+#interaction-area .option-btn-wrapper {
+    flex: 1;
+}
 
         /* Make main content areas draggable */
 .game-container,
@@ -571,8 +595,10 @@ button, input, select, textarea,
         <!-- Hint Container -->
         <div id="hint-container">
             <span id="hint-text" class="blurred"></span>
-            <button id="reveal-hint-btn">Hint: <span class="star-icon">★</span> 1</button>
+            <button id="reveal-hint-btn">hint</button>
         </div>
+
+        
 
         <!-- Interaction Area -->
         <div id="interaction-area">
@@ -876,7 +902,7 @@ button, input, select, textarea,
             const value = getComputedStyle(document.documentElement).getPropertyValue(cssVarName).trim();
             return value;
         }
-        function updateStarDisplay(animate = false, animationType = 'none') {
+    function updateStarDisplay(animate = false, animationType = 'none') {
     // Send score update to fsLogic instead of local display
     if (typeof parent !== 'undefined' && parent !== window) {
         parent.postMessage({
@@ -889,7 +915,7 @@ button, input, select, textarea,
     updateHintButtonState();
 }
 
-        function saveStarCount() {
+    function saveStarCount() {
     // fsLogic handles score persistence
     if (typeof parent !== 'undefined' && parent !== window) {
         parent.postMessage({
@@ -1050,14 +1076,11 @@ function incrementAttempts() {
             previousStarCountForAnimation = starCount;
 
             if (isCorrect) {
-                if (!levelCompletedThisSession[currentLevelIndex]) {
-                starCount += 3;
-                starsGainedThisLevel += 3;
-            } else {
-                console.log("Level already completed this session, no stars awarded.");
-            }
+                // Don't add stars immediately - calculate at end of level
+                console.log("Correct answer - will calculate stars at level end");
                 showFeedbackOverlay('correct');
                 updateStarDisplay(starCount > previousStarCountForAnimation, 'gain');
+                saveStarCount(); // ADD THIS
 
                 let codeToAdd = '';
                 if (stepData.explanation) {
@@ -1075,42 +1098,36 @@ function incrementAttempts() {
                     displayStep();
                 }, 300);
 
-            } else {
-                if (!levelCompletedThisSession[currentLevelIndex]) {
-                    const starsToLose = Math.min(2, starCount); // Don't go below 0
-                    starCount = Math.max(0, starCount - 2);
-                    starsLostThisLevel += starsToLose;
-                } else {
-                    console.log("Level already completed this session, no stars deducted.");
-                }
-                showFeedbackOverlay('incorrect');
-                const didLoseStar = starCount < previousStarCountForAnimation;
-                updateStarDisplay(didLoseStar, 'loss');
+    } else {
+    // Track wrong answers for end-of-level calculation
+    starsLostThisLevel += 2;
+    console.log("Wrong answer - will calculate stars at level end");
 
-                if (reason) {
-                    const infoBtn = document.createElement('button');
-                    infoBtn.classList.add('info-btn');
-                    infoBtn.textContent = 'ⓘ';
-                    infoBtn.title = "Why is this incorrect?";
-                    infoBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        showInfoModal(reason, {
-                            level: currentLevelIndex + 1,
-                            step: currentStep + 1,
-                            correct: stepData.correct,
-                            incorrect: incorrectText
-                        });
-                    });
-                    wrapper.appendChild(infoBtn);
-                }
+    showFeedbackOverlay('incorrect');
+    const didLoseStar = starCount < previousStarCountForAnimation;
+    updateStarDisplay(didLoseStar, 'loss');
+    saveStarCount(); // ADD THIS
 
-                setTimeout(() => {
-                    interactionArea.querySelectorAll('.option-btn').forEach(btn => {
-                        btn.disabled = false;
-                    });
-                    optionsLocked = false;
-                }, 500);
-            }
+    // Add wrong answer comment to code
+    if (reason && incorrectText) {
+        let wrongCodeComment = '';
+        wrongCodeComment += getIndent(stepData.indent) + `<span class="wrong-comment">\n/* Wrong: ${escapeHtml(incorrectText)}</span>\n`;
+        wrongCodeComment += getIndent(stepData.indent) + `<span class="wrong-comment">   ${escapeHtml(reason)} */</span>\n\n`;
+        constructedCode += wrongCodeComment;
+        codeDisplayArea.innerHTML = constructedCode;
+        scrollCodeDisplay();
+    }
+
+    // Remove the incorrect option
+wrapper.remove();
+
+setTimeout(() => {
+    interactionArea.querySelectorAll('.option-btn').forEach(btn => {
+        btn.disabled = false;
+    });
+    optionsLocked = false;
+}, 500);
+}
         }
 
         // End game
@@ -1131,23 +1148,28 @@ function incrementAttempts() {
 
             
             // Only save stars earned if this is the FIRST completion (for grading)
-    if (!wasAlreadyCompleted) {
-        const totalStarsAvailable = challengesData[currentLevelIndex].sequence.length * 3;
-        const actualStarsEarned = Math.min(starsGainedThisLevel, totalStarsAvailable);
-        const netStarsEarned = actualStarsEarned - starsLostThisLevel;
-        const finalStarsForGrade = Math.max(0, Math.min(netStarsEarned, totalStarsAvailable));
-        
-        localStorage.setItem(`level_${levelNumber}_stars_earned`, finalStarsForGrade.toString());
-        localStorage.setItem(`level_${levelNumber}_total_available`, totalStarsAvailable.toString());
-        
-        // NEW: Track which attempt this completion happened on
-        const currentAttempt = levelAttempts[currentLevelIndex] || 1;
-        localStorage.setItem(`level_${levelNumber}_completion_attempt`, currentAttempt.toString());
-        
-        console.log(`First completion of Level ${levelNumber} on attempt ${currentAttempt}: ${finalStarsForGrade}/${totalStarsAvailable} stars = ${Math.round((finalStarsForGrade/totalStarsAvailable)*100)}%`);
-    } else {
-        console.log(`Re-attempt of Level ${levelNumber}: grade remains from first attempt`);
-    }
+    // Simple calculation: (steps × 3) - (wrong answers × 2) - (hints × 1)
+const totalStepsCompleted = challengesData[currentLevelIndex].sequence.length;
+const totalPossibleStars = totalStepsCompleted * 3;
+const wrongAnswers = Math.floor(starsLostThisLevel / 2); // Since each wrong answer = 2 stars lost
+const hintsUsed = starsLostThisLevel % 2; // Remaining stars lost from hints
+const finalStarsEarned = Math.max(0, totalPossibleStars - (wrongAnswers * 2) - (hintsUsed * 1));
+
+// Only update star count and save data on FIRST completion
+if (!wasAlreadyCompleted) {
+    const netStarGain = finalStarsEarned;
+    starCount = initialStarsForLevelAttempt + netStarGain;
+    
+    localStorage.setItem(`level_${levelNumber}_stars_earned`, finalStarsEarned.toString());
+    localStorage.setItem(`level_${levelNumber}_total_available`, totalPossibleStars.toString());
+    
+    const currentAttempt = levelAttempts[currentLevelIndex] || 1;
+    localStorage.setItem(`level_${levelNumber}_completion_attempt`, currentAttempt.toString());
+    
+    console.log(`Level ${levelNumber} completed: ${finalStarsEarned}/${totalPossibleStars} stars (${wrongAnswers} wrong, ${hintsUsed} hints)`);
+} else {
+    console.log(`Re-attempt of Level ${levelNumber}: grade remains from first attempt`);
+}
 
             // Remove progress flag since level is now completed
             localStorage.removeItem(`level_${levelNumber}_progress`);
@@ -1164,7 +1186,7 @@ const netStarsGained = starCount - initialStarsForLevelAttempt;
     const isReattempt = wasAlreadyCompleted;
 
     interactionArea.innerHTML = `
-        <div style="grid-column: 1 / -1; text-align: center; padding: 20px;">
+        <div style="width: 100%; text-align: center; padding: 20px;">
             <p style="font-weight: bold; font-size: 1.2em; margin-bottom: 10px; color: var(--success-color);">
                 Level ${currentLevelIndex + 1} Complete! ${isReattempt ? '(Re-attempt)' : ''}
             </p>
@@ -1174,7 +1196,7 @@ const netStarsGained = starCount - initialStarsForLevelAttempt;
                     `Stars Gained: <span style="color: var(--success-color);">+${Math.max(0, starsGainedThisLevel)}</span>`
                 }
             </p>
-        <div style="display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap;">
+        <div style="display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap; width: 100%;">
             ${currentLevelIndex > 0 ? `
                 <button id="previous-btn" class="glass-btn">
                     <span style="margin-right: 6px;">←</span> Previous Level
@@ -1223,19 +1245,14 @@ const netStarsGained = starCount - initialStarsForLevelAttempt;
             }
         }
 
-        // Simplified functions for demo
         function updateHintButtonState() {
-            const hintCost = 1;
-            const canReveal = starCount >= hintCost && !hintRevealed;
-            revealHintBtn.disabled = !canReveal;
-            revealHintBtn.innerHTML = `Hint: <span class="star-icon">★</span> ${hintCost}`;
-            if (starCount < hintCost && !hintRevealed) {
-                revealHintBtn.innerHTML = `Need <span class="star-icon">★</span> ${hintCost}`;
-            }
-            if(hintRevealed) {
-                revealHintBtn.disabled = true;
-            }
-        }
+    if (hintRevealed) {
+        revealHintBtn.style.display = 'none';
+    } else {
+        revealHintBtn.style.display = 'block';
+        revealHintBtn.textContent = 'hint';
+    }
+}
 
         function showFeedbackOverlay(type) {
             if (feedbackTimeout) { clearTimeout(feedbackTimeout); }
@@ -1272,7 +1289,7 @@ const netStarsGained = starCount - initialStarsForLevelAttempt;
         }
         function showReattemptMessage() {
     interactionArea.innerHTML = `
-        <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+        <div style="width: 100%; text-align: center; padding: 40px;">
             <h2 style="color: var(--accent-color); margin-bottom: 20px; font-size: 1.4em;">Re-attempt Level ${currentLevelIndex + 1}</h2>
             <p style="color: var(--hint-color); font-style: italic; margin-bottom: 30px; font-size: 1.1em;">
                 No stars will be lost or gained during re-attempts
@@ -1292,11 +1309,11 @@ function startReattempt() {
 }
 
 function goToLevelBegin(levelNumber) {
-    // Store the target level and redirect back to index.html level view
+    // Store the target level for index.html to pick up
     localStorage.setItem('selectedLevel', levelNumber.toString());
     localStorage.setItem('selectedSubject', 'C');
     
-    // Send message to parent to navigate back to level selection
+    // Send message to parent to navigate back to level selection view
     if (typeof parent !== 'undefined' && parent !== window) {
         parent.postMessage({
             action: 'navigateToLevel',
@@ -1309,22 +1326,22 @@ function goToLevelBegin(levelNumber) {
         modalCloseBtn.addEventListener('click', () => hideModal(infoModal));
         infoModal.addEventListener('click', (event) => { if (event.target === infoModal) hideModal(infoModal); });
 
-        revealHintBtn.addEventListener('click', () => {
-            const hintCost = 1;
-            if (starCount >= hintCost && !hintRevealed) {
-                let didLoseStar = false;
-                if (!levelCompletedThisSession[currentLevelIndex]) {
-                previousStarCountForAnimation = starCount;
-                starCount -= hintCost;
-                starsLostThisLevel += hintCost;
-                didLoseStar = true;
-            }
-                updateStarDisplay(didLoseStar, 'loss');
-                hintText.classList.remove('blurred');
-                hintRevealed = true;
-                updateHintButtonState();
-            }
-        });
+        hintContainer.addEventListener('click', () => {
+    const hintCost = 1;
+    if (starCount >= hintCost && !hintRevealed) {
+        let didLoseStar = false;
+        if (!levelCompletedThisSession[currentLevelIndex]) {
+            previousStarCountForAnimation = starCount;
+            starCount -= hintCost;
+            starsLostThisLevel += hintCost;
+            didLoseStar = true;
+        }
+        updateStarDisplay(didLoseStar, 'loss');
+        hintText.classList.remove('blurred');
+        hintRevealed = true;
+        updateHintButtonState();
+    }
+});
 
         // Load session data
         function loadSessionData() {
@@ -1352,13 +1369,12 @@ function goToLevelBegin(levelNumber) {
                 }
 
                 if (levelInProgress) {
-                    console.warn("Level was in progress on refresh. Reverting star count.");
-                    starCount = savedInitialStars;
-                    currentLevelIndex = savedLevelIndex;
-                    levelInProgress = false;
-                    sessionStorage.setItem('chimCodeLevelInProgress', 'false');
-                    return savedLevelIndex;
-                }
+    console.warn("Level was in progress on refresh. Reverting star count.");
+    starCount = savedInitialStars;
+    levelInProgress = false;
+    sessionStorage.setItem('chimCodeLevelInProgress', 'false');
+    // Don't override level selection - let initializeGame handle it
+}
             } catch (e) {
                 console.error("Error parsing saved state:", e);
                 starCount = 0;
@@ -1383,9 +1399,8 @@ window.addEventListener('message', function(event) {
 });
 
 
-// Start the game
-const startLevelIndex = loadSessionData();
-initializeGame(startLevelIndex);
+loadSessionData();
+initializeGame(0); // Always pass 0, let initializeGame check localStorage
 
 // Simple event forwarding to parent for dragging
 let mouseDownOnNonInteractive = false;
@@ -1406,6 +1421,24 @@ document.addEventListener('mousedown', function(e) {
                 mouseY: e.clientY
             }, '*');
         }
+    }
+}, true);
+
+// Forward keyboard events to parent for shortcuts
+document.addEventListener('keydown', function(e) {
+    // Don't forward if user is typing in input elements
+    if (e.target.matches('input, textarea, [contenteditable]')) return;
+    
+    // Forward the keyboard event to parent
+    if (parent !== window) {
+        parent.postMessage({
+            action: 'keyboardEvent',
+            key: e.key,
+            metaKey: e.metaKey,
+            ctrlKey: e.ctrlKey,
+            shiftKey: e.shiftKey,
+            altKey: e.altKey
+        }, '*');
     }
 }, true);
 
