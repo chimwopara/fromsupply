@@ -238,99 +238,10 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
             display: flex;
             align-items: center;
-            justify-content: center; /* This centers the middle element */
+            justify-content: center;
             padding: 0 20px;
             z-index: 1000;
-            position: relative; /* Needed for absolute children */
-        }
-
-        .directory-nav {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex: 1; /* Allows it to take up space but still be centered */
-            min-width: 0; /* Important for flex centering */
-            transition: all 0.3s ease;
-            opacity: 1;
-        }
-
-        .directory-nav.hidden {
-            opacity: 0;
-            width: 0;
-            min-width: 0;
-            margin: 0;
-            pointer-events: none;
-        }
-
-        .directory-path {
-    background: transparent;
-    border: none;
-    border-radius: 0;
-    padding: 8px 16px;
-    color: white;
-    font-size: 14px;
-    font-weight: 500;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-    cursor: default;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: fit-content;
-    min-width: 80px;
-}
-
-.directory-path:hover {
-    background: transparent;
-}
-
-        .breadcrumb-segment {
-    display: inline;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    padding: 2px 4px;
-    border-radius: 4px;
-}
-
-.breadcrumb-segment:active {
-    transform: translateY(1px);
-    opacity: 0.8;
-}
-
-.fromsupply-home-icon {
-    transition: all 0.2s ease;
-}
-
-.breadcrumb-segment:hover .fromsupply-home-icon {
-    content: url('redhome.png');
-}
-
-.breadcrumb-segment:hover {
-    color: white;
-    text-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
-    background: transparent;
-}
-
-.breadcrumb-segment.current-tapped {
-    color: #fbbf24;
-    text-shadow: 0 0 12px rgba(251, 191, 36, 0.8);
-    background: transparent;
-}
-
-.breadcrumb-segment.current-tapped:hover {
-    color: #fbbf24;
-    text-shadow: 0 0 16px rgba(251, 191, 36, 1.0);
-    background: transparent;
-}
-
-        .breadcrumb-segment:active {
-            transform: scale(0.95);
-        }
-
-        .breadcrumb-separator {
-            color: rgba(255, 255, 255, 0.6);
-            margin: 0 4px;
-            pointer-events: none;
+            position: relative;
         }
 
         .logo-section {
@@ -371,7 +282,68 @@
             pointer-events: none;
         }
 
-       .star-button {
+        .directory-nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+            transition: all 0.3s ease;
+            opacity: 1;
+        }
+
+        .directory-nav.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .directory-path {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 8px 16px;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            cursor: default;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            max-width: 600px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .directory-path:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .breadcrumb-segment {
+            display: inline;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        .breadcrumb-segment:hover {
+            color: #fbbf24;
+            text-shadow: 0 0 8px rgba(251, 191, 36, 0.6);
+            background: rgba(251, 191, 36, 0.1);
+        }
+
+        .breadcrumb-segment:active {
+            transform: scale(0.95);
+        }
+
+        .breadcrumb-separator {
+            color: rgba(255, 255, 255, 0.6);
+            margin: 0 4px;
+            pointer-events: none;
+        }
+
+        .star-button {
             position: absolute;
             right: 20px;
             background: rgba(255, 255, 255, 0.2);
@@ -702,22 +674,22 @@
         }
 
         .folder-item-icon {
-    font-size: 24px;
-    width: 32px;
-    height: 32px;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+            font-size: 24px;
+            width: 32px;
+            height: 32px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-.folder-item-icon img {
-    width: 24px;
-    height: 24px;
-    object-fit: contain;
-}
-
-        /* Removed - now using direct img tags with dynamic icons */
+        .nested-folder-icon {
+            width: 28px;
+            height: 28px;
+            background: url('whitefile.png') center/contain;
+            background-repeat: no-repeat;
+            background-color: transparent;
+        }
 
         .folder-item-name {
             color: white !important;
@@ -1110,6 +1082,285 @@
     </div>
 
     <script>
+        // INTELLIGENT DIRECTORY REGISTRY SYSTEM
+        const DirectoryRegistry = {
+            // Complete directory structure with metadata
+            structure: {
+                'Fromsupply': {
+                    type: 'root',
+                    children: {
+                        'Desktop': {
+                            type: 'virtual',
+                            children: {
+                                'Logic': {
+                                    type: 'folder',
+                                    children: {
+                                        'Code': {
+                                            type: 'category',
+                                            children: {
+                                                'Assembly': { type: 'subject', levels: 100, cover: 'Assembly.png' },
+                                                'Bash': { type: 'subject', levels: 100, cover: 'Bash.png' },
+                                                'C': { type: 'subject', levels: 100, cover: 'C.png' },
+                                                'C#': { type: 'subject', levels: 100, cover: 'C#.png' },
+                                                'C++': { type: 'subject', levels: 100, cover: 'C++.png' },
+                                                'CSS': { type: 'subject', levels: 100, cover: 'CSS.png' },
+                                                'Go': { type: 'subject', levels: 100, cover: 'Go.png' },
+                                                'HTML': { type: 'subject', levels: 100, cover: 'HTML.png' },
+                                                'Java': { type: 'subject', levels: 100, cover: 'Java.png' },
+                                                'JavaScript': { type: 'subject', levels: 100, cover: 'JavaScript.png' },
+                                                'Kotlin': { type: 'subject', levels: 100, cover: 'Kotlin.png' },
+                                                'Python': { type: 'subject', levels: 100, cover: 'Python.png' },
+                                                'R': { type: 'subject', levels: 100, cover: 'R.png' },
+                                                'Rust': { type: 'subject', levels: 100, cover: 'Rust.png' },
+                                                'Swift': { type: 'subject', levels: 100, cover: 'Swift.png' },
+                                                'TypeScript': { type: 'subject', levels: 100, cover: 'TypeScript.png' },
+                                                'Z': { type: 'subject', levels: 100, cover: 'Z.png' }
+                                            }
+                                        },
+                                        'Science': {
+                                            type: 'category',
+                                            children: {
+                                                'Chemistry': { type: 'subject', levels: 45, cover: 'chemistry.png' },
+                                                'Physics': { type: 'subject', levels: 50, cover: 'physics.png' },
+                                                'Biology': { type: 'subject', levels: 40, cover: 'biology.png' },
+                                                'Psychology': { type: 'subject', levels: 35, cover: 'psychology.png' }
+                                            }
+                                        },
+                                        'Maths': {
+                                            type: 'category',
+                                            children: {
+                                                'Calculus': { type: 'subject', levels: 45, cover: 'calculus.png' },
+                                                'Statistics': { type: 'subject', levels: 40, cover: 'statistics.png' },
+                                                'Discrete Maths': { type: 'subject', levels: 35, cover: 'discretemaths.png' }
+                                            }
+                                        },
+                                        'Business': {
+                                            type: 'category',
+                                            children: {
+                                                'Marketing': { type: 'subject', levels: 35, cover: 'marketing.png' },
+                                                'Finance': { type: 'subject', levels: 45, cover: 'finance.png' },
+                                                'Economics': { type: 'subject', levels: 30, cover: 'economics.png' },
+                                                'Practice': { type: 'app', file: 'business-practice.html' }
+                                            }
+                                        },
+                                        'Cooking': {
+                                            type: 'category',
+                                            children: {
+                                                'African Food': { type: 'subject', levels: 30, cover: 'africanfood.png' },
+                                                'North American Food': { type: 'subject', levels: 35, cover: 'northamericanfood.png' },
+                                                'European Food': { type: 'subject', levels: 40, cover: 'europeanfood.png' },
+                                                'Asian Food': { type: 'subject', levels: 38, cover: 'asianfood.png' },
+                                                'Australian Food': { type: 'subject', levels: 25, cover: 'australianfood.png' },
+                                                'South American Food': { type: 'subject', levels: 32, cover: 'southamericanfood.png' }
+                                            }
+                                        },
+                                        ' Logic Builder': { type: 'app', file: 'logic-builder.html' }
+                                    }
+                                },
+                                'Mall': {
+                                    type: 'folder',
+                                    children: {
+                                        'Purchased': {
+                                            type: 'category',
+                                            children: {
+                                                'From Chefs': { type: 'collection', description: 'Items purchased from chef creators' },
+                                                'From Designers': { type: 'collection', description: 'Items purchased from designer creators' }
+                                            }
+                                        },
+                                        'Gifted': {
+                                            type: 'category',
+                                            children: {
+                                                'From Chefs': { type: 'collection', description: 'Gifts received from chef creators' },
+                                                'From Designers': { type: 'collection', description: 'Gifts received from designer creators' }
+                                            }
+                                        },
+                                        'Gifts': {
+                                            type: 'category',
+                                            children: {
+                                                'From Chefs': { type: 'collection', description: 'Gifts to give from chef creators' },
+                                                'From Designers': { type: 'collection', description: 'Gifts to give from designer creators' }
+                                            }
+                                        },
+                                        'Selling': {
+                                            type: 'category',
+                                            children: {
+                                                'From Chefs': { type: 'collection', description: 'Chef-created items you are selling' },
+                                                'From Designers': { type: 'collection', description: 'Designer-created items you are selling' }
+                                            }
+                                        },
+                                        'fs Mall': { type: 'app', file: 'mall.html' },
+                                        ' Mall Builder': { type: 'app', file: 'mall-builder.html' }
+                                    }
+                                },
+                                'Farm': {
+                                    type: 'folder',
+                                    children: {
+                                        'Crops': {
+                                            type: 'category',
+                                            children: {
+                                                'Vegetables': {
+                                                    type: 'subcategory',
+                                                    children: {
+                                                        'Tomatoes': { type: 'subject', levels: 25, cover: 'Tomatoes.png' },
+                                                        'Carrots': { type: 'subject', levels: 20, cover: 'Carrots.png' },
+                                                        'Lettuce': { type: 'subject', levels: 15, cover: 'Lettuce.png' },
+                                                        'Peppers': { type: 'subject', levels: 18, cover: 'Peppers.png' }
+                                                    }
+                                                },
+                                                'Fruits': {
+                                                    type: 'subcategory',
+                                                    children: {
+                                                        'Apples': { type: 'subject', levels: 30, cover: 'Apples.png' },
+                                                        'Strawberries': { type: 'subject', levels: 22, cover: 'Strawberries.png' },
+                                                        'Grapes': { type: 'subject', levels: 35, cover: 'Grapes.png' }
+                                                    }
+                                                },
+                                                'Grains': {
+                                                    type: 'subcategory',
+                                                    children: {
+                                                        'Wheat': { type: 'subject', levels: 40, cover: 'Wheat.png' },
+                                                        'Corn': { type: 'subject', levels: 35, cover: 'Corn.png' },
+                                                        'Rice': { type: 'subject', levels: 45, cover: 'Rice.png' }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        'Livestock': {
+                                            type: 'category',
+                                            children: {
+                                                'Cattle': { type: 'subject', levels: 30, cover: 'Cattle.png' },
+                                                'Chickens': { type: 'subject', levels: 25, cover: 'Chickens.png' },
+                                                'Pigs': { type: 'subject', levels: 28, cover: 'Pigs.png' },
+                                                'Sheep': { type: 'subject', levels: 22, cover: 'Sheep.png' }
+                                            }
+                                        },
+                                        'Equipment': {
+                                            type: 'category',
+                                            children: {
+                                                'Tractors': { type: 'subject', levels: 20, cover: 'Tractors.png' },
+                                                'Harvesters': { type: 'subject', levels: 25, cover: 'Harvesters.png' },
+                                                'Irrigation': { type: 'subject', levels: 18, cover: 'Irrigation.png' }
+                                            }
+                                        },
+                                        'fs Farms': { type: 'app', file: 'farms.html' },
+                                        'fs Farms Builder': { type: 'app', file: 'farms-builder.html' }
+                                    }
+                                },
+                                'Prompts': {
+                                    type: 'folder',
+                                    children: {
+                                        'My Prompts': { type: 'collection', description: 'Your personal prompt collection' },
+                                        'Saved Prompts': { type: 'collection', description: 'Bookmarked and saved prompts' },
+                                        'fs Prompts Builder': { type: 'app', file: 'prompts.html' }
+                                    }
+                                },
+                                'Media': {
+                                    type: 'folder',
+                                    children: {
+                                        'Stream Builder': { type: 'app', file: 'club-belong.html' },
+                                        'Movie Builder': { type: 'app', file: 'fivetaps.html' },
+                                        'fs Media': { type: 'app', file: 'media.html' }
+                                    }
+                                },
+                                'Browser': {
+                                    type: 'folder',
+                                    children: {
+                                        'Browser': { type: 'app', file: 'browser.html' },
+                                        'Browser Builder': { type: 'app', file: 'browserbuilder.html' }
+                                    }
+                                }
+                            }
+                        },
+                        'System': {
+                            type: 'folder',
+                            children: {
+                                'Tutorials': { type: 'collection', description: 'Interactive tutorials and help guides' },
+                                'Shortcuts': { type: 'collection', description: 'Keyboard shortcuts and gestures reference' },
+                                'Terms': { type: 'collection', description: 'Terms of service and privacy policy' },
+                                'Financials': { type: 'collection', description: 'Pricing, billing, and financial information' },
+                                'Support Center': { type: 'collection', description: 'Help desk and customer support' }
+                            }
+                        }
+                    }
+                }
+            },
+
+            // Registry to track dynamic directories
+            dynamicDirectories: new Map(),
+
+            // Get node at path
+            getNode(path) {
+                if (!Array.isArray(path)) return null;
+                
+                let current = this.structure;
+                for (const segment of path) {
+                    if (!current || !current.children || !current.children[segment]) {
+                        // Check dynamic directories
+                        const dynamicPath = path.join('/');
+                        if (this.dynamicDirectories.has(dynamicPath)) {
+                            return this.dynamicDirectories.get(dynamicPath);
+                        }
+                        return null;
+                    }
+                    current = current.children[segment];
+                }
+                return current;
+            },
+
+            // Check if path exists
+            pathExists(path) {
+                return this.getNode(path) !== null;
+            },
+
+            // Get valid parent path
+            getValidParentPath(path) {
+                if (!Array.isArray(path) || path.length <= 1) return ['Fromsupply'];
+                
+                for (let i = path.length - 1; i >= 1; i--) {
+                    const testPath = path.slice(0, i);
+                    if (this.pathExists(testPath)) {
+                        return testPath;
+                    }
+                }
+                return ['Fromsupply'];
+            },
+
+            // Get children of a node
+            getChildren(path) {
+                const node = this.getNode(path);
+                return node && node.children ? Object.keys(node.children) : [];
+            },
+
+            // Register dynamic directory
+            registerDynamic(path, node) {
+                const pathString = Array.isArray(path) ? path.join('/') : path;
+                this.dynamicDirectories.set(pathString, node);
+            },
+
+            // Check if path represents a level
+            isLevelPath(path) {
+                if (!Array.isArray(path) || path.length < 2) return false;
+                const lastSegment = path[path.length - 1];
+                return lastSegment.startsWith('Level ') || lastSegment === 'Notes' || lastSegment === 'Shell';
+            },
+
+            // Get best navigation target for level
+            getBestLevelTarget(path, targetLevel) {
+                if (!this.isLevelPath(path)) return path;
+                
+                // Remove special segments (Level, Notes, Shell)
+                const cleanPath = [];
+                for (const segment of path) {
+                    if (!segment.startsWith('Level ') && segment !== 'Notes' && segment !== 'Shell') {
+                        cleanPath.push(segment);
+                    }
+                }
+                
+                // Navigate to the target level
+                return cleanPath.slice(0, targetLevel + 1);
+            }
+        };
+
         // UNIFIED DRAG SYSTEM
         const DragManager = {
             active: false,
@@ -1436,17 +1687,34 @@
             }
         };
 
-        // UNIFIED PATH MANAGER
+        // INTELLIGENT PATH MANAGER
         const PathManager = {
             updatePath(windowId, newPath) {
+                // Validate path using registry
+                const validatedPath = this.validatePath(newPath);
+                
                 const window = openWindows.find(w => w.id === windowId);
                 if (window) {
-                    window.currentPath = [...newPath];
+                    window.currentPath = validatedPath;
                     if (this.isActiveWindow(windowId)) {
-                        currentDirectory = [...newPath];
+                        currentDirectory = [...validatedPath];
                         updateDirectoryDisplay();
                     }
                 }
+            },
+            
+            validatePath(path) {
+                if (!Array.isArray(path) || path.length === 0) {
+                    return ['Fromsupply'];
+                }
+                
+                // Check if path exists in registry
+                if (DirectoryRegistry.pathExists(path)) {
+                    return [...path];
+                }
+                
+                // Find the deepest valid parent path
+                return DirectoryRegistry.getValidParentPath(path);
             },
             
             getPath(windowId) {
@@ -1462,13 +1730,33 @@
             navigateBack(windowId) {
                 focusWindow(windowId);
                 
-                const path = this.getPath(windowId);
-                if (path.length > 2) {
-                    const newPath = path.slice(0, -1);
+                const currentPath = this.getPath(windowId);
+                
+                // Special handling for levels and dynamic content
+                if (DirectoryRegistry.isLevelPath(currentPath)) {
+                    const cleanPath = [];
+                    for (const segment of currentPath) {
+                        if (!segment.startsWith('Level ') && segment !== 'Notes' && segment !== 'Shell') {
+                            cleanPath.push(segment);
+                        } else {
+                            break; // Stop at first level-related segment
+                        }
+                    }
+                    
+                    if (cleanPath.length > 1) {
+                        this.updatePath(windowId, cleanPath);
+                        this.updateContent(windowId);
+                        return;
+                    }
+                }
+                
+                // Normal back navigation
+                if (currentPath.length > 2) {
+                    const newPath = currentPath.slice(0, -1);
                     this.updatePath(windowId, newPath);
                     this.updateContent(windowId);
-                } else if (path.length === 2) {
-                    const folderName = path[1];
+                } else if (currentPath.length === 2) {
+                    const folderName = currentPath[1];
                     const content = generateFolderContent(folderName, windowId);
                     const contentElement = document.getElementById(windowId + '-content');
                     if (contentElement) {
@@ -1485,31 +1773,63 @@
                 if (!contentElement || path.length < 2) return;
                 
                 contentElement.style.padding = '16px';
-                const folderName = path[1];
-                const content = generateFolderContent(folderName, windowId);
-                contentElement.innerHTML = content;
+                
+                // Determine content based on path
+                if (path.length === 2 && path[1] === 'Desktop') {
+                    // Show main desktop folders
+                    const content = generateFolderContent('Desktop', windowId);
+                    contentElement.innerHTML = content;
+                } else if (path.length >= 2) {
+                    // Show appropriate folder content
+                    const targetFolder = path[path.length - 1];
+                    const parentFolder = path.length > 2 ? path[path.length - 2] : null;
+                    const content = generateFolderContent(targetFolder, windowId, parentFolder);
+                    contentElement.innerHTML = content;
+                }
+            },
+
+            // Navigate to specific level in breadcrumb
+            navigateToLevel(windowId, targetLevel) {
+                const currentPath = this.getPath(windowId);
+                
+                if (targetLevel < 0 || targetLevel >= currentPath.length) return;
+                
+                // Handle special case for root level
+                if (targetLevel === 0) {
+                    if (openWindows.length > 1) {
+                        closeWindow(windowId);
+                        return;
+                    } else {
+                        closeWindow(windowId);
+                        return;
+                    }
+                }
+                
+                // Get the best navigation path using registry
+                const newPath = DirectoryRegistry.getBestLevelTarget(currentPath, targetLevel);
+                
+                if (newPath.length === 1) {
+                    closeWindow(windowId);
+                    return;
+                }
+                
+                this.updatePath(windowId, newPath);
+                this.updateContent(windowId);
             }
         };
 
-// GLOBAL VARIABLES INITIALIZATION
-function initializeGlobals() {
-    const defaults = {
-        fsWindowHistory: [],
-        fsFoldersAlphabetized: false,
-        fsOriginalFolderPositions: {},
-        fsLastMousePosition: { x: 200, y: 200 },
-        fsConsoleVisible: false,
-        fsConsoleContext: null,
-        fsConsoleHistory: [],
-        fsConsoleHistoryIndex: -1,
-        fsTappedDirectories: [],
-        breadcrumbDrag: {
-            active: false,
-            startY: 0,
-            level: -1,
-            threshold: 30
-        }
-    };
+        // GLOBAL VARIABLES INITIALIZATION
+        function initializeGlobals() {
+            const defaults = {
+                fsWindowHistory: [],
+                fsFoldersAlphabetized: false,
+                fsOriginalFolderPositions: {},
+                fsLastMousePosition: { x: 200, y: 200 },
+                fsConsoleVisible: false,
+                fsConsoleContext: null,
+                fsConsoleHistory: [],
+                fsConsoleHistoryIndex: -1
+            };
             
             for (const [key, value] of Object.entries(defaults)) {
                 if (typeof window[key] === 'undefined') {
@@ -1517,8 +1837,6 @@ function initializeGlobals() {
                 }
             }
         }
-
-        
 
         // Initialize globals
         initializeGlobals();
@@ -1658,7 +1976,7 @@ function initializeGlobals() {
         // Initialize event manager
         EventManager.init();
 
-        // FOLDER STRUCTURE
+        // FOLDER STRUCTURE (Legacy support)
          const folderStructure = {
             'System': {
                 'Tutorials': { description: 'Interactive tutorials and help guides' },
@@ -1837,298 +2155,46 @@ function initializeGlobals() {
                 }, duration);
             }
         }
-// FOLDER ICON MAPPING
-function getFolderIcon(folderName) {
-    // Levels are apps, not folders
-    if (folderName.startsWith('Level ')) {
-        return 'openapp.png';
-    }
-    
-    // Programming languages with specific icons
-    const languageIcons = ['C', 'C#', 'C++', 'Python', 'JavaScript', 'Java', 'TypeScript', 'Swift', 'Rust', 'Go', 'Kotlin', 'R', 'Assembly', 'Bash', 'CSS', 'HTML', 'Z'];
-    
-    if (languageIcons.includes(folderName)) {
-        return `${folderName}.png`;
-    }
-    
-    const iconMap = {
-    'Fromsupply': 'blackhome.png',
-    'Desktop': 'blackfile.png',
-        'Desktop': 'blackfile.png',
-        'Logic': 'blackfile.png',
-        'Mall': 'blackfile.png',
-        'Farm': 'blackfile.png',
-        'Prompts': 'blackfile.png',
-        'Media': 'blackfile.png',
-        'Browser': 'blackfile.png',
-        'Code': 'whitefile.png',
-        'Science': 'whitefile.png',
-        'Maths': 'whitefile.png',
-        'Business': 'whitefile.png',
-        'Cooking': 'whitefile.png',
-        'System': 'whitefile.png',
-        'Shell': 'openapp.png',
-        'Notes': 'notesicon.png'
-    };
-    return iconMap[folderName] || 'whitefile.png';
-}
 
-// DIRECTORY DISPLAY
-function updateDirectoryDisplay() {
-    const directoryNav = document.getElementById('directoryNav');
-    const directoryPath = document.getElementById('directoryPath');
-    const logoText = document.querySelector('.logo-text');
-    
-    if (openWindows.length === 0) {
-        directoryNav.classList.add('hidden');
-        if (logoText) logoText.classList.remove('hidden');
-        return;
-    } else {
-        directoryNav.classList.remove('hidden');
-        if (logoText) logoText.classList.add('hidden');
-    }
+        // DIRECTORY DISPLAY WITH INTELLIGENT NAVIGATION
+        function updateDirectoryDisplay() {
+            const directoryNav = document.getElementById('directoryNav');
+            const directoryPath = document.getElementById('directoryPath');
+            const logoText = document.querySelector('.logo-text');
             
-    const segments = currentDirectory.map((segment, index) => {
-    const directoryPath = currentDirectory.slice(0, index + 1).join('/');
-    const isCurrentDirectory = index === currentDirectory.length - 1;
-    const currentFullPath = currentDirectory.join('/');
-    const wasTapped = window.fsTappedDirectories.includes(currentFullPath);
-    const cssClass = (isCurrentDirectory && wasTapped) ? 'breadcrumb-segment current-tapped' : 'breadcrumb-segment';
-    const folderIcon = getFolderIcon(segment);
-    
-    // Special handling for Fromsupply home icon
-const iconHtml = segment === 'Fromsupply' 
-    ? `<img src="${folderIcon}" 
-            class="fromsupply-home-icon"
-            style="width: 32px; height: 32px; margin-right: 2px; vertical-align: middle;" 
-            alt="">`
-    : `<img src="${folderIcon}" 
-            style="width: 16px; height: 16px; margin-right: 6px; vertical-align: middle;" 
-            alt="">`;
-    
-    return `<span class="${cssClass}" 
-                  onclick="event.stopPropagation(); handleDirectoryClick(${index}); return false;"
-                  onmousedown="event.stopPropagation(); startBreadcrumbDrag(event, ${index}); return false;"
-                  style="cursor: pointer; user-select: none;">
-        ${iconHtml}${segment}
-    </span>`;
-});
+            if (openWindows.length === 0) {
+                directoryNav.classList.add('hidden');
+                if (logoText) logoText.classList.remove('hidden');
+                return;
+            } else {
+                directoryNav.classList.remove('hidden');
+                if (logoText) logoText.classList.add('hidden');
+            }
+            
+            // Validate current directory using registry
+            const validatedDirectory = DirectoryRegistry.getValidParentPath(currentDirectory);
+            if (JSON.stringify(validatedDirectory) !== JSON.stringify(currentDirectory)) {
+                currentDirectory = validatedDirectory;
+            }
+            
+            const segments = currentDirectory.map((segment, index) => {
+                return `<span class="breadcrumb-segment" onclick="event.stopPropagation(); navigateToLevel(${index}); return false;">${segment}</span>`;
+            });
             
             directoryPath.innerHTML = segments.join('<span class="breadcrumb-separator">/</span>');
         }
-function startBreadcrumbDrag(event, level) {
-    window.breadcrumbDrag.startY = event.clientY;
-    window.breadcrumbDrag.level = level;
-    window.breadcrumbDrag.active = false; // Will become true if dragged far enough
-    
-    document.addEventListener('mousemove', handleBreadcrumbDrag);
-    document.addEventListener('mouseup', endBreadcrumbDrag);
-}
 
-function handleBreadcrumbDrag(event) {
-    if (window.breadcrumbDrag.level === -1) return;
-    
-    const deltaY = event.clientY - window.breadcrumbDrag.startY;
-    
-    // Only activate drag if moved downward beyond threshold
-    if (deltaY > window.breadcrumbDrag.threshold && !window.breadcrumbDrag.active) {
-        window.breadcrumbDrag.active = true;
-        
-        // Visual feedback - could add a dragging indicator here if desired
-        document.body.style.cursor = 'grabbing';
-    }
-}
-
-function endBreadcrumbDrag(event) {
-    document.removeEventListener('mousemove', handleBreadcrumbDrag);
-    document.removeEventListener('mouseup', endBreadcrumbDrag);
-    
-    document.body.style.cursor = '';
-    
-    const level = window.breadcrumbDrag.level;
-    const wasActive = window.breadcrumbDrag.active;
-    
-    // Reset drag state
-    window.breadcrumbDrag.active = false;
-    window.breadcrumbDrag.level = -1;
-    window.breadcrumbDrag.startY = 0;
-    
-    // If we dragged downward enough, create new window
-    if (wasActive && level !== -1) {
-        createWindowFromDirectory(level);
-    } else if (!wasActive && level !== -1) {
-        // If we didn't drag, treat as normal click
-        handleDirectoryClick(level);
-    }
-}
-
-function createWindowFromDirectory(level) {
-    const targetPath = currentDirectory.slice(0, level + 1);
-    const folderName = targetPath[targetPath.length - 1];
-    
-    // Don't create window for Fromsupply - it should close instead
-    if (folderName === 'Fromsupply') {
-        return;
-    }
-    
-    // Calculate window position near mouse
-    const mouseX = window.fsLastMousePosition.x;
-    const mouseY = window.fsLastMousePosition.y;
-    const windowX = Math.max(20, mouseX - 300);
-    const windowY = Math.max(80, mouseY + 20);
-    
-    // Create new window
-    const windowId = createWindow(`${folderName} - Fromsupply`, '', 650, 500, windowX, windowY);
-    
-    // Set the path for the new window
-    PathManager.updatePath(windowId, [...targetPath]);
-    
-    // Generate appropriate content based on the directory level
-    let content;
-    if (targetPath.length === 1) {
-        // Root level - close window since it doesn't make sense
-        closeWindow(windowId);
-        return;
-    } else if (targetPath.length === 2 && targetPath[1] === 'Desktop') {
-        // Desktop level - show main folders
-        content = generateFolderContent('Desktop', windowId);
-    } else if (folderName.startsWith('Level ')) {
-        // It's a level - get the parent subject info
-        const subjectName = targetPath[targetPath.length - 2];
-        const levelNumber = parseInt(folderName.replace('Level ', ''));
-        
-        // Find subject info from folder structure
-        let coverImage = 'whitefile.png';
-        if (targetPath.length >= 4) {
-            const parentFolder = targetPath[2]; // Logic
-            const categoryFolder = targetPath[3]; // Code
-            const structure = folderStructure[parentFolder] && folderStructure[parentFolder][categoryFolder];
-            if (structure && structure[subjectName] && structure[subjectName].cover) {
-                coverImage = structure[subjectName].cover;
-            }
-        }
-        
-        openLanguageLevel(subjectName, levelNumber, coverImage, windowId);
-        return;
-    } else {
-        // Regular folder or subject
-        if (targetPath.length >= 3) {
-            const parentFolder = targetPath[targetPath.length - 2];
-            content = generateFolderContent(folderName, windowId, parentFolder);
-        } else {
-            content = generateFolderContent(folderName, windowId);
-        }
-    }
-    
-    // Set content in window
-    const contentElement = document.getElementById(windowId + '-content');
-    if (contentElement && content) {
-        contentElement.style.padding = '16px';
-        contentElement.innerHTML = content;
-    }
-    
-    focusWindow(windowId);
-}
-
-function handleDirectoryClick(level) {
-    const directoryPath = currentDirectory.slice(0, level + 1).join('/');
-    const isCurrentLevel = level === currentDirectory.length - 1;
-    const segmentName = currentDirectory[level];
-    
-    // Clicking Fromsupply closes the current window
-    if (segmentName === 'Fromsupply') {
-        const focusedWindow = openWindows.find(w => {
-            const element = document.getElementById(w.id);
-            return element && parseInt(element.style.zIndex) === windowZIndex;
-        });
-        
-        if (focusedWindow) {
-            closeWindow(focusedWindow.id);
-        }
-        return;
-    }
-    
-    // Only toggle tapped state when clicking the current directory
-    if (isCurrentLevel) {
-        const tappedIndex = window.fsTappedDirectories.indexOf(directoryPath);
-        if (tappedIndex === -1) {
-            window.fsTappedDirectories.push(directoryPath);
-        } else {
-            window.fsTappedDirectories.splice(tappedIndex, 1);
-        }
-        updateDirectoryDisplay();
-        return;
-    }
-    
-    // Otherwise navigate normally (don't add to tapped list)
-    navigateToLevel(level);
-}
         function navigateToLevel(level) {
-    const focusedWindow = openWindows.find(w => {
-        const element = document.getElementById(w.id);
-        return element && parseInt(element.style.zIndex) === windowZIndex;
-    });
-    
-    if (!focusedWindow) return;
-    
-    focusWindow(focusedWindow.id);
-    
-    if (level === 0) {
-        if (openWindows.length > 1) {
-            closeWindow(focusedWindow.id);
-            return;
-        } else if (focusedWindow) {
-            closeWindow(focusedWindow.id);
-            return;
+            const focusedWindow = openWindows.find(w => {
+                const element = document.getElementById(w.id);
+                return element && parseInt(element.style.zIndex) === windowZIndex;
+            });
+            
+            if (!focusedWindow) return;
+            
+            focusWindow(focusedWindow.id);
+            PathManager.navigateToLevel(focusedWindow.id, level);
         }
-    }
-    
-    const windowPath = PathManager.getPath(focusedWindow.id);
-    const newPath = windowPath.slice(0, level + 1);
-    PathManager.updatePath(focusedWindow.id, newPath);
-    
-    const contentElement = document.getElementById(focusedWindow.id + '-content');
-    if (!contentElement) return;
-    
-    if (newPath.length === 1) {
-        closeWindow(focusedWindow.id);
-    } else if (newPath.length === 2) {
-        // Desktop level - show main folders
-        const content = generateFolderContent('Desktop', focusedWindow.id);
-        contentElement.style.padding = '16px';
-        contentElement.innerHTML = content;
-    } else if (newPath.length === 3) {
-        // Logic level - show Logic subfolders (Programming, Science, Maths, etc.)
-        const folderName = newPath[2]; // "Logic"
-        const content = generateFolderContent(folderName, focusedWindow.id);
-        contentElement.style.padding = '16px';
-        contentElement.innerHTML = content;
-    } else if (newPath.length === 4) {
-        // Programming level - show programming languages
-        const parentFolder = newPath[2]; // "Logic" 
-        const currentFolder = newPath[3]; // "Programming"
-        const content = generateFolderContent(currentFolder, focusedWindow.id, parentFolder);
-        contentElement.style.padding = '16px';
-        contentElement.innerHTML = content;
-    } else if (newPath.length === 5 && newPath[4] === 'C') {
-    // C language level - show C levels
-    const content = generateLanguageLevels('C', 100, 'C.png', focusedWindow.id);
-    contentElement.style.padding = '16px';
-    contentElement.innerHTML = content;
-} else if (newPath.length === 6 && newPath[4] === 'C' && newPath[5].startsWith('Level ')) {
-    // Individual C level page - show specific level
-    const levelNumber = parseInt(newPath[5].replace('Level ', ''));
-    openLanguageLevel('C', levelNumber, 'C.png', focusedWindow.id);
-    return; // openLanguageLevel handles the content update
-} else if (newPath[newPath.length - 1] === 'Shell') {
-    // Shell level - reopen shell interface
-    openFsConsole(focusedWindow.id);
-    return; // Don't continue with normal navigation
-} else {
-    // Fallback to generic content generation
-    PathManager.updateContent(focusedWindow.id);
-}
-}
 
         // PHONE OVERLAY
         function openActionsBlob() {
@@ -2586,19 +2652,19 @@ function handleDirectoryClick(level) {
 			}
 
 			// Special case: Desktop should show main folders
-if (folderName === 'Desktop') {
-    const desktopFolders = ['Logic', 'Mall', 'Farm', 'Prompts', 'Media', 'Browser'];
-    let content = '';
-    
-    desktopFolders.forEach(folder => {
-        content += `
-            <div class="folder-item" onclick="navigateToItem('${folder}', '${windowId || 'current'}', 'Desktop')">
-                <div class="folder-item-icon"><img src="blackfile.png" style="width: 24px; height: 24px;" alt="Folder"></div>
-                <div class="folder-item-name" style="color: white;">${folder}</div>
-                <div class="folder-item-subtitle" style="color: rgba(255,255,255,0.8);">Folder</div>
-            </div>
-        `;
-    });
+			if (folderName === 'Desktop') {
+			    const desktopFolders = ['Logic', 'Mall', 'Farm', 'Prompts', 'Media', 'Browser'];
+			    let content = '';
+			    
+			    desktopFolders.forEach(folder => {
+			        content += `
+			            <div class="folder-item" onclick="navigateToItem('${folder}', '${windowId || 'current'}', 'Desktop')">
+			                <div class="folder-item-icon"><div class="nested-folder-icon"></div></div>
+			                <div class="folder-item-name" style="color: white;">${folder}</div>
+			                <div class="folder-item-subtitle" style="color: rgba(255,255,255,0.8);">Folder</div>
+			            </div>
+			        `;
+			    });
 			    
 			    if (windowId) {
 			        setTimeout(() => {
@@ -2627,29 +2693,24 @@ if (folderName === 'Desktop') {
                 const isSubfolder = value && typeof value === 'object' && !value.levels && !value.cover && !value.app && !value.description;
                 
                 let icon;
-let subtitle = '';
-
-if (isSubjectFile) {
-    // Subjects with levels - use whitefile.png
-    icon = '<img src="whitefile.png" style="width: 24px; height: 24px;" alt="Subject">';
-    subtitle = `${value.levels} Levels`;
-} else if (isAppFile) {
-    // Applications - use openapp.png
-    icon = '<img src="openapp.png" style="width: 24px; height: 24px;" alt="App">';
-    subtitle = 'Application';
-} else if (isSubfolder) {
-    // Folders that contain other folders - use blackfile.png
-    icon = '<img src="blackfile.png" style="width: 24px; height: 24px;" alt="Folder">';
-    subtitle = 'Folder';
-} else if (value && value.description) {
-    // Items with descriptions (usually endpoints) - use whitefile.png
-    icon = '<img src="whitefile.png" style="width: 24px; height: 24px;" alt="Item">';
-    subtitle = value.description;
-} else {
-    // Default - use whitefile.png
-    icon = '<img src="whitefile.png" style="width: 24px; height: 24px;" alt="Item">';
-    subtitle = 'Item';
-}
+                let subtitle = '';
+                
+                if (isSubjectFile) {
+                    icon = '<div class="nested-folder-icon"></div>';
+                    subtitle = `${value.levels} Levels`;
+                } else if (isAppFile) {
+                    icon = '<img src="openapp.png" style="width: 24px; height: 24px;" alt="App">';
+                    subtitle = 'Application';
+                }else if (isSubfolder) {
+                    icon = '<div class="nested-folder-icon"></div>';
+                    subtitle = 'Folder';
+                } else if (value && value.description) {
+                    icon = '<div class="nested-folder-icon"></div>';
+                    subtitle = value.description;
+                } else {
+                    icon = '<div class="nested-folder-icon"></div>';
+                    subtitle = 'Item';
+                }
                 
                 content += `
                     <div class="folder-item" onclick="navigateToItem('${key}', '${windowId || 'current'}', '${parentFolder || folderName}')">
@@ -2933,16 +2994,22 @@ if (subjectName === 'C' && typeof challengesData !== 'undefined') {
     }
     
     const contentElement = document.getElementById(windowId + '-content');
-    if (contentElement) {
-        contentElement.innerHTML = content;
-        contentElement.style.padding = '0';
-    }
-}
+            if (contentElement) {
+                contentElement.innerHTML = content;
+                contentElement.style.padding = '0';
+            }
+        }
 
         // Get level progress status (placeholder for future implementation)
-        function getLevelProgress(subjectName, levelNumber) {
-            // For now, return 'begin' - later this can check actual progress
-            // Possible values: 'begin', 'continue', 'completed'
+        function getLevelProgress(levelNumber) {
+            const progressKey = `level_${levelNumber}_progress`;
+            const completedKey = `level_${levelNumber}_completed`;
+            
+            if (localStorage.getItem(completedKey) === 'true') {
+                return 'completed';
+            } else if (localStorage.getItem(progressKey) === 'true') {
+                return 'continue';
+            }
             return 'begin';
         }
 
@@ -2981,895 +3048,243 @@ if (subjectName === 'C' && typeof challengesData !== 'undefined') {
             }
         }
 
-        function navigateToItem(itemName, windowId, parentFolder) {
-            if (windowId === 'current') {
-                const focusedWindow = openWindows.find(w => {
-                    const element = document.getElementById(w.id);
-                    return element && parseInt(element.style.zIndex) === windowZIndex;
-                });
-                if (!focusedWindow) return;
-                windowId = focusedWindow.id;
-            }
+        function getLevelGrade(levelNumber, totalStarsAvailable) {
+            const starsEarnedKey = `level_${levelNumber}_stars_earned`;
+            const totalAvailableKey = `level_${levelNumber}_total_available`;
             
-            const windowPath = PathManager.getPath(windowId);
-            let currentStructure;
-            let item;
+            const starsEarned = parseInt(localStorage.getItem(starsEarnedKey) || '0');
+            const savedTotalAvailable = parseInt(localStorage.getItem(totalAvailableKey) || totalStarsAvailable.toString());
             
-			if (windowPath.length === 2) {
-			    const folderName = windowPath[1];
-			    
-			    // Special case: navigating from Desktop
-			    if (folderName === 'Desktop') {
-			        // Replace current window content with the folder content
-			        const newPath = ['Fromsupply', 'Desktop', itemName];
-			        PathManager.updatePath(windowId, newPath);
-			        
-			        const content = generateFolderContent(itemName, windowId);
-			        const contentElement = document.getElementById(windowId + '-content');
-			        if (contentElement) {
-			            contentElement.style.padding = '16px';
-			            contentElement.innerHTML = content;
-			        }
-			        return;
-			    }
-			    
-			    currentStructure = folderStructure[folderName];
-			    item = currentStructure[itemName];
-			} else if (windowPath.length === 3) {
-			    // Handle paths like ['Fromsupply', 'Desktop', 'Logic']
-			    const level1 = windowPath[1]; // 'Desktop'
-			    const level2 = windowPath[2]; // 'Logic'
-			    
-			    if (level1 === 'Desktop') {
-			        // This is a main folder from desktop (Logic, Mall, etc.)
-			        currentStructure = folderStructure[level2];
-			        item = currentStructure[itemName];
-			    } else {
-			        // Legacy path handling
-			        currentStructure = folderStructure[level1][level2];
-			        item = currentStructure[itemName];
-			    }
-			} else if (windowPath.length === 4) {
-			    // Handle paths like ['Fromsupply', 'Desktop', 'Logic', 'Programming']
-			    const level1 = windowPath[1]; // 'Desktop'
-			    const level2 = windowPath[2]; // 'Logic'
-			    const level3 = windowPath[3]; // 'Programming'
-			    
-			    if (level1 === 'Desktop') {
-			        currentStructure = folderStructure[level2][level3];
-			        item = currentStructure[itemName];
-			    }
-			}
+            if (savedTotalAvailable === 0) return 0;
             
-            if (!item) return;
-            
-            const newPath = [...windowPath, itemName];
-
-            // Special handling for Shortcuts in System
-            if (parentFolder === 'System' && itemName === 'Shortcuts') {
-                PathManager.updatePath(windowId, newPath);
-                
-                const content = generateShortcutsContent();
-                const contentElement = document.getElementById(windowId + '-content');
-                if (contentElement) {
-                    contentElement.style.padding = '0';
-                    contentElement.innerHTML = content;
-                }
-                return;
-            }
-            
-            // Check if it's an app
-            if (item.app && item.file) {
-                const parentFolderName = windowPath[1];
-                openApp(itemName, item.file, parentFolderName);
-                return;
-            }
-            
-            // Check if it's a subject file with levels
-            if (item.levels && item.cover) {
-                PathManager.updatePath(windowId, newPath);
-                
-                const content = generateLanguageLevels(itemName, item.levels, item.cover, windowId);
-                const contentElement = document.getElementById(windowId + '-content');
-                if (contentElement) {
-                    contentElement.style.padding = '16px';
-                    contentElement.innerHTML = content;
-                }
-                
-                // Resize window to better fit level grid
-                const windowElement = document.getElementById(windowId);
-                if (windowElement && !windowElement.classList.contains('maximized') && 
-                    !windowElement.classList.contains('snapped-left') && 
-                    !windowElement.classList.contains('snapped-right') &&
-                    !windowElement.classList.contains('snapped-top') &&
-                    !windowElement.classList.contains('snapped-bottom') &&
-                    !windowElement.classList.contains('snapped-top-left') &&
-                    !windowElement.classList.contains('snapped-top-right') &&
-                    !windowElement.classList.contains('snapped-bottom-left') &&
-                    !windowElement.classList.contains('snapped-bottom-right')) {
-                    windowElement.style.width = '800px';
-                    windowElement.style.height = '600px';
-                }
-            } else if (typeof item === 'object' && !item.description) {
-                PathManager.updatePath(windowId, newPath);
-                
-                const content = generateFolderContent(itemName, windowId, parentFolder);
-                const contentElement = document.getElementById(windowId + '-content');
-                if (contentElement) {
-                    contentElement.style.padding = '16px';
-                    contentElement.innerHTML = content;
-                }
-            } else {
-                PathManager.updatePath(windowId, newPath);
-                
-                const content = `
-                    <div style="padding: 20px; text-align: center;">
-                        <h2 style="color: white; margin-bottom: 20px;">${itemName}</h2>
-                        <p style="color: rgba(255,255,255,0.8); font-size: 16px; line-height: 1.5;">
-                            ${item.description || 'Content coming soon...'}
-                        </p>
-                    </div>
-                `;
-                
-                const contentElement = document.getElementById(windowId + '-content');
-                if (contentElement) {
-                    contentElement.innerHTML = content;
-                }
-            }
+            const grade = Math.round((starsEarned / savedTotalAvailable) * 100);
+            return grade;
         }
 
-        function openFolder(folderName, mouseX = null, mouseY = null) {
-            let windowX = 100;
-            let windowY = 120;
+        function getLevelTintAndDisplay(levelNumber, totalStarsAvailable) {
+            const progressStatus = getLevelProgress(levelNumber);
+            const grade = getLevelGrade(levelNumber, totalStarsAvailable);
+            const isPerfectScore = grade === 100;
             
-            if (mouseX !== null && mouseY !== null) {
-                const firstItemOffsetX = 100;
-                const firstItemOffsetY = 100;
-                
-                windowX = mouseX - firstItemOffsetX;
-                windowY = mouseY - firstItemOffsetY;
-                
-                const windowWidth = 650;
-                const windowHeight = 500;
-                const maxX = window.innerWidth - windowWidth - 20;
-                const maxY = window.innerHeight - windowHeight - 20;
-                
-                windowX = Math.max(20, Math.min(windowX, maxX));
-                windowY = Math.max(80, Math.min(windowY, maxY));
-            }
+            // Get the attempt number when this level was first completed
+            const completionAttemptKey = `level_${levelNumber}_completion_attempt`;
+            const completionAttempt = parseInt(localStorage.getItem(completionAttemptKey) || '1');
             
-            const windowId = createWindow(`${folderName} - Fromsupply`, '', 650, 500, windowX, windowY);
+            let tintStyle = 'background: rgba(255,255,255,0.05);'; // default
+            let displayContent = '';
             
-            const newPath = ['Fromsupply', 'Desktop', folderName];
-            PathManager.updatePath(windowId, newPath);
-            
-            const content = generateFolderContent(folderName, windowId);
-            const contentElement = document.getElementById(windowId + '-content');
-            if (contentElement) {
-                contentElement.style.padding = '16px';
-                contentElement.innerHTML = content;
-            }
-            
-            setTimeout(() => {
-                focusWindow(windowId);
-            }, 100);
-        }
-
-        function openApp(appName, fileName, parentFolder = null) {
-			// Find the currently focused window
-			const focusedWindow = openWindows.find(w => {
-			    const element = document.getElementById(w.id);
-			    return element && parseInt(element.style.zIndex) === windowZIndex;
-			});
-			
-			let windowId;
-			
-			if (focusedWindow) {
-			    // Use existing focused window - app will replace its content
-			    windowId = focusedWindow.id;
-			} else {
-			    // No window open, create a new one
-			    windowId = createWindow(`${appName} - Fromsupply`, '', 800, 600);
-			}
-			
-			// Update path to show we're now in the app
-			let newPath;
-			if (parentFolder) {
-			    newPath = ['Fromsupply', parentFolder, appName];
-			} else {
-			    newPath = ['Fromsupply', appName];
-			}
-			PathManager.updatePath(windowId, newPath);
-			
-			// Create iframe content that will replace whatever was in the window
-			const content = `
-			    <iframe src="${fileName}" 
-			            style="width: 100%; height: 100%; border: none; opacity: 0; transition: opacity 0.3s ease;"
-			            onload="this.style.opacity = '1';">
-			    </iframe>
-			`;
-			
-			// Replace the window's content with the app
-		   const contentElement = document.getElementById(windowId + '-content');
-			if (contentElement) {
-			    contentElement.style.padding = '0';
-			    contentElement.innerHTML = content;
-			    // Keep dragging enabled - don't remove onmousedown or change cursor
-			}
-			
-			// Focus the window (which now contains the app)
-			focusWindow(windowId);
-		}
-
-        function openHiddenSystemWindow() {
-            let windowX = 100;
-            let windowY = 120;
-            
-            if (window.fsLastMousePosition) {
-                const firstItemOffsetX = 100;
-                const firstItemOffsetY = 100;
-                
-                windowX = window.fsLastMousePosition.x - firstItemOffsetX;
-                windowY = window.fsLastMousePosition.y - firstItemOffsetY;
-                
-                const windowWidth = 650;
-                const windowHeight = 500;
-                const maxX = window.innerWidth - windowWidth - 20;
-                const maxY = window.innerHeight - windowHeight - 20;
-                
-                windowX = Math.max(20, Math.min(windowX, maxX));
-                windowY = Math.max(80, Math.min(windowY, maxY));
-            }
-            
-            const windowId = createWindow('System - Fromsupply', '', 650, 500, windowX, windowY);
-            
-            const newPath = ['Fromsupply', 'System'];
-            PathManager.updatePath(windowId, newPath);
-            
-            const content = generateSystemContent(windowId);
-            const contentElement = document.getElementById(windowId + '-content');
-            if (contentElement) {
-                contentElement.style.padding = '16px';
-                contentElement.innerHTML = content;
-            }
-            
-            focusWindow(windowId);
-        }
-
-        function generateSystemContent(windowId) {
-            return `
-                <div class="folder-item" onclick="navigateToItem('Tutorials', '${windowId}', 'System')">
-                    <div class="folder-item-icon"><div class="nested-folder-icon"></div></div>
-                    <div class="folder-item-name" style="color: white;">Tutorials</div>
-                    <div class="folder-item-subtitle" style="color: rgba(255,255,255,0.8);">Interactive tutorials and help guides</div>
-                </div>
-                <div class="folder-item" onclick="navigateToItem('Shortcuts', '${windowId}', 'System')">
-                    <div class="folder-item-icon"><div class="nested-folder-icon"></div></div>
-                    <div class="folder-item-name" style="color: white;">Shortcuts</div>
-                    <div class="folder-item-subtitle" style="color: rgba(255,255,255,0.8);">Keyboard shortcuts and gestures reference</div>
-                </div>
-                <div class="folder-item" onclick="navigateToItem('Terms', '${windowId}', 'System')">
-                    <div class="folder-item-icon"><div class="nested-folder-icon"></div></div>
-                    <div class="folder-item-name" style="color: white;">Terms</div>
-                    <div class="folder-item-subtitle" style="color: rgba(255,255,255,0.8);">Terms of service and privacy policy</div>
-                </div>
-                <div class="folder-item" onclick="navigateToItem('Financials', '${windowId}', 'System')">
-                    <div class="folder-item-icon"><div class="nested-folder-icon"></div></div>
-                    <div class="folder-item-name" style="color: white;">Financials</div>
-                    <div class="folder-item-subtitle" style="color: rgba(255,255,255,0.8);">Pricing, billing, and financial information</div>
-                </div>
-                <div class="folder-item" onclick="navigateToItem('Support Center', '${windowId}', 'System')">
-                    <div class="folder-item-icon"><div class="nested-folder-icon"></div></div>
-                    <div class="folder-item-name" style="color: white;">Support Center</div>
-                    <div class="folder-item-subtitle" style="color: rgba(255,255,255,0.8);">Help desk and customer support</div>
-                </div>
-            `;
-        }
-
-        function generateShortcutsContent() {
-            return `
-                <div style="padding: 20px; color: white; font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;">
-                    <h2 style="color: white; margin-bottom: 30px; font-size: 24px; text-align: center;">⌨️ Keyboard Shortcuts</h2>
+            switch(progressStatus) {
+                case 'begin':
+                    // Not started - show stars available
+                    tintStyle = 'background: rgba(255,255,255,0.05);';
+                    displayContent = `<span style="color: white;">★</span> ${totalStarsAvailable} Stars Available`;
+                    break;
                     
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px;">
-                        
-                        <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
-                            <h3 style="color: #60a5fa; margin-bottom: 15px; font-size: 16px;">🪟 Window Management</h3>
-                            <div style="space-y: 8px;">
-                                <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">Q</span> <span style="color: rgba(255,255,255,0.8);">Close current window</span></div>
-                                <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">D</span> <span style="color: rgba(255,255,255,0.8);">Duplicate current window</span></div>
-                                <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">C</span> <span style="color: rgba(255,255,255,0.8);">Close other windows</span></div>
-                                <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">F</span> <span style="color: rgba(255,255,255,0.8);">Toggle fullscreen</span></div>
+                case 'continue':
+                    // In progress - show progress bar with white tint
+                    tintStyle = 'background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.4);';
+                    displayContent = `
+                        <div style="margin-bottom: 8px;">
+                            <div style="background: rgba(255,255,255,0.2); border-radius: 10px; height: 4px; overflow: hidden; margin-bottom: 4px;">
+                                <div style="background: linear-gradient(90deg, #22c55e, #10b981); height: 100%; width: 65%; border-radius: 10px;"></div>
                             </div>
+                            <span style="color: rgba(255,255,255,0.9); font-size: 11px;">In Progress</span>
                         </div>
-                        
-                        <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
-                            <h3 style="color: #34d399; margin-bottom: 15px; font-size: 16px;">📐 Window Snapping</h3>
-                            <div style="space-y: 8px;">
-                                <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">L</span> <span style="color: rgba(255,255,255,0.8);">Snap window left</span></div>
-<div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">R</span> <span style="color: rgba(255,255,255,0.8);">Snap window right</span></div>
-                                <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">Z</span> <span style="color: rgba(255,255,255,0.8);">Undo last action</span></div>
-                            </div>
-                        </div>
-                        
-                        <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
-                            <h3 style="color: #f59e0b; margin-bottom: 15px; font-size: 16px;">🧭 Navigation</h3>
-                            <div style="space-y: 8px;">
-                                <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">,</span> <span style="color: rgba(255,255,255,0.8);">Go back in directory</span></div>
-                                <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">J</span> <span style="color: rgba(255,255,255,0.8);">Toggle alphabetical sorting</span></div>
-                            </div>
-                        </div>
-                        
-                        <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
-                            <h3 style="color: #a78bfa; margin-bottom: 15px; font-size: 16px;">🔍 System Access</h3>
-                            <div style="space-y: 8px;">
-                                <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">Space</span> <span style="color: rgba(255,255,255,0.8);">Open search blob</span></div>
-                                <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">B</span> <span style="color: rgba(255,255,255,0.8);">Toggle actions blob</span></div>
-                                <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">H</span> <span style="color: rgba(255,255,255,0.8);">Open system window</span></div>
-                                <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">Esc</span> <span style="color: rgba(255,255,255,0.8);">Close topmost window</span></div>
-                            </div>
-                        </div>
-                        
-                        <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
-                            <h3 style="color: #ef4444; margin-bottom: 15px; font-size: 16px;">⌘ Advanced Shortcuts</h3>
-                            <div style="space-y: 8px;">
-                                <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">Cmd/Ctrl + M</span> <span style="color: rgba(255,255,255,0.8);">Minimize window</span></div>
-                                <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">Cmd/Ctrl + F</span> <span style="color: rgba(255,255,255,0.8);">Fullscreen window</span></div>
-                                <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">Cmd/Ctrl + W</span> <span style="color: rgba(255,255,255,0.8);">Close window</span></div>
-                            </div>
-                        </div>
-                        
-                        <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
-                            <h3 style="color: #00ff00; margin-bottom: 15px; font-size: 16px;">⚡ Console Commands</h3>
-                            <div style="space-y: 8px;">
-                                <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">Double-click</span> <span style="color: rgba(255,255,255,0.8);">Open console</span></div>
-                                <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">help</span> <span style="color: rgba(255,255,255,0.8);">Show console help</span></div>
-                                <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">clear</span> <span style="color: rgba(255,255,255,0.8);">Clear console</span></div>
-                            </div>
-                        </div>
-                        
-                    </div>
+                    `;
+                    break;
                     
-                    <div style="margin-top: 30px; text-align: center; color: rgba(255,255,255,0.6); font-size: 14px;">
-                        💻 Fromsupply Desktop Environment - Press H anytime to access this system
-                    </div>
-                </div>
-            `;
+                case 'completed':
+                    // Completed - show grade with appropriate tinting
+                    if (isPerfectScore) {
+                        if (completionAttempt === 1) {
+                            // Perfect score on first attempt - GREEN
+                            tintStyle = 'background: rgba(34, 197, 94, 0.15); border-color: rgba(34, 197, 94, 0.4);';
+                        } else {
+                            // Perfect score on re-attempt - PURPLE
+                            tintStyle = 'background: rgba(147, 51, 234, 0.15); border-color: rgba(147, 51, 234, 0.4);';
+                        }
+                    } else {
+                        // Non-perfect score - RED
+                        tintStyle = 'background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.4);';
+                    }
+                    displayContent = `Grade: ${grade}%`;
+                    break;
+            }
+            
+            return { tintStyle, displayContent };
         }
 
-        // NOTES FUNCTIONALITY
-        function toggleNotesInterface() {
-            const focusedWindow = openWindows.find(w => {
+        function openSubjectLesson(subjectName, levelNumber = null) {
+            console.log('Opening lesson:', subjectName, 'Level:', levelNumber);
+            
+            if (levelNumber) {
+                localStorage.setItem('selectedLevel', levelNumber.toString());
+                localStorage.setItem('selectedSubject', subjectName);
+                console.log('Stored level data');
+            }
+            
+            // Get the current window's content element and replace it directly
+            const currentWindow = openWindows.find(w => {
                 const element = document.getElementById(w.id);
                 return element && parseInt(element.style.zIndex) === windowZIndex;
             });
             
-            if (!focusedWindow) return;
-            
-            const contentElement = document.getElementById(focusedWindow.id + '-content');
-            if (!contentElement) return;
-            
-            if (!notesMode) {
-                currentLevelContent = contentElement.innerHTML;
-                currentWindowId = focusedWindow.id;
-                
-                const currentPath = [...focusedWindow.currentPath, 'Notes'];
-                PathManager.updatePath(focusedWindow.id, currentPath);
-                
-                const notesContent = createNotesInterface();
-                
-                contentElement.innerHTML = notesContent;
-                contentElement.style.padding = '0';
-                notesMode = true;
-                
-                setTimeout(() => {
-                    initializeNotesCanvas();
-                    setTool('pen');
-                }, 100);
-            } else {
-                if (currentLevelContent && currentWindowId === focusedWindow.id) {
-                    contentElement.innerHTML = currentLevelContent;
+            if (currentWindow) {
+                const contentElement = document.getElementById(currentWindow.id + '-content');
+                if (contentElement) {
+                    console.log('Replacing content with logicbody.html');
                     contentElement.style.padding = '0';
-                    
-                    const currentPath = [...focusedWindow.currentPath];
-                    if (currentPath[currentPath.length - 1] === 'Notes') {
-                        currentPath.pop();
-                        PathManager.updatePath(focusedWindow.id, currentPath);
-                    }
-                }
-                notesMode = false;
+                    contentElement.innerHTML = `
+            <iframe src="logicbody.html" 
+                    style="width: 100%; height: 100%; border: none; pointer-events: auto;" 
+                    onload="console.log('logicbody.html loaded successfully');">
+            </iframe>
+        `;
+        // Restore dragging capability
+        contentElement.onmousedown = function(e) {
+            // Only start drag if not clicking inside iframe
+            if (!e.target.closest('iframe')) {
+                DragManager.start('window', currentWindow.element, e, { windowId: currentWindow.id });
             }
-        }
-
-        function createNotesInterface() {
-            const currentSubject = window.currentLevelInfo ? window.currentLevelInfo.subject : 'This Level';
-            
-            return `
-                <div class="notes-interface">
-                    <div class="notes-toolbar">
-                        <button class="notes-tool-btn ${currentTool === 'pen' ? 'active' : ''}" data-tool="pen" onclick="setTool('pen')">
-                            ✏️ Pen
-                        </button>
-                        <button class="notes-tool-btn ${currentTool === 'eraser' ? 'active' : ''}" data-tool="eraser" onclick="setTool('eraser')">
-                            🧹 Eraser
-                        </button>
-                        <button class="notes-tool-btn ${currentTool === 'text' ? 'active' : ''}" data-tool="text" onclick="setTool('text')">
-                            📝 Text
-                        </button>
-                        <button class="notes-tool-btn" onclick="clearCanvas()">
-                            🗑️ Clear
-                        </button>
-                    </div>
-                    
-                    <div class="notes-content">
-                        <div class="notes-canvas-container">
-                            <canvas class="notes-canvas" id="notesCanvas"></canvas>
-                        </div>
-                    </div>
-                    
-                    <div class="notes-tabs">
-                        <button class="notes-tab" onclick="switchTab('personal')">✏️ Personal</button>
-                        <button class="notes-tab active" onclick="switchTab('thisFolder')">📋 ${currentSubject}</button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function setTool(tool) {
-            currentTool = tool;
-            updateToolButtons();
-            
-            const canvas = document.getElementById('notesCanvas');
-            if (canvas) {
-                switch(tool) {
-                    case 'pen':
-                        canvas.style.cursor = 'crosshair';
-                        setupCanvasDragPrevention();
-                        break;
-                    case 'eraser':
-                        canvas.style.cursor = 'grab';
-                        setupCanvasDragPrevention();
-                        break;
-                    case 'text':
-                        canvas.style.cursor = 'text';
-                        removeCanvasDragPrevention();
-                        break;
-                }
-            }
-        }
-
-        function setupCanvasDragPrevention() {
-            const canvasContainer = document.querySelector('.notes-canvas-container');
-            if (canvasContainer) {
-                canvasContainer.classList.add('no-drag');
-                canvasContainer.addEventListener('mousedown', preventDragOnCanvas, true);
-            }
-        }
-
-        function removeCanvasDragPrevention() {
-            const canvasContainer = document.querySelector('.notes-canvas-container');
-            if (canvasContainer) {
-                canvasContainer.classList.remove('no-drag');
-                canvasContainer.removeEventListener('mousedown', preventDragOnCanvas, true);
-            }
-        }
-
-        function preventDragOnCanvas(e) {
-            e.stopPropagation();
-            e.preventDefault();
-        }
-
-        function updateToolButtons() {
-            document.querySelectorAll('.notes-tool-btn[data-tool]').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            const activeBtn = document.querySelector(`[data-tool="${currentTool}"]`);
-            if (activeBtn) {
-                activeBtn.classList.add('active');
-            }
-        }
-
-        function initializeNotesCanvas() {
-            canvas = document.getElementById('notesCanvas');
-            if (!canvas) return;
-            
-            ctx = canvas.getContext('2d');
-            
-            const container = canvas.parentElement;
-            canvas.width = container.clientWidth;
-            canvas.height = container.clientHeight;
-            
-            ctx.fillStyle = backgroundColor;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            canvas.addEventListener('mousedown', startDrawing);
-            canvas.addEventListener('mousemove', draw);
-            canvas.addEventListener('mouseup', stopDrawing);
-            canvas.addEventListener('mouseout', stopDrawing);
-            
-            canvas.addEventListener('touchstart', handleTouch);
-            canvas.addEventListener('touchmove', handleTouch);
-            canvas.addEventListener('touchend', stopDrawing);
-        }
-
-        function startDrawing(e) {
-            if (currentTool !== 'pen' && currentTool !== 'eraser') return;
-            
-            isDrawing = true;
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-            
-            if (currentTool === 'pen') {
-                ctx.globalCompositeOperation = 'source-over';
-                ctx.strokeStyle = currentColor;
-                ctx.lineWidth = 2;
-            } else if (currentTool === 'eraser') {
-                ctx.globalCompositeOperation = 'destination-out';
-                ctx.lineWidth = 20;
-            }
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-        }
-
-        function draw(e) {
-            if (!isDrawing || (currentTool !== 'pen' && currentTool !== 'eraser')) return;
-            
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            ctx.lineTo(x, y);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-        }
-
-        function stopDrawing() {
-            isDrawing = false;
-            ctx.beginPath();
-        }
-
-        function handleTouch(e) {
-            e.preventDefault();
-            const touch = e.touches[0];
-            const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : 
-                                            e.type === 'touchmove' ? 'mousemove' : 'mouseup', {
-                clientX: touch.clientX,
-                clientY: touch.clientY
-            });
-            canvas.dispatchEvent(mouseEvent);
-        }
-
-        function clearCanvas() {
-            if (ctx) {
-                ctx.fillStyle = backgroundColor;
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-            }
-        }
-
-        function switchTab(tab) {
-            document.querySelectorAll('.notes-tab').forEach(t => {
-                t.classList.remove('active');
-            });
-            
-            const activeTab = document.querySelector(`[onclick="switchTab('${tab}')"]`);
-            activeTab.classList.add('active');
-            
-            const container = document.querySelector('.notes-canvas-container');
-            
-            container.style.opacity = '0.7';
-            container.style.transform = 'scale(0.98)';
-            
-            setTimeout(() => {
-                if (tab === 'personal') {
-                    const tabName = tab.charAt(0).toUpperCase() + tab.slice(1);
-                    container.innerHTML = `
-                        <div style="color: #6b7280; font-size: 11px; margin-bottom: 12px; padding: 20px 20px 0 20px;">Personal Notes - ${new Date().toLocaleDateString('en-US', { 
-                            weekday: 'short', 
-                            year: 'numeric', 
-                            month: 'short', 
-                            day: 'numeric' 
-                        })}</div>
-                        <textarea class="notes-text-area" placeholder="Enter your personal notes and thoughts...">${notesData[tab] || ''}</textarea>
-                    `;
-                    
-                    const textarea = container.querySelector('textarea');
-                    if (textarea) {
-                        textarea.addEventListener('input', () => {
-                            notesData[tab] = textarea.value;
-                            saveNotesToStorage();
-                        });
-                    }
+        };
                 } else {
-                    const currentSubject = window.currentLevelInfo ? window.currentLevelInfo.subject : 'Code';
-                    const corrections = getLanguageCorrections(currentSubject);
-                    container.innerHTML = `
-                        <div class="notes-text-area" readonly style="background: rgba(255, 255, 255, 0.98); color: #374151; font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace; font-size: 13px; line-height: 1.6; white-space: pre-wrap; user-select: text; cursor: text; border: 1px solid rgba(34, 197, 94, 0.2);">
-${corrections}
-                        </div>
-                    `;
-                }
-                
-                container.style.opacity = '1';
-                container.style.transform = 'scale(1)';
-            }, 150);
-        }
-
-        function getLanguageCorrections(language) {
-            const corrections = {
-                'C': `📋 CORRECTION COMMENTS - C PROGRAMMING
-
-❌ Level 3 - Hello World
-• Missing #include <stdio.h> for printf function
-• Semicolon required after each statement
-• main() function should return int, not void
-
-❌ Level 8 - Variables
-• Variable names cannot start with numbers
-• Use descriptive variable names for better readability
-• const keyword makes variables read-only
-
-❌ Level 15 - Conditionals
-• Use == for comparison, = for assignment
-• Braces {} required for multi-line if statements
-• else if allows multiple conditions to be tested
-
-🎯 C-Specific Focus: Syntax rules, memory concepts, standard library usage`,
-
-                'Python': `📋 CORRECTION COMMENTS - PYTHON
-
-❌ Level 2 - Print Statements
-• Python 3 uses print() function, not print statement
-• Indentation matters - use 4 spaces consistently
-• Strings can use single or double quotes
-
-❌ Level 9 - Variables
-• Python variables don't need type declarations
-• Use snake_case for variable names (not camelCase)
-• Variables are case-sensitive
-
-🎯 Python-Specific Focus: Indentation, naming conventions, data structures`,
-
-                'JavaScript': `📋 CORRECTION COMMENTS - JAVASCRIPT
-
-❌ Level 4 - Variables
-• Use let/const instead of var for block scope
-• const prevents reassignment, not mutation of objects
-• Hoisting behavior differs between var and let/const
-
-❌ Level 11 - Functions
-• Arrow functions don't have their own 'this' context
-• Function declarations are hoisted, expressions are not
-• Default parameters provide fallback values
-
-🎯 JavaScript-Specific Focus: Scope rules, function types, object manipulation`
-            };
-
-            return corrections[language] || `📋 CORRECTION COMMENTS - ${language.toUpperCase()}
-
-❌ Level 5 - Syntax Basics
-• Pay attention to language-specific syntax rules
-• Read error messages carefully for debugging hints
-• Practice fundamental concepts before advanced topics
-
-🎯 ${language}-Specific Focus: Review fundamental concepts and syntax rules`;
-        }
-
-        function saveNotesToStorage() {
-            try {
-                localStorage.setItem('fsLogic_notes', JSON.stringify(notesData));
-            } catch (error) {
-                console.warn('Could not save notes to storage:', error);
-            }
-        }
-
-        function loadNotesFromStorage() {
-            try {
-                const savedNotes = localStorage.getItem('fsLogic_notes');
-                if (savedNotes) {
-                    notesData = { ...notesData, ...JSON.parse(savedNotes) };
-                }
-            } catch (error) {
-                console.warn('Could not load notes from storage:', error);
-            }
-        }
-function getLevelProgress(levelNumber) {
-    const progressKey = `level_${levelNumber}_progress`;
-    const completedKey = `level_${levelNumber}_completed`;
-    
-    if (localStorage.getItem(completedKey) === 'true') {
-        return 'completed';
-    } else if (localStorage.getItem(progressKey) === 'true') {
-        return 'continue';
-    }
-    return 'begin';
-}
-
-function getLevelGrade(levelNumber, totalStarsAvailable) {
-    const starsEarnedKey = `level_${levelNumber}_stars_earned`;
-    const totalAvailableKey = `level_${levelNumber}_total_available`;
-    
-    const starsEarned = parseInt(localStorage.getItem(starsEarnedKey) || '0');
-    const savedTotalAvailable = parseInt(localStorage.getItem(totalAvailableKey) || totalStarsAvailable.toString());
-    
-    if (savedTotalAvailable === 0) return 0;
-    
-    const grade = Math.round((starsEarned / savedTotalAvailable) * 100);
-    return grade;
-}
-function getLevelTintAndDisplay(levelNumber, totalStarsAvailable) {
-    const progressStatus = getLevelProgress(levelNumber);
-    const grade = getLevelGrade(levelNumber, totalStarsAvailable);
-    const isPerfectScore = grade === 100;
-    
-    // Get the attempt number when this level was first completed
-    const completionAttemptKey = `level_${levelNumber}_completion_attempt`;
-    const completionAttempt = parseInt(localStorage.getItem(completionAttemptKey) || '1');
-    
-    let tintStyle = 'background: rgba(255,255,255,0.05);'; // default
-    let displayContent = '';
-    
-    switch(progressStatus) {
-        case 'begin':
-            // Not started - show stars available
-            tintStyle = 'background: rgba(255,255,255,0.05);';
-            displayContent = `<span style="color: white;">★</span> ${totalStarsAvailable} Stars Available`;
-            break;
-            
-        case 'continue':
-            // In progress - show progress bar with white tint
-            tintStyle = 'background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.4);';
-            displayContent = `
-                <div style="margin-bottom: 8px;">
-                    <div style="background: rgba(255,255,255,0.2); border-radius: 10px; height: 4px; overflow: hidden; margin-bottom: 4px;">
-                        <div style="background: linear-gradient(90deg, #22c55e, #10b981); height: 100%; width: 65%; border-radius: 10px;"></div>
-                    </div>
-                    <span style="color: rgba(255,255,255,0.9); font-size: 11px;">In Progress</span>
-                </div>
-            `;
-            break;
-            
-        case 'completed':
-            // Completed - show grade with appropriate tinting
-            if (isPerfectScore) {
-                if (completionAttempt === 1) {
-                    // Perfect score on first attempt - GREEN
-                    tintStyle = 'background: rgba(34, 197, 94, 0.15); border-color: rgba(34, 197, 94, 0.4);';
-                } else {
-                    // Perfect score on re-attempt - PURPLE
-                    tintStyle = 'background: rgba(147, 51, 234, 0.15); border-color: rgba(147, 51, 234, 0.4);';
+                    console.error('Content element not found');
                 }
             } else {
-                // Non-perfect score - RED
-                tintStyle = 'background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.4);';
+                console.error('Current window not found');
             }
-            displayContent = `Grade: ${grade}%`;
-            break;
-    }
-    
-    return { tintStyle, displayContent };
-}
-
-    function openSubjectLesson(subjectName, levelNumber = null) {
-    console.log('Opening lesson:', subjectName, 'Level:', levelNumber);
-    
-    if (levelNumber) {
-        localStorage.setItem('selectedLevel', levelNumber.toString());
-        localStorage.setItem('selectedSubject', subjectName);
-        console.log('Stored level data');
-    }
-    
-    // Get the current window's content element and replace it directly
-    const currentWindow = openWindows.find(w => {
-        const element = document.getElementById(w.id);
-        return element && parseInt(element.style.zIndex) === windowZIndex;
-    });
-    
-    if (currentWindow) {
-        const contentElement = document.getElementById(currentWindow.id + '-content');
-        if (contentElement) {
-            console.log('Replacing content with logicbody.html');
-            contentElement.style.padding = '0';
-            contentElement.innerHTML = `
-    <iframe src="logicbody.html" 
-            style="width: 100%; height: 100%; border: none; pointer-events: auto;" 
-            onload="console.log('logicbody.html loaded successfully');">
-    </iframe>
-`;
-// Restore dragging capability
-contentElement.onmousedown = function(e) {
-    // Only start drag if not clicking inside iframe
-    if (!e.target.closest('iframe')) {
-        DragManager.start('window', currentWindow.element, e, { windowId: currentWindow.id });
-    }
-};
-        } else {
-            console.error('Content element not found');
         }
-    } else {
-        console.error('Current window not found');
-    }
-}
 
         function goToIndex() {
             window.location.href = 'index.html';
         }
 
         // CONSOLE SYSTEM
-	   function openFsConsole(windowId = null) {
-		    // Create or reuse window for console
-		    const focusedWindow = openWindows.find(w => {
-		        const element = document.getElementById(w.id);
-		        return element && parseInt(element.style.zIndex) === windowZIndex;
-		    });
+        function openFsConsole(windowId = null) {
+            // Create or reuse window for console
+            const focusedWindow = openWindows.find(w => {
+                const element = document.getElementById(w.id);
+                return element && parseInt(element.style.zIndex) === windowZIndex;
+            });
 
-		    // ADD THIS CHECK HERE:
-		    // Check if current window already has a shell
-		    if (focusedWindow && focusedWindow.currentPath && focusedWindow.currentPath.includes('Shell')) {
-		        // Shell already open, just focus the input
-		        const input = document.getElementById(`shellInput-${focusedWindow.id}`);
-		        if (input) {
-		            input.focus();
-		        }
-		        return;
-		    }
-		    // END OF NEW CHECK
+            // Check if current window already has a shell
+            if (focusedWindow && focusedWindow.currentPath && focusedWindow.currentPath.includes('Shell')) {
+                // Shell already open, just focus the input
+                const input = document.getElementById(`shellInput-${focusedWindow.id}`);
+                if (input) {
+                    input.focus();
+                }
+                return;
+            }
 
-		    let consoleWindowId;
-		    if (focusedWindow) {
-		        consoleWindowId = focusedWindow.id;
-		    } else {
-		        consoleWindowId = createWindow('Shell - Fromsupply', '', 700, 450);
-		    }
+            let consoleWindowId;
+            if (focusedWindow) {
+                consoleWindowId = focusedWindow.id;
+            } else {
+                consoleWindowId = createWindow('Shell - Fromsupply', '', 700, 450);
+            }
 
-		    // Update path to show Shell
-		    const currentPath = focusedWindow ? [...focusedWindow.currentPath, 'Shell'] : ['Fromsupply', 'Desktop', 'Shell'];
-		    PathManager.updatePath(consoleWindowId, currentPath);
+            // Update path to show Shell
+            const currentPath = focusedWindow ? [...focusedWindow.currentPath, 'Shell'] : ['Fromsupply', 'Desktop', 'Shell'];
+            PathManager.updatePath(consoleWindowId, currentPath);
 
-		    // Create shell content WITHOUT header bar
-		    const shellContent = `
-		        <div style="height: 100%; display: flex; flex-direction: column; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;">
-		            <!-- Output area -->
-		            <div style="flex: 1; padding: 16px; overflow-y: auto; color: rgba(255,255,255,0.9); font-size: 13px; line-height: 1.6;" 
-		                 id="shellOutput-${consoleWindowId}">
-		                <div style="margin-bottom: 4px; color: #10b981;">Fromsupply Console v2.0 - Ready</div>
-		                <div style="margin-bottom: 4px; color: rgba(255,255,255,0.9);">Type 'help' for commands or 'h' for shortcuts</div>
-		            </div>
-		            
-		            <!-- Input area -->
-		            <div style="padding: 16px; border-top: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05);">
-		                <div style="display: flex; align-items: center; gap: 12px;">
-		                    <span style="color: #60a5fa; font-weight: bold; font-size: 14px;">$</span>
-		                    <input type="text" 
-		                           id="shellInput-${consoleWindowId}" 
-		                           style="flex: 1; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; padding: 8px 12px; font-family: inherit; font-size: 13px; outline: none; backdrop-filter: blur(10px);"
-		                           onkeydown="handleShellInput(event, '${consoleWindowId}')"
-		                           placeholder="Type command..."
-		                    />
-		                </div>
-		            </div>
-		        </div>
-		    `;
+            // Create shell content WITHOUT header bar
+            const shellContent = `
+                <div style="height: 100%; display: flex; flex-direction: column; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;">
+                    <!-- Output area -->
+                    <div style="flex: 1; padding: 16px; overflow-y: auto; color: rgba(255,255,255,0.9); font-size: 13px; line-height: 1.6;" 
+                         id="shellOutput-${consoleWindowId}">
+                        <div style="margin-bottom: 4px; color: #10b981;">Fromsupply Console v2.0 - Ready</div>
+                        <div style="margin-bottom: 4px; color: rgba(255,255,255,0.9);">Type 'help' for commands or 'h' for shortcuts</div>
+                    </div>
+                    
+                    <!-- Input area -->
+                    <div style="padding: 16px; border-top: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05);">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span style="color: #60a5fa; font-weight: bold; font-size: 14px;">$</span>
+                            <input type="text" 
+                                   id="shellInput-${consoleWindowId}" 
+                                   style="flex: 1; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; padding: 8px 12px; font-family: inherit; font-size: 13px; outline: none; backdrop-filter: blur(10px);"
+                                   onkeydown="handleShellInput(event, '${consoleWindowId}')"
+                                   placeholder="Type command..."
+                            />
+                        </div>
+                    </div>
+                </div>
+            `;
 
-		    // Set shell content in window
-		    const contentElement = document.getElementById(consoleWindowId + '-content');
-		    if (contentElement) {
-		        contentElement.style.padding = '0';
-		        contentElement.innerHTML = shellContent;
-		    }
+            // Set shell content in window
+            const contentElement = document.getElementById(consoleWindowId + '-content');
+            if (contentElement) {
+                contentElement.style.padding = '0';
+                contentElement.innerHTML = shellContent;
+            }
 
-		    // Focus window and input
-		    focusWindow(consoleWindowId);
-		    setTimeout(() => {
-		        const input = document.getElementById(`shellInput-${consoleWindowId}`);
-		        if (input) input.focus();
-		    }, 100);
-		}
+            // Focus window and input
+            focusWindow(consoleWindowId);
+            setTimeout(() => {
+                const input = document.getElementById(`shellInput-${consoleWindowId}`);
+                if (input) input.focus();
+            }, 100);
+        }
+
+        function handleShellInput(event, windowId) {
+            if (event.key === 'Enter') {
+                const input = event.target;
+                const command = input.value.trim();
+                if (command) {
+                    executeShellCommand(command, windowId);
+                    input.value = '';
+                }
+            } else if (event.key === 'Escape') {
+                PathManager.navigateBack(windowId);
+            }
+        }
+
+        function executeShellCommand(command, windowId) {
+            const output = document.getElementById(`shellOutput-${windowId}`);
+            
+            // Add command to output
+            const commandLine = document.createElement('div');
+            commandLine.style.marginBottom = '4px';
+            commandLine.innerHTML = `<span style="color: #60a5fa;">$ </span><span style="color: #3b82f6;">${command}</span>`;
+            output.appendChild(commandLine);
+            
+            const parts = command.trim().split(' ');
+            const cmd = parts[0].toLowerCase();
+            const args = parts.slice(1);
+            
+            const responseLine = document.createElement('div');
+            responseLine.style.marginBottom = '8px';
+            
+            switch(cmd) {
+                case 'help':
+                case 'h':
+                    responseLine.innerHTML = `
+                        <div style="color: #10b981; margin-bottom: 4px;">FROMSUPPLY SHELL HELP</div>
+                        <div style="color: rgba(255,255,255,0.9);">Available commands:</div>
+                        <div style="color: rgba(255,255,255,0.9);">• help, h - Show this help</div>
+                        <div style="color: rgba(255,255,255,0.9);">• clear - Clear shell output</div>
+                        <div style="color: rgba(255,255,255,0.9);">• exit - Exit shell</div>
+                        <div style="color: rgba(255,255,255,0.9);">• score - Show current score</div>
+                    `;
+                    break;
+                case 'clear':
+                    output.innerHTML = '';
+                    return; // Don't add response line
+                case 'exit':
+                    PathManager.navigateBack(windowId);
+                    return;
+                case 'score':
+                    responseLine.innerHTML = `<div style="color: #10b981;">Current score: ${currentScore} stars</div>`;
+                    break;
+                default:
+                    responseLine.innerHTML = `<div style="color: #ef4444;">Command not found: ${cmd}</div>`;
+            }
+            
+            output.appendChild(responseLine);
+            output.scrollTop = output.scrollHeight;
+        }
 
         function closeFsConsole() {
             const console = document.getElementById('fsConsole');
@@ -3949,83 +3364,83 @@ contentElement.onmousedown = function(e) {
 
         // DRAG AND DROP INITIALIZATION
         function initializeDragAndDrop() {
-			const folders = document.querySelectorAll('.folder');
-			
-			folders.forEach(folder => {
-			    let dragStartTime = 0;
-			    let dragStartPosition = { x: 0, y: 0 };
-			    let hasActuallyDragged = false;
-			    let clickMousePosition = { x: 0, y: 0 };
-			    let justHadMouseDown = false;
-			    
-			    folder.addEventListener('mousedown', function(e) {
-			        // Reset all states on new mousedown
-			        dragStartTime = Date.now();
-			        dragStartPosition.x = e.clientX;
-			        dragStartPosition.y = e.clientY;
-			        clickMousePosition.x = e.clientX;
-			        clickMousePosition.y = e.clientY;
-			        hasActuallyDragged = false;
-			        justHadMouseDown = true;
-			        
-			        // Safety timeout to prevent stuck drags
-			        setTimeout(() => {
-			            justHadMouseDown = false;
-			            hasActuallyDragged = false; // Reset this too
-			        }, 500);
-			    });
-			    
-			    folder.addEventListener('mousemove', function(e) {
-			        if (!DragManager.active && justHadMouseDown && this === e.currentTarget) {
-			            const deltaX = Math.abs(e.clientX - dragStartPosition.x);
-			            const deltaY = Math.abs(e.clientY - dragStartPosition.y);
-			            
-			            if (deltaX > 5 || deltaY > 5) {
-			                hasActuallyDragged = true;
-			                justHadMouseDown = false; // Clear this immediately
-			                DragManager.start('folder', this, e);
-			            }
-			        }
-			    });
-			    
-			    folder.addEventListener('mouseup', function(e) {
-			        // Always reset states on mouseup
-			        justHadMouseDown = false;
-			        
-			        // Small delay to ensure click handler gets correct state
-			        setTimeout(() => {
-			            hasActuallyDragged = false;
-			        }, 50);
-			    });
-			    
-			    folder.addEventListener('click', function(e) {
-			        const clickDuration = Date.now() - dragStartTime;
-			        
-			        // Only trigger click if we didn't drag AND it was a quick click
-			        if (!hasActuallyDragged && clickDuration < 300 && !DragManager.active) {
-			            const folderName = this.dataset.folder;
-			            const isApp = this.dataset.app === 'true';
-			            const fileName = this.dataset.file;
-			            
-			            if (isApp && fileName) {
-			                openApp(folderName, fileName);
-			            } else {
-			                openFolder(folderName, clickMousePosition.x, clickMousePosition.y);
-			            }
-			        }
-			    });
-			    
-			    // Add mouseleave as safety to reset states
-			    folder.addEventListener('mouseleave', function(e) {
-			        if (!DragManager.active) {
-			            justHadMouseDown = false;
-			            setTimeout(() => {
-			                hasActuallyDragged = false;
-			            }, 100);
-			        }
-			    });
-			});
-		}
+            const folders = document.querySelectorAll('.folder');
+            
+            folders.forEach(folder => {
+                let dragStartTime = 0;
+                let dragStartPosition = { x: 0, y: 0 };
+                let hasActuallyDragged = false;
+                let clickMousePosition = { x: 0, y: 0 };
+                let justHadMouseDown = false;
+                
+                folder.addEventListener('mousedown', function(e) {
+                    // Reset all states on new mousedown
+                    dragStartTime = Date.now();
+                    dragStartPosition.x = e.clientX;
+                    dragStartPosition.y = e.clientY;
+                    clickMousePosition.x = e.clientX;
+                    clickMousePosition.y = e.clientY;
+                    hasActuallyDragged = false;
+                    justHadMouseDown = true;
+                    
+                    // Safety timeout to prevent stuck drags
+                    setTimeout(() => {
+                        justHadMouseDown = false;
+                        hasActuallyDragged = false; // Reset this too
+                    }, 500);
+                });
+                
+                folder.addEventListener('mousemove', function(e) {
+                    if (!DragManager.active && justHadMouseDown && this === e.currentTarget) {
+                        const deltaX = Math.abs(e.clientX - dragStartPosition.x);
+                        const deltaY = Math.abs(e.clientY - dragStartPosition.y);
+                        
+                        if (deltaX > 5 || deltaY > 5) {
+                            hasActuallyDragged = true;
+                            justHadMouseDown = false; // Clear this immediately
+                            DragManager.start('folder', this, e);
+                        }
+                    }
+                });
+                
+                folder.addEventListener('mouseup', function(e) {
+                    // Always reset states on mouseup
+                    justHadMouseDown = false;
+                    
+                    // Small delay to ensure click handler gets correct state
+                    setTimeout(() => {
+                        hasActuallyDragged = false;
+                    }, 50);
+                });
+                
+                folder.addEventListener('click', function(e) {
+                    const clickDuration = Date.now() - dragStartTime;
+                    
+                    // Only trigger click if we didn't drag AND it was a quick click
+                    if (!hasActuallyDragged && clickDuration < 300 && !DragManager.active) {
+                        const folderName = this.dataset.folder;
+                        const isApp = this.dataset.app === 'true';
+                        const fileName = this.dataset.file;
+                        
+                        if (isApp && fileName) {
+                            openApp(folderName, fileName);
+                        } else {
+                            openFolder(folderName, clickMousePosition.x, clickMousePosition.y);
+                        }
+                    }
+                });
+                
+                // Add mouseleave as safety to reset states
+                folder.addEventListener('mouseleave', function(e) {
+                    if (!DragManager.active) {
+                        justHadMouseDown = false;
+                        setTimeout(() => {
+                            hasActuallyDragged = false;
+                        }, 100);
+                    }
+                });
+            });
+        }
 
         function loadFolderPositions() {
             try {
@@ -4082,62 +3497,62 @@ contentElement.onmousedown = function(e) {
         });
 
         window.addEventListener('message', function(event) {
-    try {
-        if (event.data && event.data.action) {
-            switch(event.data.action) {
-                case 'dismissOverlay':
-                    navigationAttempted = false;
-                    hidePhoneOverlay();
-                    break;
-                    
-                case 'updateScore':
-                    if (typeof event.data.points === 'number') {
-                        addToScore(event.data.points);
-                    } else if (typeof event.data.newScore === 'number') {
-                        setScore(event.data.newScore);
+            try {
+                if (event.data && event.data.action) {
+                    switch(event.data.action) {
+                        case 'dismissOverlay':
+                            navigationAttempted = false;
+                            hidePhoneOverlay();
+                            break;
+                            
+                        case 'updateScore':
+                            if (typeof event.data.points === 'number') {
+                                addToScore(event.data.points);
+                            } else if (typeof event.data.newScore === 'number') {
+                                setScore(event.data.newScore);
+                            }
+                            break;
+                            
+                        case 'getScore':
+                            if (event.source) {
+                                event.source.postMessage({
+                                    action: 'scoreResponse',
+                                    score: currentScore
+                                }, '*');
+                            }
+                            break;
+                            
+                        case 'openApp':
+                            if (event.data.appName && event.data.fileName) {
+                                openApp(event.data.appName, event.data.fileName);
+                            }
+                            break;
+                            
+                        case 'openCodeApp':
+                            console.log('Opening code app from message');
+                            openApp('C Coding Challenge', 'logicbody.html');
+                            break;
+                            
+                        case 'navigateToLevel':
+                            const targetLevel = event.data.level;
+                            if (targetLevel) {
+                                // Find focused window and navigate to level
+                                const focusedWindow = openWindows.find(w => {
+                                    const element = document.getElementById(w.id);
+                                    return element && parseInt(element.style.zIndex) === windowZIndex;
+                                });
+                                
+                                if (focusedWindow) {
+                                    openLanguageLevel('C', targetLevel, 'C.png', focusedWindow.id);
+                                }
+                            }
+                            break;
                     }
-                    break;
-                    
-                case 'getScore':
-                    if (event.source) {
-                        event.source.postMessage({
-                            action: 'scoreResponse',
-                            score: currentScore
-                        }, '*');
-                    }
-                    break;
-                    
-                case 'openApp':
-                    if (event.data.appName && event.data.fileName) {
-                        openApp(event.data.appName, event.data.fileName);
-                    }
-                    break;
-                    
-                case 'openCodeApp':
-                    console.log('Opening code app from message');
-                    openApp('C Coding Challenge', 'logicbody.html');
-                    break;
-                    
-                case 'navigateToLevel':
-                    const targetLevel = event.data.level;
-                    if (targetLevel) {
-                        // Find focused window and navigate to level
-                        const focusedWindow = openWindows.find(w => {
-                            const element = document.getElementById(w.id);
-                            return element && parseInt(element.style.zIndex) === windowZIndex;
-                        });
-                        
-                        if (focusedWindow) {
-                            openLanguageLevel('C', targetLevel, 'C.png', focusedWindow.id);
-                        }
-                    }
-                    break;
+                }
+            } catch (error) {
+                console.log('Message handling error:', error);
             }
-        }
-    } catch (error) {
-        console.log('Message handling error:', error);
-    }
-});
+        });
 
         // CONSOLE INPUT HANDLING
         document.getElementById('fsConsoleInput').addEventListener('keydown', function(e) {
@@ -4193,7 +3608,6 @@ contentElement.onmousedown = function(e) {
                 }
             });
         });
-
-    </script>
+            </script>
 </body>
 </html>
