@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fromsupply</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     
    <!-- Programming Languages -->
 <script src="c.js"></script>
@@ -1111,14 +1112,153 @@
     box-shadow: 0 4px 20px rgba(255, 255, 255, 0.2); */
     transform: scale(1.1);
 }
+/* Logo Dropdown Overlay */
+.logo-dropdown {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 4000;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    padding-top: 90px;
+    padding-left: 20px;
+}
+
+.logo-dropdown.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.logo-dropdown-content {
+    width: 280px;
+    transform: scale(0.8);
+    transition: transform 0.3s ease;
+}
+
+.logo-dropdown.active .logo-dropdown-content {
+    transform: scale(1);
+}
+
+.logo-dropdown-section {
+    margin-bottom: 16px;
+}
+
+.logo-dropdown-section:last-child {
+    margin-bottom: 0;
+}
+
+.logo-dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.logo-dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.logo-dropdown-text {
+    color: white;
+    font-weight: 500;
+    font-size: 14px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.logo-user-info {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+}
+
+.logo-user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.logo-user-details {
+    flex-grow: 1;
+}
+
+.logo-user-name {
+    color: white;
+    font-weight: 500;
+    font-size: 13px;
+    margin-bottom: 2px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.logo-user-email {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 11px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Google Sign-in button styling in dropdown */
+#logo-google-auth-slot {
+    display: flex;
+    justify-content: center;
+}
+
+#logo-google-auth-slot .g_id_signin {
+    margin: 0 !important;
+    transform: scale(0.9);
+}
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="logo-section" onclick="goToIndex()">
-            <div class="logo"></div>
-            <div class="logo-text">Fromsupply</div>
+        <div class="logo-section" onclick="toggleLogoDropdown(event)">
+    <div class="logo"></div>
+    <div class="logo-text">Fromsupply</div>
+</div>
+
+<div id="logo-dropdown" class="logo-dropdown">
+    <div class="logo-dropdown-content">
+        <!-- Google Sign-in section -->
+        <div id="logo-google-auth-section" class="logo-dropdown-section">
+            <div id="logo-google-auth-slot"></div>
         </div>
+        
+        <!-- User info section (hidden by default) -->
+        <div id="logo-user-section" class="logo-dropdown-section" style="display: none;">
+            <div class="logo-user-info">
+                <img id="logo-user-avatar" class="logo-user-avatar" src="https://placehold.co/32x32/4B5563/FFFFFF?text=U" alt="User">
+                <div class="logo-user-details">
+                    <div id="logo-user-name" class="logo-user-name">User Name</div>
+                    <div id="logo-user-email" class="logo-user-email">user@example.com</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Support section -->
+        <div class="logo-dropdown-section">
+            <div class="logo-dropdown-item" onclick="window.location.href='support.html'">
+                <div class="logo-dropdown-text">Support</div>
+            </div>
+        </div>
+    </div>
+</div>
         <div class="directory-nav hidden" id="directoryNav">
             <div class="directory-path" id="directoryPath">/Fromsupply</div>
         </div>
@@ -4170,8 +4310,128 @@ if (windowElement) {
 }
 
         function goToIndex() {
-            window.location.href = 'index.html';
+    window.location.href = 'index.html';
+}
+
+// Logo dropdown functionality
+let logoDropdownVisible = false;
+let userData = {
+    isLoggedIn: false,
+    profile: null
+};
+
+function toggleLogoDropdown(event) {
+    event.stopPropagation();
+    const dropdown = document.getElementById('logo-dropdown');
+    logoDropdownVisible = !logoDropdownVisible;
+    
+    if (logoDropdownVisible) {
+        dropdown.classList.add('active');
+    } else {
+        dropdown.classList.remove('active');
+    }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+    const dropdown = document.getElementById('logo-dropdown');
+    const dropdownContent = dropdown ? dropdown.querySelector('.logo-dropdown-content') : null;
+    const logoSection = document.querySelector('.logo-section');
+    
+    if (dropdown && logoSection && !dropdownContent.contains(e.target) && !logoSection.contains(e.target)) {
+        dropdown.classList.remove('active');
+        logoDropdownVisible = false;
+    }
+});
+
+// Google Sign-in callback
+function handleCredentialResponse(response) {
+    try {
+        const base64Url = response.credential.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+
+        const profile = JSON.parse(jsonPayload);
+        console.log('User signed in:', profile.name, profile.email);
+
+        userData.isLoggedIn = true;
+        userData.profile = profile;
+
+        // Hide Google Sign-in, show user info
+        document.getElementById('logo-google-auth-section').style.display = 'none';
+        document.getElementById('logo-user-section').style.display = 'block';
+        
+        // Update user info
+        document.getElementById('logo-user-name').textContent = profile.name;
+        document.getElementById('logo-user-email').textContent = profile.email;
+        if (profile.picture) {
+            document.getElementById('logo-user-avatar').src = profile.picture;
         }
+
+        // Save to localStorage
+        localStorage.setItem('fs_user_logged_in', 'true');
+        localStorage.setItem('fs_user_profile', JSON.stringify(profile));
+        
+    } catch (error) {
+        console.error('Google Sign-in error:', error);
+    }
+}
+
+// Initialize Google Sign-in
+function initializeGoogleSignIn() {
+    if (window.google && window.google.accounts && window.google.accounts.id) {
+        google.accounts.id.initialize({
+            client_id: "495690405484-ikrq0pgtkuc0fcqj9p6cski79dleagma.apps.googleusercontent.com",
+            callback: handleCredentialResponse
+        });
+
+        // Check if user is already logged in
+        const isLoggedIn = localStorage.getItem('fs_user_logged_in') === 'true';
+        const profileData = localStorage.getItem('fs_user_profile');
+        
+        if (isLoggedIn && profileData) {
+            try {
+                const profile = JSON.parse(profileData);
+                userData.isLoggedIn = true;
+                userData.profile = profile;
+                
+                // Show user info instead of sign-in button
+                document.getElementById('logo-google-auth-section').style.display = 'none';
+                document.getElementById('logo-user-section').style.display = 'block';
+                document.getElementById('logo-user-name').textContent = profile.name;
+                document.getElementById('logo-user-email').textContent = profile.email;
+                if (profile.picture) {
+                    document.getElementById('logo-user-avatar').src = profile.picture;
+                }
+            } catch (error) {
+                console.error('Error loading saved profile:', error);
+                localStorage.removeItem('fs_user_logged_in');
+                localStorage.removeItem('fs_user_profile');
+            }
+        } else {
+            // Render Google Sign-in button
+            google.accounts.id.renderButton(
+                document.getElementById('logo-google-auth-slot'),
+                {
+                    theme: "outline",
+                    size: "large",
+                    type: "standard",
+                    shape: "pill",
+                    text: "signin_with",
+                    logo_alignment: "left",
+                    width: "280"
+                }
+            );
+        }
+    }
+}
+
+// Initialize when page loads
+window.addEventListener('load', function() {
+    setTimeout(initializeGoogleSignIn, 100);
+});
 
         // CONSOLE SYSTEM
 	   function openFsConsole(windowId = null) {

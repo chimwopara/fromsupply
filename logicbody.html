@@ -841,6 +841,8 @@ button, input, select, textarea,
         let levelCompletedThisSession = {};
         let starsGainedThisLevel = 0;
         let starsLostThisLevel = 0;
+        let wrongAnswersCount = 0;
+        let hintsUsedCount = 0;
 
         // DOM Elements
         // Header elements removed - managed by fsLogic
@@ -971,6 +973,8 @@ button, input, select, textarea,
     // Reset level tracking
     starsGainedThisLevel = 0;
     starsLostThisLevel = 0;
+    wrongAnswersCount = 0;  // ADD THIS
+    hintsUsedCount = 0;     // ADD THIS
 
     // Mark level as started for index.html progress tracking
     const levelNumber = currentLevelIndex + 1;
@@ -1147,13 +1151,11 @@ setTimeout(() => {
             localStorage.setItem(`level_${levelNumber}_completed`, 'true');
 
             
-            // Only save stars earned if this is the FIRST completion (for grading)
-    // Simple calculation: (steps × 3) - (wrong answers × 2) - (hints × 1)
+
+// Simple calculation: (steps × 3) - (wrong answers × 2) - (hints × 1)
 const totalStepsCompleted = challengesData[currentLevelIndex].sequence.length;
 const totalPossibleStars = totalStepsCompleted * 3;
-const wrongAnswers = Math.floor(starsLostThisLevel / 2); // Since each wrong answer = 2 stars lost
-const hintsUsed = starsLostThisLevel % 2; // Remaining stars lost from hints
-const finalStarsEarned = Math.max(0, totalPossibleStars - (wrongAnswers * 2) - (hintsUsed * 1));
+const finalStarsEarned = Math.max(0, totalPossibleStars - (wrongAnswersCount * 2) - (hintsUsedCount * 1));
 
 // Only update star count and save data on FIRST completion
 if (!wasAlreadyCompleted) {
@@ -1166,7 +1168,7 @@ if (!wasAlreadyCompleted) {
     const currentAttempt = levelAttempts[currentLevelIndex] || 1;
     localStorage.setItem(`level_${levelNumber}_completion_attempt`, currentAttempt.toString());
     
-    console.log(`Level ${levelNumber} completed: ${finalStarsEarned}/${totalPossibleStars} stars (${wrongAnswers} wrong, ${hintsUsed} hints)`);
+    console.log(`Level ${levelNumber} completed: ${finalStarsEarned}/${totalPossibleStars} stars (${wrongAnswersCount} wrong, ${hintsUsedCount} hints)`);
 } else {
     console.log(`Re-attempt of Level ${levelNumber}: grade remains from first attempt`);
 }
@@ -1326,14 +1328,14 @@ function goToLevelBegin(levelNumber) {
         modalCloseBtn.addEventListener('click', () => hideModal(infoModal));
         infoModal.addEventListener('click', (event) => { if (event.target === infoModal) hideModal(infoModal); });
 
-        hintContainer.addEventListener('click', () => {
+    hintContainer.addEventListener('click', () => {
     const hintCost = 1;
     if (starCount >= hintCost && !hintRevealed) {
         let didLoseStar = false;
         if (!levelCompletedThisSession[currentLevelIndex]) {
             previousStarCountForAnimation = starCount;
             starCount -= hintCost;
-            starsLostThisLevel += hintCost;
+            hintsUsedCount++;  // REPLACE starsLostThisLevel += hintCost with this
             didLoseStar = true;
         }
         updateStarDisplay(didLoseStar, 'loss');
