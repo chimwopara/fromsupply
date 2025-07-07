@@ -64,7 +64,7 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             height: 100vh;
             overflow: hidden;
-            background-image: url('logicdefault.png');
+            background-image: url('logicdefault.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -2533,11 +2533,40 @@ function navigateToFavorite(directoryPath) {
             contentElement.innerHTML = content;
         }
     } else {
-        // Create new window for this directory
-        const pathParts = directoryPath.split('/');
-        const folderName = pathParts[pathParts.length - 1];
-        openFolder(folderName);
+    // Create new window for this directory
+    const pathParts = directoryPath.split('/');
+    const folderName = pathParts[pathParts.length - 1];
+    
+    // Calculate position near mouse
+    const mouseX = window.fsLastMousePosition ? window.fsLastMousePosition.x : 200;
+    const mouseY = window.fsLastMousePosition ? window.fsLastMousePosition.y : 200;
+    const windowX = Math.max(20, mouseX - 300);
+    const windowY = Math.max(80, mouseY + 50);
+    
+    // Create new window with proper path
+    const newWindowId = createWindow(`${folderName} - Fromsupply`, '', 650, 500, windowX, windowY);
+    
+    // Set the correct full path
+    PathManager.updatePath(newWindowId, pathParts);
+    
+    // Generate content with proper parent context
+    const parentFolder = pathParts.length > 3 ? pathParts[pathParts.length - 2] : null;
+    let content;
+    
+    if (folderName === 'Desktop') {
+        content = generateFolderContent('Desktop', newWindowId);
+    } else {
+        content = generateFolderContent(folderName, newWindowId, parentFolder);
     }
+    
+    const contentElement = document.getElementById(newWindowId + '-content');
+    if (contentElement && content) {
+        contentElement.style.padding = '16px';
+        contentElement.innerHTML = content;
+    }
+    
+    focusWindow(newWindowId);
+}
 }
 
         function showPhoneOverlay() {
@@ -3058,13 +3087,31 @@ function validatePath(pathArray) {
     }
     
     let structure;
-    if (parentFolder) {
-        structure = folderStructure[parentFolder] && folderStructure[parentFolder][folderName];
-        console.log('Looking for structure:', parentFolder, '->', folderName, 'found:', !!structure);
-    } else {
-        structure = folderStructure[folderName];
-        console.log('Looking for structure:', folderName, 'found:', !!structure);
+if (parentFolder) {
+    structure = folderStructure[parentFolder] && folderStructure[parentFolder][folderName];
+    console.log('Looking for structure:', parentFolder, '->', folderName, 'found:', !!structure);
+} else {
+    structure = folderStructure[folderName];
+    console.log('Looking for structure:', folderName, 'found:', !!structure);
+}
+
+// If structure not found and we have a window with a path, try to navigate the structure
+if (!structure && windowId) {
+    const windowPath = PathManager.getPath(windowId);
+    let tempStructure = folderStructure;
+    
+    // Navigate through the path to find the correct structure
+    for (let i = 2; i < windowPath.length; i++) {
+        if (tempStructure && tempStructure[windowPath[i]]) {
+            if (i === windowPath.length - 1) {
+                structure = tempStructure[windowPath[i]];
+            } else {
+                tempStructure = tempStructure[windowPath[i]];
+            }
+        }
     }
+    console.log('Path-based structure lookup for', folderName, 'found:', !!structure);
+}
 
 			// Special case: Desktop should show main folders
 if (folderName === 'Desktop') {
@@ -3097,10 +3144,16 @@ if (folderName === 'Desktop') {
 			}
 
 			if (!structure) return '<p style="color: white;">No content available</p>';
-            
-            let content = '';
-            
-            for (const [key, value] of Object.entries(structure)) {
+
+// Check if the current folder itself is a subject with levels
+if (structure.levels && structure.cover && typeof structure.levels === 'number') {
+    // This folder IS a subject - generate the levels grid instead of folder contents
+    return generateLanguageLevels(folderName, structure.levels, structure.cover, windowId);
+}
+
+let content = '';
+
+for (const [key, value] of Object.entries(structure)) {
                 if (key === 'app' || key === 'file') continue;
                 
                 const isSubjectFile = value && typeof value === 'object' && value.levels && value.cover;
@@ -4651,8 +4704,17 @@ window.addEventListener('load', function() {
             }
             
             if (typeof currentStructure === 'object') {
-                items = Object.keys(currentStructure).filter(key => key !== 'app' && key !== 'file');
-            }
+    // Check if this is a subject with levels
+    if (currentStructure.levels && currentStructure.cover && typeof currentStructure.levels === 'number') {
+        // Generate level names for subjects
+        items = [];
+        for (let i = 1; i <= currentStructure.levels; i++) {
+            items.push(`Level ${i}`);
+        }
+    } else {
+        items = Object.keys(currentStructure).filter(key => key !== 'app' && key !== 'file');
+    }
+}
         } catch (error) {
             items = ['No items found'];
         }
@@ -5221,8 +5283,17 @@ function showDirectoryListing(windowId) {
             }
             
             if (typeof currentStructure === 'object') {
-                items = Object.keys(currentStructure).filter(key => key !== 'app' && key !== 'file');
-            }
+    // Check if this is a subject with levels
+    if (currentStructure.levels && currentStructure.cover && typeof currentStructure.levels === 'number') {
+        // Generate level names for subjects
+        items = [];
+        for (let i = 1; i <= currentStructure.levels; i++) {
+            items.push(`Level ${i}`);
+        }
+    } else {
+        items = Object.keys(currentStructure).filter(key => key !== 'app' && key !== 'file');
+    }
+}
         } catch (error) {
             items = ['No items found'];
         }
@@ -5349,11 +5420,20 @@ function changeDirectory(targetDir, windowId) {
         }
         
         // Navigate through each part of the path
-        if (pathValid) {
-            for (let i = 0; i < pathParts.length; i++) {
-                const targetPart = pathParts[i];
-                const targetPartLower = targetPart.toLowerCase();
-                let found = false;
+        // Navigate through each part of the path
+if (pathValid) {
+    for (let i = 0; i < pathParts.length; i++) {
+        let targetPart = pathParts[i];
+        let targetPartLower = targetPart.toLowerCase();
+        
+        // Handle "level X" pattern - if current part is "level" and next part is a number
+        if (targetPartLower === 'level' && i + 1 < pathParts.length && /^\d+$/.test(pathParts[i + 1])) {
+            targetPart = `Level ${pathParts[i + 1]}`;
+            targetPartLower = targetPart.toLowerCase();
+            i++; // Skip the next part since we consumed it
+        }
+        
+        let found = false;
                 
                 // If we're at the root level, check main directories
                 if (tempPath.length <= 2) {
@@ -5382,14 +5462,61 @@ function changeDirectory(targetDir, windowId) {
                 }
                 
                 if (!found) {
-                    pathValid = false;
-                    const errorLine = document.createElement('div');
-                    errorLine.style.marginBottom = '4px';
-                    errorLine.style.color = '#ef4444';
-                    errorLine.textContent = `Directory not found: ${targetPart} (in path ${targetDir})`;
-                    outputElement.appendChild(errorLine);
-                    break;
+    // Check if this is a level (e.g., "Level 100")
+    if (targetPart.match(/^Level \d+$/i)) {
+        const levelNumber = parseInt(targetPart.replace(/Level /i, ''));
+        
+        // Determine the current subject based on path
+        let currentSubject = 'C'; // default
+        const pathWithoutShell = tempPath.filter(p => p !== 'Shell');
+        
+        // Look for the subject in the path (should be the last non-shell item)
+        for (let j = pathWithoutShell.length - 1; j >= 0; j--) {
+            const pathItem = pathWithoutShell[j];
+            // Check if this item exists in folderStructure and has levels
+            let found = false;
+            function searchForSubject(structure, item) {
+                if (structure[item] && structure[item].levels) {
+                    currentSubject = item;
+                    return true;
                 }
+                for (const key in structure) {
+                    if (typeof structure[key] === 'object' && structure[key] !== null && !structure[key].app && !structure[key].file) {
+                        if (searchForSubject(structure[key], item)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+            
+            if (searchForSubject(folderStructure, pathItem)) {
+                break;
+            }
+        }
+        
+        // Open the level
+        const responseLine = document.createElement('div');
+        responseLine.style.marginBottom = '4px';
+        responseLine.style.color = '#10b981';
+        responseLine.textContent = `Opening ${currentSubject} ${targetPart}...`;
+        outputElement.appendChild(responseLine);
+        
+        // Call the function to open the subject lesson
+        openSubjectLesson(currentSubject, levelNumber);
+        
+        pathValid = true; // Don't show error
+        break;
+    } else {
+        pathValid = false;
+        const errorLine = document.createElement('div');
+        errorLine.style.marginBottom = '4px';
+        errorLine.style.color = '#ef4444';
+        errorLine.textContent = `Directory not found: ${targetPart} (in path ${targetDir})`;
+        outputElement.appendChild(errorLine);
+        break;
+    }
+}
             }
         }
         
@@ -5499,9 +5626,15 @@ function openCurrentDirectoryAsWindow(windowId) {
     if (directoryPath.length === 2 && directoryPath[1] === 'Desktop') {
         content = generateFolderContent('Desktop', newWindowId);
     } else if (folderName) {
-        const parentFolder = directoryPath.length > 2 ? directoryPath[directoryPath.length - 2] : null;
-        content = generateFolderContent(folderName, newWindowId, parentFolder);
+    // Determine parent folder based on the actual folder structure
+    let parentFolder = null;
+    if (directoryPath.length > 3) {
+        parentFolder = directoryPath[directoryPath.length - 2];
+    } else if (directoryPath.length === 3 && directoryPath[1] === 'Desktop') {
+        parentFolder = null; // Main folders under Desktop don't need parent context
     }
+    content = generateFolderContent(folderName, newWindowId, parentFolder);
+}
     
     // Set content in new window
     const contentElement = document.getElementById(newWindowId + '-content');
@@ -5528,9 +5661,15 @@ function closeShellAndOpenDirectory(windowId) {
         if (directoryPath.length === 2 && directoryPath[1] === 'Desktop') {
             content = generateFolderContent('Desktop', windowId);
         } else if (folderName) {
-            const parentFolder = directoryPath.length > 2 ? directoryPath[directoryPath.length - 2] : null;
-            content = generateFolderContent(folderName, windowId, parentFolder);
-        }
+    // Determine parent folder based on the actual folder structure
+    let parentFolder = null;
+    if (directoryPath.length > 3) {
+        parentFolder = directoryPath[directoryPath.length - 2];
+    } else if (directoryPath.length === 3 && directoryPath[1] === 'Desktop') {
+        parentFolder = null; // Main folders under Desktop don't need parent context
+    }
+    content = generateFolderContent(folderName, newWindowId, parentFolder);
+}
         
         const contentElement = document.getElementById(windowId + '-content');
         if (contentElement && content) {
