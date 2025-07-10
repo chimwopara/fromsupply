@@ -69,17 +69,30 @@
         height: 142.857%;
     }
     
-    /* Touch action controls */
+    /* Touch action controls - be more specific */
     .folder {
-        touch-action: none;
+        touch-action: manipulation; /* Allow taps but prevent zoom */
     }
     
     .window {
-        touch-action: none;
+        touch-action: manipulation;
     }
     
     .window-content {
         touch-action: auto;
+    }
+    
+    /* Allow clicks on interactive elements */
+    .folder-item,
+    .breadcrumb-segment,
+    .logo-section,
+    .star-button,
+    button,
+    input,
+    textarea,
+    .notes-tool-btn,
+    .notes-tab {
+        touch-action: manipulation;
     }
     
     /* Better touch targets */
@@ -93,6 +106,15 @@
         min-height: 44px;
         display: inline-flex;
         align-items: center;
+    }
+    
+    /* Ensure inputs work on mobile */
+    input, textarea {
+        -webkit-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
+        user-select: text;
+        -webkit-touch-callout: default;
     }
 }
 
@@ -2319,9 +2341,10 @@ const iconHtml = segment === 'Fromsupply'
             alt="">`;
     
     return `<span class="${cssClass}" 
-                  onclick="event.stopPropagation(); handleDirectoryClick(${index}); return false;"
-                  onmousedown="event.stopPropagation(); startBreadcrumbDrag(event, ${index}); return false;"
-                  style="cursor: pointer; user-select: none;">
+              onclick="event.stopPropagation(); handleDirectoryClick(${index}); return false;"
+              ontouchend="event.stopPropagation(); handleDirectoryTouch(event, ${index}); return false;"
+              onmousedown="event.stopPropagation(); startBreadcrumbDrag(event, ${index}); return false;"
+              style="cursor: pointer; user-select: none;">
         ${iconHtml}${segment}
     </span>`;
 });
@@ -2461,6 +2484,12 @@ function createWindowFromDirectory(level) {
     
     focusWindow(windowId);
 }
+// Touch-friendly directory navigation
+function handleDirectoryTouch(e, level) {
+    e.preventDefault();
+    e.stopPropagation();
+    handleDirectoryClick(level);
+}
 
 function handleDirectoryClick(level) {
     const directoryPath = currentDirectory.slice(0, level + 1).join('/');
@@ -2596,7 +2625,6 @@ function openActionsBlob() {
     showPhoneOverlay();
 }
 
-// STAR BUTTON LONG PRESS
 function handleStarClick() {
     if (!window.starLongPress.isPressed) {
         openActionsBlob();
@@ -2619,6 +2647,32 @@ function startStarLongPress() {
 
 function endStarLongPress() {
     window.starLongPress.isPressed = false;
+}
+
+// Mobile touch support for star button
+function initializeStarButtonTouch() {
+    const starButton = document.querySelector('.star-button');
+    if (starButton) {
+        let touchStartTime = 0;
+        
+        starButton.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            touchStartTime = Date.now();
+            startStarLongPress();
+        }, { passive: false });
+        
+        starButton.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            const touchDuration = Date.now() - touchStartTime;
+            endStarLongPress();
+            
+            if (touchDuration < 500) {
+                // Short tap - open blob
+                handleStarClick();
+            }
+            // Long press already handled by timer
+        }, { passive: false });
+    }
 }
 
 // FAVORITES OVERLAY
@@ -4201,27 +4255,30 @@ if (item.type === 'youtube') {
         }
 
         function setTool(tool) {
-            currentTool = tool;
-            updateToolButtons();
-            
-            const canvas = document.getElementById('notesCanvas');
-            if (canvas) {
-                switch(tool) {
-                    case 'pen':
-                        canvas.style.cursor = 'crosshair';
-                        setupCanvasDragPrevention();
-                        break;
-                    case 'eraser':
-                        canvas.style.cursor = 'grab';
-                        setupCanvasDragPrevention();
-                        break;
-                    case 'text':
-                        canvas.style.cursor = 'text';
-                        removeCanvasDragPrevention();
-                        break;
-                }
-            }
+    currentTool = tool;
+    updateToolButtons();
+    
+    const canvas = document.getElementById('notesCanvas');
+    if (canvas) {
+        switch(tool) {
+            case 'pen':
+                canvas.style.cursor = 'crosshair';
+                canvas.style.touchAction = 'none';
+                setupCanvasDragPrevention();
+                break;
+            case 'eraser':
+                canvas.style.cursor = 'grab';
+                canvas.style.touchAction = 'none';
+                setupCanvasDragPrevention();
+                break;
+            case 'text':
+                canvas.style.cursor = 'text';
+                canvas.style.touchAction = 'auto';
+                removeCanvasDragPrevention();
+                break;
         }
+    }
+}
 
         function setupCanvasDragPrevention() {
             const canvasContainer = document.querySelector('.notes-canvas-container');
@@ -5030,7 +5087,41 @@ function showConsoleHelp() {
     logToConsole('clear, cls      - Clear console output', 'output');
     logToConsole('exit, quit, q   - Exit console', 'output');
 }
-
+// Initialize touch support for all interactive elements
+function initializeTouchSupport() {
+    // Add touch support to all clickable elements
+    const clickableSelectors = [
+        '.folder-item',
+        '.breadcrumb-segment', 
+        '.logo-section',
+        '.star-button',
+        '.notes-tool-btn',
+        '.notes-tab',
+        '.back-button',
+        '.favorite-item',
+        '.logo-dropdown-item'
+    ];
+    
+    clickableSelectors.forEach(selector => {
+        document.addEventListener('touchend', function(e) {
+            const element = e.target.closest(selector);
+            if (element) {
+                e.preventDefault();
+                // Simulate click after touch
+                setTimeout(() => {
+                    element.click();
+                }, 10);
+            }
+        }, { passive: false });
+    });
+    
+    // Special handling for inputs to ensure they get focus
+    document.addEventListener('touchstart', function(e) {
+        if (e.target.matches('input, textarea')) {
+            e.target.focus();
+        }
+    }, { passive: true });
+}
         // DRAG AND DROP INITIALIZATION
         function initializeDragAndDrop() {
 			const folders = document.querySelectorAll('.folder');
@@ -5358,7 +5449,37 @@ case 'endDragFromIframe':
         console.log('Message handling error:', error);
     }
 });
-
+// Mobile-specific input handling
+function setupMobileInputSupport() {
+    // Handle shell inputs on mobile
+    document.addEventListener('touchstart', function(e) {
+        if (e.target.id && e.target.id.includes('shellInput-')) {
+            e.target.focus();
+            // Show virtual keyboard
+            e.target.click();
+        }
+    });
+    
+    // Handle console input on mobile  
+    document.addEventListener('touchstart', function(e) {
+        if (e.target.id === 'fsConsoleInput') {
+            e.target.focus();
+            e.target.click();
+        }
+    });
+    
+    // Ensure all inputs work on touch
+    document.addEventListener('touchend', function(e) {
+        if (e.target.matches('input[type="text"], textarea')) {
+            e.preventDefault();
+            e.target.focus();
+            // Force show keyboard on iOS
+            if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+                e.target.setSelectionRange(e.target.value.length, e.target.value.length);
+            }
+        }
+    }, { passive: false });
+}
         // SHELL INPUT HANDLING
 function handleShellInput(event, windowId) {
     if (event.key === 'Enter') {
@@ -6213,18 +6334,32 @@ function showOnboardingVideo() {
     const overlay = document.createElement('div');
     overlay.id = 'onboardingOverlay';
     overlay.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: #000000;
-        z-index: 50000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-    `;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 50000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transform-origin: top left;
+`;
+
+// Handle mobile scaling
+if (window.innerWidth <= 768) {
+    if (window.innerWidth <= 480) {
+        overlay.style.transform = 'scale(2)'; // Compensate for 50% body scale
+        overlay.style.width = '50vw';
+        overlay.style.height = '50vh';
+    } else {
+        overlay.style.transform = 'scale(1.428)'; // Compensate for 70% body scale  
+        overlay.style.width = '70vw';
+        overlay.style.height = '70vh';
+    }
+}
     
     overlay.innerHTML = `
     <div style="position: relative; width: 80%; max-width: 1000px; height: 80%; max-height: 600px;">
@@ -6273,17 +6408,19 @@ function finishOnboarding() {
         console.warn('Could not save visit status:', error);
     }
     
-    // Check if user is signed in before opening system window
-    if (userData.isLoggedIn) {
-        setTimeout(() => {
-            openHiddenSystemWindow();
-        }, 500);
-    } else {
-        // Force open logo dropdown to require signin
-        setTimeout(() => {
-            forceSigninFlow();
-        }, 500);
-    }
+    
+    // Check if user is signed in before opening system window  
+const currentlyLoggedIn = checkUserLoginStatus();
+if (currentlyLoggedIn) {
+    setTimeout(() => {
+        openHiddenSystemWindow();
+    }, 500);
+} else {
+    // Force open logo dropdown to require signin
+    setTimeout(() => {
+        forceSigninFlow();
+    }, 500);
+}
 }
 
 function forceSigninFlow() {
@@ -6313,6 +6450,11 @@ function forceSigninFlow() {
 
 // TEMPORARY DEV FUNCTION - COMMENT OUT BEFORE LAUNCH
 function addTemporaryUnlockButton() {
+    // Don't show unlock button if already logged in
+    if (userData.isLoggedIn || checkUserLoginStatus()) {
+        return;
+    }
+    
     const dropdownContent = document.querySelector('.logo-dropdown-content');
     if (dropdownContent && !document.getElementById('temp-unlock-btn')) {
         const unlockSection = document.createElement('div');
@@ -6380,6 +6522,25 @@ function checkFirstVisit() {
         return false; // Default to not showing onboarding if localStorage fails
     }
 }
+
+function checkUserLoginStatus() {
+    try {
+        const isLoggedIn = localStorage.getItem('fs_user_logged_in') === 'true';
+        const profileData = localStorage.getItem('fs_user_profile');
+        
+        if (isLoggedIn && profileData) {
+            const profile = JSON.parse(profileData);
+            userData.isLoggedIn = true;
+            userData.profile = profile;
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.warn('Could not check login status:', error);
+        return false;
+    }
+}
+
 // Handle video loading
 function handleVideoLoad(windowId) {
     const iframe = document.querySelector(`#${windowId} iframe`);
@@ -6421,22 +6582,26 @@ function setupIframeDragHandling(windowId) {
     };
 }
 
-// INITIALIZATION
-
-        // INITIALIZATION
-        document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
     loadScore();
     loadNotesFromStorage();
     initializeDragAndDrop();
+    initializeTouchSupport(); // Add this line
+    setupMobileInputSupport(); // Add this line
+    initializeStarButtonTouch(); // Add this line
     loadFolderPositions();
     
-    // Check for first visit and show onboarding
+
+// Check login status first
+const isLoggedIn = checkUserLoginStatus();
+
+// Check for first visit and show onboarding
 if (checkFirstVisit()) {
     // Small delay to ensure page is fully loaded
     setTimeout(() => {
         showOnboardingVideo();
     }, 1000);
-} else if (!userData.isLoggedIn) {
+} else if (!isLoggedIn) {
     // Returning user but not signed in - force signin
     setTimeout(() => {
         forceSigninFlow();
