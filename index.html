@@ -60,7 +60,6 @@
     -ms-user-select: none;
 }
 
-/* Mobile responsive styles */
 @media (max-width: 768px) {
     .header {
         padding: 0 10px;
@@ -94,6 +93,7 @@
     .folder {
         width: 120px;
         height: 150px;
+        touch-action: none; /* Prevent default touch behaviors */
     }
     
     .folder-icon {
@@ -111,6 +111,11 @@
         min-height: 250px;
         max-width: 95vw;
         max-height: 85vh;
+        touch-action: none;
+    }
+    
+    .window-content {
+        touch-action: auto; /* Allow scrolling within windows */
     }
     
     .desktop {
@@ -129,8 +134,20 @@
     .logo-dropdown-content {
         width: 260px;
     }
+    
+    /* Better touch targets */
+    .folder-item {
+        padding: 16px;
+        min-height: 60px;
+    }
+    
+    .breadcrumb-segment {
+        padding: 8px 12px;
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+    }
 }
-
 @media (max-width: 480px) {
     .header {
         padding: 0 5px;
@@ -1974,10 +1991,14 @@ function initializeGlobals() {
         // EVENT MANAGER
         const EventManager = {
             init() {
-                document.addEventListener('mousemove', this.handleMouseMove.bind(this));
-                document.addEventListener('mouseup', this.handleMouseUp.bind(this));
-                document.addEventListener('keydown', this.handleKeyboard.bind(this));
-            },
+    document.addEventListener('mousemove', this.handleMouseMove.bind(this));
+    document.addEventListener('mouseup', this.handleMouseUp.bind(this));
+    document.addEventListener('keydown', this.handleKeyboard.bind(this));
+    
+    // Add touch support for mobile
+    document.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
+    document.addEventListener('touchend', this.handleTouchEnd.bind(this));
+},
             
             handleMouseMove(e) {
                 window.fsLastMousePosition = { x: e.clientX, y: e.clientY };
@@ -1989,6 +2010,33 @@ function initializeGlobals() {
                 DragManager.end(e);
                 if (isDrawing) stopDrawing();
             },
+
+            handleTouchMove(e) {
+    e.preventDefault(); // Prevent scrolling while dragging
+    // Convert touch to mouse-like event
+    if (e.touches.length > 0) {
+        const touch = e.touches[0];
+        const mouseEvent = {
+            clientX: touch.clientX,
+            clientY: touch.clientY,
+            preventDefault: () => e.preventDefault(),
+            stopPropagation: () => e.stopPropagation()
+        };
+        this.handleMouseMove(mouseEvent);
+    }
+},
+
+handleTouchEnd(e) {
+    // Convert touch to mouse-like event
+    const touch = e.changedTouches[0];
+    const mouseEvent = {
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+        preventDefault: () => e.preventDefault(),
+        stopPropagation: () => e.stopPropagation()
+    };
+    this.handleMouseUp(mouseEvent);
+},
             
             handleKeyboard(e) {
     if (e.target.matches('input, textarea, [contenteditable]')) return;
@@ -2863,10 +2911,27 @@ function navigateToFavorite(directoryPath) {
 });
 
             windowElement.addEventListener('mousedown', (e) => {
-                if (!e.target.closest('.resize-handle')) {
-                    focusWindow(windowId);
-                }
-            });
+    if (!e.target.closest('.resize-handle')) {
+        focusWindow(windowId);
+    }
+});
+
+// Add touch support
+windowElement.addEventListener('touchstart', (e) => {
+    if (!e.target.closest('.resize-handle')) {
+        focusWindow(windowId);
+        
+        // Convert touch to mouse-like event for drag start
+        const touch = e.touches[0];
+        const mouseEvent = {
+            clientX: touch.clientX,
+            clientY: touch.clientY,
+            preventDefault: () => e.preventDefault(),
+            stopPropagation: () => e.stopPropagation()
+        };
+        DragManager.start('window', windowElement, mouseEvent, { windowId });
+    }
+}, { passive: false });
 
             windowElement.addEventListener('dblclick', (e) => {
     // Check if we're on a level detail page
@@ -5091,6 +5156,66 @@ function showConsoleHelp() {
 			            hasActuallyDragged = false; // Reset this too
 			        }, 500);
 			    });
+
+                // Add touch support for folders
+folder.addEventListener('touchstart', function(e) {
+    const touch = e.touches[0];
+    dragStartTime = Date.now();
+    dragStartPosition.x = touch.clientX;
+    dragStartPosition.y = touch.clientY;
+    clickMousePosition.x = touch.clientX;
+    clickMousePosition.y = touch.clientY;
+    hasActuallyDragged = false;
+    justHadMouseDown = true;
+    
+    setTimeout(() => {
+        justHadMouseDown = false;
+        hasActuallyDragged = false;
+    }, 500);
+}, { passive: true });
+
+folder.addEventListener('touchmove', function(e) {
+    if (!DragManager.active && justHadMouseDown && this === e.currentTarget) {
+        const touch = e.touches[0];
+        const deltaX = Math.abs(touch.clientX - dragStartPosition.x);
+        const deltaY = Math.abs(touch.clientY - dragStartPosition.y);
+        
+        if (deltaX > 5 || deltaY > 5) {
+            hasActuallyDragged = true;
+            justHadMouseDown = false;
+            
+            const mouseEvent = {
+                clientX: touch.clientX,
+                clientY: touch.clientY,
+                preventDefault: () => e.preventDefault(),
+                stopPropagation: () => e.stopPropagation()
+            };
+            DragManager.start('folder', this, mouseEvent);
+        }
+    }
+}, { passive: false });
+
+folder.addEventListener('touchend', function(e) {
+    justHadMouseDown = false;
+    
+    setTimeout(() => {
+        hasActuallyDragged = false;
+    }, 50);
+    
+    // Handle tap (like click)
+    const touchDuration = Date.now() - dragStartTime;
+    if (!hasActuallyDragged && touchDuration < 300 && !DragManager.active) {
+        const folderName = this.dataset.folder;
+        const isApp = this.dataset.app === 'true';
+        const fileName = this.dataset.file;
+        
+        if (isApp && fileName) {
+            openApp(folderName, fileName);
+        } else {
+            openFolder(folderName, clickMousePosition.x, clickMousePosition.y);
+        }
+    }
+});
 			    
 			    folder.addEventListener('mousemove', function(e) {
 			        if (!DragManager.active && justHadMouseDown && this === e.currentTarget) {
