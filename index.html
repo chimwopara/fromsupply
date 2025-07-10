@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Fromsupply</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     
@@ -51,14 +51,140 @@
 
     <style>
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-        }
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+    .header {
+        padding: 0 10px;
+        height: 50px;
+    }
+    
+    .logo {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .logo-text {
+        font-size: 18px;
+    }
+    
+    .star-button {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    
+    .star-icon {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .directory-path {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+    
+    .folder {
+        width: 120px;
+        height: 150px;
+    }
+    
+    .folder-icon {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .folder-name {
+        font-size: 14px;
+        padding: 4px 8px;
+    }
+    
+    .window {
+        min-width: 300px;
+        min-height: 250px;
+        max-width: 95vw;
+        max-height: 85vh;
+    }
+    
+    .desktop {
+        padding: 60px 10px 10px;
+    }
+    
+    .favorites-grid {
+        width: 350px;
+        max-height: 400px;
+    }
+    
+    .favorites-content {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .logo-dropdown-content {
+        width: 260px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header {
+        padding: 0 5px;
+        height: 45px;
+    }
+    
+    .logo-text {
+        display: none;
+    }
+    
+    .directory-nav {
+        padding: 4px 10px;
+        margin: 0 -10px;
+    }
+    
+    .directory-path {
+        font-size: 11px;
+        min-width: 60px;
+    }
+    
+    .folder {
+        width: 100px;
+        height: 130px;
+    }
+    
+    .folder-icon {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .folder-name {
+        font-size: 12px;
+    }
+    
+    .window {
+        min-width: 280px;
+        min-height: 200px;
+        max-width: 98vw;
+        max-height: 90vh;
+    }
+    
+    .favorites-grid {
+        width: 300px;
+        max-height: 350px;
+    }
+    
+    .favorites-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .logo-dropdown-content {
+        width: 240px;
+    }
+}
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -5999,23 +6125,30 @@ function openYouTubeWindow(videoName, youtubeUrl, sourceWindowId = null) {
     }
     
     // Convert YouTube URL to embed format if needed
-    let embedUrl = youtubeUrl;
-    if (youtubeUrl.includes('watch?v=')) {
-        const videoId = youtubeUrl.split('watch?v=')[1].split('&')[0];
-        embedUrl = `https://www.youtube.com/embed/${videoId}`;
-    } else if (youtubeUrl.includes('youtu.be/')) {
-        const videoId = youtubeUrl.split('youtu.be/')[1].split('?')[0];
-        embedUrl = `https://www.youtube.com/embed/${videoId}`;
-    }
-    
-   // Create YouTube iframe content with drag handling
+   // Convert YouTube URL to embed format if needed
+let embedUrl = youtubeUrl;
+if (youtubeUrl.includes('watch?v=')) {
+    const videoId = youtubeUrl.split('watch?v=')[1].split('&')[0];
+    embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&fs=1&cc_load_policy=0&iv_load_policy=3&autohide=0&controls=1&showinfo=0&mute=0`;
+} else if (youtubeUrl.includes('youtu.be/')) {
+    const videoId = youtubeUrl.split('youtu.be/')[1].split('?')[0];
+    embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&fs=1&cc_load_policy=0&iv_load_policy=3&autohide=0&controls=1&showinfo=0&mute=0`;
+} else if (!embedUrl.includes('?')) {
+    embedUrl += '?autoplay=1&rel=0&modestbranding=1&fs=1&cc_load_policy=0&iv_load_policy=3&autohide=0&controls=1&showinfo=0&mute=0';
+}
+
+// Create YouTube iframe content with loading optimization
 const content = `
-    <iframe 
-        src="${embedUrl}" 
-        style="width: 100%; height: 100%; border: none;" 
-        allowfullscreen
-        onload="setupIframeDragHandling('${windowId}')">
-    </iframe>
+    <div style="width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center; position: relative;">
+        <div id="loading-${windowId}" style="color: white; font-size: 18px; position: absolute; z-index: 1;">Loading video...</div>
+        <iframe 
+            src="${embedUrl}" 
+            style="width: 100%; height: 100%; border: none; opacity: 0; transition: opacity 0.3s ease;" 
+            allowfullscreen
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            onload="handleVideoLoad('${windowId}'); setupIframeDragHandling('${windowId}')">
+        </iframe>
+    </div>
 `;
 
 const contentElement = document.getElementById(windowId + '-content');
@@ -6218,6 +6351,16 @@ function checkFirstVisit() {
     } catch (error) {
         console.warn('Could not check visit status:', error);
         return false; // Default to not showing onboarding if localStorage fails
+    }
+}
+// Handle video loading
+function handleVideoLoad(windowId) {
+    const iframe = document.querySelector(`#${windowId} iframe`);
+    const loading = document.getElementById(`loading-${windowId}`);
+    
+    if (iframe && loading) {
+        iframe.style.opacity = '1';
+        loading.style.display = 'none';
     }
 }
 
