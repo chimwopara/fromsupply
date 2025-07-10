@@ -60,79 +60,26 @@
     -ms-user-select: none;
 }
 
+/* Mobile responsive styles - 50% scale approach */
 @media (max-width: 768px) {
-    .header {
-        padding: 0 10px;
-        height: 50px;
+    body {
+        transform: scale(0.7);
+        transform-origin: top left;
+        width: 142.857%; /* 100% / 0.7 to compensate for scale */
+        height: 142.857%;
     }
     
-    .logo {
-        width: 30px;
-        height: 30px;
-    }
-    
-    .logo-text {
-        font-size: 18px;
-    }
-    
-    .star-button {
-        padding: 6px 12px;
-        font-size: 12px;
-    }
-    
-    .star-icon {
-        width: 16px;
-        height: 16px;
-    }
-    
-    .directory-path {
-        font-size: 12px;
-        padding: 6px 12px;
-    }
-    
+    /* Touch action controls */
     .folder {
-        width: 120px;
-        height: 150px;
-        touch-action: none; /* Prevent default touch behaviors */
-    }
-    
-    .folder-icon {
-        width: 120px;
-        height: 120px;
-    }
-    
-    .folder-name {
-        font-size: 14px;
-        padding: 4px 8px;
+        touch-action: none;
     }
     
     .window {
-        min-width: 300px;
-        min-height: 250px;
-        max-width: 95vw;
-        max-height: 85vh;
         touch-action: none;
     }
     
     .window-content {
-        touch-action: auto; /* Allow scrolling within windows */
-    }
-    
-    .desktop {
-        padding: 60px 10px 10px;
-    }
-    
-    .favorites-grid {
-        width: 350px;
-        max-height: 400px;
-    }
-    
-    .favorites-content {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .logo-dropdown-content {
-        width: 260px;
+        touch-action: auto;
     }
     
     /* Better touch targets */
@@ -148,58 +95,13 @@
         align-items: center;
     }
 }
+
 @media (max-width: 480px) {
-    .header {
-        padding: 0 5px;
-        height: 45px;
-    }
-    
-    .logo-text {
-        display: none;
-    }
-    
-    .directory-nav {
-        padding: 4px 10px;
-        margin: 0 -10px;
-    }
-    
-    .directory-path {
-        font-size: 11px;
-        min-width: 60px;
-    }
-    
-    .folder {
-        width: 100px;
-        height: 130px;
-    }
-    
-    .folder-icon {
-        width: 100px;
-        height: 100px;
-    }
-    
-    .folder-name {
-        font-size: 12px;
-    }
-    
-    .window {
-        min-width: 280px;
-        min-height: 200px;
-        max-width: 98vw;
-        max-height: 90vh;
-    }
-    
-    .favorites-grid {
-        width: 300px;
-        max-height: 350px;
-    }
-    
-    .favorites-content {
-        grid-template-columns: 1fr;
-    }
-    
-    .logo-dropdown-content {
-        width: 240px;
+    body {
+        transform: scale(0.5);
+        transform-origin: top left;
+        width: 200%; /* 100% / 0.5 to compensate for scale */
+        height: 200%;
     }
 }
 
