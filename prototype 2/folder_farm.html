@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm - Fromsupply</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            background-image: url('logicdefault.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: #1e3a8a;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .logo-section:hover {
+            opacity: 0.8;
+            transform: translateY(-1px);
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: url('logo.jpg') center/contain;
+            background-repeat: no-repeat;
+            background-color: transparent;
+            border-radius: 8px;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 600;
+            color: white;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .breadcrumb {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .breadcrumb-link {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .breadcrumb-link:hover {
+            color: #fbbf24;
+        }
+
+        .star-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .star-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .star-icon {
+            width: 20px;
+            height: 20px;
+            fill: white;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+        }
+
+        .star-count {
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .container {
+            padding: 80px 20px 20px;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .farm-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .farm-title {
+            color: white;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .farm-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 16px;
+        }
+
+        .folder-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .category-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .category-section:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .category-title {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-items {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .folder-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .folder-item:hover {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: rgba(34, 197, 94, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .folder-icon {
+            width: 28px;
+            height: 28px;
+            background: url('whitefile.png') center/contain;
+            background-repeat: no-repeat;
+            background-color: transparent;
+        }
+
+        .app-icon {
+            width: 28px;
+            height: 28px;
+        }
+
+        .folder-name {
+            color: white;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .folder-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 11px;
+        }
+
+        .folder-content {
+            flex: 1;
+        }
+
+        .back-button {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: rgba(34, 197, 94, 0.8);
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-button:hover {
+            background: rgba(34, 197, 94, 1);
+            transform: translateY(-2px);
+        }
+
+        .phone-overlay-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 3000;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-start;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            padding-top: 90px;
+            padding-right: 20px;
+        }
+
+        .phone-overlay-wrapper.show {
+            opacity: 1;
+        }
+
+        .phone-iframe {
+            width: 100vw;
+            height: 100vh;
+            border: 0;
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: auto;
+        }
+
+        .phone-overlay-wrapper.show .phone-iframe {
+            opacity: 1;
+        }
+
+        .subcategory-section {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .subcategory-title {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            padding-left: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo-section" onclick="goToIndex()">
+            <div class="logo"></div>
+            <div class="logo-text">Fromsupply</div>
+        </div>
+        <div class="breadcrumb">
+            <a href="index.html" class="breadcrumb-link">Desktop</a> / Farm
+        </div>
+        <div class="star-button" onclick="openActionsBlob()">
+            <svg class="star-icon" viewBox="0 0 24 24">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+            <span class="star-count" id="starCount">0</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="farm-header">
+            <div class="farm-title">🚜 Fromsupply Farm</div>
+            <div class="farm-subtitle">Learn farming, livestock management, and agricultural techniques</div>
+        </div>
+
+        <div class="folder-grid">
+            <!-- Crops Category -->
+            <div class="category-section">
+                <div class="category-title">
+                    🌱 Crops
+                </div>
+                
+                <!-- Vegetables Subcategory -->
+                <div class="subcategory-section">
+                    <div class="subcategory-title">Vegetables</div>
+                    <div class="category-items">
+                        <div class="folder-item" onclick="openCrop('Tomatoes')">
+                            <div class="folder-icon"></div>
+                            <div class="folder-content">
+                                <div class="folder-name">Tomatoes</div>
+                                <div class="folder-subtitle">25 Levels</div>
+                            </div>
+                        </div>
+                        <div class="folder-item" onclick="openCrop('Carrots')">
+                            <div class="folder-icon"></div>
+                            <div class="folder-content">
+                                <div class="folder-name">Carrots</div>
+                                <div class="folder-subtitle">20 Levels</div>
+                            </div>
+                        </div>
+                        <div class="folder-item" onclick="openCrop('Lettuce')">
+                            <div class="folder-icon"></div>
+                            <div class="folder-content">
+                                <div class="folder-name">Lettuce</div>
+                                <div class="folder-subtitle">15 Levels</div>
+                            </div>
+                        </div>
+                        <div class="folder-item" onclick="openCrop('Peppers')">
+                            <div class="folder-icon"></div>
+                            <div class="folder-content">
+                                <div class="folder-name">Peppers</div>
+                                <div class="folder-subtitle">18 Levels</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fruits Subcategory -->
+                <div class="subcategory-section">
+                    <div class="subcategory-title">Fruits</div>
+                    <div class="category-items">
+                        <div class="folder-item" onclick="openCrop('Apples')">
+                            <div class="folder-icon"></div>
+                            <div class="folder-content">
+                                <div class="folder-name">Apples</div>
+                                <div class="folder-subtitle">30 Levels</div>
+                            </div>
+                        </div>
+                        <div class="folder-item" onclick="openCrop('Strawberries')">
+                            <div class="folder-icon"></div>
+                            <div class="folder-content">
+                                <div class="folder-name">Strawberries</div>
+                                <div class="folder-subtitle">22 Levels</div>
+                            </div>
+                        </div>
+                        <div class="folder-item" onclick="openCrop('Grapes')">
+                            <div class="folder-icon"></div>
+                            <div class="folder-content">
+                                <div class="folder-name">Grapes</div>
+                                <div class="folder-subtitle">35 Levels</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grains Subcategory -->
+                <div class="subcategory-section">
+                    <div class="subcategory-title">Grains</div>
+                    <div class="category-items">
+                        <div class="folder-item" onclick="openCrop('Wheat')">
+                            <div class="folder-icon"></div>
+                            <div class="folder-content">
+                                <div class="folder-name">Wheat</div>
+                                <div class="folder-subtitle">40 Levels</div>
+                            </div>
+                        </div>
+                        <div class="folder-item" onclick="openCrop('Corn')">
+                            <div class="folder-icon"></div>
+                            <div class="folder-content">
+                                <div class="folder-name">Corn</div>
+                                <div class="folder-subtitle">35 Levels</div>
+                            </div>
+                        </div>
+                        <div class="folder-item" onclick="openCrop('Rice')">
+                            <div class="folder-icon"></div>
+                            <div class="folder-content">
+                                <div class="folder-name">Rice</div>
+                                <div class="folder-subtitle">45 Levels</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Livestock Category -->
+            <div class="category-section">
+                <div class="category-title">
+                    🐄 Livestock
+                </div>
+                <div class="category-items">
+                    <div class="folder-item" onclick="openLivestock('Cattle')">
+                        <div class="folder-icon"></div>
+                        <div class="folder-content">
+                            <div class="folder-name">Cattle</div>
+                            <div class="folder-subtitle">30 Levels</div>
+                        </div>
+                    </div>
+                    <div class="folder-item" onclick="openLivestock('Chickens')">
+                        <div class="folder-icon"></div>
+                        <div class="folder-content">
+                            <div class="folder-name">Chickens</div>
+                            <div class="folder-subtitle">25 Levels</div>
+                        </div>
+                    </div>
+                    <div class="folder-item" onclick="openLivestock('Pigs')">
+                        <div class="folder-icon"></div>
+                        <div class="folder-content">
+                            <div class="folder-name">Pigs</div>
+                            <div class="folder-subtitle">28 Levels</div>
+                        </div>
+                    </div>
+                    <div class="folder-item" onclick="openLivestock('Sheep')">
+                        <div class="folder-icon"></div>
+                        <div class="folder-content">
+                            <div class="folder-name">Sheep</div>
+                            <div class="folder-subtitle">22 Levels</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Equipment Category -->
+            <div class="category-section">
+                <div class="category-title">
+                    🚜 Equipment
+                </div>
+                <div class="category-items">
+                    <div class="folder-item" onclick="openEquipment('Tractors')">
+                        <div class="folder-icon"></div>
+                        <div class="folder-content">
+                            <div class="folder-name">Tractors</div>
+                            <div class="folder-subtitle">20 Levels</div>
+                        </div>
+                    </div>
+                    <div class="folder-item" onclick="openEquipment('Harvesters')">
+                        <div class="folder-icon"></div>
+                        <div class="folder-content">
+                            <div class="folder-name">Harvesters</div>
+                            <div class="folder-subtitle">25 Levels</div>
+                        </div>
+                    </div>
+                    <div class="folder-item" onclick="openEquipment('Irrigation')">
+                        <div class="folder-icon"></div>
+                        <div class="folder-content">
+                            <div class="folder-name">Irrigation</div>
+                            <div class="folder-subtitle">18 Levels</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Farm Applications -->
+            <div class="category-section">
+                <div class="category-title">
+                    ⚡ Farm Applications
+                </div>
+                <div class="category-items">
+                    <div class="folder-item" onclick="openApp('fs Farms', 'farms.html')">
+                        <img src="openapp.png" class="app-icon" alt="App">
+                        <div class="folder-content">
+                            <div class="folder-name">fs Farms</div>
+                            <div class="folder-subtitle">Main farming application</div>
+                        </div>
+                    </div>
+                    <div class="folder-item" onclick="openApp('fs Farms Builder', 'farms-builder.html')">
+                        <img src="openapp.png" class="app-icon" alt="App">
+                        <div class="folder-content">
+                            <div class="folder-name">fs Farms Builder</div>
+                            <div class="folder-subtitle">Design and plan your farm</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="back-button" onclick="goToIndex()">
+        ← Back to Desktop
+    </button>
+
+    <div id="phoneOverlay" class="phone-overlay-wrapper" style="display: none;" onclick="hidePhoneOverlay()">
+        <iframe src="ActionsBlob.html" class="phone-iframe" onclick="event.stopPropagation()"></iframe>
+    </div>
+
+    <script>
+        // GLOBAL VARIABLES
+        let currentScore = 0;
+
+        // SCORE MANAGEMENT
+        function loadScore() {
+            const savedScore = localStorage.getItem('fsLogic_score');
+            if (savedScore !== null) {
+                currentScore = parseInt(savedScore, 10) || 0;
+            } else {
+                currentScore = 0;
+            }
+            updateScoreDisplay();
+        }
+
+        function saveScore() {
+            localStorage.setItem('fsLogic_score', currentScore.toString());
+        }
+
+        function updateScoreDisplay() {
+            const starCountElement = document.getElementById('starCount');
+            if (starCountElement) {
+                starCountElement.textContent = currentScore.toString();
+            }
+        }
+
+        function addToScore(points) {
+            currentScore += points;
+            updateScoreDisplay();
+            saveScore();
+            
+            const starButton = document.querySelector('.star-button');
+            if (starButton && points > 0) {
+                starButton.style.transform = 'scale(1.1)';
+                starButton.style.background = 'rgba(34, 197, 94, 0.3)';
+                setTimeout(() => {
+                    starButton.style.transform = '';
+                    starButton.style.background = '';
+                }, 200);
+            }
+        }
+
+        function setScore(newScore) {
+            currentScore = Math.max(0, newScore);
+            updateScoreDisplay();
+            saveScore();
+        }
+
+        // NAVIGATION
+        function goToIndex() {
+            window.location.href = 'index.html';
+        }
+
+        function openCrop(cropName) {
+            console.log('Opening crop:', cropName);
+            alert(`Opening ${cropName} farming course. Learn cultivation techniques, planting schedules, and harvest optimization.`);
+        }
+
+        function openLivestock(animalName) {
+            console.log('Opening livestock:', animalName);
+            alert(`Opening ${animalName} management course. Learn animal care, breeding, and sustainable farming practices.`);
+        }
+
+        function openEquipment(equipmentName) {
+            console.log('Opening equipment:', equipmentName);
+            alert(`Opening ${equipmentName} course. Learn operation, maintenance, and efficient usage techniques.`);
+        }
+
+        function openApp(appName, fileName) {
+            window.location.href = fileName;
+        }
+
+        // PHONE OVERLAY
+        function openActionsBlob() {
+            showPhoneOverlay();
+        }
+
+        function showPhoneOverlay() {
+            const overlay = document.getElementById('phoneOverlay');
+            overlay.style.display = 'flex';
+            
+            setTimeout(() => {
+                overlay.classList.add('show');
+            }, 10);
+        }
+
+        function hidePhoneOverlay() {
+            const overlay = document.getElementById('phoneOverlay');
+            overlay.classList.remove('show');
+            
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 300);
+        }
+
+        function togglePhoneOverlay() {
+            const overlay = document.getElementById('phoneOverlay');
+            const isVisible = overlay.classList.contains('show');
+            
+            if (isVisible) {
+                hidePhoneOverlay();
+            } else {
+                showPhoneOverlay();
+            }
+        }
+
+        // KEYBOARD SHORTCUTS
+        document.addEventListener('keydown', function(e) {
+            if (e.target.matches('input, textarea, [contenteditable]')) return;
+            
+            const shortcuts = {
+                'Escape': () => hidePhoneOverlay(),
+                ' ': (e) => { e.preventDefault(); showPhoneOverlay(); },
+                'b': () => togglePhoneOverlay(),
+            };
+            
+            const action = shortcuts[e.key];
+            if (action) action(e);
+        });
+
+        // MESSAGE HANDLING
+        window.addEventListener('message', function(event) {
+            try {
+                if (event.data && event.data.action) {
+                    switch(event.data.action) {
+                        case 'dismissOverlay':
+                            hidePhoneOverlay();
+                            break;
+                            
+                        case 'updateScore':
+                            if (typeof event.data.points === 'number') {
+                                addToScore(event.data.points);
+                            } else if (typeof event.data.newScore === 'number') {
+                                setScore(event.data.newScore);
+                            }
+                            break;
+                            
+                        case 'getScore':
+                            if (event.source) {
+                                event.source.postMessage({
+                                    action: 'scoreResponse',
+                                    score: currentScore
+                                }, '*');
+                            }
+                            break;
+                    }
+                }
+            } catch (error) {
+                console.log('Message handling error:', error);
+            }
+        });
+
+        // INITIALIZATION
+        document.addEventListener('DOMContentLoaded', function() {
+            loadScore();
+            
+            // Animate categories on load
+            const categories = document.querySelectorAll('.category-section');
+            categories.forEach((category, index) => {
+                category.style.opacity = '0';
+                category.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    category.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                    category.style.opacity = '1';
+                    category.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

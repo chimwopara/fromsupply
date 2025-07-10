@@ -229,41 +229,49 @@
 }
 
         .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 60px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center; /* This centers the middle element */
-            padding: 0 20px;
-            z-index: 1000;
-            position: relative; /* Needed for absolute children */
-        }
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center; /* This centers the middle element */
+    padding: 0 20px;
+    z-index: 100000;
+    position: relative; /* Needed for absolute children */
+}
 
         .directory-nav {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex: 1; /* Allows it to take up space but still be centered */
-            min-width: 0; /* Important for flex centering */
-            transition: all 0.3s ease;
-            opacity: 1;
-        }
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1; /* Allows it to take up space but still be centered */
+    min-width: 0; /* Important for flex centering */
+    transition: all 0.3s ease;
+    opacity: 1;
+    padding: 8px 20px; /* Add padding to expand hover area */
+    margin: 0 -20px; /* Negative margin to maintain visual positioning */
+    border-radius: 8px;
+}
 
-        .directory-nav.hidden {
-            opacity: 0;
-            width: 0;
-            min-width: 0;
-            margin: 0;
-            pointer-events: none;
-        }
+.directory-nav.hidden {
+    opacity: 0;
+    width: 0;
+    min-width: 0;
+    margin: 0;
+    pointer-events: none;
+    padding: 0;
+}
 
-        .directory-path {
+.directory-nav:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.directory-path {
     background: transparent;
     border: none;
     border-radius: 0;
@@ -281,11 +289,7 @@
     min-width: 80px;
 }
 
-.directory-path:hover {
-    background: transparent;
-}
-
-        .breadcrumb-segment {
+.breadcrumb-segment {
     display: inline;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -294,16 +298,31 @@
 }
 
 .breadcrumb-segment:active {
-    transform: translateY(1px);
-    opacity: 0.8;
+    transform: scale(0.95);
+}
+
+/* Enhanced directory bar hover effects */
+.directory-nav:hover {
+    transform: translateY(-1px);
+}
+
+.directory-nav:hover .breadcrumb-separator {
+    color: rgba(255, 255, 255, 0.9);
 }
 
 .fromsupply-home-icon {
     transition: all 0.2s ease;
+    transform: translateY(-2px);
 }
 
-.breadcrumb-segment:hover .fromsupply-home-icon {
+.directory-nav:hover .fromsupply-home-icon {
     content: url('redhome.png');
+}
+
+.directory-nav:hover .breadcrumb-segment:first-child {
+    color: #e53e3e !important;
+    text-shadow: none;
+    background: transparent;
 }
 
 .breadcrumb-segment:hover {
@@ -321,6 +340,12 @@
 .breadcrumb-segment.current-tapped:hover {
     color: #fbbf24;
     text-shadow: 0 0 16px rgba(251, 191, 36, 1.0);
+    background: transparent;
+}
+
+.directory-nav:hover .breadcrumb-segment.current-tapped:first-child {
+    color: #e53e3e !important;
+    text-shadow: none;
     background: transparent;
 }
 
@@ -1158,16 +1183,16 @@
     display: flex;
     align-items: center;
     padding: 10px 12px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.35);
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .logo-dropdown-item:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.6);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
@@ -1956,12 +1981,28 @@ function initializeGlobals() {
         // FOLDER STRUCTURE
          const folderStructure = {
             'System': {
-                'Tutorials': { description: 'Interactive tutorials and help guides' },
-                'Shortcuts': { description: 'Keyboard shortcuts and gestures reference' },
-                'Terms': { description: 'Terms of service and privacy policy' },
-                'Financials': { description: 'Pricing, billing, and financial information' },
-                'Support Center': { description: 'Help desk and customer support' }
-            },
+    'Tutorials': {
+        'onboarding.mp4': { type: 'video', file: 'onboarding.mp4' },
+        'Farm.mp4': { type: 'youtube', url: '' },
+        'Browser.mp4': { type: 'youtube', url: '' },
+        'Media.mp4': { type: 'youtube', url: '' },
+        'Logic.mp4': { type: 'youtube', url: '' },
+        'Mall.mp4': { type: 'youtube', url: '' },
+        'Prompts.mp4': { type: 'youtube', url: '' },
+        'Blob.mp4': { type: 'youtube', url: '' },
+        'Console.mp4': { type: 'youtube', url: '' },
+        'Pals.mp4': { type: 'youtube', url: '' },
+        'Club.mp4': { type: 'youtube', url: '' },
+        'Music.mp4': { type: 'youtube', url: '' },
+        'Brawl.mp4': { type: 'youtube', url: '' },
+        'Panels.mp4': { type: 'youtube', url: '' },
+        'Bank.mp4': { type: 'youtube', url: '' }
+    },
+    'Shortcuts': { description: 'Keyboard shortcuts and gestures reference' },
+    'Terms': { description: 'Terms of service and privacy policy' },
+    'Financials': { description: 'Pricing, billing, and financial information' },
+    'Support Center': { description: 'Help desk and customer support' }
+},
             'Logic': {
                 'Code': {
                     'Assembly': { levels: 100, cover: 'Assembly.png' },
@@ -2195,7 +2236,7 @@ function updateDirectoryDisplay() {
 const iconHtml = segment === 'Fromsupply' 
     ? `<img src="${folderIcon}" 
             class="fromsupply-home-icon"
-            style="width: 32px; height: 32px; margin-right: 2px; vertical-align: middle;" 
+            style="width: 32px; height: 32px; margin-right: 2px; vertical-align: middle; transform: translateY(-2px);" 
             alt="">`
     : `<img src="${folderIcon}" 
             style="width: 16px; height: 16px; margin-right: 6px; vertical-align: middle;" 
@@ -2210,6 +2251,26 @@ const iconHtml = segment === 'Fromsupply'
 });
             
             directoryPath.innerHTML = segments.join('<span class="breadcrumb-separator">/</span>');
+
+// Add hover text change for Fromsupply
+if (directoryNav && currentDirectory.length > 0 && currentDirectory[0] === 'Fromsupply') {
+    const fromsupplySegment = directoryNav.querySelector('.breadcrumb-segment:first-child');
+    
+    if (fromsupplySegment) {
+        // Store original content
+        const originalContent = fromsupplySegment.innerHTML;
+        const iconImg = fromsupplySegment.querySelector('img');
+        const iconHtml = iconImg ? iconImg.outerHTML : '';
+        
+        directoryNav.addEventListener('mouseenter', function() {
+            fromsupplySegment.innerHTML = iconHtml + 'Close';
+        });
+        
+        directoryNav.addEventListener('mouseleave', function() {
+            fromsupplySegment.innerHTML = originalContent;
+        });
+    }
+}
         }
 function startBreadcrumbDrag(event, level) {
     window.breadcrumbDrag.startY = event.clientY;
@@ -2385,27 +2446,56 @@ function handleDirectoryClick(level) {
     const contentElement = document.getElementById(focusedWindow.id + '-content');
     if (!contentElement) return;
     
-    if (newPath.length === 1) {
-        closeWindow(focusedWindow.id);
-    } else if (newPath.length === 2) {
-        // Desktop level - show main folders
+if (newPath.length === 1) {
+    closeWindow(focusedWindow.id);
+} else if (newPath.length === 2) {
+    // Could be Desktop or main folder level (like System)
+    const folderName = newPath[1];
+    
+    if (folderName === 'Desktop') {
         const content = generateFolderContent('Desktop', focusedWindow.id);
         contentElement.style.padding = '16px';
         contentElement.innerHTML = content;
-    } else if (newPath.length === 3) {
-        // Logic level - show Logic subfolders (Programming, Science, Maths, etc.)
-        const folderName = newPath[2]; // "Logic"
+    } else if (folderName === 'System') {
+        const content = generateSystemContent(focusedWindow.id);
+        contentElement.style.padding = '16px';
+        contentElement.innerHTML = content;
+    } else {
+        // Other main folders (Logic, Mall, etc.)
         const content = generateFolderContent(folderName, focusedWindow.id);
         contentElement.style.padding = '16px';
         contentElement.innerHTML = content;
-    } else if (newPath.length === 4) {
-        // Programming level - show programming languages
-        const parentFolder = newPath[2]; // "Logic" 
-        const currentFolder = newPath[3]; // "Programming"
-        const content = generateFolderContent(currentFolder, focusedWindow.id, parentFolder);
+    }
+} else if (newPath.length === 3) {
+    // Subfolder level
+    const parentFolder = newPath[1];
+    const folderName = newPath[2];
+    
+    if (parentFolder === 'System') {
+        if (folderName === 'Tutorials') {
+            const content = generateFolderContent(folderName, focusedWindow.id, parentFolder);
+            contentElement.style.padding = '16px';
+            contentElement.innerHTML = content;
+        } else {
+            // Other System items (Shortcuts, Terms, etc.)
+            const content = generateFolderContent(folderName, focusedWindow.id, parentFolder);
+            contentElement.style.padding = '16px';
+            contentElement.innerHTML = content;
+        }
+    } else {
+        // Other folder structures
+        const content = generateFolderContent(folderName, focusedWindow.id, parentFolder);
         contentElement.style.padding = '16px';
         contentElement.innerHTML = content;
-    } else if (newPath.length === 5 && newPath[4] === 'C') {
+    }
+} else if (newPath.length === 4) {
+    // Programming level - show programming languages OR System/Tutorials
+    const parentFolder = newPath[2]; // "Logic" or "System"
+    const currentFolder = newPath[3]; // "Programming" or "Tutorials"
+    const content = generateFolderContent(currentFolder, focusedWindow.id, parentFolder);
+    contentElement.style.padding = '16px';
+    contentElement.innerHTML = content;
+} else if (newPath.length === 5 && newPath[4] === 'C') {
     // C language level - show C levels
     const content = generateLanguageLevels('C', 100, 'C.png', focusedWindow.id);
     contentElement.style.padding = '16px';
@@ -2638,7 +2728,12 @@ function navigateToFavorite(directoryPath) {
             addResizeHandles(windowElement, windowId);
             
        windowElement.addEventListener('click', (e) => {
+    e.stopPropagation();
     focusWindow(windowId);
+    
+    // Ensure this window is truly on top
+    windowZIndex += 2;
+    windowElement.style.zIndex = windowZIndex;
 });
 
             windowElement.addEventListener('mousedown', (e) => {
@@ -2741,8 +2836,10 @@ function navigateToFavorite(directoryPath) {
     const windowElement = document.getElementById(windowId);
     if (windowElement) {
         windowElement.style.zIndex = windowZIndex;
-        // Add this line:
         windowElement.focus();
+        
+        // Ensure it's visually on top
+        windowElement.style.transform = 'translateZ(0)';
     }
     
     const window = openWindows.find(w => w.id === windowId);
@@ -2751,7 +2848,6 @@ function navigateToFavorite(directoryPath) {
         updateDirectoryDisplay();
     }
 }
-
         function closeWindow(windowId) {
             const windowElement = document.getElementById(windowId);
             if (windowElement) {
@@ -3095,6 +3191,15 @@ if (parentFolder) {
     console.log('Looking for structure:', folderName, 'found:', !!structure);
 }
 
+// Special handling for System folder structure
+if (!structure && windowId) {
+    const windowPath = PathManager.getPath(windowId);
+    if (windowPath.includes('System') && windowPath.includes('Tutorials')) {
+        structure = folderStructure['System']['Tutorials'];
+        console.log('Found System/Tutorials structure:', !!structure);
+    }
+}
+
 // If structure not found and we have a window with a path, try to navigate the structure
 if (!structure && windowId) {
     const windowPath = PathManager.getPath(windowId);
@@ -3154,13 +3259,14 @@ if (structure.levels && structure.cover && typeof structure.levels === 'number')
 let content = '';
 
 for (const [key, value] of Object.entries(structure)) {
-                if (key === 'app' || key === 'file') continue;
+    if (key === 'app' || key === 'file') continue;
+    
+    const isSubjectFile = value && typeof value === 'object' && value.levels && value.cover;
+    const isAppFile = value && typeof value === 'object' && value.app && value.file;
+    const isVideoFile = value && typeof value === 'object' && (value.type === 'video' || value.type === 'youtube');
+    const isSubfolder = value && typeof value === 'object' && !value.levels && !value.cover && !value.app && !value.description && !value.type;
                 
-                const isSubjectFile = value && typeof value === 'object' && value.levels && value.cover;
-                const isAppFile = value && typeof value === 'object' && value.app && value.file;
-                const isSubfolder = value && typeof value === 'object' && !value.levels && !value.cover && !value.app && !value.description;
-                
-                let icon;
+let icon;
 let subtitle = '';
 
 if (isSubjectFile) {
@@ -3171,6 +3277,14 @@ if (isSubjectFile) {
     // Applications - use openapp.png
     icon = '<img src="openapp.png" style="width: 24px; height: 24px;" alt="App">';
     subtitle = 'Application';
+} else if (isVideoFile) {
+    // Video files - use openapp.png
+    icon = '<img src="openapp.png" style="width: 24px; height: 24px;" alt="Video">';
+    if (value.type === 'youtube') {
+        subtitle = value.url ? 'YouTube Video' : 'YouTube Video (No URL Set)';
+    } else {
+        subtitle = 'Video';
+    }
 } else if (isSubfolder) {
     // Folders that contain other folders - use blackfile.png
     icon = '<img src="blackfile.png" style="width: 24px; height: 24px;" alt="Folder">';
@@ -3588,28 +3702,56 @@ if (subjectName === 'C' && typeof challengesData !== 'undefined') {
 			}
             
             if (!item) return;
-            
-            const newPath = [...windowPath, itemName];
 
-            // Special handling for Shortcuts in System
-            if (parentFolder === 'System' && itemName === 'Shortcuts') {
-                PathManager.updatePath(windowId, newPath);
-                
-                const content = generateShortcutsContent();
-                const contentElement = document.getElementById(windowId + '-content');
-                if (contentElement) {
-                    contentElement.style.padding = '0';
-                    contentElement.innerHTML = content;
-                }
-                return;
-            }
-            
+const newPath = [...windowPath, itemName];
+
+// Special handling for Shortcuts in System
+if (parentFolder === 'System' && itemName === 'Shortcuts') {
+    PathManager.updatePath(windowId, newPath);
+    
+    const content = generateShortcutsContent();
+    const contentElement = document.getElementById(windowId + '-content');
+    if (contentElement) {
+        contentElement.style.padding = '0';
+        contentElement.innerHTML = content;
+    }
+    return;
+}
+
+// Special handling for Tutorials in System - it's a folder containing videos
+if (parentFolder === 'System' && itemName === 'Tutorials') {
+    PathManager.updatePath(windowId, newPath);
+    
+    const content = generateFolderContent(itemName, windowId, parentFolder);
+    const contentElement = document.getElementById(windowId + '-content');
+    if (contentElement) {
+        contentElement.style.padding = '16px';
+        contentElement.innerHTML = content;
+    }
+    return;
+}
             // Check if it's an app
-            if (item.app && item.file) {
-                const parentFolderName = windowPath[1];
-                openApp(itemName, item.file, parentFolderName);
-                return;
-            }
+if (item.app && item.file) {
+    const parentFolderName = windowPath[1];
+    openApp(itemName, item.file, parentFolderName);
+    return;
+}
+
+// Check if it's a video file
+if (item.type === 'video') {
+    openVideoWindow(itemName, item.file, windowId);
+    return;
+}
+
+// Check if it's a YouTube video
+if (item.type === 'youtube') {
+    if (item.url) {
+        openYouTubeWindow(itemName, item.url, windowId);
+    } else {
+        openYouTubeWindow(itemName, 'https://www.youtube.com/embed/dQw4w9WgXcQ', windowId); // Placeholder video
+    }
+    return;
+}
             
             // Check if it's a subject file with levels
             if (item.levels && item.cover) {
@@ -3783,34 +3925,34 @@ if (subjectName === 'C' && typeof challengesData !== 'undefined') {
         }
 
         function generateSystemContent(windowId) {
-            return `
-                <div class="folder-item" onclick="navigateToItem('Tutorials', '${windowId}', 'System')">
-                    <div class="folder-item-icon"><div class="nested-folder-icon"></div></div>
-                    <div class="folder-item-name" style="color: white;">Tutorials</div>
-                    <div class="folder-item-subtitle" style="color: rgba(255,255,255,0.8);">Interactive tutorials and help guides</div>
-                </div>
-                <div class="folder-item" onclick="navigateToItem('Shortcuts', '${windowId}', 'System')">
-                    <div class="folder-item-icon"><div class="nested-folder-icon"></div></div>
-                    <div class="folder-item-name" style="color: white;">Shortcuts</div>
-                    <div class="folder-item-subtitle" style="color: rgba(255,255,255,0.8);">Keyboard shortcuts and gestures reference</div>
-                </div>
-                <div class="folder-item" onclick="navigateToItem('Terms', '${windowId}', 'System')">
-                    <div class="folder-item-icon"><div class="nested-folder-icon"></div></div>
-                    <div class="folder-item-name" style="color: white;">Terms</div>
-                    <div class="folder-item-subtitle" style="color: rgba(255,255,255,0.8);">Terms of service and privacy policy</div>
-                </div>
-                <div class="folder-item" onclick="navigateToItem('Financials', '${windowId}', 'System')">
-                    <div class="folder-item-icon"><div class="nested-folder-icon"></div></div>
-                    <div class="folder-item-name" style="color: white;">Financials</div>
-                    <div class="folder-item-subtitle" style="color: rgba(255,255,255,0.8);">Pricing, billing, and financial information</div>
-                </div>
-                <div class="folder-item" onclick="navigateToItem('Support Center', '${windowId}', 'System')">
-                    <div class="folder-item-icon"><div class="nested-folder-icon"></div></div>
-                    <div class="folder-item-name" style="color: white;">Support Center</div>
-                    <div class="folder-item-subtitle" style="color: rgba(255,255,255,0.8);">Help desk and customer support</div>
-                </div>
-            `;
-        }
+    return `
+        <div class="folder-item" onclick="navigateToItem('Tutorials', '${windowId}', 'System')">
+            <div class="folder-item-icon"><img src="blackfile.png" style="width: 24px; height: 24px;" alt="Folder"></div>
+            <div class="folder-item-name" style="color: white;">Tutorials</div>
+            <div class="folder-item-subtitle" style="color: rgba(255,255,255,0.8);">Interactive tutorials and help guides</div>
+        </div>
+        <div class="folder-item" onclick="navigateToItem('Shortcuts', '${windowId}', 'System')">
+            <div class="folder-item-icon"><img src="whitefile.png" style="width: 24px; height: 24px;" alt="Item"></div>
+            <div class="folder-item-name" style="color: white;">Shortcuts</div>
+            <div class="folder-item-subtitle" style="color: rgba(255,255,255,0.8);">Keyboard shortcuts and gestures reference</div>
+        </div>
+        <div class="folder-item" onclick="navigateToItem('Terms', '${windowId}', 'System')">
+            <div class="folder-item-icon"><img src="whitefile.png" style="width: 24px; height: 24px;" alt="Item"></div>
+            <div class="folder-item-name" style="color: white;">Terms</div>
+            <div class="folder-item-subtitle" style="color: rgba(255,255,255,0.8);">Terms of service and privacy policy</div>
+        </div>
+        <div class="folder-item" onclick="navigateToItem('Financials', '${windowId}', 'System')">
+            <div class="folder-item-icon"><img src="whitefile.png" style="width: 24px; height: 24px;" alt="Item"></div>
+            <div class="folder-item-name" style="color: white;">Financials</div>
+            <div class="folder-item-subtitle" style="color: rgba(255,255,255,0.8);">Pricing, billing, and financial information</div>
+        </div>
+        <div class="folder-item" onclick="navigateToItem('Support Center', '${windowId}', 'System')">
+            <div class="folder-item-icon"><img src="whitefile.png" style="width: 24px; height: 24px;" alt="Item"></div>
+            <div class="folder-item-name" style="color: white;">Support Center</div>
+            <div class="folder-item-subtitle" style="color: rgba(255,255,255,0.8);">Help desk and customer support</div>
+        </div>
+    `;
+}
 
         function generateShortcutsContent() {
             return `
@@ -4423,9 +4565,12 @@ function handleCredentialResponse(response) {
             document.getElementById('logo-user-avatar').src = profile.picture;
         }
 
-        // Save to localStorage
-        localStorage.setItem('fs_user_logged_in', 'true');
-        localStorage.setItem('fs_user_profile', JSON.stringify(profile));
+       // Save to localStorage
+localStorage.setItem('fs_user_logged_in', 'true');
+localStorage.setItem('fs_user_profile', JSON.stringify(profile));
+
+// Enable UI if it was blocked
+enableUIAfterSignin();
         
     } catch (error) {
         console.error('Google Sign-in error:', error);
@@ -5315,34 +5460,38 @@ function showDirectoryListing(windowId) {
             
             
             // Determine item type and icon using the same logic as generateFolderContent
-            let iconFileName = 'whitefile.png'; // default
-            
-            if (currentStructure[item]) {
-                const value = currentStructure[item];
-                const isSubjectFile = value && typeof value === 'object' && value.levels && value.cover;
-                const isAppFile = value && typeof value === 'object' && value.app && value.file;
-                const isSubfolder = value && typeof value === 'object' && !value.levels && !value.cover && !value.app && !value.description;
-                
-                if (isSubjectFile) {
-                    // Subjects with levels - use whitefile.png
-                    iconFileName = 'whitefile.png';
-                } else if (isAppFile) {
-                    // Applications - use openapp.png
-                    iconFileName = 'openapp.png';
-                } else if (isSubfolder) {
-                    // Folders that contain other folders - use blackfile.png
-                    iconFileName = 'blackfile.png';
-                } else if (value && value.description) {
-                    // Items with descriptions - use whitefile.png
-                    iconFileName = 'whitefile.png';
-                } else {
-                    // Default - use whitefile.png
-                    iconFileName = 'whitefile.png';
-                }
-            } else {
-                // Use getFolderIcon for main directories
-                iconFileName = getFolderIcon(item);
-            }
+let iconFileName = 'whitefile.png'; // default
+
+if (currentStructure[item]) {
+    const value = currentStructure[item];
+    const isSubjectFile = value && typeof value === 'object' && value.levels && value.cover;
+    const isAppFile = value && typeof value === 'object' && value.app && value.file;
+    const isVideoFile = value && typeof value === 'object' && (value.type === 'video' || value.type === 'youtube');
+    const isSubfolder = value && typeof value === 'object' && !value.levels && !value.cover && !value.app && !value.description && !value.type;
+    
+    if (isSubjectFile) {
+        // Subjects with levels - use whitefile.png
+        iconFileName = 'whitefile.png';
+    } else if (isAppFile) {
+        // Applications - use openapp.png
+        iconFileName = 'openapp.png';
+    } else if (isVideoFile) {
+        // Video files - use openapp.png
+        iconFileName = 'openapp.png';
+    } else if (isSubfolder) {
+        // Folders that contain other folders - use blackfile.png
+        iconFileName = 'blackfile.png';
+    } else if (value && value.description) {
+        // Items with descriptions - use whitefile.png
+        iconFileName = 'whitefile.png';
+    } else {
+        // Default - use whitefile.png
+        iconFileName = 'whitefile.png';
+    }
+} else {
+    // Use getFolderIcon for main directories
+    iconFileName = getFolderIcon(item);
+}
             
             itemLine.innerHTML = `<img src="${iconFileName}" style="width: 16px; height: 16px; margin-right: 8px; vertical-align: middle;"> ${item}`;
             outputElement.appendChild(itemLine);
@@ -5436,18 +5585,28 @@ if (pathValid) {
         let found = false;
                 
                 // If we're at the root level, check main directories
-                if (tempPath.length <= 2) {
-                    const mainDirs = ['System', 'Logic', 'Mall', 'Farm', 'Prompts', 'Media', 'Browser'];
-                    const matchedDir = mainDirs.find(dir => dir.toLowerCase() === targetPartLower);
-                    
-                    if (matchedDir) {
-                        tempPath.push(matchedDir);
-                        if (folderStructure[matchedDir]) {
-                            currentStructure = folderStructure[matchedDir];
-                        }
-                        found = true;
-                    }
-                } else {
+if (tempPath.length <= 2) {
+    const mainDirs = ['System', 'Logic', 'Mall', 'Farm', 'Prompts', 'Media', 'Browser'];
+    const matchedDir = mainDirs.find(dir => dir.toLowerCase() === targetPartLower);
+    
+    if (matchedDir) {
+        tempPath.push(matchedDir);
+        if (folderStructure[matchedDir]) {
+            currentStructure = folderStructure[matchedDir];
+        }
+        found = true;
+    }
+} else if (tempPath.includes('System') && tempPath.length === 3) {
+    // Special handling for System subdirectories
+    const systemItems = ['Tutorials', 'Shortcuts', 'Terms', 'Financials', 'Support Center'];
+    const matchedItem = systemItems.find(item => item.toLowerCase() === targetPartLower);
+    
+    if (matchedItem && currentStructure[matchedItem]) {
+        tempPath.push(matchedItem);
+        currentStructure = currentStructure[matchedItem];
+        found = true;
+    }
+} else {
                     // Check in current structure
                     if (typeof currentStructure === 'object') {
                         const availableItems = Object.keys(currentStructure).filter(key => key !== 'app' && key !== 'file');
@@ -5770,12 +5929,349 @@ document.getElementById('fsConsoleInput').addEventListener('keydown', function(e
     }
 });
 
+function openVideoWindow(videoName, videoFile, sourceWindowId = null) {
+    // Calculate position
+    const mouseX = window.fsLastMousePosition ? window.fsLastMousePosition.x : 200;
+    const mouseY = window.fsLastMousePosition ? window.fsLastMousePosition.y : 200;
+    const windowX = Math.max(20, mouseX - 400);
+    const windowY = Math.max(80, mouseY - 200);
+    
+    const windowId = createWindow(`${videoName} - Fromsupply`, '', 800, 600, windowX, windowY);
+    
+    // Set proper path for directory bar
+    if (sourceWindowId) {
+        const sourcePath = PathManager.getPath(sourceWindowId);
+        const videoPath = [...sourcePath, videoName];
+        PathManager.updatePath(windowId, videoPath);
+    } else {
+        // Default path if no source window
+        PathManager.updatePath(windowId, ['Fromsupply', 'System', 'Tutorials', videoName]);
+    }
+    
+    // Create simple video content
+    const content = `
+        <video controls style="width: 100%; height: 100%; background: #000;" autoplay>
+            <source src="${videoFile}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    `;
+    
+    const contentElement = document.getElementById(windowId + '-content');
+    if (contentElement) {
+        contentElement.style.padding = '0';
+        contentElement.innerHTML = content;
+    }
+    
+    // Force focus and bring to front
+setTimeout(() => {
+    focusWindow(windowId);
+    const windowElement = document.getElementById(windowId);
+    if (windowElement) {
+        // Ensure it's on top
+        windowZIndex += 10;
+        windowElement.style.zIndex = windowZIndex;
+        
+        // Force click to focus
+        windowElement.click();
+    }
+}, 100);
+
+return windowId;
+}
+
+function openYouTubeWindow(videoName, youtubeUrl, sourceWindowId = null) {
+    // Calculate position
+    const mouseX = window.fsLastMousePosition ? window.fsLastMousePosition.x : 200;
+    const mouseY = window.fsLastMousePosition ? window.fsLastMousePosition.y : 200;
+    const windowX = Math.max(20, mouseX - 400);
+    const windowY = Math.max(80, mouseY - 200);
+    
+    const windowId = createWindow(`${videoName} - Fromsupply`, '', 800, 600, windowX, windowY);
+    
+    // Set proper path for directory bar
+    if (sourceWindowId) {
+        const sourcePath = PathManager.getPath(sourceWindowId);
+        const videoPath = [...sourcePath, videoName];
+        PathManager.updatePath(windowId, videoPath);
+    } else {
+        // Default path if no source window
+        PathManager.updatePath(windowId, ['Fromsupply', 'System', 'Tutorials', videoName]);
+    }
+    
+    // Convert YouTube URL to embed format if needed
+    let embedUrl = youtubeUrl;
+    if (youtubeUrl.includes('watch?v=')) {
+        const videoId = youtubeUrl.split('watch?v=')[1].split('&')[0];
+        embedUrl = `https://www.youtube.com/embed/${videoId}`;
+    } else if (youtubeUrl.includes('youtu.be/')) {
+        const videoId = youtubeUrl.split('youtu.be/')[1].split('?')[0];
+        embedUrl = `https://www.youtube.com/embed/${videoId}`;
+    }
+    
+   // Create YouTube iframe content with drag handling
+const content = `
+    <iframe 
+        src="${embedUrl}" 
+        style="width: 100%; height: 100%; border: none;" 
+        allowfullscreen
+        onload="setupIframeDragHandling('${windowId}')">
+    </iframe>
+`;
+
+const contentElement = document.getElementById(windowId + '-content');
+if (contentElement) {
+    contentElement.style.padding = '0';
+    contentElement.innerHTML = content;
+    
+    // Remove the existing mousedown handler and restore normal window behavior
+    contentElement.onmousedown = function(e) {
+        DragManager.start('window', document.getElementById('${windowId}'), e, { windowId: '${windowId}' });
+    };
+    contentElement.style.cursor = 'grab';
+}
+    
+    // Force focus and bring to front
+setTimeout(() => {
+    focusWindow(windowId);
+    const windowElement = document.getElementById(windowId);
+    if (windowElement) {
+        // Ensure it's on top
+        windowZIndex += 10;
+        windowElement.style.zIndex = windowZIndex;
+        
+        // Force click to focus
+        windowElement.click();
+    }
+}, 100);
+
+return windowId;
+}
+
+// ONBOARDING FUNCTIONALITY
+function showOnboardingVideo() {
+    // Create fullscreen overlay for onboarding
+    const overlay = document.createElement('div');
+    overlay.id = 'onboardingOverlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: #000000;
+        z-index: 50000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    `;
+    
+    overlay.innerHTML = `
+    <div style="position: relative; width: 80%; max-width: 1000px; height: 80%; max-height: 600px;">
+        <video id="onboardingVideo" style="width: 100%; height: 100%; object-fit: contain;" autoplay>
+            <source src="onboarding.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div style="position: absolute; bottom: 20px; right: 20px; color: white; font-size: 14px; opacity: 0.7;">
+            Click anywhere to skip
+        </div>
+    </div>
+`;
+    
+    document.body.appendChild(overlay);
+    
+    const video = document.getElementById('onboardingVideo');
+    
+    // Auto-close when video ends
+    video.addEventListener('ended', function() {
+        finishOnboarding();
+    });
+    
+    // Click anywhere to skip
+    overlay.addEventListener('click', function() {
+        finishOnboarding();
+    });
+    
+    // Prevent video clicks from bubbling
+    video.addEventListener('click', function(e) {
+        e.stopPropagation();
+        finishOnboarding(); // Still allow video click to skip
+    });
+}
+
+function finishOnboarding() {
+    // Remove onboarding overlay
+    const overlay = document.getElementById('onboardingOverlay');
+    if (overlay) {
+        overlay.remove();
+    }
+    
+    // Mark as visited
+    try {
+        localStorage.setItem('fs_visited_before', 'true');
+    } catch (error) {
+        console.warn('Could not save visit status:', error);
+    }
+    
+    // Check if user is signed in before opening system window
+    if (userData.isLoggedIn) {
+        setTimeout(() => {
+            openHiddenSystemWindow();
+        }, 500);
+    } else {
+        // Force open logo dropdown to require signin
+        setTimeout(() => {
+            forceSigninFlow();
+        }, 500);
+    }
+}
+
+function forceSigninFlow() {
+    // Block all UI interactions
+    document.body.style.pointerEvents = 'none';
+    
+    // Allow only logo dropdown and its contents
+    const logoSection = document.querySelector('.logo-section');
+    const logoDropdown = document.getElementById('logo-dropdown');
+    
+    if (logoSection) logoSection.style.pointerEvents = 'auto';
+    if (logoDropdown) logoDropdown.style.pointerEvents = 'auto';
+    
+    // Force open logo dropdown
+    toggleLogoDropdown({ stopPropagation: () => {} });
+    
+    // Add signed out indicator
+    const logoText = document.querySelector('.logo-text');
+    if (logoText && !logoText.classList.contains('signed-out-mode')) {
+        logoText.classList.add('signed-out-mode');
+        logoText.innerHTML = 'Fromsupply <span style="color: #ef4444; font-size: 12px; margin-left: 8px;">● Sign In Required</span>';
+    }
+    
+    // TEMPORARY DEV UNLOCK BUTTON - REMOVE or comment out BEFORE LAUNCH
+    addTemporaryUnlockButton();
+}
+
+// TEMPORARY DEV FUNCTION - COMMENT OUT BEFORE LAUNCH
+function addTemporaryUnlockButton() {
+    const dropdownContent = document.querySelector('.logo-dropdown-content');
+    if (dropdownContent && !document.getElementById('temp-unlock-btn')) {
+        const unlockSection = document.createElement('div');
+        unlockSection.className = 'logo-dropdown-section';
+        unlockSection.innerHTML = `
+            <div class="logo-dropdown-item" id="temp-unlock-btn" onclick="temporaryUnlock()" style="background: rgba(255, 165, 0, 0.3); border-color: rgba(255, 165, 0, 0.5);">
+                <div class="logo-dropdown-text" style="color: #ffa500; font-weight: bold;">🔓 DEV UNLOCK (Remove Before Launch)</div>
+            </div>
+        `;
+        dropdownContent.insertBefore(unlockSection, dropdownContent.firstChild);
+    }
+}
+
+// TEMPORARY DEV FUNCTION - COMMENT OUT BEFORE LAUNCH
+function temporaryUnlock() {
+    // Simulate successful signin for development
+    userData.isLoggedIn = true;
+    userData.profile = {
+        name: 'Developer Mode',
+        email: 'dev@fromsupply.com',
+        picture: 'https://placehold.co/32x32/FFA500/FFFFFF?text=DEV'
+    };
+    
+    // Update UI to show "signed in" state
+    document.getElementById('logo-google-auth-section').style.display = 'none';
+    document.getElementById('logo-user-section').style.display = 'block';
+    document.getElementById('logo-user-name').textContent = userData.profile.name;
+    document.getElementById('logo-user-email').textContent = userData.profile.email;
+    document.getElementById('logo-user-avatar').src = userData.profile.picture;
+    
+    // Enable UI
+    enableUIAfterSignin();
+}
+
+function enableUIAfterSignin() {
+    // Re-enable all UI interactions
+    document.body.style.pointerEvents = 'auto';
+    
+    // Remove signed out indicator
+    const logoText = document.querySelector('.logo-text');
+    if (logoText && logoText.classList.contains('signed-out-mode')) {
+        logoText.classList.remove('signed-out-mode');
+        logoText.innerHTML = 'Fromsupply';
+    }
+    
+    // Close logo dropdown
+    const dropdown = document.getElementById('logo-dropdown');
+    if (dropdown) {
+        dropdown.classList.remove('active');
+        logoDropdownVisible = false;
+    }
+    
+    // Open system window
+    setTimeout(() => {
+        openHiddenSystemWindow();
+    }, 500);
+}
+
+function checkFirstVisit() {
+    try {
+        const hasVisited = localStorage.getItem('fs_visited_before');
+        return hasVisited !== 'true';
+    } catch (error) {
+        console.warn('Could not check visit status:', error);
+        return false; // Default to not showing onboarding if localStorage fails
+    }
+}
+
+// Setup iframe drag handling for video windows
+function setupIframeDragHandling(windowId) {
+    const iframe = document.querySelector(`#${windowId} iframe`);
+    if (!iframe) return;
+    
+    // Add message listener for iframe drag events
+    const handleIframeMessage = (event) => {
+        if (event.data && event.data.windowId === windowId) {
+            switch(event.data.action) {
+                case 'startDrag':
+                    DragManager.start('window', document.getElementById(windowId), event.data, { windowId: windowId });
+                    break;
+                case 'updateDrag':
+                    DragManager.update(event.data);
+                    break;
+                case 'endDrag':
+                    DragManager.end(event.data);
+                    break;
+            }
+        }
+    };
+    
+    window.addEventListener('message', handleIframeMessage);
+    
+    // Store cleanup function
+    iframe.cleanupDragHandler = () => {
+        window.removeEventListener('message', handleIframeMessage);
+    };
+}
+
+// INITIALIZATION
+
         // INITIALIZATION
         document.addEventListener('DOMContentLoaded', function() {
-            loadScore();
-            loadNotesFromStorage();
-            initializeDragAndDrop();
-            loadFolderPositions();
+    loadScore();
+    loadNotesFromStorage();
+    initializeDragAndDrop();
+    loadFolderPositions();
+    
+    // Check for first visit and show onboarding
+if (checkFirstVisit()) {
+    // Small delay to ensure page is fully loaded
+    setTimeout(() => {
+        showOnboardingVideo();
+    }, 1000);
+} else if (!userData.isLoggedIn) {
+    // Returning user but not signed in - force signin
+    setTimeout(() => {
+        forceSigninFlow();
+    }, 500);
+}
             
             const directoryNav = document.getElementById('directoryNav');
             directoryNav.classList.add('hidden');

@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser - Fromsupply</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            background-image: url('logicdefault.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: #1e3a8a;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .logo-section:hover {
+            opacity: 0.8;
+            transform: translateY(-1px);
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: url('logo.jpg') center/contain;
+            background-repeat: no-repeat;
+            background-color: transparent;
+            border-radius: 8px;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 600;
+            color: white;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .breadcrumb {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .breadcrumb-link {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .breadcrumb-link:hover {
+            color: #fbbf24;
+        }
+
+        .star-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .star-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .star-icon {
+            width: 20px;
+            height: 20px;
+            fill: white;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+        }
+
+        .star-count {
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .container {
+            padding: 80px 20px 20px;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .browser-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .browser-title {
+            color: white;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .browser-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 16px;
+        }
+
+        .folder-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .category-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 24px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #06b6d4, #3b82f6, #6366f1, #8b5cf6);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .category-section:hover::before {
+            opacity: 1;
+        }
+
+        .category-section:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .category-title {
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-items {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .folder-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .folder-item:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .folder-item.app-item:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+
+        .folder-icon {
+            width: 32px;
+            height: 32px;
+            background: url('whitefile.png') center/contain;
+            background-repeat: no-repeat;
+            background-color: transparent;
+        }
+
+        .app-icon {
+            width: 32px;
+            height: 32px;
+        }
+
+        .folder-name {
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .folder-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+        }
+
+        .folder-content {
+            flex: 1;
+        }
+
+        .back-button {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: rgba(59, 130, 246, 0.8);
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-button:hover {
+            background: rgba(59, 130, 246, 1);
+            transform: translateY(-2px);
+        }
+
+        .phone-overlay-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 3000;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-start;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            padding-top: 90px;
+            padding-right: 20px;
+        }
+
+        .phone-overlay-wrapper.show {
+            opacity: 1;
+        }
+
+        .phone-iframe {
+            width: 100vw;
+            height: 100vh;
+            border: 0;
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: auto;
+        }
+
+        .phone-overlay-wrapper.show .phone-iframe {
+            opacity: 1;
+        }
+
+        .browser-preview {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 8px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.4;
+            border-left: 3px solid rgba(59, 130, 246, 0.6);
+        }
+
+        .browser-stats {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.6);
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        .feature-highlight {
+            background: linear-gradient(45deg, rgba(59, 130, 246, 0.2), rgba(99, 102, 241, 0.2));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .quick-launch {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .quick-launch-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            padding: 8px;
+            color: white;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .quick-launch-btn:hover {
+            background: rgba(59, 130, 246, 0.3);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo-section" onclick="goToIndex()">
+            <div class="logo"></div>
+            <div class="logo-text">Fromsupply</div>
+        </div>
+        <div class="breadcrumb">
+            <a href="index.html" class="breadcrumb-link">Desktop</a> / Browser
+        </div>
+        <div class="star-button" onclick="openActionsBlob()">
+            <svg class="star-icon" viewBox="0 0 24 24">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+            <span class="star-count" id="starCount">0</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="browser-header">
+            <div class="browser-title">🌐 Fromsupply Browser</div>
+            <div class="browser-subtitle">Advanced web browsing and development tools</div>
+        </div>
+
+        <div class="folder-grid">
+            <!-- Main Browser Application -->
+            <div class="category-section feature-highlight">
+                <div class="category-title">
+                    🌐 Web Browser
+                </div>
+                <div class="category-items">
+                    <div class="folder-item app-item" onclick="openApp('Browser', 'browser.html')">
+                        <img src="openapp.png" class="app-icon" alt="App">
+                        <div class="folder-content">
+                            <div class="folder-name">fs Browser</div>
+                            <div class="folder-subtitle">Advanced web browser with development tools</div>
+                            <div class="browser-preview">Full-featured web browser with built-in developer tools, privacy controls, tab management, bookmark sync, and extension support.</div>
+                            <div class="browser-stats">
+                                <span class="stat-item">🔒 Private</span>
+                                <span class="stat-item">🛠️ Dev tools</span>
+                                <span class="stat-item">⚡ Fast</span>
+                                <span class="stat-item">🔄 Sync</span>
+                            </div>
+                            <div class="quick-launch">
+                                <div class="quick-launch-btn" onclick="event.stopPropagation(); openQuickSite('https://google.com')">Google</div>
+                                <div class="quick-launch-btn" onclick="event.stopPropagation(); openQuickSite('https://github.com')">GitHub</div>
+                                <div class="quick-launch-btn" onclick="event.stopPropagation(); openQuickSite('https://stackoverflow.com')">Stack Overflow</div>
+                                <div class="quick-launch-btn" onclick="event.stopPropagation(); openQuickSite('https://youtube.com')">YouTube</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Browser Builder & Development -->
+            <div class="category-section feature-highlight">
+                <div class="category-title">
+                    🛠️ Browser Builder
+                </div>
+                <div class="category-items">
+                    <div class="folder-item app-item" onclick="openApp('Browser Builder', 'browserbuilder.html')">
+                        <img src="openapp.png" class="app-icon" alt="App">
+                        <div class="folder-content">
+                            <div class="folder-name">Browser Development Suite</div>
+                            <div class="folder-subtitle">Create custom browser experiences</div>
+                            <div class="browser-preview">Advanced browser customization with theme builder, extension development, bookmark management, and performance optimization tools.</div>
+                            <div class="browser-stats">
+                                <span class="stat-item">🎨 Themes</span>
+                                <span class="stat-item">🧩 Extensions</span>
+                                <span class="stat-item">📊 Analytics</span>
+                                <span class="stat-item">⚙️ Custom</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="folder-item" onclick="openBrowserCategory('custom-themes')">
+                        <div class="folder-icon"></div>
+                        <div class="folder-content">
+                            <div class="folder-name">Custom Themes</div>
+                            <div class="folder-subtitle">Browser appearance customizations</div>
+                            <div class="browser-stats">
+                                <span class="stat-item">12 themes</span>
+                                <span class="stat-item">Dark/Light modes</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="folder-item" onclick="openBrowserCategory('extensions')">
+                        <div class="folder-icon"></div>
+                        <div class="folder-content">
+                            <div class="folder-name">Extensions</div>
+                            <div class="folder-subtitle">Browser functionality extensions</div>
+                            <div class="browser-stats">
+                                <span class="stat-item">8 installed</span>
+                                <span class="stat-item">Custom built</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bookmarks & History -->
+            <div class="category-section">
+                <div class="category-title">
+                    📚 Browsing Data
+                </div>
+                <div class="category-items">
+                    <div class="folder-item" onclick="openBrowserCategory('bookmarks')">
+                        <div class="folder-icon"></div>
+                        <div class="folder-content">
+                            <div class="folder-name">Bookmarks</div>
+                            <div class="folder-subtitle">Saved websites and collections</div>
+                            <div class="browser-stats">
+                                <span class="stat-item">247 bookmarks</span>
+                                <span class="stat-item">15 folders</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="folder-item" onclick="openBrowserCategory('history')">
+                        <div class="folder-icon"></div>
+                        <div class="folder-content">
+                            <div class="folder-name">Browse History</div>
+                            <div class="folder-subtitle">Recent browsing activity</div>
+                            <div class="browser-stats">
+                                <span class="stat-item">Last 30 days</span>
+                                <span class="stat-item">Searchable</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="folder-item" onclick="openBrowserCategory('downloads')">
+                        <div class="folder-icon"></div>
+                        <div class="folder-content">
+                            <div class="folder-name">Downloads</div>
+                            <div class="folder-subtitle">Downloaded files and documents</div>
+                            <div class="browser-stats">
+                                <span class="stat-item">156 files</span>
+                                <span class="stat-item">2.3 GB total</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="folder-item" onclick="openBrowserCategory('passwords')">
+                        <div class="folder-icon"></div>
+                        <div class="folder-content">
+                            <div class="folder-name">Saved Passwords</div>
+                            <div class="folder-subtitle">Encrypted password manager</div>
+                            <div class="browser-stats">
+                                <span class="stat-item">🔐 Encrypted</span>
+                                <span class="stat-item">Auto-fill</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Developer Tools -->
+            <div class="category-section">
+                <div class="category-title">
+                    👨‍💻 Developer Tools
+                </div>
+                <div class="category-items">
+                    <div class="folder-item" onclick="openBrowserCategory('dev-console')">
+                        <div class="folder-icon"></div>
+                        <div class="folder-content">
+                            <div class="folder-name">Developer Console</div>
+                            <div class="folder-subtitle">JavaScript console and debugging</div>
+                            <div class="browser-stats">
+                                <span class="stat-item">Console logs</span>
+                                <span class="stat-item">Error tracking</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="folder-item" onclick="openBrowserCategory('network-tools')">
+                        <div class="folder-icon"></div>
+                        <div class="folder-content">
+                            <div class="folder-name">Network Analysis</div>
+                            <div class="folder-subtitle">HTTP requests and performance</div>
+                            <div class="browser-stats">
+                                <span class="stat-item">Request logs</span>
+                                <span class="stat-item">Performance metrics</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="folder-item" onclick="openBrowserCategory('element-inspector')">
+                        <div class="folder-icon"></div>
+                        <div class="folder-content">
+                            <div class="folder-name">Element Inspector</div>
+                            <div class="folder-subtitle">HTML/CSS debugging tools</div>
+                            <div class="browser-stats">
+                                <span class="stat-item">Live editing</span>
+                                <span class="stat-item">Style inspector</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="back-button" onclick="goToIndex()">
+        ← Back to Desktop
+    </button>
+
+    <div id="phoneOverlay" class="phone-overlay-wrapper" style="display: none;" onclick="hidePhoneOverlay()">
+        <iframe src="ActionsBlob.html" class="phone-iframe" onclick="event.stopPropagation()"></iframe>
+    </div>
+
+    <script>
+        // GLOBAL VARIABLES
+        let currentScore = 0;
+
+        // SCORE MANAGEMENT
+        function loadScore() {
+            const savedScore = localStorage.getItem('fsLogic_score');
+            if (savedScore !== null) {
+                currentScore = parseInt(savedScore, 10) || 0;
+            } else {
+                currentScore = 0;
+            }
+            updateScoreDisplay();
+        }
+
+        function saveScore() {
+            localStorage.setItem('fsLogic_score', currentScore.toString());
+        }
+
+        function updateScoreDisplay() {
+            const starCountElement = document.getElementById('starCount');
+            if (starCountElement) {
+                starCountElement.textContent = currentScore.toString();
+            }
+        }
+
+        function addToScore(points) {
+            currentScore += points;
+            updateScoreDisplay();
+            saveScore();
+            
+            const starButton = document.querySelector('.star-button');
+            if (starButton && points > 0) {
+                starButton.style.transform = 'scale(1.1)';
+                starButton.style.background = 'rgba(34, 197, 94, 0.3)';
+                setTimeout(() => {
+                    starButton.style.transform = '';
+                    starButton.style.background = '';
+                }, 200);
+            }
+        }
+
+        function setScore(newScore) {
+            currentScore = Math.max(0, newScore);
+            updateScoreDisplay();
+            saveScore();
+        }
+
+        // NAVIGATION
+        function goToIndex() {
+            window.location.href = 'index.html';
+        }
+
+        function openBrowserCategory(categoryName) {
+            console.log('Opening browser category:', categoryName);
+            alert(`Opening ${categoryName} browser tools. This will show your browser data and management options.`);
+        }
+
+        function openApp(appName, fileName) {
+            window.location.href = fileName;
+        }
+
+        function openQuickSite(url) {
+            // Store the URL and open the browser app
+            localStorage.setItem('browserStartupUrl', url);
+            window.location.href = 'browser.html';
+        }
+
+        // PHONE OVERLAY
+        function openActionsBlob() {
+            showPhoneOverlay();
+        }
+
+        function showPhoneOverlay() {
+            const overlay = document.getElementById('phoneOverlay');
+            overlay.style.display = 'flex';
+            
+            setTimeout(() => {
+                overlay.classList.add('show');
+            }, 10);
+        }
+
+        function hidePhoneOverlay() {
+            const overlay = document.getElementById('phoneOverlay');
+            overlay.classList.remove('show');
+            
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 300);
+        }
+
+        function togglePhoneOverlay() {
+            const overlay = document.getElementById('phoneOverlay');
+            const isVisible = overlay.classList.contains('show');
+            
+            if (isVisible) {
+                hidePhoneOverlay();
+            } else {
+                showPhoneOverlay();
+            }
+        }
+
+        // KEYBOARD SHORTCUTS
+        document.addEventListener('keydown', function(e) {
+            if (e.target.matches('input, textarea, [contenteditable]')) return;
+            
+            const shortcuts = {
+                'Escape': () => hidePhoneOverlay(),
+                ' ': (e) => { e.preventDefault(); showPhoneOverlay(); },
+                'b': () => togglePhoneOverlay(),
+            };
+            
+            const action = shortcuts[e.key];
+            if (action) action(e);
+        });
+
+        // MESSAGE HANDLING
+        window.addEventListener('message', function(event) {
+            try {
+                if (event.data && event.data.action) {
+                    switch(event.data.action) {
+                        case 'dismissOverlay':
+                            hidePhoneOverlay();
+                            break;
+                            
+                        case 'updateScore':
+                            if (typeof event.data.points === 'number') {
+                                addToScore(event.data.points);
+                            } else if (typeof event.data.newScore === 'number') {
+                                setScore(event.data.newScore);
+                            }
+                            break;
+                            
+                        case 'getScore':
+                            if (event.source) {
+                                event.source.postMessage({
+                                    action: 'scoreResponse',
+                                    score: currentScore
+                                }, '*');
+                            }
+                            break;
+                    }
+                }
+            } catch (error) {
+                console.log('Message handling error:', error);
+            }
+        });
+
+        // INITIALIZATION
+        document.addEventListener('DOMContentLoaded', function() {
+            loadScore();
+            
+            // Animate categories on load
+            const categories = document.querySelectorAll('.category-section');
+            categories.forEach((category, index) => {
+                category.style.opacity = '0';
+                category.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    category.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                    category.style.opacity = '1';
+                    category.style.transform = 'translateY(0)';
+                }, index * 150);
+            });
+        });
+    </script>
+</body>
+</html>
