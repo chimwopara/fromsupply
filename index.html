@@ -62,34 +62,51 @@
 
 /* Mobile responsive styles - 50% scale approach */
 @media (max-width: 768px) {
-    html {
-        background-image: url('logicdefault.jpg');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-color: #1e3a8a;
-        background-attachment: fixed;
-    }
     
-    body {
-        transform: scale(0.7);
-        transform-origin: top left;
-        width: 142.857%; /* 100% / 0.7 to compensate for scale */
-        height: 142.857%;
-    }
-    
-    /* Touch action controls - be more specific */
-    .folder {
-        touch-action: manipulation; /* Allow taps but prevent zoom */
-    }
-    
-    .window {
-        touch-action: manipulation;
-    }
-    
-    .window-content {
-        touch-action: auto;
-    }
+
+html {
+background-image: url('logicdefault.jpg');
+background-size: cover;
+background-position: center;
+background-repeat: no-repeat;
+background-color: #1e3a8a;
+background-attachment: fixed;
+ }
+body {
+transform: scale(0.7);
+transform-origin: top left;
+width: 142.857%; /* 100% / 0.7 to compensate for scale */
+height: 142.857%;
+ }
+/* Touch action controls - be more specific */
+.folder {
+touch-action: manipulation; /* Allow taps but prevent zoom */
+ }
+.window {
+touch-action: manipulation;
+ }
+.window-content {
+touch-action: auto;
+ }
+
+/* ADD THESE NEW LINES: */
+/* Make drag handles more prominent on mobile */
+.window-drag-handle {
+    height: 40px;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.window-content {
+    height: calc(100% - 40px);
+    margin-top: 40px;
+    touch-action: auto;
+}
+
+.window-drag-indicator {
+    width: 50px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.5);
+}
     
     /* Allow clicks on interactive elements */
     .folder-item,
@@ -126,8 +143,15 @@
         -webkit-touch-callout: default;
     }
 }
-
+    
+    
 @media (max-width: 480px) {
+    body {
+        transform: scale(0.5);
+        transform-origin: top left;
+        width: 200%; /* 100% / 0.5 to compensate for scale */
+        height: 200%;
+    }
     html {
         background-image: url('logicdefault.jpg');
         background-size: cover;
@@ -137,17 +161,33 @@
         background-attachment: fixed;
     }
     
-    body {
-        transform: scale(0.5);
-        transform-origin: top left;
-        width: 200%; /* 100% / 0.5 to compensate for scale */
-        height: 200%;
+    .window-drag-handle {
+        height: 45px;
+        background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .window-content {
+        height: calc(100% - 45px);
+        margin-top: 45px;
+    }
+    
+    .window-drag-indicator {
+        width: 60px;
+        height: 6px;
     }
 }
 
-        html {
+html {
+    background-image: url('logicdefault.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #1e3a8a;
+    background-attachment: fixed;
+    margin: 0;
+    padding: 0;
+    width: 100%;
     height: 100%;
-    overflow: hidden;
 }
 
 body {
@@ -158,7 +198,10 @@ body {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-color: #1e3a8a; /* Fallback color */
+    background-color: #1e3a8a;
+    background-attachment: fixed;
+    margin: 0;
+    padding: 0;
 }
 
         /* Fromsupply Console Styles */
@@ -633,6 +676,38 @@ body {
             perspective: 1000px;
         }
 
+        .window-drag-handle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    z-index: 10;
+    border-radius: 24px 24px 0 0;
+}
+
+.window-drag-handle:active {
+    cursor: grabbing;
+}
+
+.window-drag-indicator {
+    width: 40px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+}
+
+.window-drag-handle:hover .window-drag-indicator {
+    background: rgba(255, 255, 255, 0.5);
+}
+
         .window.resizing {
             transition: none !important;
         }
@@ -741,11 +816,12 @@ body {
 
         .window-content {
     padding: 0;
-    height: 100%;
-    overflow: auto;  /* ← Change to auto */
+    height: calc(100% - 30px); /* Account for drag handle */
+    margin-top: 30px; /* Push content below drag handle */
+    overflow: auto;
     will-change: scroll-position;
     backface-visibility: hidden;
-    cursor: default;  /* ← Change to default */
+    cursor: default;
     display: flex;
     flex-direction: column;
 }
@@ -2849,7 +2925,10 @@ function navigateToFavorite(directoryPath) {
             windowElement.id = windowId;
 
             windowElement.innerHTML = `
-    <div class="window-content" id="${windowId}-content" onmousedown="DragManager.start('window', document.getElementById('${windowId}'), event, { windowId: '${windowId}' })" style="cursor: grab;">
+    <div class="window-drag-handle" id="${windowId}-drag-handle" onmousedown="DragManager.start('window', document.getElementById('${windowId}'), event, { windowId: '${windowId}' })" style="cursor: grab;">
+        <div class="window-drag-indicator"></div>
+    </div>
+    <div class="window-content" id="${windowId}-content" style="cursor: default;">
         ${content}
     </div>
 `;
@@ -2896,8 +2975,10 @@ function navigateToFavorite(directoryPath) {
 });
 
 // Add touch support
-windowElement.addEventListener('touchstart', (e) => {
-    if (!e.target.closest('.resize-handle')) {
+// Add touch support - only for drag handle
+const dragHandle = windowElement.querySelector('.window-drag-handle');
+if (dragHandle) {
+    dragHandle.addEventListener('touchstart', (e) => {
         focusWindow(windowId);
         
         // Convert touch to mouse-like event for drag start
@@ -2909,8 +2990,17 @@ windowElement.addEventListener('touchstart', (e) => {
             stopPropagation: () => e.stopPropagation()
         };
         DragManager.start('window', windowElement, mouseEvent, { windowId });
-    }
-}, { passive: false });
+    }, { passive: false });
+}
+
+// Allow normal touch behavior in content area
+const windowContent = windowElement.querySelector('.window-content');
+if (windowContent) {
+    windowContent.addEventListener('touchstart', (e) => {
+        focusWindow(windowId);
+        // Don't prevent default - allow scrolling
+    }, { passive: true });
+}
 
             windowElement.addEventListener('dblclick', (e) => {
     // Check if we're on a level detail page
@@ -3657,6 +3747,21 @@ if (subjectName === 'C' && typeof challengesData !== 'undefined') {
             
             return content;
         }
+
+        // Touch-specific level opening
+function handleLevelTouch(e, subjectName, levelNumber) {
+    e.preventDefault();
+    e.stopPropagation();
+    openLanguageLevel(subjectName, levelNumber, 'C.png', getCurrentWindowId());
+}
+
+function getCurrentWindowId() {
+    const focusedWindow = openWindows.find(w => {
+        const element = document.getElementById(w.id);
+        return element && parseInt(element.style.zIndex) === windowZIndex;
+    });
+    return focusedWindow ? focusedWindow.id : null;
+}
 
         function openLanguageLevel(subjectName, levelNumber, coverImage, windowId) {
     const windowPath = PathManager.getPath(windowId);
@@ -5111,6 +5216,7 @@ function showConsoleHelp() {
     logToConsole('exit, quit, q   - Exit console', 'output');
 }
 // Initialize touch support for all interactive elements
+// Initialize touch support for all interactive elements
 function initializeTouchSupport() {
     // Add touch support to all clickable elements
     const clickableSelectors = [
@@ -5122,17 +5228,24 @@ function initializeTouchSupport() {
         '.notes-tab',
         '.back-button',
         '.favorite-item',
-        '.logo-dropdown-item'
+        '.logo-dropdown-item',
+        '.language-level-item', // Add this for C levels
+        '.notes-icon',
+        '[onclick]' // Catch any element with onclick
     ];
     
     clickableSelectors.forEach(selector => {
         document.addEventListener('touchend', function(e) {
             const element = e.target.closest(selector);
-            if (element) {
+            if (element && !e.defaultPrevented) {
                 e.preventDefault();
-                // Simulate click after touch
+                // Small delay to ensure touch is processed
                 setTimeout(() => {
-                    element.click();
+                    if (element.onclick) {
+                        element.onclick(e);
+                    } else {
+                        element.click();
+                    }
                 }, 10);
             }
         }, { passive: false });
@@ -5144,7 +5257,62 @@ function initializeTouchSupport() {
             e.target.focus();
         }
     }, { passive: true });
+    
+    // Add the pinch resize functionality
+    addPinchResize();
 }
+
+// Add pinch-to-resize for windows
+function addPinchResize() {
+    let initialDistance = 0;
+    let initialWidth = 0;
+    let initialHeight = 0;
+    let targetWindow = null;
+    
+    document.addEventListener('touchstart', function(e) {
+        if (e.touches.length === 2) {
+            const windowElement = e.target.closest('.window');
+            if (windowElement) {
+                targetWindow = windowElement;
+                initialDistance = getDistance(e.touches[0], e.touches[1]);
+                const rect = windowElement.getBoundingClientRect();
+                initialWidth = rect.width;
+                initialHeight = rect.height;
+                e.preventDefault();
+            }
+        }
+    }, { passive: false });
+    
+    document.addEventListener('touchmove', function(e) {
+        if (e.touches.length === 2 && targetWindow) {
+            const currentDistance = getDistance(e.touches[0], e.touches[1]);
+            const scale = currentDistance / initialDistance;
+            
+            const newWidth = Math.max(300, initialWidth * scale);
+            const newHeight = Math.max(200, initialHeight * scale);
+            
+            targetWindow.style.width = newWidth + 'px';
+            targetWindow.style.height = newHeight + 'px';
+            e.preventDefault();
+        }
+    }, { passive: false });
+    
+    document.addEventListener('touchend', function(e) {
+        if (e.touches.length < 2) {
+            targetWindow = null;
+            initialDistance = 0;
+        }
+    });
+}
+
+function getDistance(touch1, touch2) {
+    return Math.sqrt(
+        Math.pow(touch2.clientX - touch1.clientX, 2) +
+        Math.pow(touch2.clientY - touch1.clientY, 2)
+    );
+}
+
+addPinchResize();
         // DRAG AND DROP INITIALIZATION
         function initializeDragAndDrop() {
 			const folders = document.querySelectorAll('.folder');
