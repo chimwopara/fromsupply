@@ -60,53 +60,134 @@
     -ms-user-select: none;
 }
 
-/* Mobile responsive styles - 50% scale approach */
+/* Mobile responsive styles - viewport-based approach */
 @media (max-width: 768px) {
+    html {
+        background-image: url('logicdefault.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-color: #1e3a8a;
+        background-attachment: scroll; /* Changed from fixed for better mobile support */
+        min-height: 100vh;
+        min-height: -webkit-fill-available; /* iOS Safari fix */
+    }
     
-
-html {
-background-image: url('logicdefault.jpg');
-background-size: cover;
-background-position: center;
-background-repeat: no-repeat;
-background-color: #1e3a8a;
-background-attachment: fixed;
- }
-body {
-transform: scale(0.7);
-transform-origin: top left;
-width: 142.857%; /* 100% / 0.7 to compensate for scale */
-height: 142.857%;
- }
-/* Touch action controls - be more specific */
-.folder {
-touch-action: manipulation; /* Allow taps but prevent zoom */
- }
-.window {
-touch-action: manipulation;
- }
-.window-content {
-touch-action: auto;
- }
-
-/* ADD THESE NEW LINES: */
-/* Make drag handles more prominent on mobile */
-.window-drag-handle {
-    height: 40px;
-    background: rgba(255, 255, 255, 0.15);
+    body {
+        /* Remove scaling - use natural sizing instead */
+        transform: none;
+        width: 100%;
+        height: 100vh;
+        height: -webkit-fill-available; /* iOS Safari fix */
+        font-size: 14px; /* Slightly smaller for mobile */
+        overflow-x: hidden;
+    }
+    
+    /* Adjust folder sizes for mobile */
+    .folder {
+        width: 120px;
+        height: 150px;
+    }
+    
+    .folder-icon {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .folder-name {
+        font-size: 14px;
+        padding: 4px 8px;
+    }
+    
+    /* Better touch targets */
+    .folder-item {
+        padding: 16px;
+        min-height: 60px;
+    }
+    
+    .breadcrumb-segment {
+        padding: 8px 12px;
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+    }
+    
+    /* Touch controls */
+    .folder {
+        touch-action: manipulation;
+    }
+    
+    .window {
+        touch-action: manipulation;
+    }
+    
+    .window-content {
+        touch-action: auto;
+    }
+    
+    .folder-item,
+    .breadcrumb-segment,
+    .logo-section,
+    .star-button,
+    button,
+    input,
+    textarea,
+    .notes-tool-btn,
+    .notes-tab {
+        touch-action: manipulation;
+    }
+    
+    /* Ensure inputs work on mobile */
+    input, textarea {
+        -webkit-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
+        user-select: text;
+        -webkit-touch-callout: default;
+    }
+    
+    /* Better window sizing on mobile */
+    .window {
+        min-width: 300px;
+        min-height: 250px;
+        max-width: 95vw;
+        max-height: 85vh;
+    }
 }
 
-.window-content {
-    height: calc(100% - 40px);
-    margin-top: 40px;
-    touch-action: auto;
-}
+@media (max-width: 480px) {
+    body {
+        font-size: 13px;
+    }
+    
+    .folder {
+        width: 100px;
+        height: 130px;
+    }
+    
+    .folder-icon {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .folder-name {
+        font-size: 12px;
+    }
+    
+    .header {
+        height: 50px; /* Smaller header on very small screens */
+    }
+    
+    .desktop {
+        padding: 60px 10px 10px; /* Adjust for smaller header */
+    }
+    
+    .window {
+        min-width: 280px;
+        max-width: 98vw;
+        max-height: 90vh;
+    }
 
-.window-drag-indicator {
-    width: 50px;
-    height: 5px;
-    background: rgba(255, 255, 255, 0.5);
-}
     
     /* Allow clicks on interactive elements */
     .folder-item,
@@ -178,30 +259,55 @@ touch-action: auto;
 }
 
 html {
-    background-image: url('logicdefault.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
     background-color: #1e3a8a;
-    background-attachment: fixed;
     margin: 0;
     padding: 0;
     width: 100%;
     height: 100%;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
 }
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     height: 100vh;
+    height: -webkit-fill-available;
     overflow: hidden;
     background-image: url('logicdefault.jpg');
     background-size: cover;
-    background-position: center;
+    background-position: center center;
     background-repeat: no-repeat;
     background-color: #1e3a8a;
-    background-attachment: fixed;
+    background-attachment: scroll; /* Better mobile support */
     margin: 0;
     padding: 0;
+    position: relative;
+}
+
+/* Fallback for browsers that don't support the background image */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #1e40af 100%);
+    z-index: -2;
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('logicdefault.jpg');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    z-index: -1;
 }
 
         /* Fromsupply Console Styles */
@@ -676,38 +782,7 @@ body {
             perspective: 1000px;
         }
 
-        .window-drag-handle {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 30px;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: grab;
-    z-index: 10;
-    border-radius: 24px 24px 0 0;
-}
-
-.window-drag-handle:active {
-    cursor: grabbing;
-}
-
-.window-drag-indicator {
-    width: 40px;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 2px;
-}
-
-.window-drag-handle:hover .window-drag-indicator {
-    background: rgba(255, 255, 255, 0.5);
-}
-
+ 
         .window.resizing {
             transition: none !important;
         }
@@ -814,16 +889,17 @@ body {
             border-radius: 0px;
         }
 
-        .window-content {
+      .window-content {
     padding: 0;
-    height: calc(100% - 30px); /* Account for drag handle */
-    margin-top: 30px; /* Push content below drag handle */
+    height: 100%;
+    margin-top: 0;
     overflow: auto;
     will-change: scroll-position;
     backface-visibility: hidden;
     cursor: default;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
        .window-content::-webkit-scrollbar {
@@ -2268,38 +2344,39 @@ handleTouchEnd(e) {
                 ' Mall Builder': { app: true, file: 'mall-builder.html' }
             },
             'Farm': {
-                'Crops': {
-                    'Vegetables': {
-                        'Tomatoes': { levels: 25, cover: 'Tomatoes.png' },
-                        'Carrots': { levels: 20, cover: 'Carrots.png' },
-                        'Lettuce': { levels: 15, cover: 'Lettuce.png' },
-                        'Peppers': { levels: 18, cover: 'Peppers.png' }
-                    },
-                    'Fruits': {
-                        'Apples': { levels: 30, cover: 'Apples.png' },
-                        'Strawberries': { levels: 22, cover: 'Strawberries.png' },
-                        'Grapes': { levels: 35, cover: 'Grapes.png' }
-                    },
-                    'Grains': {
-                        'Wheat': { levels: 40, cover: 'Wheat.png' },
-                        'Corn': { levels: 35, cover: 'Corn.png' },
-                        'Rice': { levels: 45, cover: 'Rice.png' }
-                    }
-                },
-                'Livestock': {
-                    'Cattle': { levels: 30, cover: 'Cattle.png' },
-                    'Chickens': { levels: 25, cover: 'Chickens.png' },
-                    'Pigs': { levels: 28, cover: 'Pigs.png' },
-                    'Sheep': { levels: 22, cover: 'Sheep.png' }
-                },
-                'Equipment': {
-                    'Tractors': { levels: 20, cover: 'Tractors.png' },
-                    'Harvesters': { levels: 25, cover: 'Harvesters.png' },
-                    'Irrigation': { levels: 18, cover: 'Irrigation.png' }
-                },
-                'fs Farms': { app: true, file: 'farms.html' },
-                'fs Farms Builder': { app: true, file: 'farms-builder.html' }
-            },
+    'Crops': {
+        'Vegetables': {
+            'Tomatoes': { levels: 25, cover: 'Tomatoes.png' },
+            'Carrots': { levels: 20, cover: 'Carrots.png' },
+            'Lettuce': { levels: 15, cover: 'Lettuce.png' },
+            'Peppers': { levels: 18, cover: 'Peppers.png' }
+        },
+        'Fruits': {
+            'Apples': { levels: 30, cover: 'Apples.png' },
+            'Strawberries': { levels: 22, cover: 'Strawberries.png' },
+            'Grapes': { levels: 35, cover: 'Grapes.png' }
+        },
+        'Grains': {
+            'Wheat': { levels: 40, cover: 'Wheat.png' },
+            'Corn': { levels: 35, cover: 'Corn.png' },
+            'Rice': { levels: 45, cover: 'Rice.png' }
+        }
+    },
+    'Livestock': {
+        'Cattle': { levels: 30, cover: 'Cattle.png' },
+        'Chickens': { levels: 25, cover: 'Chickens.png' },
+        'Pigs': { levels: 28, cover: 'Pigs.png' },
+        'Sheep': { levels: 22, cover: 'Sheep.png' }
+    },
+    'Equipment': {
+        'Tractors': { levels: 20, cover: 'Tractors.png' },
+        'Harvesters': { levels: 25, cover: 'Harvesters.png' },
+        'Irrigation': { levels: 18, cover: 'Irrigation.png' }
+    },
+    'Join A4': { app: true, file: 'A4.html' },
+    'fs Farms': { app: true, file: 'farms.html' },
+    'fs Farms Builder': { app: true, file: 'farms-builder.html' }
+},
             'Prompts': {
                 'My Prompts': { description: 'Your personal prompt collection' },
                 'Saved Prompts': { description: 'Bookmarked and saved prompts' },
@@ -2924,10 +3001,7 @@ function navigateToFavorite(directoryPath) {
             windowElement.className = 'window';
             windowElement.id = windowId;
 
-            windowElement.innerHTML = `
-    <div class="window-drag-handle" id="${windowId}-drag-handle" onmousedown="DragManager.start('window', document.getElementById('${windowId}'), event, { windowId: '${windowId}' })" style="cursor: grab;">
-        <div class="window-drag-indicator"></div>
-    </div>
+           windowElement.innerHTML = `
     <div class="window-content" id="${windowId}-content" style="cursor: default;">
         ${content}
     </div>
@@ -2968,21 +3042,38 @@ function navigateToFavorite(directoryPath) {
     windowElement.style.zIndex = windowZIndex;
 });
 
-            windowElement.addEventListener('mousedown', (e) => {
+    windowElement.addEventListener('mousedown', (e) => {
     if (!e.target.closest('.resize-handle')) {
         focusWindow(windowId);
+        
+        // Check if click is in top 30% for dragging
+        const rect = windowElement.getBoundingClientRect();
+        const clickY = e.clientY - rect.top;
+        const windowHeight = rect.height;
+        const topThirtyPercent = windowHeight * 0.3;
+        
+        if (clickY <= topThirtyPercent) {
+            // Top 30% - allow dragging
+            e.preventDefault();
+            DragManager.start('window', windowElement, e, { windowId });
+        }
+        // Bottom 70% - allow normal scrolling/interaction (do nothing)
     }
 });
 
-// Add touch support
-// Add touch support - only for drag handle
-const dragHandle = windowElement.querySelector('.window-drag-handle');
-if (dragHandle) {
-    dragHandle.addEventListener('touchstart', (e) => {
-        focusWindow(windowId);
-        
-        // Convert touch to mouse-like event for drag start
-        const touch = e.touches[0];
+// Add touch support for top 30% dragging
+windowElement.addEventListener('touchstart', (e) => {
+    focusWindow(windowId);
+    
+    // Check if touch is in top 30% for dragging
+    const rect = windowElement.getBoundingClientRect();
+    const touch = e.touches[0];
+    const touchY = touch.clientY - rect.top;
+    const windowHeight = rect.height;
+    const topThirtyPercent = windowHeight * 0.3;
+    
+    if (touchY <= topThirtyPercent) {
+        // Top 30% - allow dragging
         const mouseEvent = {
             clientX: touch.clientX,
             clientY: touch.clientY,
@@ -2990,17 +3081,9 @@ if (dragHandle) {
             stopPropagation: () => e.stopPropagation()
         };
         DragManager.start('window', windowElement, mouseEvent, { windowId });
-    }, { passive: false });
-}
-
-// Allow normal touch behavior in content area
-const windowContent = windowElement.querySelector('.window-content');
-if (windowContent) {
-    windowContent.addEventListener('touchstart', (e) => {
-        focusWindow(windowId);
-        // Don't prevent default - allow scrolling
-    }, { passive: true });
-}
+    }
+    // Bottom 70% - allow normal scrolling (do nothing)
+}, { passive: false });
 
             windowElement.addEventListener('dblclick', (e) => {
     // Check if we're on a level detail page
@@ -6539,17 +6622,9 @@ function showOnboardingVideo() {
     transform-origin: top left;
 `;
 
-// Handle mobile scaling
+// Handle mobile scaling - no transform compensation needed now
 if (window.innerWidth <= 768) {
-    if (window.innerWidth <= 480) {
-        overlay.style.transform = 'scale(2)'; // Compensate for 50% body scale
-        overlay.style.width = '50vw';
-        overlay.style.height = '50vh';
-    } else {
-        overlay.style.transform = 'scale(1.428)'; // Compensate for 70% body scale  
-        overlay.style.width = '70vw';
-        overlay.style.height = '70vh';
-    }
+    overlay.style.padding = '20px';
 }
     
     overlay.innerHTML = `
