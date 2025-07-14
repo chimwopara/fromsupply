@@ -163,6 +163,81 @@
         animation: blink 1s infinite;
       }
 
+      /* --- Directory Bar --- */
+      .directory-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 50px;
+        background: rgba(3, 7, 18, 0.8);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border-bottom: 1px solid rgba(55, 65, 81, 0.3);
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+
+      .directory-bar.visible {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      .directory-bar.hidden {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+
+      .directory-content {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #D1D5DB;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .directory-home-icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: opacity 0.2s ease;
+      }
+
+      .directory-home-icon:hover {
+        opacity: 0.8;
+      }
+
+      .directory-separator {
+        color: rgba(255, 255, 255, 0.6);
+        margin: 0 4px;
+      }
+
+      .directory-segment {
+        color: rgba(255, 255, 255, 0.8);
+        transition: color 0.2s ease;
+      }
+
+      .directory-segment.current-app {
+        color: #60A5FA;
+        font-weight: 600;
+      }
+
+      /* Adjust main content when directory bar is visible */
+      body.directory-active {
+        padding-top: 50px;
+      }
+
+      body.directory-active #hero-video {
+        height: calc(100vh - 50px);
+      }
+
       @keyframes blink {
         0%, 50% { opacity: 1; }
         51%, 100% { opacity: 0; }
@@ -549,6 +624,16 @@
         <div id="typing-cursor">|</div>
     </div>
   </section>
+
+  <div id="directory-bar" class="directory-bar hidden">
+    <div class="directory-content">
+      <img src="logo.jpg" class="directory-home-icon" alt="Home" onerror="this.src='https://placehold.co/24x24/030712/FFFFFF?text=FS';">
+      <span class="directory-separator">/</span>
+      <span class="directory-segment">Apps</span>
+      <span class="directory-separator">/</span>
+      <span id="current-app-name" class="directory-segment current-app">App Name</span>
+    </div>
+  </div>
 
   <div class="w-full flex-grow flex flex-col items-center py-6 relative z-10 mt-16 sm:mt-0">
       <main id="product-showcase" class="w-full max-w-7xl mb-16 px-4 sm:px-6">
@@ -940,6 +1025,146 @@
         }
       }
 
+      // App tracking and directory bar system
+      var activeApp = null;
+      var appRegistry = {}; // Will store all apps automatically
+
+      function registerApp(appName, href, element) {
+        appRegistry[appName] = {
+          name: appName,
+          href: href,
+          element: element
+        };
+        console.log('Registered app:', appName);
+      }
+
+      function showDirectoryBar(appName) {
+        try {
+          var directoryBar = getEl('directory-bar');
+          var currentAppNameEl = getEl('current-app-name');
+          var body = document.body;
+          
+          if (directoryBar && currentAppNameEl) {
+            activeApp = appName;
+            currentAppNameEl.textContent = appName;
+            
+            // Show directory bar
+            directoryBar.classList.remove('hidden');
+            directoryBar.classList.add('visible');
+            body.classList.add('directory-active');
+            
+            console.log('Directory bar showing:', appName);
+          }
+        } catch (e) {
+          console.error('Error showing directory bar:', e);
+        }
+      }
+
+      function hideDirectoryBar() {
+        try {
+          var directoryBar = getEl('directory-bar');
+          var body = document.body;
+          
+          if (directoryBar) {
+            activeApp = null;
+            directoryBar.classList.remove('visible');
+            directoryBar.classList.add('hidden');
+            body.classList.remove('directory-active');
+            
+            console.log('Directory bar hidden');
+          }
+        } catch (e) {
+          console.error('Error hiding directory bar:', e);
+        }
+      }
+
+      function setupAppTracking() {
+        try {
+          // Auto-register all apps from cards
+          document.querySelectorAll('.card-action-button').forEach(function(button) {
+            var card = button.closest('.card');
+            if (card) {
+              var titleEl = card.querySelector('.card-title');
+              var href = button.getAttribute('href');
+              
+              if (titleEl && href) {
+                var appName = titleEl.textContent.trim();
+                registerApp(appName, href, button);
+                
+              // Intercept app launches
+                button.addEventListener('click', function(e) {
+                  e.preventDefault();
+                  
+                  // Store that we're launching this app
+                  storeAppLaunch(appName);
+                  
+                  // Show directory bar with current app
+                  showDirectoryBar(appName);
+                  
+                  // Navigate to app after a brief delay
+                  setTimeout(function() {
+                    window.location.href = href;
+                  }, 300);
+                });
+              }
+            }
+          });
+
+          // Setup home icon click
+          var homeIcon = document.querySelector('.directory-home-icon');
+          if (homeIcon) {
+            homeIcon.addEventListener('click', function() {
+              hideDirectoryBar();
+              // Navigate back to main page if needed
+              if (window.location.pathname !== '/' && window.location.pathname !== '/index.html') {
+                window.location.href = '/';
+              }
+            });
+          }
+
+          console.log('App tracking setup complete. Registered apps:', Object.keys(appRegistry));
+        } catch (e) {
+          console.error('App tracking setup error:', e);
+        }
+      }
+
+      function checkIfReturningFromApp() {
+        try {
+          // Check if we're returning from an app (via referrer or session storage)
+          var referrer = document.referrer;
+          var lastApp = getItem('fs_last_opened_app');
+          
+          if (lastApp) {
+            var appData = JSON.parse(lastApp);
+            var timeSinceOpen = Date.now() - appData.timestamp;
+            
+            // If less than 5 minutes since opening an app, show directory bar
+            if (timeSinceOpen < 300000) { // 5 minutes
+              showDirectoryBar(appData.appName);
+              
+              // Clear the stored app after showing
+              setTimeout(function() {
+                localStorage.removeItem('fs_last_opened_app');
+              }, 2000);
+            }
+          }
+        } catch (e) {
+          console.error('Error checking returning from app:', e);
+        }
+      }
+
+      function storeAppLaunch(appName) {
+        try {
+          var appData = {
+            appName: appName,
+            timestamp: Date.now()
+          };
+          setItem('fs_last_opened_app', JSON.stringify(appData));
+        } catch (e) {
+          console.error('Error storing app launch:', e);
+        }
+      }
+
       // Global callback function for Google Sign-In
       window.handleCredentialResponse = function(response) {
         try {
@@ -1052,6 +1277,10 @@
           setupScroll();
           setupVideos();
           setupTypingAnimation(); // Add this line
+          setupAppTracking(); // Add this line
+          
+          // Check if returning from an app
+          setTimeout(checkIfReturningFromApp, 500);
 
 
           console.log('Initialization complete');
