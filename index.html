@@ -124,6 +124,19 @@
     .window-content {
         touch-action: auto;
     }
+
+    .window-drag-bar:active {
+    cursor: grabbing;
+}
+
+.window.dragging .window-drag-bar {
+    height: 100%;
+    cursor: grabbing;
+}
+
+.window.dragging .window-content {
+    pointer-events: none;
+}
     
     .folder-item,
     .breadcrumb-segment,
@@ -696,10 +709,7 @@ body::after {
             transform: scale(1.08);
         }
 
-        .folder[data-app="true"]:hover .folder-icon::after {
-            background: rgba(74, 222, 128, 0.9);
-            animation: pulse 0.5s ease-in-out;
-        }
+        
 
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
@@ -731,9 +741,9 @@ body::after {
         .folder[data-app="true"] .folder-icon::after {
         content: '';  /* Remove the lightning emoji */
         position: absolute;
-        bottom: 10px;
+        bottom: 5px;
         right: 10px;
-        background: rgba(255, 255, 255, 0.9);
+        background: rgba(255, 255, 255, 0.15);
         border-radius: 50%;
         width: 40px;
         height: 40px;
@@ -746,7 +756,7 @@ body::after {
         background-size: 24px 24px;  /* Adjust size as needed */
         background-position: center;
         background-repeat: no-repeat;
-        background-color: rgba(255, 255, 255, 0.9);  /* Keep the white background */
+        background-color: rgba(255, 255, 255, 0.15);  /* Match window opacity */
     }
 
         .folder-name {
@@ -1028,8 +1038,8 @@ body::after {
     opacity: 1;
 }
 
-/* Favorites Overlay Styles */
-.favorites-overlay-wrapper {
+/* Saved Overlay Styles */
+.saved-overlay-wrapper {
     position: fixed;
     top: 0;
     left: 0;
@@ -1046,11 +1056,11 @@ body::after {
     padding-right: 20px;
 }
 
-.favorites-overlay-wrapper.show {
+.saved-overlay-wrapper.show {
     opacity: 1;
 }
 
-.favorites-grid {
+.saved-grid {
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(25px);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -1063,11 +1073,11 @@ body::after {
     transition: transform 0.3s ease;
 }
 
-.favorites-overlay-wrapper.show .favorites-grid {
+.saved-overlay-wrapper.show .saved-grid {
     transform: scale(1);
 }
 
-.favorites-header {
+.saved-header {
     color: white;
     font-size: 20px;
     font-weight: 600;
@@ -1076,13 +1086,13 @@ body::after {
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-.favorites-content {
+.saved-content {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 16px;
 }
 
-.favorite-item {
+.saved-item {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 12px;
@@ -1098,19 +1108,19 @@ body::after {
     gap: 8px;
 }
 
-.favorite-item:hover {
+.saved-item:hover {
     background: rgba(255, 255, 255, 0.2);
     border-color: rgba(255, 255, 255, 0.4);
     transform: translateY(-2px);
 }
 
-.favorite-item-icon {
+.saved-item-icon {
     width: 32px;
     height: 32px;
     margin-bottom: 8px;
 }
 
-.favorite-item-name {
+.saved-item-name {
     color: white;
     font-size: 12px;
     font-weight: 500;
@@ -1118,13 +1128,13 @@ body::after {
     word-break: break-word;
 }
 
-.favorite-item-path {
+.saved-item-path {
     color: rgba(255, 255, 255, 0.7);
     font-size: 10px;
     word-break: break-word;
 }
 
-.favorites-empty {
+.saved-empty {
     grid-column: 1 / -1;
     text-align: center;
     color: rgba(255, 255, 255, 0.7);
@@ -1568,16 +1578,20 @@ body::after {
             <div class="folder-name">Browser</div>
         </div>
     </div>
+    <div class="folder" data-folder="Arcade" data-app="true" data-file="arcade.html" style="left: 820px; top: 100px;">
+            <div class="folder-icon"></div>
+            <div class="folder-name">Arcade</div>
+        </div>
 
     <div id="phoneOverlay" class="phone-overlay-wrapper" style="display: none;" onclick="hidePhoneOverlay()">
     <iframe src="ActionsBlob.html" class="phone-iframe" onclick="event.stopPropagation()"></iframe>
 </div>
 
-<div id="favoritesOverlay" class="favorites-overlay-wrapper" style="display: none;" onclick="hideFavoritesOverlay()">
-    <div class="favorites-grid" onclick="event.stopPropagation()">
-        <div class="favorites-header">Favorites</div>
-        <div class="favorites-content" id="favoritesContent">
-            <!-- Favorites will be populated here -->
+<div id="savedOverlay" class="saved-overlay-wrapper" style="display: none;" onclick="hideSavedOverlay()">
+    <div class="saved-grid" onclick="event.stopPropagation()">
+        <div class="saved-header">Saved</div>
+        <div class="saved-content" id="savedContent">
+            <!-- Saved will be populated here -->
         </div>
     </div>
 </div>
@@ -1839,6 +1853,8 @@ body::after {
         },
             
             end(event) {
+    const wasDragging = this.active;
+    
     if (this.active) {
         this.element.classList.remove('dragging');
         this.element.style.borderColor = 'rgba(255, 255, 255, 0.2)';
@@ -2004,7 +2020,6 @@ handleWindowSnapping(event) {
         const contentElement = document.getElementById(windowId + '-content');
         if (contentElement) {
             contentElement.style.padding = '16px';
-            contentElement.innerHTML = content;
         }
     }
 },
@@ -2049,7 +2064,8 @@ function initializeGlobals() {
         starLongPress: {
             isPressed: false,
             startTime: 0,
-            threshold: 500
+            threshold: 500,
+            wasLongPress: false
         }
     };
             
@@ -2134,7 +2150,17 @@ handleTouchEnd(e) {
         preventDefault: () => e.preventDefault(),
         stopPropagation: () => e.stopPropagation()
     };
+    
+    // Check if this was a drag operation
+    const wasDragging = DragManager.active;
+    
     this.handleMouseUp(mouseEvent);
+    
+    // Prevent ghost clicks after dragging
+    if (wasDragging) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
 },
             
             handleKeyboard(e) {
@@ -2151,7 +2177,7 @@ handleTouchEnd(e) {
                 const shortcuts = {
     'Escape': () => {
         hidePhoneOverlay();
-        hideFavoritesOverlay();
+        hideSavedOverlay();
         if (openWindows.length > 0) {
             const topWindow = openWindows[openWindows.length - 1];
             closeWindow(topWindow.id);
@@ -2167,7 +2193,7 @@ handleTouchEnd(e) {
     'd': () => focusedWindow && duplicateWindow(focusedWindow.id),
     'c': () => focusedWindow && closeOtherWindows(focusedWindow.id),
     'b': () => togglePhoneOverlay(),
-    'v': () => showFavoritesOverlay(),
+   'v': () => toggleSavedOverlay(),
     'f': () => {
         if (focusedWindow) {
             addToHistory('snap', { windowId: focusedWindow.id, previousState: getWindowState(focusedWindow.id) });
@@ -2693,6 +2719,7 @@ function handleDirectoryClick(level) {
         } else {
             window.fsTappedDirectories.splice(tappedIndex, 1);
         }
+        saveTappedDirectoriesToStorage(); // Save to localStorage
         updateDirectoryDisplay();
         return;
     }
@@ -2802,20 +2829,27 @@ function openActionsBlob() {
 }
 
 function handleStarClick() {
-    if (!window.starLongPress.isPressed) {
+    // Only open blob if it wasn't a long press
+    if (!window.starLongPress.wasLongPress) {
         openActionsBlob();
     }
+    
+    // Reset state
+    window.starLongPress.wasLongPress = false;
 }
 
 function startStarLongPress() {
     window.starLongPress.isPressed = true;
     window.starLongPress.startTime = Date.now();
+    window.starLongPress.wasLongPress = false;
     
     setTimeout(() => {
         if (window.starLongPress.isPressed) {
             const elapsed = Date.now() - window.starLongPress.startTime;
             if (elapsed >= window.starLongPress.threshold) {
-                showFavoritesOverlay();
+                showSavedOverlay();
+                window.starLongPress.isPressed = false;
+                window.starLongPress.wasLongPress = true; // Mark as long press
             }
         }
     }, window.starLongPress.threshold);
@@ -2840,21 +2874,23 @@ function initializeStarButtonTouch() {
         starButton.addEventListener('touchend', function(e) {
             e.preventDefault();
             const touchDuration = Date.now() - touchStartTime;
+            
             endStarLongPress();
             
             if (touchDuration < 500) {
-                // Short tap - open blob
+                // Short tap - open blob (reset wasLongPress first)
+                window.starLongPress.wasLongPress = false;
                 handleStarClick();
             }
-            // Long press already handled by timer
+            // Long press was already handled by timer and set wasLongPress = true
         }, { passive: false });
     }
 }
 
 // FAVORITES OVERLAY
-function showFavoritesOverlay() {
-    populateFavorites();
-    const overlay = document.getElementById('favoritesOverlay');
+function showSavedOverlay() {
+    populateSaved();
+    const overlay = document.getElementById('savedOverlay');
     overlay.style.display = 'flex';
     
     setTimeout(() => {
@@ -2862,44 +2898,54 @@ function showFavoritesOverlay() {
     }, 10);
 }
 
-function hideFavoritesOverlay() {
-    const overlay = document.getElementById('favoritesOverlay');
+function hideSavedOverlay() {
+    const overlay = document.getElementById('savedOverlay');
     overlay.classList.remove('show');
     
     setTimeout(() => {
         overlay.style.display = 'none';
     }, 300);
 }
+function toggleSavedOverlay() {
+    const overlay = document.getElementById('savedOverlay');
+    const isVisible = overlay.classList.contains('show');
+    
+    if (isVisible) {
+        hideSavedOverlay();
+    } else {
+        showSavedOverlay();
+    }
+}
 
-function populateFavorites() {
-    const content = document.getElementById('favoritesContent');
+function populateSaved() {
+    const content = document.getElementById('savedContent');
     
     if (window.fsTappedDirectories.length === 0) {
-        content.innerHTML = '<div class="favorites-empty">No Favorites yet<br>Click on directories in the directories bar to favorite them</div>';
+        content.innerHTML = '<div class="saved-empty">No Saved yet<br>Click on directories in the directories bar to save them</div>';
         return;
     }
     
-    let favoritesHTML = '';
+    let savedHTML = '';
     
     window.fsTappedDirectories.forEach(directoryPath => {
         const pathParts = directoryPath.split('/');
         const lastPart = pathParts[pathParts.length - 1];
         const icon = getFolderIcon(lastPart);
         
-        favoritesHTML += `
-            <div class="favorite-item" onclick="navigateToFavorite('${directoryPath}')">
-                <img src="${icon}" class="favorite-item-icon" alt="">
-                <div class="favorite-item-name">${lastPart}</div>
-                <div class="favorite-item-path">${directoryPath}</div>
+        savedHTML += `
+            <div class="saved-item" onclick="navigateToSaved('${directoryPath}')">
+                <img src="${icon}" class="saved-item-icon" alt="">
+                <div class="saved-item-name">${lastPart}</div>
+                <div class="saved-item-path">${directoryPath}</div>
             </div>
         `;
     });
     
-    content.innerHTML = favoritesHTML;
+    content.innerHTML = savedHTML;
 }
 
-function navigateToFavorite(directoryPath) {
-    hideFavoritesOverlay();
+function navigateToSaved(directoryPath) {
+    hideSavedOverlay();
     
     // Find or create a window to navigate to this directory
     const focusedWindow = openWindows.find(w => {
@@ -3002,10 +3048,27 @@ function navigateToFavorite(directoryPath) {
             windowElement.id = windowId;
 
            windowElement.innerHTML = `
+    <div class="window-drag-overlay" id="${windowId}-drag-overlay"></div>
     <div class="window-content" id="${windowId}-content" style="cursor: default;">
         ${content}
     </div>
 `;
+// Add drag functionality to the drag bar
+const dragBar = document.getElementById(`${windowId}-drag-bar`);
+if (dragBar) {
+    dragBar.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        focusWindow(windowId);
+        DragManager.start('window', windowElement, e, { windowId });
+    });
+    
+    dragBar.addEventListener('dblclick', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openFsConsole(windowId);
+    });
+}
             
             let windowX, windowY;
             if (x !== null && y !== null) {
@@ -3190,6 +3253,80 @@ windowElement.addEventListener('touchstart', (e) => {
         currentDirectory = [...window.currentPath];
         updateDirectoryDisplay();
     }
+}
+function checkWindowControlState(windowId) {
+    const windowElement = document.getElementById(windowId);
+    const contentElement = document.getElementById(windowId + '-content');
+    
+    if (!windowElement || !contentElement) return;
+    
+    // Check if window contains iframe or complex HTML that steals focus
+    const hasIframe = contentElement.querySelector('iframe');
+    const hasComplexHTML = contentElement.innerHTML.includes('<iframe') || 
+                          contentElement.innerHTML.includes('arcade.html') ||
+                          contentElement.innerHTML.includes('logicbody.html');
+    
+    if (hasIframe || hasComplexHTML) {
+        // Add tint and disable indicator
+        addControlsDisabledTint(windowId);
+    } else {
+        // Remove tint - controls work normally
+        removeControlsDisabledTint(windowId);
+    }
+}
+
+function addControlsDisabledTint(windowId) {
+    const windowElement = document.getElementById(windowId);
+    if (!windowElement) return;
+    
+    // Remove existing indicator
+    removeControlsDisabledTint(windowId);
+    
+    // Add tint overlay
+    const tintOverlay = document.createElement('div');
+    tintOverlay.id = `${windowId}-controls-tint`;
+    tintOverlay.style.cssText = `
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 165, 0, 0.1);
+        pointer-events: none;
+        z-index: 999;
+        border-radius: 24px;
+    `;
+    
+    // Add indicator message
+    const indicator = document.createElement('div');
+    indicator.id = `${windowId}-controls-indicator`;
+    indicator.style.cssText = `
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(255, 165, 0, 0.9);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 500;
+        pointer-events: none;
+        z-index: 1000;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    `;
+    indicator.textContent = '⌨️ Click desktop for shortcuts';
+    
+    windowElement.appendChild(tintOverlay);
+    windowElement.appendChild(indicator);
+}
+
+function removeControlsDisabledTint(windowId) {
+    const tintOverlay = document.getElementById(`${windowId}-controls-tint`);
+    const indicator = document.getElementById(`${windowId}-controls-indicator`);
+    
+    if (tintOverlay) tintOverlay.remove();
+    if (indicator) indicator.remove();
 }
         function closeWindow(windowId) {
             const windowElement = document.getElementById(windowId);
@@ -3564,14 +3701,27 @@ if (!structure && windowId) {
 			// Special case: Desktop should show main folders
 if (folderName === 'Desktop') {
     const desktopFolders = ['Logic', 'Mall', 'Farm', 'Prompts', 'Media', 'Browser'];
+    const desktopApps = [{ name: 'Arcade', file: 'arcade.html' }];
     let content = '';
     
+    // Add folders
     desktopFolders.forEach(folder => {
         content += `
             <div class="folder-item" onclick="navigateToItem('${folder}', '${windowId || 'current'}', 'Desktop')">
                 <div class="folder-item-icon"><img src="blackfile.png" style="width: 24px; height: 24px;" alt="Folder"></div>
                 <div class="folder-item-name" style="color: white;">${folder}</div>
                 <div class="folder-item-subtitle" style="color: rgba(255,255,255,0.8);">Folder</div>
+            </div>
+        `;
+    });
+    
+    // Add apps
+    desktopApps.forEach(app => {
+        content += `
+            <div class="folder-item" onclick="openApp('${app.name}', '${app.file}', 'Desktop')">
+                <div class="folder-item-icon"><img src="openapp.png" style="width: 24px; height: 24px;" alt="App"></div>
+                <div class="folder-item-name" style="color: white;">${app.name}</div>
+                <div class="folder-item-subtitle" style="color: rgba(255,255,255,0.8);">Application</div>
             </div>
         `;
     });
@@ -3953,6 +4103,7 @@ function getCurrentWindowId() {
     const contentElement = document.getElementById(windowId + '-content');
     if (contentElement) {
         contentElement.innerHTML = content;
+        setTimeout(() => checkWindowControlState(windowId), 100);
         contentElement.style.padding = '0';
     }
 }
@@ -4092,6 +4243,12 @@ if (parentFolder === 'System' && itemName === 'Tutorials') {
 if (item.app && item.file) {
     const parentFolderName = windowPath[1];
     openApp(itemName, item.file, parentFolderName);
+    return;
+}
+
+// Special handling for desktop apps that aren't in folderStructure
+if (parentFolder === 'Desktop' && itemName === 'Arcade') {
+    openApp('Arcade', 'arcade.html', 'Desktop');
     return;
 }
 
@@ -4247,6 +4404,97 @@ if (item.type === 'youtube') {
 			focusWindow(windowId);
 		}
 
+        function openArcadeWindow() {
+            // Calculate position near mouse
+            const mouseX = window.fsLastMousePosition ? window.fsLastMousePosition.x : 200;
+            const mouseY = window.fsLastMousePosition ? window.fsLastMousePosition.y : 200;
+            const windowX = Math.max(20, mouseX - 400);
+            const windowY = Math.max(80, mouseY - 200);
+            
+            // Create new window
+            const windowId = createWindow('Arcade - Fromsupply', '', 800, 600, windowX, windowY);
+            
+            // Set path to show "Desktop/Arcade" in directory bar
+            const newPath = ['Fromsupply', 'Desktop', 'Arcade'];
+            PathManager.updatePath(windowId, newPath);
+            
+            // Create iframe content for arcade.html with focus management
+            const content = `
+                <iframe src="arcade.html" 
+                        style="width: 100%; height: 100%; border: none; opacity: 0; transition: opacity 0.3s ease;"
+                        onload="this.style.opacity = '1'; handleArcadeIframeLoad('${windowId}');">
+                </iframe>
+            `;
+            
+            // Set content in window
+            const contentElement = document.getElementById(windowId + '-content');
+            if (contentElement) {
+                contentElement.style.padding = '0';
+                contentElement.innerHTML = content;
+                setTimeout(() => checkWindowControlState(windowId), 100);
+            }
+            
+            // Focus the window and automatically maximize
+            focusWindow(windowId);
+            
+            // Use the same maximization logic as toggleMaximize
+            setTimeout(() => {
+                const windowElement = document.getElementById(windowId);
+                const window = openWindows.find(w => w.id === windowId);
+                
+                if (windowElement && window) {
+                    // Save original position (following exact toggleMaximize pattern)
+                    const rect = windowElement.getBoundingClientRect();
+                    window.originalPosition = {
+                        x: rect.left,
+                        y: rect.top,
+                        width: rect.width,
+                        height: rect.height
+                    };
+                    
+                    // Remove any existing snap classes first
+                    const snapClasses = ['snapped-left', 'snapped-right', 'snapped-top', 'snapped-bottom', 
+                                       'snapped-top-left', 'snapped-top-right', 'snapped-bottom-left', 
+                                       'snapped-bottom-right'];
+                    snapClasses.forEach(cls => windowElement.classList.remove(cls));
+                    
+                    // Apply maximized class
+                    windowElement.classList.add('maximized');
+                    window.snapped = 'maximized';
+                    
+                    // Ensure focus stays on window container, not iframe
+                    focusWindow(windowId);
+                }
+            }, 100);
+            
+            return windowId;
+        }
+        function handleArcadeIframeLoad(windowId) {
+            // Ensure the window container keeps focus, not the iframe
+            setTimeout(() => {
+                focusWindow(windowId);
+                
+                // Add click handler to window to restore focus when clicked
+                const windowElement = document.getElementById(windowId);
+                if (windowElement) {
+                    // Remove any existing arcade focus handler
+                    windowElement.removeEventListener('click', windowElement.arcadeFocusHandler);
+                    
+                    // Add new focus handler
+                    windowElement.arcadeFocusHandler = function(e) {
+                        // Ensure keyboard shortcuts work by focusing the window
+                        focusWindow(windowId);
+                        
+                        // Focus the document to ensure keyboard events work
+                        document.activeElement.blur();
+                        window.focus();
+                    };
+                    
+                    windowElement.addEventListener('click', windowElement.arcadeFocusHandler);
+                }
+            }, 200);
+        }
+
         function openHiddenSystemWindow() {
             let windowX = 100;
             let windowY = 120;
@@ -4354,7 +4602,7 @@ if (item.type === 'youtube') {
                             <div style="space-y: 8px;">
                                 <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">Space</span> <span style="color: rgba(255,255,255,0.8);">Open search blob</span></div>
                                 <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">B</span> <span style="color: rgba(255,255,255,0.8);">Toggle actions blob</span></div>
-<div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">V</span> <span style="color: rgba(255,255,255,0.8);">Show Favorites</span></div>
+<div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">V</span> <span style="color: rgba(255,255,255,0.8);">Show Saved</span></div>
                                 <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">H</span> <span style="color: rgba(255,255,255,0.8);">Open system window</span></div>
                                 <div style="margin-bottom: 8px;"><span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold;">Esc</span> <span style="color: rgba(255,255,255,0.8);">Close topmost window</span></div>
                             </div>
@@ -4729,6 +4977,27 @@ ${corrections}
                 }
             } catch (error) {
                 console.warn('Could not load notes from storage:', error);
+            }
+        }
+        function saveTappedDirectoriesToStorage() {
+            try {
+                localStorage.setItem('fsLogic_savedDirectories', JSON.stringify(window.fsTappedDirectories));
+            } catch (error) {
+                console.warn('Could not save directories to storage:', error);
+            }
+        }
+
+        function loadTappedDirectoriesFromStorage() {
+            try {
+                const savedDirectories = localStorage.getItem('fsLogic_savedDirectories');
+                if (savedDirectories) {
+                    window.fsTappedDirectories = JSON.parse(savedDirectories);
+                } else {
+                    window.fsTappedDirectories = [];
+                }
+            } catch (error) {
+                console.warn('Could not load directories from storage:', error);
+                window.fsTappedDirectories = [];
             }
         }
 function getLevelProgress(levelNumber) {
@@ -5310,7 +5579,7 @@ function initializeTouchSupport() {
         '.notes-tool-btn',
         '.notes-tab',
         '.back-button',
-        '.favorite-item',
+        '.saved-item',
         '.logo-dropdown-item',
         '.language-level-item', // Add this for C levels
         '.notes-icon',
@@ -5910,8 +6179,8 @@ case 'q':
             responseType = 'success';
             break;
         case 'v':
-            showFavoritesOverlay();
-            response = 'Favorites overlay opened';
+            toggleSavedOverlay();
+            response = 'Saved overlay toggled';
             responseType = 'success';
             // Restore focus after overlay might close
             setTimeout(() => {
@@ -5922,6 +6191,11 @@ case 'q':
         case 'open':
             openCurrentDirectoryAsWindow(windowId);
             response = 'Current directory opened in new window';
+            responseType = 'success';
+            break;
+        case 'arcade':
+            openArcadeWindow();
+            response = 'Arcade opened';
             responseType = 'success';
             break;
         default:
@@ -5962,10 +6236,10 @@ function showDirectoryListing(windowId) {
     
     if (currentPath.length === 1) {
         // Root level - show main folders + System
-        items = ['System', 'Logic', 'Mall', 'Farm', 'Prompts', 'Media', 'Browser'];
+        items = ['System', 'Logic', 'Mall', 'Farm', 'Prompts', 'Media', 'Browser', 'Arcade'];
     } else if (currentPath.length === 2 && currentPath[1] === 'Desktop') {
-        // Desktop level - show main folders + System
-        items = ['System', 'Logic', 'Mall', 'Farm', 'Prompts', 'Media', 'Browser'];
+        // Desktop level - show main folders + System + Arcade
+        items = ['System', 'Logic', 'Mall', 'Farm', 'Prompts', 'Media', 'Browser', 'Arcade'];
     } else {
         // Navigate to current directory in structure
         try {
@@ -6010,7 +6284,10 @@ function showDirectoryListing(windowId) {
             // Determine item type and icon using the same logic as generateFolderContent
 let iconFileName = 'whitefile.png'; // default
 
-if (currentStructure[item]) {
+// Special handling for desktop apps
+if ((currentPath.length <= 2) && item === 'Arcade') {
+    iconFileName = 'openapp.png';
+} else if (currentStructure[item]) {
     const value = currentStructure[item];
     const isSubjectFile = value && typeof value === 'object' && value.levels && value.cover;
     const isAppFile = value && typeof value === 'object' && value.app && value.file;
@@ -6214,6 +6491,17 @@ if (tempPath.length <= 2) {
         
         pathValid = true; // Don't show error
         break;
+    } else if (targetPartLower === 'arcade' && (tempPath.length <= 2 || tempPath.includes('Desktop'))) {
+        // Special handling for Arcade app
+        const responseLine = document.createElement('div');
+        responseLine.style.marginBottom = '4px';
+        responseLine.style.color = '#10b981';
+        responseLine.textContent = 'Opening Arcade...';
+        outputElement.appendChild(responseLine);
+        
+        openArcadeWindow();
+        pathValid = true;
+        break;
     } else {
         pathValid = false;
         const errorLine = document.createElement('div');
@@ -6414,7 +6702,7 @@ function handleShellShortcuts(event, windowId) {
             break;
         case 'v':
             event.preventDefault();
-            showFavoritesOverlay();
+            showSavedOverlay();
             break;
         case 'h':
             event.preventDefault();
@@ -6439,6 +6727,7 @@ function showShellHelp(windowId) {
         { text: 'cd ..           - Go back one directory', color: 'rgba(255,255,255,0.9)' },
         { text: 'cd /            - Go to root directory', color: 'rgba(255,255,255,0.9)' },
         { text: 'open            - Open current directory in new window', color: 'rgba(255,255,255,0.9)' },
+        { text: 'arcade          - Open arcade application', color: 'rgba(255,255,255,0.9)' },
         { text: '', color: 'rgba(255,255,255,0.9)' },
         { text: 'KEYBOARD SHORTCUTS:', color: 'rgba(255,255,255,0.9)' },
         { text: 'Esc             - Exit shell', color: 'rgba(255,255,255,0.9)' },
@@ -6449,7 +6738,7 @@ function showShellHelp(windowId) {
         { text: 'F               - Toggle fullscreen', color: 'rgba(255,255,255,0.9)' },
         { text: 'J               - Toggle alphabetical arrangement', color: 'rgba(255,255,255,0.9)' },
         { text: 'Z               - Undo last action', color: 'rgba(255,255,255,0.9)' },
-        { text: 'V               - Show favorites', color: 'rgba(255,255,255,0.9)' },
+       { text: 'V               - Show saved', color: 'rgba(255,255,255,0.9)' },
         { text: 'H               - Open system window', color: 'rgba(255,255,255,0.9)' }
     ];
     
@@ -6707,7 +6996,7 @@ function forceSigninFlow() {
     const logoText = document.querySelector('.logo-text');
     if (logoText && !logoText.classList.contains('signed-out-mode')) {
         logoText.classList.add('signed-out-mode');
-        logoText.innerHTML = 'Fromsupply <span style="color: #ef4444; font-size: 12px; margin-left: 8px;">● Sign In Required</span>';
+        logoText.innerHTML = 'Fromsupply <span style="color: #ef4444; font-size: 12px; margin-left: 8px;"> Click to Sign In</span>';
     }
     
     // TEMPORARY DEV UNLOCK BUTTON - REMOVE or comment out BEFORE LAUNCH
@@ -6851,6 +7140,7 @@ function setupIframeDragHandling(windowId) {
 document.addEventListener('DOMContentLoaded', function() {
     loadScore();
     loadNotesFromStorage();
+    loadTappedDirectoriesFromStorage();
     initializeDragAndDrop();
     initializeTouchSupport(); // Add this line
     setupMobileInputSupport(); // Add this line
@@ -6896,6 +7186,7 @@ if (checkFirstVisit()) {
                     folder.style.transform = 'translateY(0)';
                 }, index * 100);
             });
+            
             
             document.addEventListener('click', function(e) {
                 if (e.target.id === 'desktop' || e.target.closest('.desktop')) {
