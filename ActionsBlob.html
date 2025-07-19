@@ -200,7 +200,7 @@
             transform: rotate(0deg);
         }
 
-        .fsPanels {
+        .fsNotes {
             bottom: -80px;
             right: 69px;
             transform: rotate(0deg);
@@ -216,14 +216,14 @@
         .fsClub:hover { transform: translateY(-5px) scale(1.05); }
         .fsMusic:hover { transform: translateY(-5px) scale(1.05); }
         .fsBrawl:hover { transform: translateY(-5px) scale(1.05); }
-        .fsPanels:hover { transform: translateY(-5px) scale(1.05); }
+        .fsNotes:hover { transform: translateY(-5px) scale(1.05); }
         .fsBank:hover { transform: translateY(-5px) scale(1.05); }
 
         .fsPals:active { transform: translateY(-2px) scale(0.98); }
         .fsClub:active { transform: translateY(-2px) scale(0.98); }
         .fsMusic:active { transform: translateY(-2px) scale(0.98); }
         .fsBrawl:active { transform: translateY(-2px) scale(0.98); }
-        .fsPanels:active { transform: translateY(-2px) scale(0.98); }
+        .fsNotes:active { transform: translateY(-2px) scale(0.98); }
         .fsBank:active { transform: translateY(-2px) scale(0.98); }
 
         .app-icon {
@@ -258,7 +258,7 @@
         .fsBrawl .app-icon { background-image: url('fsBrawl.png'); }
         .fsBank .app-icon { background-image: url('fsBank.png'); }
         .fsClub .app-icon { background-image: url('fsClub.png'); }
-        .fsPanels .app-icon { background-image: url('fsPanels.png'); }
+        .fsNotes .app-icon { background-image: url('notesicon.png'); }
 
         .media-player {
             position: absolute;
@@ -746,6 +746,50 @@ cursor: pointer;
 .floating-song-bubble.hint-blink {
     animation: greenPulse 0.8s ease-in-out;
 }
+
+.search-context-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            border-radius: 20px;
+            padding: 8px 12px;
+            margin-bottom: 12px;
+            color: white;
+            font-size: 13px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .context-text {
+            flex: 1;
+            font-weight: 500;
+        }
+        
+        .context-remove {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+        
+        .context-remove:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .context-remove:active {
+            transform: scale(0.9);
+        }
 
 @keyframes greenPulse {
     0%, 100% { 
@@ -1256,9 +1300,9 @@ border-radius: 50%;
                     <div class="app-icon"></div>
                     <div class="app-name">fsBrawl</div>
                 </div>
-                <div class="app fsPanels" onclick="launchApp('fsPanels')">
+                <div class="app fsNotes" onclick="launchApp('fsNotes')">
                     <div class="app-icon"></div>
-                    <div class="app-name">fsPanels</div>
+                    <div class="app-name">fsNotes</div>
                 </div>
                 <div class="app fsBank" onclick="launchApp('fsBank')">
                     <div class="app-icon"></div>
@@ -1479,7 +1523,7 @@ let isSearchMode = false;
         let quoteRestoreTimer = null;
         let showingSongTitle = false;
 
-        // **NEW: Back button support - Listen for goBack messages from parent window**
+        // **NEW: Back button support and search context - Listen for messages from parent window**
         window.addEventListener('message', function(event) {
             try {
                 console.log('Iframe received message:', event.data);
@@ -1488,10 +1532,73 @@ let isSearchMode = false;
                     console.log('goBack message received - handling navigation');
                     handleBackNavigation();
                 }
+                else if (event.data && event.data.action === 'setSearchWithContext') {
+                    console.log('Search with context received:', event.data);
+                    setSearchWithContext(event.data.searchTerm, event.data.context);
+                }
             } catch (error) {
                 console.log('Message handling error in iframe:', error);
             }
         });
+
+        function setSearchWithContext(searchTerm, context) {
+            // Auto-open search mode
+            if (!isSearchMode) {
+                toggleSearchMode();
+            }
+            
+            // Wait for search mode to open, then set the search term and context
+            setTimeout(() => {
+                const searchInput = document.getElementById('searchInput');
+                if (searchInput) {
+                    searchInput.value = searchTerm;
+                    
+                    // Add context chip if provided
+                    if (context) {
+                        addSearchContext(context);
+                    }
+                    
+                    // Trigger search
+                    handleSearch();
+                }
+            }, 600);
+        }
+        
+        function addSearchContext(contextText) {
+            const searchContainer = document.getElementById('searchContainer');
+            if (!searchContainer) return;
+            
+            // Check if context already exists
+            const existingContexts = searchContainer.querySelectorAll('.search-context-chip .context-text');
+            for (let existingContext of existingContexts) {
+                if (existingContext.textContent === contextText) {
+                    console.log(`Context "${contextText}" already exists, skipping duplicate`);
+                    return; // Don't add duplicate
+                }
+            }
+            
+            // Create context chip
+            const contextChip = document.createElement('div');
+            contextChip.className = 'search-context-chip';
+            contextChip.innerHTML = `
+                <span class="context-text">${contextText}</span>
+                <button class="context-remove" onclick="removeSearchContext(this)" title="Remove context">×</button>
+            `;
+            
+            // Insert before search input
+            const searchBar = searchContainer.querySelector('.search-bar');
+            searchContainer.insertBefore(contextChip, searchBar);
+            
+            console.log(`Added search context: ${contextText}`);
+        }
+        
+        function removeSearchContext(button) {
+            const chip = button.closest('.search-context-chip');
+            if (chip) {
+                chip.remove();
+                console.log('Removed search context');
+            }
+        }
 
         // **NEW: Direct click handling within iframe for outside clicks**
         function handleBackNavigation() {

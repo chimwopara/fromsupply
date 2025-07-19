@@ -663,6 +663,152 @@ body::after {
             transition: all 0.2s ease;
             backdrop-filter: blur(10px);
         }
+         /* Search Icon Button */
+        .search-icon-button {
+            position: absolute;
+            right: 120px; /* Position between directory and star button */
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            transform: translateX(20px) scale(0.9);
+            pointer-events: none;
+            z-index: 150;
+        }
+
+        .search-icon-button.visible {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .search-icon-button.hidden {
+            opacity: 0;
+            transform: translateX(20px) scale(0.9);
+            pointer-events: none;
+        }
+
+        .search-icon-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateX(0) translateY(-1px) scale(1.05);
+        }
+
+        .search-icon-button:active {
+            transform: translateX(0) translateY(0) scale(0.95);
+        }
+
+        .search-icon-button .search-icon {
+            width: 20px;
+            height: 20px;
+            fill: white;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+        }
+
+        /* Notes Icon Button */
+        .notes-icon-button {
+            position: absolute;
+            right: 170px; /* Position to the left of search icon */
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            transform: translateX(20px) scale(0.9);
+            pointer-events: none;
+            z-index: 150;
+        }
+
+        .notes-icon-button.visible {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .notes-icon-button.hidden {
+            opacity: 0;
+            transform: translateX(20px) scale(0.9);
+            pointer-events: none;
+        }
+
+        .notes-icon-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateX(0) translateY(-1px) scale(1.05);
+        }
+
+        .notes-icon-button:active {
+            transform: translateX(0) translateY(0) scale(0.95);
+        }
+
+        .notes-icon-button .notes-icon {
+            width: 20px;
+            height: 20px;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+        }
+
+        /* Mobile responsive adjustments */
+        @media (max-width: 768px) {
+            .notes-icon-button {
+                right: 130px;
+                padding: 6px 12px;
+            }
+            
+            .notes-icon-button .notes-icon {
+                width: 18px;
+                height: 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .notes-icon-button {
+                right: 120px;
+                padding: 6px 10px;
+            }
+            
+            .notes-icon-button .notes-icon {
+                width: 16px;
+                height: 16px;
+            }
+        }
+
+        /* Mobile responsive adjustments */
+        @media (max-width: 768px) {
+            .search-icon-button {
+                right: 80px;
+                padding: 6px 12px;
+            }
+            
+            .search-icon-button .search-icon {
+                width: 18px;
+                height: 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .search-icon-button {
+                right: 70px;
+                padding: 6px 10px;
+            }
+            
+            .search-icon-button .search-icon {
+                width: 16px;
+                height: 16px;
+            }
+        }
 
         .star-button:hover {
             background: rgba(255, 255, 255, 0.3);
@@ -1505,10 +1651,10 @@ body::after {
 </head>
 <body>
     <div class="header">
-        <div class="logo-section" onclick="toggleLogoDropdown(event)">
-    <div class="logo"></div>
-    <div class="logo-text">Fromsupply</div>
-</div>
+    <div class="logo-section" onclick="toggleLogoDropdown(event)">
+        <div class="logo"></div>
+        <div class="logo-text">Fromsupply</div>
+    </div>
 
 <div id="logo-dropdown" class="logo-dropdown">
     <div class="logo-dropdown-content">
@@ -1537,15 +1683,27 @@ body::after {
     </div>
 </div>
         <div class="directory-nav hidden" id="directoryNav">
-            <div class="directory-path" id="directoryPath">/Fromsupply</div>
-        </div>
-        <div class="star-button" onclick="handleStarClick()" onmousedown="startStarLongPress()" onmouseup="endStarLongPress()" onmouseleave="endStarLongPress()">
-            <svg class="star-icon" viewBox="0 0 24 24">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-            </svg>
-            <span class="star-count" id="starCount">0</span>
-        </div>
+        <div class="directory-path" id="directoryPath">/Fromsupply</div>
     </div>
+
+    <!-- Search Icon Button -->
+    <div class="search-icon-button hidden" id="searchIconButton" onclick="openBlobSearch()" title="Search everywhere">
+        <svg class="search-icon" viewBox="0 0 24 24">
+            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+        </svg>
+    </div>
+    <!-- Notes Icon Button -->
+    <div class="notes-icon-button hidden" id="notesIconButton" onclick="openNotesWindow()" title="Open Notes">
+        <img src="notesicon.png" class="notes-icon" alt="Notes">
+    </div>
+    
+        <div class="star-button" onclick="handleStarClick()" onmousedown="startStarLongPress()" onmouseup="endStarLongPress()" onmouseleave="endStarLongPress()">
+        <svg class="star-icon" viewBox="0 0 24 24">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>
+        <span class="star-count" id="starCount">0</span>
+    </div>
+</div>
 
     <div class="desktop" id="desktop">
         <div class="folder" data-folder="Logic" style="left: 40px; top: 100px;">
@@ -1990,6 +2148,8 @@ handleWindowSnapping(event) {
             if (this.isActiveWindow(windowId)) {
                 currentDirectory = [...newPath];
                 updateDirectoryDisplay();
+                // Check notes icon when path changes
+                checkAndShowNotesIcon();
             }
         } else {
             console.error('Window not found for path update:', windowId);
@@ -3024,6 +3184,11 @@ function navigateToSaved(directoryPath) {
             const overlay = document.getElementById('phoneOverlay');
             overlay.classList.remove('show');
             
+            // Show search icon again if there are open windows
+            if (openWindows.length > 0) {
+                showSearchIcon();
+            }
+            
             setTimeout(() => {
                 overlay.style.display = 'none';
             }, 300);
@@ -3037,6 +3202,359 @@ function navigateToSaved(directoryPath) {
                 hidePhoneOverlay();
             } else {
                 showPhoneOverlay();
+            }
+        }
+        // LOCAL SEARCH FUNCTIONALITY
+        let currentSearchTerm = '';
+        let searchMatches = [];
+        let currentMatchIndex = -1;
+        let searchHighlightClass = 'local-search-highlight';
+
+        function showSearchIcon() {
+            const searchIcon = document.getElementById('searchIconButton');
+            const logoText = document.querySelector('.logo-text');
+            
+            if (searchIcon && !searchIcon.classList.contains('visible')) {
+                searchIcon.classList.remove('hidden');
+                searchIcon.classList.add('visible');
+                
+                // Only show notes icon if we're in Logic
+                checkAndShowNotesIcon();
+                
+                // Hide logo text when search icon is visible
+                if (logoText) logoText.classList.add('hidden');
+            }
+        }
+
+        function hideSearchIcon() {
+            const searchIcon = document.getElementById('searchIconButton');
+            const logoText = document.querySelector('.logo-text');
+            
+            if (searchIcon && searchIcon.classList.contains('visible')) {
+                searchIcon.classList.remove('visible');
+                searchIcon.classList.add('hidden');
+                
+                // Always hide notes icon when hiding search
+                hideNotesIcon();
+                
+                // Show logo text when search icon is hidden
+                if (logoText && openWindows.length === 0) {
+                    logoText.classList.remove('hidden');
+                }
+            }
+        }
+
+        function handleLocalSearch(event) {
+            if (event.key === 'Enter') {
+                navigateSearchResults(event.shiftKey ? -1 : 1);
+            } else if (event.key === 'Escape') {
+                clearLocalSearch();
+                const searchInput = document.getElementById('localSearchInput');
+                if (searchInput) searchInput.blur();
+            }
+        }
+
+         function performLocalSearch(searchTerm) {
+            currentSearchTerm = searchTerm.toLowerCase().trim();
+            
+            if (!currentSearchTerm) {
+                clearLocalSearch();
+                return;
+            }
+            
+            // Get context from the current window
+            const focusedWindow = openWindows.find(w => {
+                const element = document.getElementById(w.id);
+                return element && parseInt(element.style.zIndex) === windowZIndex;
+            });
+            
+            let searchContext = '';
+            if (focusedWindow) {
+                const windowPath = PathManager.getPath(focusedWindow.id);
+                const currentLocation = windowPath[windowPath.length - 1];
+                
+                // Create context based on current location
+                if (currentLocation && currentLocation !== 'Fromsupply') {
+                    searchContext = `Context: ${currentLocation}`;
+                }
+            }
+            
+            // Open blob search with context instead of local search
+            openBlobWithSearch(currentSearchTerm, searchContext);
+        }
+        function openBlobSearch() {
+            // Hide the search icon when opening blob
+            hideSearchIcon();
+            
+            // Get context from the current window
+            const focusedWindow = openWindows.find(w => {
+                const element = document.getElementById(w.id);
+                return element && parseInt(element.style.zIndex) === windowZIndex;
+            });
+            
+            let searchContext = '';
+            if (focusedWindow) {
+                const windowPath = PathManager.getPath(focusedWindow.id);
+                const currentLocation = windowPath[windowPath.length - 1];
+                
+                // Create context based on current location
+                if (currentLocation && currentLocation !== 'Fromsupply') {
+                    searchContext = `Context: ${currentLocation}`;
+                }
+            }
+            
+            // Show the phone overlay (blob)
+            showPhoneOverlay();
+            
+            // Send search data to blob
+            setTimeout(() => {
+                const phoneIframe = document.querySelector('#phoneOverlay iframe');
+                if (phoneIframe && phoneIframe.contentWindow) {
+                    phoneIframe.contentWindow.postMessage({
+                        action: 'setSearchWithContext',
+                        searchTerm: '',
+                        context: searchContext
+                    }, '*');
+                }
+            }, 500); // Wait for iframe to load
+            
+            console.log(`Opening blob search with context: "${searchContext}"`);
+        }
+
+        function searchInElement(element, searchTerm) {
+            const walker = document.createTreeWalker(
+                element,
+                NodeFilter.SHOW_TEXT,
+                {
+                    acceptNode: function(node) {
+                        // Skip script and style elements
+                        const parent = node.parentElement;
+                        if (parent && (parent.tagName === 'SCRIPT' || parent.tagName === 'STYLE')) {
+                            return NodeFilter.FILTER_REJECT;
+                        }
+                        return NodeFilter.FILTER_ACCEPT;
+                    }
+                }
+            );
+            
+            const textNodes = [];
+            let node;
+            while (node = walker.nextNode()) {
+                if (node.textContent.toLowerCase().includes(searchTerm)) {
+                    textNodes.push(node);
+                }
+            }
+            
+            textNodes.forEach(textNode => {
+                const parent = textNode.parentElement;
+                const text = textNode.textContent;
+                const lowerText = text.toLowerCase();
+                let lastIndex = 0;
+                let index;
+                
+                while ((index = lowerText.indexOf(searchTerm, lastIndex)) !== -1) {
+                    // Create highlight span
+                    const span = document.createElement('span');
+                    span.className = searchHighlightClass;
+                    span.style.cssText = `
+                        background: rgba(255, 255, 0, 0.6);
+                        color: #000;
+                        padding: 1px 2px;
+                        border-radius: 2px;
+                        font-weight: bold;
+                    `;
+                    span.textContent = text.substr(index, searchTerm.length);
+                    
+                    searchMatches.push({
+                        element: span,
+                        originalNode: textNode,
+                        index: searchMatches.length
+                    });
+                    
+                    lastIndex = index + searchTerm.length;
+                }
+                
+                // Replace text node with highlighted content
+                if (searchMatches.some(match => match.originalNode === textNode)) {
+                    const newHTML = text.replace(
+                        new RegExp(escapeRegExp(searchTerm), 'gi'),
+                        `<span class="${searchHighlightClass}" style="background: rgba(255, 255, 0, 0.6); color: #000; padding: 1px 2px; border-radius: 2px; font-weight: bold;">$&</span>`
+                    );
+                    
+                    const wrapper = document.createElement('div');
+                    wrapper.innerHTML = newHTML;
+                    
+                    while (wrapper.firstChild) {
+                        parent.insertBefore(wrapper.firstChild, textNode);
+                    }
+                    parent.removeChild(textNode);
+                }
+            });
+        }
+
+        function searchInIframe(iframe, searchTerm) {
+            try {
+                // Send search message to iframe
+                iframe.contentWindow.postMessage({
+                    action: 'performSearch',
+                    searchTerm: searchTerm
+                }, '*');
+            } catch (error) {
+                // Cross-origin iframe - show message
+                updateSearchResultsCount('Cross-origin');
+            }
+        }
+
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function clearLocalSearch() {
+            const focusedWindow = openWindows.find(w => {
+                const element = document.getElementById(w.id);
+                return element && parseInt(element.style.zIndex) === windowZIndex;
+            });
+            
+            if (focusedWindow) {
+                const contentElement = document.getElementById(focusedWindow.id + '-content');
+                if (contentElement) {
+                    clearSearchHighlights(contentElement);
+                }
+            }
+            
+            searchMatches = [];
+            currentMatchIndex = -1;
+            currentSearchTerm = '';
+            updateSearchResultsCount();
+            
+            const searchInput = document.getElementById('localSearchInput');
+            if (searchInput) searchInput.value = '';
+        }
+
+        function clearSearchHighlights(element) {
+            const highlights = element.querySelectorAll(`.${searchHighlightClass}`);
+            highlights.forEach(highlight => {
+                const parent = highlight.parentNode;
+                parent.replaceChild(document.createTextNode(highlight.textContent), highlight);
+                parent.normalize();
+            });
+        }
+
+        function navigateSearchResults(direction) {
+            if (searchMatches.length === 0) return;
+            
+            currentMatchIndex += direction;
+            
+            if (currentMatchIndex >= searchMatches.length) {
+                currentMatchIndex = 0;
+            } else if (currentMatchIndex < 0) {
+                currentMatchIndex = searchMatches.length - 1;
+            }
+            
+            highlightCurrentMatch();
+            updateSearchResultsCount();
+        }
+
+        function highlightCurrentMatch() {
+            // Remove previous current highlight
+            const prevCurrent = document.querySelector(`.${searchHighlightClass}.current`);
+            if (prevCurrent) {
+                prevCurrent.classList.remove('current');
+                prevCurrent.style.background = 'rgba(255, 255, 0, 0.6)';
+            }
+            
+            if (searchMatches.length > 0 && currentMatchIndex >= 0) {
+                const currentMatch = document.querySelectorAll(`.${searchHighlightClass}`)[currentMatchIndex];
+                if (currentMatch) {
+                    currentMatch.classList.add('current');
+                    currentMatch.style.background = 'rgba(255, 100, 100, 0.8)';
+                    currentMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }
+
+        function updateSearchResultsCount(customMessage = null) {
+            const resultsCount = document.getElementById('searchResultsCount');
+            if (!resultsCount) return;
+            
+            if (customMessage) {
+                resultsCount.textContent = customMessage;
+            } else if (searchMatches.length === 0 && currentSearchTerm) {
+                resultsCount.textContent = 'No results';
+            } else if (searchMatches.length > 0) {
+                resultsCount.textContent = `${currentMatchIndex + 1}/${searchMatches.length}`;
+            } else {
+                resultsCount.textContent = '';
+            }
+        }
+        function showNotesIcon() {
+            const notesIcon = document.getElementById('notesIconButton');
+            
+            if (notesIcon && !notesIcon.classList.contains('visible')) {
+                notesIcon.classList.remove('hidden');
+                notesIcon.classList.add('visible');
+            }
+        }
+
+        function hideNotesIcon() {
+            const notesIcon = document.getElementById('notesIconButton');
+            
+            if (notesIcon && notesIcon.classList.contains('visible')) {
+                notesIcon.classList.remove('visible');
+                notesIcon.classList.add('hidden');
+            }
+        }
+
+        function openNotesWindow() {
+            // Calculate position for notes window
+            const mouseX = window.fsLastMousePosition ? window.fsLastMousePosition.x : 200;
+            const mouseY = window.fsLastMousePosition ? window.fsLastMousePosition.y : 200;
+            const windowX = Math.max(20, mouseX - 350);
+            const windowY = Math.max(80, mouseY - 200);
+            
+            // Create notes window
+            const windowId = createWindow('Notes - Fromsupply', '', 700, 500, windowX, windowY);
+            
+            // Set path for notes
+            const notesPath = ['Fromsupply', 'Notes'];
+            PathManager.updatePath(windowId, notesPath);
+            
+            // Create notes interface content
+            const notesContent = createNotesInterface();
+            
+            // Set content in window
+            const contentElement = document.getElementById(windowId + '-content');
+            if (contentElement) {
+                contentElement.style.padding = '0';
+                contentElement.innerHTML = notesContent;
+                
+                // Initialize notes functionality
+                setTimeout(() => {
+                    initializeNotesCanvas();
+                    setTool('pen');
+                }, 100);
+            }
+            
+            focusWindow(windowId);
+            console.log('Notes window opened');
+        }
+
+        function checkAndShowNotesIcon() {
+            const focusedWindow = openWindows.find(w => {
+                const element = document.getElementById(w.id);
+                return element && parseInt(element.style.zIndex) === windowZIndex;
+            });
+            
+            if (focusedWindow) {
+                const windowPath = PathManager.getPath(focusedWindow.id);
+                // Check if path contains "Logic"
+                if (windowPath.includes('Logic')) {
+                    showNotesIcon();
+                } else {
+                    hideNotesIcon();
+                }
+            } else {
+                hideNotesIcon();
             }
         }
 
@@ -3182,6 +3700,8 @@ windowElement.addEventListener('touchstart', (e) => {
             
             setTimeout(() => {
                 windowElement.classList.add('active');
+                // Show search bar when window is created
+                 showSearchIcon();
             }, 10);
             
             return windowId;
@@ -3234,7 +3754,7 @@ windowElement.addEventListener('touchstart', (e) => {
             });
         }
 
-        function focusWindow(windowId) {
+    function focusWindow(windowId) {
     windowFocusOrder = windowFocusOrder.filter(id => id !== windowId);
     windowFocusOrder.unshift(windowId);
     
@@ -3252,6 +3772,9 @@ windowElement.addEventListener('touchstart', (e) => {
     if (window && window.currentPath) {
         currentDirectory = [...window.currentPath];
         updateDirectoryDisplay();
+        
+        // Check if we should show/hide notes icon based on new focus
+        checkAndShowNotesIcon();
     }
 }
 function checkWindowControlState(windowId) {
@@ -3337,7 +3860,7 @@ function removeControlsDisabledTint(windowId) {
             openWindows = openWindows.filter(w => w.id !== windowId);
             windowFocusOrder = windowFocusOrder.filter(id => id !== windowId);
             
-            if (windowFocusOrder.length > 0) {
+           if (windowFocusOrder.length > 0) {
                 const nextWindowId = windowFocusOrder[0];
                 focusWindow(nextWindowId);
             } else {
@@ -3345,6 +3868,9 @@ function removeControlsDisabledTint(windowId) {
                 const logoText = document.querySelector('.logo-text');
                 directoryNav.classList.add('hidden');
                 if (logoText) logoText.classList.remove('hidden');
+                // Hide both search and notes icons when no windows are open
+                hideSearchIcon();
+                hideNotesIcon();
             }
         }
 
@@ -3914,8 +4440,6 @@ function handleLevelClick(event, subjectName, levelNumber) {
             const description = getSubjectDescription(subjectName);
             
             let content = `
-                <div class="notes-icon show" onclick="toggleNotesInterface()">
-</div>
                 
                 <div style="display: flex; align-items: center; gap: 30px; margin-bottom: 30px; padding: 20px;">
                     <div style="flex: 0 0 200px;">
@@ -4680,7 +5204,7 @@ if (item.type === 'youtube') {
         }
 
         function createNotesInterface() {
-            const currentSubject = window.currentLevelInfo ? window.currentLevelInfo.subject : 'This Level';
+            const notesFooter = generateNotesFooter();
             
             return `
                 <div class="notes-interface">
@@ -4705,12 +5229,168 @@ if (item.type === 'youtube') {
                         </div>
                     </div>
                     
-                    <div class="notes-tabs">
-                        <button class="notes-tab" onclick="switchTab('personal')">✏️ Personal</button>
-                        <button class="notes-tab active" onclick="switchTab('thisFolder')">📋 ${currentSubject}</button>
-                    </div>
+                    ${notesFooter}
                 </div>
             `;
+        }
+
+        function generateNotesFooter() {
+            // Get the current focused window to determine context
+            const focusedWindow = openWindows.find(w => {
+                const element = document.getElementById(w.id);
+                return element && parseInt(element.style.zIndex) === windowZIndex;
+            });
+            
+            if (!focusedWindow) {
+                return `
+                    <div class="notes-tabs">
+                        <button class="notes-tab" onclick="switchTab('personal')">✏️ Personal</button>
+                        <button class="notes-tab active" onclick="switchTab('thisFolder')">📋 Notes</button>
+                    </div>
+                `;
+            }
+            
+            const windowPath = PathManager.getPath(focusedWindow.id);
+            
+            // If we're in the main Logic directory, hide the contextual tab
+            if (windowPath.length === 3 && windowPath.includes('Logic')) {
+                return `
+                    <div class="notes-tabs">
+                        <button class="notes-tab active" onclick="switchTab('personal')">✏️ Personal</button>
+                    </div>
+                `;
+            }
+            
+            // If we're in a specific level - check both path and currentLevelInfo
+const isInLevel = (windowPath.length >= 5 && windowPath[windowPath.length - 1].startsWith('Level ')) ||
+                  (window.currentLevelInfo && window.currentLevelInfo.level && window.currentLevelInfo.level !== 'overview');
+
+if (isInLevel) {
+    let levelName = '';
+    let subjectName = '';
+    
+    // Try to get level info from currentLevelInfo first
+    if (window.currentLevelInfo && window.currentLevelInfo.level && window.currentLevelInfo.level !== 'overview') {
+        levelName = `Level ${window.currentLevelInfo.level}`;
+        subjectName = window.currentLevelInfo.subject;
+    } else if (windowPath.length >= 5 && windowPath[windowPath.length - 1].startsWith('Level ')) {
+        levelName = windowPath[windowPath.length - 1];
+        subjectName = windowPath[windowPath.length - 2];
+    }
+    
+    const subjectIcon = getSubjectIcon(subjectName);
+    
+    return `
+        <div class="notes-tabs">
+            <button class="notes-tab" onclick="switchTab('personal')">✏️ Personal</button>
+            <button class="notes-tab active" onclick="switchTab('thisFolder')">
+                <img src="${subjectIcon}" style="width: 16px; height: 16px; margin-right: 4px; vertical-align: middle;" alt="">
+                ${levelName}
+            </button>
+        </div>
+    `;
+}
+            
+            // If we're in a subject/language overview
+            if (windowPath.length >= 4) {
+                const subjectName = windowPath[windowPath.length - 1];
+                
+                // Skip if it's a category folder like "Code", "Science", etc.
+                const categoryFolders = ['Code', 'Science', 'Maths', 'Business', 'Cooking'];
+                if (categoryFolders.includes(subjectName)) {
+                    return `
+                        <div class="notes-tabs">
+                            <button class="notes-tab" onclick="switchTab('personal')">✏️ Personal</button>
+                            <button class="notes-tab active" onclick="switchTab('thisFolder')">📋 ${subjectName}</button>
+                        </div>
+                    `;
+                }
+                
+                // It's a specific subject
+                const subjectIcon = getSubjectIcon(subjectName);
+                
+                return `
+                    <div class="notes-tabs">
+                        <button class="notes-tab" onclick="switchTab('personal')">✏️ Personal</button>
+                        <button class="notes-tab active" onclick="switchTab('thisFolder')">
+                            <img src="${subjectIcon}" style="width: 16px; height: 16px; margin-right: 4px; vertical-align: middle;" alt="">
+                            ${subjectName}
+                        </button>
+                    </div>
+                `;
+            }
+            
+            // Default fallback
+            return `
+                <div class="notes-tabs">
+                    <button class="notes-tab" onclick="switchTab('personal')">✏️ Personal</button>
+                    <button class="notes-tab active" onclick="switchTab('thisFolder')">📋 Notes</button>
+                </div>
+            `;
+        }
+        function getSubjectIcon(subjectName) {
+            // Programming languages
+            const programmingIcons = {
+                'C': 'C.png',
+                'C#': 'C#.png',
+                'C++': 'C++.png',
+                'Python': 'Python.png',
+                'JavaScript': 'JavaScript.png',
+                'Java': 'Java.png',
+                'TypeScript': 'TypeScript.png',
+                'Swift': 'Swift.png',
+                'Rust': 'Rust.png',
+                'Go': 'Go.png',
+                'Kotlin': 'Kotlin.png',
+                'R': 'R.png',
+                'Assembly': 'Assembly.png',
+                'Bash': 'Bash.png',
+                'CSS': 'CSS.png',
+                'HTML': 'HTML.png',
+                'Z': 'Z.png'
+            };
+            
+            // Science subjects
+            const scienceIcons = {
+                'Chemistry': 'chemistry.png',
+                'Physics': 'physics.png',
+                'Biology': 'biology.png',
+                'Psychology': 'psychology.png'
+            };
+            
+            // Math subjects
+            const mathIcons = {
+                'Calculus': 'calculus.png',
+                'Statistics': 'statistics.png',
+                'Discrete Maths': 'discretemaths.png'
+            };
+            
+            // Business subjects
+            const businessIcons = {
+                'Marketing': 'marketing.png',
+                'Finance': 'finance.png',
+                'Economics': 'economics.png'
+            };
+            
+            // Cooking subjects
+            const cookingIcons = {
+                'African Food': 'africanfood.png',
+                'North American Food': 'northamericanfood.png',
+                'European Food': 'europeanfood.png',
+                'Asian Food': 'asianfood.png',
+                'Australian Food': 'australianfood.png',
+                'South American Food': 'southamericanfood.png'
+            };
+            
+            // Check each category
+            if (programmingIcons[subjectName]) return programmingIcons[subjectName];
+            if (scienceIcons[subjectName]) return scienceIcons[subjectName];
+            if (mathIcons[subjectName]) return mathIcons[subjectName];
+            if (businessIcons[subjectName]) return businessIcons[subjectName];
+            if (cookingIcons[subjectName]) return cookingIcons[subjectName];
+            
+            // Default fallback
+            return 'whitefile.png';
         }
 
         function setTool(tool) {
@@ -4887,14 +5567,25 @@ if (item.type === 'youtube') {
                         });
                     }
                 } else {
-                    const currentSubject = window.currentLevelInfo ? window.currentLevelInfo.subject : 'Code';
-                    const corrections = getLanguageCorrections(currentSubject);
-                    container.innerHTML = `
-                        <div class="notes-text-area" readonly style="background: rgba(255, 255, 255, 0.98); color: #374151; font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace; font-size: 13px; line-height: 1.6; white-space: pre-wrap; user-select: text; cursor: text; border: 1px solid rgba(34, 197, 94, 0.2);">
+    const currentSubject = window.currentLevelInfo ? window.currentLevelInfo.subject : 'Code';
+    console.log('Switching to thisFolder tab for subject:', currentSubject, 'Level info:', window.currentLevelInfo);
+    const corrections = getLanguageCorrections(currentSubject);
+    
+    // For level corrections, use innerHTML directly; for manuals, use textarea
+    const isLevelCorrections = window.currentLevelInfo && 
+                              window.currentLevelInfo.level && 
+                              window.currentLevelInfo.level !== 'overview';
+    
+    if (isLevelCorrections) {
+        container.innerHTML = corrections;
+    } else {
+        container.innerHTML = `
+            <div class="notes-text-area" style="background: rgba(255, 255, 255, 0.98); color: #374151; font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace; font-size: 13px; line-height: 1.6; white-space: pre-wrap; user-select: text; cursor: text; border: 1px solid rgba(34, 197, 94, 0.2); padding: 20px; overflow-y: auto;">
 ${corrections}
-                        </div>
-                    `;
-                }
+            </div>
+        `;
+    }
+}
                 
                 container.style.opacity = '1';
                 container.style.transform = 'scale(1)';
@@ -4902,64 +5593,247 @@ ${corrections}
         }
 
         function getLanguageCorrections(language) {
-            const corrections = {
-                'C': `📋 CORRECTION COMMENTS - C PROGRAMMING
+    // Check if we're in a specific level context
+    let levelNumber = null;
+    
+    // First try to get level from currentLevelInfo
+    if (window.currentLevelInfo && window.currentLevelInfo.level && window.currentLevelInfo.level !== 'overview') {
+        levelNumber = parseInt(window.currentLevelInfo.level);
+    } else {
+        // Fallback to path-based detection
+        const currentPath = window.currentLevelInfo ? window.currentLevelInfo.path : '';
+        const isInLevel = currentPath.includes('Level ');
+        
+        if (isInLevel) {
+            const levelMatch = currentPath.match(/Level (\d+)/);
+            levelNumber = levelMatch ? parseInt(levelMatch[1]) : null;
+        }
+    }
+    
+    if (levelNumber) {
+        return getLevelSpecificCorrections(language, levelNumber);
+    }
+    
+    // Check if we're in a general language page (not in a specific level)
+    const isGeneralLanguagePage = window.currentLevelInfo && 
+                                  window.currentLevelInfo.subject && 
+                                  !isInLevel;
+    
+    if (isGeneralLanguagePage) {
+        return getLanguageManual(language);
+    }
+    
+    // Fallback to default corrections
+    return getDefaultCorrections(language);
+}
+
+function getLevelSpecificCorrections(language, levelNumber) {
+    const correctionKey = `corrections_${language}_level_${levelNumber}`;
+    
+    // Get stored corrections for this level
+    let storedCorrections = [];
+    try {
+        storedCorrections = JSON.parse(localStorage.getItem(correctionKey) || '[]');
+    } catch (e) {
+        console.warn('Error loading stored corrections:', e);
+    }
+    
+    // Return structured HTML instead of plain text
+    let html = `
+        <div style="padding: 20px; font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace; font-size: 13px; line-height: 1.6; color: #374151;">
+            <div style="font-weight: bold; margin-bottom: 16px; color: #1f2937;">
+                📋 LEVEL ${levelNumber} CORRECTIONS - ${language.toUpperCase()}
+            </div>
+            <div id="corrections-container-${levelNumber}" style="margin-bottom: 16px;">
+    `;
+    
+    if (storedCorrections.length === 0) {
+        html += `
+            <div id="no-corrections-message" style="color: #059669; font-style: italic;">
+                🎯 Level in Progress<br>
+                Incorrect answers will appear here as you make them.
+            </div>
+        `;
+    } else {
+        // Group corrections by step and render them
+        const correctionsByStep = {};
+        storedCorrections.forEach((correction, globalIndex) => {
+            if (!correctionsByStep[correction.step]) {
+                correctionsByStep[correction.step] = [];
+            }
+            correctionsByStep[correction.step].push({...correction, globalIndex});
+        });
+        
+        Object.keys(correctionsByStep).sort((a, b) => parseInt(a) - parseInt(b)).forEach(step => {
+            const stepCorrections = correctionsByStep[step];
+            html += `<div style="margin-bottom: 12px; border-left: 3px solid #e5e7eb; padding-left: 12px;">`;
+            html += `<div style="font-weight: bold; color: #1f2937; margin-bottom: 6px;">📍 Step ${step}:</div>`;
+            
+            stepCorrections.forEach((correction) => {
+                const correctionId = `correction-${levelNumber}-${correction.globalIndex}`;
+                html += renderCorrectionElement(correction, correctionId, levelNumber);
+            });
+            
+            html += `</div>`;
+        });
+    }
+    
+    html += `
+            </div>
+            <div style="color: #dc2626; font-style: italic;">
+                🎯 ${language}-Specific Focus: Apply corrections to improve understanding
+            </div>
+        </div>
+    `;
+    
+    return html;
+}
+
+function renderCorrectionElement(correction, correctionId, levelNumber) {
+    const statusIcon = correction.status === 'corrected' ? '🔄' : '❌';
+    const statusColor = correction.status === 'corrected' ? '#7c3aed' : '#dc2626';
+    
+    if (correction.status === 'corrected') {
+        return `
+            <div id="${correctionId}" style="margin-bottom: 8px; padding: 8px; background: #f3f4f6; border-radius: 6px;">
+                <div style="color: ${statusColor}; font-weight: bold;">
+                    ${statusIcon} ${correction.incorrectAnswer} [CORRECTED]
+                </div>
+                <div style="color: #6b7280; margin: 4px 0;">
+                    Reason: ${correction.reason}
+                </div>
+                <div style="color: #059669; font-weight: bold;">
+                    ✅ Correct: ${correction.correctAnswer}
+                </div>
+                <button onclick="hideCorrection('${correctionId}')" 
+                        style="background: #7c3aed; color: white; border: none; padding: 2px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; margin-top: 4px;">
+                    Hide
+                </button>
+            </div>
+        `;
+    } else {
+        return `
+            <div id="${correctionId}" style="margin-bottom: 8px; padding: 8px; background: #fef2f2; border-radius: 6px;">
+                <div style="color: ${statusColor}; font-weight: bold;">
+                    ${statusIcon} ${correction.incorrectAnswer}
+                </div>
+                <div style="color: #6b7280; margin: 4px 0;">
+                    Reason: ${correction.reason}
+                </div>
+                <div id="${correctionId}-reveal-section" style="margin-top: 4px;">
+                    <button onclick="revealCorrection('${correctionId}', '${correction.correctAnswer}')" 
+                            style="background: #059669; color: white; border: none; padding: 2px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">
+                        Reveal Correct Answer
+                    </button>
+                    <span id="${correctionId}-answer" style="display: none; color: #059669; font-weight: bold; margin-left: 8px;">
+                        ✅ Correct: ${correction.correctAnswer}
+                    </span>
+                </div>
+            </div>
+        `;
+    }
+}
+function getLanguageManual(language) {
+    // Try to load manual from corresponding file
+    const manualKey = `manual_${language.toLowerCase()}`;
+    let manualContent = localStorage.getItem(manualKey);
+    
+    if (!manualContent) {
+        // Try to fetch manual file
+        fetchLanguageManual(language);
+        
+        // Return placeholder while loading
+        return `📖 ${language.toUpperCase()} MANUAL\n\n⏳ Loading manual content...\n\nIf this persists, the manual file (${language.toLowerCase()}manual.pages) may not be available.`;
+    }
+    
+    return manualContent;
+}
+
+function fetchLanguageManual(language) {
+    const manualFile = `${language.toLowerCase()}manual.pages`;
+    
+    fetch(manualFile)
+        .then(response => {
+            if (!response.ok) throw new Error('Manual not found');
+            return response.text();
+        })
+        .then(content => {
+            const manualKey = `manual_${language.toLowerCase()}`;
+            localStorage.setItem(manualKey, content);
+            
+            // Refresh notes if currently viewing this manual
+            const currentSubject = window.currentLevelInfo ? window.currentLevelInfo.subject : null;
+            if (currentSubject === language) {
+                switchTab('thisFolder');
+            }
+        })
+        .catch(error => {
+            console.warn(`Could not load manual for ${language}:`, error);
+            const fallbackContent = `📖 ${language.toUpperCase()} MANUAL\n\n❌ Manual file not available\n\nThe manual file (${manualFile}) could not be loaded.\nPlease ensure the manual file exists in the same directory.`;
+            const manualKey = `manual_${language.toLowerCase()}`;
+            localStorage.setItem(manualKey, fallbackContent);
+        });
+}
+
+function getDefaultCorrections(language) {
+    const corrections = {
+        'C': `📋 CORRECTION COMMENTS - C PROGRAMMING
 
 ❌ Level 3 - Hello World
-• Missing #include <stdio.h> for printf function
-• Semicolon required after each statement
-• main() function should return int, not void
+- Missing #include <stdio.h> for printf function
+- Semicolon required after each statement
+- main() function should return int, not void
 
 ❌ Level 8 - Variables
-• Variable names cannot start with numbers
-• Use descriptive variable names for better readability
-• const keyword makes variables read-only
+- Variable names cannot start with numbers
+- Use descriptive variable names for better readability
+- const keyword makes variables read-only
 
 ❌ Level 15 - Conditionals
-• Use == for comparison, = for assignment
-• Braces {} required for multi-line if statements
-• else if allows multiple conditions to be tested
+- Use == for comparison, = for assignment
+- Braces {} required for multi-line if statements
+- else if allows multiple conditions to be tested
 
 🎯 C-Specific Focus: Syntax rules, memory concepts, standard library usage`,
 
-                'Python': `📋 CORRECTION COMMENTS - PYTHON
+        'Python': `📋 CORRECTION COMMENTS - PYTHON
 
 ❌ Level 2 - Print Statements
-• Python 3 uses print() function, not print statement
-• Indentation matters - use 4 spaces consistently
-• Strings can use single or double quotes
+- Python 3 uses print() function, not print statement
+- Indentation matters - use 4 spaces consistently
+- Strings can use single or double quotes
 
 ❌ Level 9 - Variables
-• Python variables don't need type declarations
-• Use snake_case for variable names (not camelCase)
-• Variables are case-sensitive
+- Python variables don't need type declarations
+- Use snake_case for variable names (not camelCase)
+- Variables are case-sensitive
 
 🎯 Python-Specific Focus: Indentation, naming conventions, data structures`,
 
-                'JavaScript': `📋 CORRECTION COMMENTS - JAVASCRIPT
+        'JavaScript': `📋 CORRECTION COMMENTS - JAVASCRIPT
 
 ❌ Level 4 - Variables
-• Use let/const instead of var for block scope
-• const prevents reassignment, not mutation of objects
-• Hoisting behavior differs between var and let/const
+- Use let/const instead of var for block scope
+- const prevents reassignment, not mutation of objects
+- Hoisting behavior differs between var and let/const
 
 ❌ Level 11 - Functions
-• Arrow functions don't have their own 'this' context
-• Function declarations are hoisted, expressions are not
-• Default parameters provide fallback values
+- Arrow functions don't have their own 'this' context
+- Function declarations are hoisted, expressions are not
+- Default parameters provide fallback values
 
 🎯 JavaScript-Specific Focus: Scope rules, function types, object manipulation`
-            };
+    };
 
-            return corrections[language] || `📋 CORRECTION COMMENTS - ${language.toUpperCase()}
+    return corrections[language] || `📋 CORRECTION COMMENTS - ${language.toUpperCase()}
 
 ❌ Level 5 - Syntax Basics
-• Pay attention to language-specific syntax rules
-• Read error messages carefully for debugging hints
-• Practice fundamental concepts before advanced topics
+- Pay attention to language-specific syntax rules
+- Read error messages carefully for debugging hints
+- Practice fundamental concepts before advanced topics
 
 🎯 ${language}-Specific Focus: Review fundamental concepts and syntax rules`;
-        }
+}
 
         function saveNotesToStorage() {
             try {
@@ -5895,6 +6769,23 @@ folder.addEventListener('touchend', function(e) {
                     console.log('Opening code app from message');
                     openApp('C Coding Challenge', 'logicbody.html');
                     break;
+                case 'updateDirectoryForArcadeApp':
+                if (event.data.appName) {
+                    updateDirectoryForArcadeApp(event.data.appName, event.data.appPath);
+                }
+                break;
+                
+            case 'searchResponse':
+                if (event.data.matches) {
+                    searchMatches = event.data.matches.map((match, index) => ({
+                        element: null,
+                        iframe: true,
+                        index: index
+                    }));
+                    currentMatchIndex = event.data.currentIndex || 0;
+                    updateSearchResultsCount();
+                }
+                break;
                     
                 case 'navigateToLevel':
     const targetLevel = event.data.level;
@@ -5919,6 +6810,21 @@ folder.addEventListener('touchend', function(e) {
             }
         }
     }
+    break;
+
+case 'updateLevelCorrections':
+    // Handle correction updates from the game
+    console.log('Main window received updateLevelCorrections message:', event.data);
+    updateLevelCorrections(event.data);
+    break;
+
+case 'setCurrentLevelInfo':
+    // Set current level info for notes system
+    window.currentLevelInfo = {
+        subject: event.data.subject,
+        level: event.data.level,
+        path: event.data.path
+    };
     break;
 
      case 'startDragFromIframe':
@@ -5992,6 +6898,48 @@ case 'endDragFromIframe':
         console.log('Message handling error:', error);
     }
 });
+
+// ARCADE APP DIRECTORY INTEGRATION
+        function updateDirectoryForArcadeApp(appName, appPath = null) {
+            // Find or create arcade window to update its directory
+            const arcadeWindow = openWindows.find(w => w.title && w.title.includes('Arcade'));
+            
+            if (arcadeWindow) {
+                // Update the arcade window's path to show the current app
+                let newPath;
+                if (appPath) {
+                    newPath = ['Fromsupply', 'Arcade', ...appPath.split('/')];
+                } else {
+                    newPath = ['Fromsupply', 'Arcade', appName];
+                }
+                
+                PathManager.updatePath(arcadeWindow.id, newPath);
+                
+                // Update window title
+                const windowElement = document.getElementById(arcadeWindow.id);
+                if (windowElement) {
+                    arcadeWindow.title = `${appName} - Arcade`;
+                }
+            }
+        }
+
+        // SEARCH KEYBOARD SHORTCUT
+        function initializeSearchShortcut() {
+            document.addEventListener('keydown', function(e) {
+                // Ctrl/Cmd + F to focus search (if search bar is visible)
+                if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+                    const searchContainer = document.getElementById('searchIconButton');
+                    if (searchContainer && searchContainer.classList.contains('visible')) {
+                        e.preventDefault();
+                        const searchInput = document.getElementById('localSearchInput');
+                        if (searchInput) {
+                            searchInput.focus();
+                            searchInput.select();
+                        }
+                    }
+                }
+            });
+        }
 // Mobile-specific input handling
 function setupMobileInputSupport() {
     // Handle shell inputs on mobile
@@ -7130,6 +8078,188 @@ function setupIframeDragHandling(windowId) {
     };
     
     window.addEventListener('message', handleIframeMessage);
+
+    // Add this new function after the message handling window.addEventListener('message', function(event) { ... });
+    // Add this test function
+window.testNotesUpdate = function() {
+    console.log('Testing notes update...');
+    
+    // Set current level info manually
+    window.currentLevelInfo = {
+        subject: 'C',
+        level: 1,
+        path: 'C/Level 1'
+    };
+    
+    // Simulate a wrong answer
+    const testData = {
+        language: 'C',
+        levelNumber: 1,
+        step: 1,
+        incorrectAnswer: 'Test wrong answer',
+        reason: 'This is a test reason',
+        correctAnswer: 'Test correct answer',
+        isCorrection: false
+    };
+    
+    updateLevelCorrections(testData);
+    console.log('Test completed - check localStorage and notes');
+};
+
+function updateLevelCorrections(data) {
+    console.log('Received correction data:', data);
+    const { language, levelNumber, step, incorrectAnswer, reason, correctAnswer, isCorrection } = data;
+    const correctionKey = `corrections_${language}_level_${levelNumber}`;
+    
+    try {
+        let corrections = JSON.parse(localStorage.getItem(correctionKey) || '[]');
+        console.log('Existing corrections:', corrections);
+        
+        if (isCorrection) {
+            // Mark previous incorrect answer as corrected
+            const existingIndex = corrections.findIndex(c => 
+                c.step === step && c.incorrectAnswer === incorrectAnswer
+            );
+            
+            if (existingIndex >= 0) {
+                corrections[existingIndex].status = 'corrected';
+                corrections[existingIndex].correctedOn = new Date().toISOString();
+                localStorage.setItem(correctionKey, JSON.stringify(corrections));
+                
+                // Update DOM immediately
+                updateCorrectionInDOM(existingIndex, corrections[existingIndex], levelNumber);
+                console.log('Marked correction as corrected and updated DOM');
+            }
+        } else {
+            // Add new incorrect answer
+            const newCorrection = {
+                step,
+                incorrectAnswer,
+                reason,
+                correctAnswer,
+                timestamp: new Date().toISOString(),
+                status: 'incorrect'
+            };
+            
+            // Check if this exact correction already exists
+            const existsIndex = corrections.findIndex(c => 
+                c.step === step && c.incorrectAnswer === incorrectAnswer
+            );
+            
+            if (existsIndex === -1) {
+                corrections.push(newCorrection);
+                localStorage.setItem(correctionKey, JSON.stringify(corrections));
+                
+                // Add to DOM immediately
+                addCorrectionToDOM(newCorrection, corrections.length - 1, levelNumber);
+                console.log('Added new correction and updated DOM');
+            }
+        }
+        
+    } catch (error) {
+        console.error('Error updating level corrections:', error);
+    }
+}
+
+function addCorrectionToDOM(correction, globalIndex, levelNumber) {
+    // Check if we're currently viewing this level's corrections
+    if (!isViewingLevelCorrections(levelNumber)) return;
+    
+    const container = document.getElementById(`corrections-container-${levelNumber}`);
+    if (!container) return;
+    
+    // Remove "no corrections" message if it exists
+    const noCorrectionsMsg = document.getElementById('no-corrections-message');
+    if (noCorrectionsMsg) {
+        noCorrectionsMsg.remove();
+    }
+    
+    // Find or create step container
+    let stepContainer = document.querySelector(`[data-step="${correction.step}"]`);
+    if (!stepContainer) {
+        stepContainer = document.createElement('div');
+        stepContainer.setAttribute('data-step', correction.step);
+        stepContainer.style.cssText = 'margin-bottom: 12px; border-left: 3px solid #e5e7eb; padding-left: 12px;';
+        stepContainer.innerHTML = `<div style="font-weight: bold; color: #1f2937; margin-bottom: 6px;">📍 Step ${correction.step}:</div>`;
+        
+        // Insert in correct order
+        const allStepContainers = Array.from(container.querySelectorAll('[data-step]'));
+        const insertIndex = allStepContainers.findIndex(el => parseInt(el.getAttribute('data-step')) > correction.step);
+        
+        if (insertIndex === -1) {
+            container.appendChild(stepContainer);
+        } else {
+            container.insertBefore(stepContainer, allStepContainers[insertIndex]);
+        }
+    }
+    
+    // Add correction element
+    const correctionId = `correction-${levelNumber}-${globalIndex}`;
+    const correctionHTML = renderCorrectionElement(correction, correctionId, levelNumber);
+    stepContainer.insertAdjacentHTML('beforeend', correctionHTML);
+}
+
+function updateCorrectionInDOM(globalIndex, correction, levelNumber) {
+    // Check if we're currently viewing this level's corrections
+    if (!isViewingLevelCorrections(levelNumber)) return;
+    
+    const correctionId = `correction-${levelNumber}-${globalIndex}`;
+    const existingElement = document.getElementById(correctionId);
+    
+    if (existingElement) {
+        // Replace with corrected version
+        existingElement.outerHTML = renderCorrectionElement(correction, correctionId, levelNumber);
+    }
+}
+
+function isViewingLevelCorrections(levelNumber) {
+    return window.currentLevelInfo && 
+           window.currentLevelInfo.level === levelNumber &&
+           document.querySelector('.notes-tab.active') &&
+           document.querySelector('.notes-tab.active').textContent.includes('Level');
+}
+
+function refreshNotesIfNeeded(language, levelNumber) {
+    // Check if notes window is open and showing this level
+    if (window.currentLevelInfo && 
+        window.currentLevelInfo.subject === language &&
+        window.currentLevelInfo.level === levelNumber) {
+        
+        console.log('Refreshing notes for current level');
+        
+        // Find the notes container and refresh it
+        const notesContainer = document.querySelector('.notes-canvas-container');
+        if (notesContainer) {
+            // Force refresh the notes content
+            setTimeout(() => {
+                const activeTab = document.querySelector('.notes-tab.active');
+                if (activeTab && (activeTab.textContent.includes('Level') || activeTab.textContent.includes('Notes'))) {
+                    console.log('Refreshing notes tab content');
+                    switchTab('thisFolder');
+                }
+            }, 100);
+        }
+    }
+}
+// Add these global functions for the reveal/hide buttons
+// Update these global functions for the reveal/hide buttons
+window.revealCorrection = function(correctionId, correctAnswer) {
+    const button = event.target;
+    const answerSpan = document.getElementById(correctionId + '-answer');
+    
+    if (button && answerSpan) {
+        button.style.display = 'none';
+        answerSpan.style.display = 'inline';
+    }
+};
+
+window.hideCorrection = function(correctionId) {
+    const element = document.getElementById(correctionId);
+    if (element) {
+        element.style.display = 'none';
+    }
+};
+    
     
     // Store cleanup function
     iframe.cleanupDragHandler = () => {
@@ -7198,6 +8328,8 @@ if (checkFirstVisit()) {
                     });
                 }
             });
+            // Initialize search shortcut
+            initializeSearchShortcut();
         });
 
     </script>

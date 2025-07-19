@@ -958,7 +958,17 @@ button, input, select, textarea,
     }
 
     const currentChallenge = challengesData[currentLevelIndex];
-    currentStep = 0;
+currentStep = 0;
+
+// Set current level info for notes system
+if (typeof parent !== 'undefined' && parent !== window) {
+    parent.postMessage({
+        action: 'setCurrentLevelInfo',
+        subject: 'C',
+        level: currentLevelIndex + 1,
+        path: `C/Level ${currentLevelIndex + 1}`
+    }, '*');
+}
 
     initialStarsForLevelAttempt = starCount;
     
@@ -1080,37 +1090,70 @@ function incrementAttempts() {
             previousStarCountForAnimation = starCount;
 
             if (isCorrect) {
-                // Don't add stars immediately - calculate at end of level
-                console.log("Correct answer - will calculate stars at level end");
-                showFeedbackOverlay('correct');
-                updateStarDisplay(starCount > previousStarCountForAnimation, 'gain');
-                saveStarCount(); // ADD THIS
+    // Don't add stars immediately - calculate at end of level
+    console.log("Correct answer - will calculate stars at level end");
+    showFeedbackOverlay('correct');
+    updateStarDisplay(starCount > previousStarCountForAnimation, 'gain');
+    saveStarCount();
 
-                let codeToAdd = '';
-                if (stepData.explanation) {
-                    codeToAdd += getIndent(stepData.indent) + `<span class="explanation-comment">${escapeHtml("// " + stepData.explanation)}</span>\n`;
-                }
-                const escapedCorrectCode = escapeHtml(stepData.correct);
-                codeToAdd += getIndent(stepData.indent) + escapedCorrectCode + '\n';
-                constructedCode += codeToAdd;
+    // Check if this was a correction of a previous wrong answer
+    checkForCorrection(stepData.correct);
 
-                codeDisplayArea.innerHTML = constructedCode;
-                scrollCodeDisplay();
+    let codeToAdd = '';
+    if (stepData.explanation) {
+        codeToAdd += getIndent(stepData.indent) + `<span class="explanation-comment">${escapeHtml("// " + stepData.explanation)}</span>\n`;
+    }
+    const escapedCorrectCode = escapeHtml(stepData.correct);
+    codeToAdd += getIndent(stepData.indent) + escapedCorrectCode + '\n';
+    constructedCode += codeToAdd;
 
-                setTimeout(() => {
-                    currentStep++;
-                    displayStep();
-                }, 300);
+    codeDisplayArea.innerHTML = constructedCode;
+    scrollCodeDisplay();
+
+    setTimeout(() => {
+        currentStep++;
+        displayStep();
+    }, 300);
 
     } else {
     // Track wrong answers for end-of-level calculation
     starsLostThisLevel += 2;
+    wrongAnswersCount++; // Track for corrections
     console.log("Wrong answer - will calculate stars at level end");
 
     showFeedbackOverlay('incorrect');
     const didLoseStar = starCount < previousStarCountForAnimation;
     updateStarDisplay(didLoseStar, 'loss');
-    saveStarCount(); // ADD THIS
+    saveStarCount();
+
+    // DEBUG: Log everything before sending
+    console.log('=== WRONG ANSWER DEBUG ===');
+    console.log('incorrectText:', incorrectText);
+    console.log('reason:', reason);
+    console.log('stepData.correct:', stepData.correct);
+    console.log('currentLevelIndex:', currentLevelIndex);
+    console.log('currentStep:', currentStep);
+    console.log('parent window exists:', typeof parent !== 'undefined' && parent !== window);
+
+    // Send correction data to parent window for notes app
+    if (typeof parent !== 'undefined' && parent !== window) {
+        const messageData = {
+            action: 'updateLevelCorrections',
+            language: 'C',
+            levelNumber: currentLevelIndex + 1,
+            step: currentStep + 1,
+            incorrectAnswer: incorrectText,
+            reason: reason,
+            correctAnswer: stepData.correct,
+            isCorrection: false
+        };
+        
+        console.log('Sending message to parent:', messageData);
+        parent.postMessage(messageData, '*');
+        console.log('Message sent successfully');
+    } else {
+        console.error('PARENT WINDOW NOT FOUND - Messages cannot be sent');
+    }
 
     // Add wrong answer comment to code
     if (reason && incorrectText) {
@@ -1123,16 +1166,54 @@ function incrementAttempts() {
     }
 
     // Remove the incorrect option
-wrapper.remove();
+    wrapper.remove();
 
-setTimeout(() => {
-    interactionArea.querySelectorAll('.option-btn').forEach(btn => {
-        btn.disabled = false;
-    });
-    optionsLocked = false;
-}, 500);
+    setTimeout(() => {
+        interactionArea.querySelectorAll('.option-btn').forEach(btn => {
+            btn.disabled = false;
+        });
+        optionsLocked = false;
+    }, 500);
 }
         }
+
+        function checkForCorrection(correctAnswer) {
+    // Check if this correct answer was previously answered incorrectly
+    const correctionKey = `corrections_C_level_${currentLevelIndex + 1}`;
+    
+    try {
+        let corrections = JSON.parse(localStorage.getItem(correctionKey) || '[]');
+        
+        // Find any incorrect answers for this step that match this correct answer
+        const stepCorrections = corrections.filter(c => 
+            c.step === (currentStep + 1) && 
+            c.correctAnswer === correctAnswer &&
+            c.status === 'incorrect'
+        );
+        
+        if (stepCorrections.length > 0) {
+            // Mark all matching corrections as corrected
+            stepCorrections.forEach(correction => {
+                // Send correction update to parent
+                if (typeof parent !== 'undefined' && parent !== window) {
+                    parent.postMessage({
+                        action: 'updateLevelCorrections',
+                        language: 'C',
+                        levelNumber: currentLevelIndex + 1,
+                        step: currentStep + 1,
+                        incorrectAnswer: correction.incorrectAnswer,
+                        reason: correction.reason,
+                        correctAnswer: correctAnswer,
+                        isCorrection: true
+                    }, '*');
+                }
+            });
+        }
+    } catch (error) {
+        console.warn('Error checking for corrections:', error);
+    }
+}
+
 
         // End game
         function endGame() {
@@ -1387,16 +1468,113 @@ function goToLevelBegin(levelNumber) {
             return 0;
         }
 
-        // Start the game
-        // Listen for score updates from fsLogic
-// Listen for score updates from fsLogic
 window.addEventListener('message', function(event) {
-    if (event.data && event.data.action === 'scoreResponse') {
-        starCount = event.data.score || 0;
-        console.log(`Received score from fsLogic: ${starCount}`);
-        updateHintButtonState();
-        updateStoreButtons();
-        updateLibraryButtons();
+    console.log('=== PARENT RECEIVED MESSAGE ===');
+    console.log('Event origin:', event.origin);
+    console.log('Event data:', event.data);
+    
+    try {
+        if (event.data && event.data.action) {
+            console.log('Processing action:', event.data.action);
+            
+            switch(event.data.action) {
+                case 'dismissOverlay':
+                    navigationAttempted = false;
+                    hidePhoneOverlay();
+                    break;
+                    
+                case 'updateScore':
+                    if (typeof event.data.points === 'number') {
+                        addToScore(event.data.points);
+                    } else if (typeof event.data.newScore === 'number') {
+                        setScore(event.data.newScore);
+                    }
+                    break;
+                    
+                case 'getScore':
+                    if (event.source) {
+                        event.source.postMessage({
+                            action: 'scoreResponse',
+                            score: currentScore
+                        }, '*');
+                    }
+                    break;
+                    
+                case 'openApp':
+                    if (event.data.appName && event.data.fileName) {
+                        openApp(event.data.appName, event.data.fileName);
+                    }
+                    break;
+                    
+                case 'openCodeApp':
+                    console.log('Opening code app from message');
+                    openApp('C Coding Challenge', 'logicbody.html');
+                    break;
+                
+                case 'updateDirectoryForArcadeApp':
+                    if (event.data.appName) {
+                        updateDirectoryForArcadeApp(event.data.appName, event.data.appPath);
+                    }
+                    break;
+                    
+                case 'searchResponse':
+                    if (event.data.matches) {
+                        searchMatches = event.data.matches.map((match, index) => ({
+                            element: null,
+                            iframe: true,
+                            index: index
+                        }));
+                        currentMatchIndex = event.data.currentIndex || 0;
+                        updateSearchResultsCount();
+                    }
+                    break;
+                        
+                case 'navigateToLevel':
+                    const targetLevel = event.data.level;
+                    if (targetLevel) {
+                        const focusedWindow = openWindows.find(w => {
+                            const element = document.getElementById(w.id);
+                            return element && parseInt(element.style.zIndex) === windowZIndex;
+                        });
+                        
+                        if (focusedWindow) {
+                            const newPath = ['Fromsupply', 'Desktop', 'Logic', 'Code', 'C'];
+                            PathManager.updatePath(focusedWindow.id, newPath);
+                            
+                            const content = generateLanguageLevels('C', 100, 'C.png', focusedWindow.id);
+                            const contentElement = document.getElementById(focusedWindow.id + '-content');
+                            if (contentElement) {
+                                contentElement.style.padding = '16px';
+                                contentElement.innerHTML = content;
+                            }
+                        }
+                    }
+                    break;
+
+                case 'updateLevelCorrections':
+                    console.log('*** RECEIVED LEVEL CORRECTIONS MESSAGE ***');
+                    console.log('Data:', event.data);
+                    updateLevelCorrections(event.data);
+                    break;
+
+                case 'setCurrentLevelInfo':
+                    console.log('*** SETTING CURRENT LEVEL INFO ***');
+                    console.log('Data:', event.data);
+                    window.currentLevelInfo = {
+                        subject: event.data.subject,
+                        level: event.data.level,
+                        path: event.data.path
+                    };
+                    console.log('Set currentLevelInfo to:', window.currentLevelInfo);
+                    break;
+
+                // ... rest of cases
+            }
+        } else {
+            console.log('Message received but no action property');
+        }
+    } catch (error) {
+        console.error('Error handling message:', error);
     }
 });
 
